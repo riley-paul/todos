@@ -1,10 +1,9 @@
 ---
 import "@/globals.css";
 import Root from "@/layouts/root.astro";
-import ToastButton from "@/components/toast-button.tsx";
+import App from "@/components/app.tsx";
 ---
 
 <Root>
-  <h1>Astro</h1>
-  <ToastButton client:load />
+  <App client:load />
 </Root>
