@@ -2,7 +2,6 @@ import type React from "react";
 
 import { Button } from "./ui/button";
 import TodoItem from "./todo";
-import { Loader2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { getTodosQP } from "@/lib/queries";
