@@ -13,7 +13,7 @@ interface Props {
   todo: Todo;
 }
 
-const Todo: React.FC<Props> = (props) => {
+const TodoItem: React.FC<Props> = (props) => {
   const { todo } = props;
   const queryClient = useQueryClient();
 
@@ -67,4 +67,4 @@ const Todo: React.FC<Props> = (props) => {
   );
 };
 
-export default Todo;
+export default TodoItem;

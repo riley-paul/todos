@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { Button } from "./ui/button";
-import Todo from "./todo";
+import TodoItem from "./todo";
 import { Loader2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
@@ -51,7 +51,7 @@ const TodoList: React.FC = () => {
     <div>
       <div className="flex flex-col gap-2 overflow-auto">
         {todosQuery.data?.map((todo) => (
-          <Todo key={todo.id} todo={todo} />
+          <TodoItem key={todo.id} todo={todo} />
         ))}
       </div>
       {todosQuery.isSuccess &&
