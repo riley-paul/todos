@@ -1,5 +1,3 @@
-"use client";
-
 import type React from "react";
 
 import { Button } from "./ui/button";
@@ -8,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { getTodosQP } from "@/lib/queries";
+import { Skeleton } from "./ui/skeleton";
 
 const TodoList: React.FC = () => {
   const todosQuery = useQuery(getTodosQP);
@@ -22,11 +21,10 @@ const TodoList: React.FC = () => {
 
   if (todosQuery.isLoading) {
     return (
-      <div className="flex min-h-20 flex-1 items-center justify-center">
-        <p className="flex text-sm text-muted-foreground">
-          <Loader2 className="mr-2 animate-spin text-primary" size="1.2rem" />
-          Loading...
-        </p>
+      <div className="flex flex-col gap-2">
+        {new Array(3).fill(null).map((_, i) => (
+          <Skeleton className="h-12 w-full" />
+        ))}
       </div>
     );
   }

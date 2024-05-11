@@ -2,8 +2,10 @@
 import "@/globals.css";
 import Root from "@/layouts/root.astro";
 import App from "@/components/app.tsx";
+import Header from "@/components/header";
 ---
 
 <Root>
+  <Header />
   <App client:load />
 </Root>
