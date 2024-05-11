@@ -1,0 +1,40 @@
+{
+  "name": "Todos",
+  "short_name": "Todos",
+  "display": "standalone",
+  "description": "A simple todo list app",
+  "background_color": "#061419",
+  "icons": [
+    {
+      "src": "/icons/60.png",
+      "sizes": "60x60",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/87.png",
+      "sizes": "87x87",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/167.png",
+      "sizes": "167x167",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ]
+
+}
