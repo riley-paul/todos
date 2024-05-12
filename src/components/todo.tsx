@@ -39,7 +39,7 @@ const TodoItem: React.FC<Props> = (props) => {
       className={cn(
         "flex items-center gap-2 rounded-md p-2 text-sm",
         todo.isCompleted && "bg-card/50",
-        deleteMutation.isPending && "opacity-50"
+        deleteMutation.isPending && "opacity-50",
       )}
     >
       <Button
@@ -57,7 +57,7 @@ const TodoItem: React.FC<Props> = (props) => {
       <span
         className={cn(
           "flex-1",
-          todo.isCompleted && "text-muted-foreground line-through"
+          todo.isCompleted && "text-muted-foreground line-through",
         )}
       >
         {todo.text}

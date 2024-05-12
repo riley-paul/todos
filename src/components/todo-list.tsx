@@ -47,9 +47,7 @@ const TodoList: React.FC = () => {
   return (
     <div>
       <div className="flex flex-col gap-2 overflow-auto">
-        {todosQuery.data?.map((todo) => (
-          <TodoItem key={todo.id} todo={todo} />
-        ))}
+        {todosQuery.data?.map((todo) => <TodoItem key={todo.id} todo={todo} />)}
       </div>
       {todosQuery.isSuccess &&
         todosQuery.data.filter((i) => i.isCompleted).length > 0 && (

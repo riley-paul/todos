@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { db } from "@/api/db";
 import { todoInsertSchema, todos as todosTable } from "@/api/db/schema";
-import { and, desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 
@@ -11,7 +11,7 @@ const app = new Hono()
       .select()
       .from(todosTable)
       .where(and(eq(todosTable.isDeleted, false)))
-      .orderBy(desc(todosTable.createdAt));
+      .orderBy(asc(todosTable.isCompleted), desc(todosTable.createdAt));
     return c.json(todos);
   })
 
@@ -25,7 +25,7 @@ const app = new Hono()
     "/update",
     zValidator(
       "json",
-      z.object({ id: z.string(), data: todoInsertSchema.partial() })
+      z.object({ id: z.string(), data: todoInsertSchema.partial() }),
     ),
     async (c) => {
       const { id, data } = c.req.valid("json");
@@ -44,7 +44,7 @@ const app = new Hono()
         .where(eq(todosTable.id, id))
         .returning();
       return c.json(todo);
-    }
+    },
   )
 
   .post(
@@ -66,7 +66,7 @@ const app = new Hono()
         .set({ isCompleted: complete })
         .where(eq(todosTable.id, id));
       return c.status(204);
-    }
+    },
   )
 
   .post(
@@ -88,7 +88,7 @@ const app = new Hono()
         .set({ isDeleted: true })
         .where(eq(todosTable.id, id));
       return c.status(204);
-    }
+    },
   )
 
   .post("/delete-completed", async (c) => {
