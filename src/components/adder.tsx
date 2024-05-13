@@ -3,7 +3,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Loader2, Plus } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
+import api from "@/lib/client";
 import { getTodosQP } from "@/lib/queries";
 import { type TodoInsert } from "@/api/db/schema";
 

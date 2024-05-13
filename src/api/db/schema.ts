@@ -4,7 +4,7 @@ import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { v4 as uuid } from "uuid";
 
 export const todosTable = sqliteTable("todo", {
-  id: text("id").$defaultFn(uuid).primaryKey().unique(),
+  id: text("id").$defaultFn(uuid).primaryKey(),
   text: text("text").notNull(),
   isCompleted: integer("is_completed", { mode: "boolean" })
     .default(false)

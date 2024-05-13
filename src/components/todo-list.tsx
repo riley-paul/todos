@@ -3,7 +3,7 @@ import type React from "react";
 import { Button } from "./ui/button";
 import TodoItem from "./todo";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
+import api from "@/lib/client";
 import { getTodosQP } from "@/lib/queries";
 import { Skeleton } from "./ui/skeleton";
 
