@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { db } from "@/api/db";
-import { todoInsertSchema, todos as todosTable } from "@/api/db/schema";
+import { todoInsertSchema, todosTable } from "@/api/db/schema";
 import { and, asc, desc, eq } from "drizzle-orm";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";

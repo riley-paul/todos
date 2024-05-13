@@ -3,7 +3,7 @@ import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { v4 as uuid } from "uuid";
 
-export const todos = sqliteTable("todo", {
+export const todosTable = sqliteTable("todo", {
   id: text("id").$defaultFn(uuid).primaryKey(),
   text: text("text").notNull(),
   isCompleted: integer("is_completed", { mode: "boolean" })
@@ -18,7 +18,7 @@ export const todos = sqliteTable("todo", {
     .notNull(),
 });
 
-export type Todo = typeof todos.$inferSelect;
-export type TodoInsert = typeof todos.$inferInsert;
-export const todoSchema = createSelectSchema(todos);
-export const todoInsertSchema = createInsertSchema(todos);
+export type Todo = typeof todosTable.$inferSelect;
+export type TodoInsert = typeof todosTable.$inferInsert;
+export const todoSchema = createSelectSchema(todosTable);
+export const todoInsertSchema = createInsertSchema(todosTable);
