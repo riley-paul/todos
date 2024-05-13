@@ -23,7 +23,7 @@ declare module "lucia" {
   }
 }
 
-type DatabaseUserAttributes = Omit<User, "id">;
+type DatabaseUserAttributes = Omit<User, "id" | "passwordHash">;
 
 export const github = new GitHub(
   import.meta.env.GITHUB_CLIENT_ID,
