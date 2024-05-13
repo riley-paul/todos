@@ -6,7 +6,7 @@ import { Check, Loader2 } from "lucide-react";
 import type { Todo } from "@/api/db/schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import DeleteButton from "./ui/delete-button";
-import api from "@/lib/api";
+import api from "@/lib/client";
 import { getTodosQP } from "@/lib/queries";
 
 interface Props {

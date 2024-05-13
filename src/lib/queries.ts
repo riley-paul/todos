@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import api from "./api";
+import api from "./client";
 
 export const getTodosQP = queryOptions({
   queryKey: ["todos"],
