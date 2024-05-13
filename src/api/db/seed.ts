@@ -1,5 +1,5 @@
 import { db } from ".";
-import { type TodoInsert, todos as todosTable } from "./schema";
+import { type TodoInsert, todosTable } from "./schema";
 
 const todos: TodoInsert[] = [
   {
