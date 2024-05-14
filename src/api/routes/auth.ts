@@ -1,108 +1,132 @@
-import { zValidator } from "@hono/zod-validator";
-import { z } from "astro:content";
 import { Hono } from "hono";
-import { db } from "../db";
-import { userTable } from "../db/schema";
-import { lucia } from "@/lib/auth";
+import { generateState } from "arctic";
 import { setCookie } from "hono/cookie";
-import type { CookieOptions } from "hono/utils/cookie";
+import { github, lucia } from "@/lib/auth";
+import { OAuth2RequestError } from "arctic";
+import { generateIdFromEntropySize } from "lucia";
+import { db } from "@/api/db";
+import { userTable } from "@/api/db/schema";
 import { eq } from "drizzle-orm";
-import { hash, verify, type Options } from "@node-rs/argon2";
-
-const HASH_OPTIONS: Options = {
-  // recommended minimum parameters
-  memoryCost: 19456,
-  timeCost: 2,
-  outputLen: 32,
-  parallelism: 1,
-};
-
-export const signInSchema = z.object({
-  email: z.string().email(),
-  password: z
-    .string()
-    .min(6)
-    .max(255)
-    .regex(/^[a-zA-Z0-9!@#$%^&*()_+=[\]{};':"\\|,.<>/?]*$/),
-});
-
-export const signUpSchema = signInSchema
-  .extend({
-    passwordConfirm: z.string(),
-  })
-  .refine((data) => data.password === data.passwordConfirm, {
-    message: "Passwords do not match",
-    path: ["passwordConfirm"],
-  });
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
+import { luciaToHonoCookieAttributes, sameSiteConversion } from "../helpers";
 
 const app = new Hono()
-  .post("/signup", zValidator("form", signUpSchema), async (c) => {
-    const { email, password } = c.req.valid("form");
-    const passwordHash = await hash(password, HASH_OPTIONS);
-    const existingUser = await db
-      .select()
-      .from(userTable)
-      .where(eq(userTable.email, email))
-      .then((rows) => rows[0]);
+  .get("/login/github", async (c) => {
+    const state = generateState();
+    const url = await github.createAuthorizationURL(state);
 
-    if (existingUser) {
-      return c.json({ error: "User already exists" }, 400);
+    setCookie(c, "github_oauth_state", state, {
+      path: "/",
+      secure: import.meta.env.PROD,
+      httpOnly: true,
+      maxAge: 60 * 10,
+      sameSite: "Lax",
+    });
+
+    return c.redirect(url.toString());
+  })
+  .get(
+    "/login/github/callback",
+    zValidator(
+      "param",
+      z.object({
+        code: z.string(),
+        state: z.string(),
+      }),
+    ),
+    zValidator(
+      "cookie",
+      z.object({ github_oauth_state: z.string().nullable() }),
+    ),
+    async (c) => {
+      const { code, state } = c.req.valid("param");
+      const { github_oauth_state } = c.req.valid("cookie");
+
+      if (state !== github_oauth_state) {
+        return c.json({ error: "Invalid state" }, 400);
+      }
+
+      try {
+        const tokens = await github.validateAuthorizationCode(code);
+        const githubUserResponse = await fetch("https://api.github.com/user", {
+          headers: {
+            Authorization: `Bearer ${tokens.accessToken}`,
+          },
+        });
+        const githubUser: GitHubUser = await githubUserResponse.json();
+
+        // Replace this with your own DB client.
+        const existingUser = await db
+          .select()
+          .from(userTable)
+          .where(eq(userTable.githubId, githubUser.id))
+          .then((rows) => rows[0]);
+
+        if (existingUser) {
+          const session = await lucia.createSession(existingUser.id, {});
+          const sessionCookie = lucia.createSessionCookie(session.id);
+          setCookie(
+            c,
+            sessionCookie.name,
+            sessionCookie.value,
+            luciaToHonoCookieAttributes(sessionCookie.attributes),
+          );
+          return c.redirect("/");
+        }
+
+        const userId = generateIdFromEntropySize(10); // 16 characters long
+
+        // Replace this with your own DB client.
+        await db.insert(userTable).values({
+          id: userId,
+          githubId: githubUser.id,
+          username: githubUser.login,
+        });
+
+        const session = await lucia.createSession(userId, {});
+        const sessionCookie = lucia.createSessionCookie(session.id);
+        setCookie(
+          c,
+          sessionCookie.name,
+          sessionCookie.value,
+          luciaToHonoCookieAttributes(sessionCookie.attributes),
+        );
+        return c.redirect("/");
+      } catch (e) {
+        // the specific error message depends on the provider
+        if (e instanceof OAuth2RequestError) {
+          // invalid code
+          console.log(e.message);
+          return c.json({ error: "An OAuth error occured" }, 400);
+        }
+        return c.json({ error: "An error occurred" }, 500);
+      }
+    },
+  )
+  .post("/logout", async (c) => {
+    const session = c.get("session");
+
+    if (!session) {
+      return c.json({ error: "No session" }, 400);
     }
 
-    const user = await db
-      .insert(userTable)
-      .values({
-        email,
-        passwordHash,
-      })
-      .returning()
-      .then((rows) => rows[0]);
+    await lucia.invalidateSession(session.id);
 
-    const session = await lucia.createSession(user.id, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
+    const sessionCookie = lucia.createBlankSessionCookie();
     setCookie(
       c,
       sessionCookie.name,
       sessionCookie.value,
-      sessionCookie.attributes as CookieOptions,
+      luciaToHonoCookieAttributes(sessionCookie.attributes),
     );
 
-    return c.redirect("/");
-  })
-  .post("/login", zValidator("form", signInSchema), async (c) => {
-    const { email, password } = c.req.valid("form");
+    return c.redirect("/login");
+  });
 
-    const existingUser = await db
-      .select()
-      .from(userTable)
-      .where(eq(userTable.email, email))
-      .then((rows) => rows[0]);
-
-    if (!existingUser) {
-      return c.json({ error: "Incorrect username or password" }, 400);
-    }
-
-    const validPassword = await verify(
-      existingUser.passwordHash,
-      password,
-      HASH_OPTIONS,
-    );
-
-    if (!validPassword) {
-      return c.json({ error: "Incorrect username or password" }, 400);
-    }
-
-    const session = await lucia.createSession(existingUser.id, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
-    setCookie(
-      c,
-      sessionCookie.name,
-      sessionCookie.value,
-      sessionCookie.attributes as CookieOptions,
-    );
-
-    return c.redirect("/");
-  })
-  .post("/signout");
+interface GitHubUser {
+  id: string;
+  login: string;
+}
 
 export default app;

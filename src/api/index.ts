@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import todoRoutes from "./routes/todos";
+import type { Session, User } from "lucia";
 
 export const config = {
   runtime: "edge",
@@ -16,3 +17,10 @@ const routes = app
 
 export default app;
 export type AppType = typeof routes;
+
+declare module "hono" {
+  interface ContextVariableMap {
+    session: Session | null;
+    user: User | null;
+  }
+}
