@@ -1,7 +1,9 @@
 import { Hono } from "hono";
-import { cors } from "hono/cors";
-import todoRoutes from "./routes/todos";
 import type { Session, User } from "lucia";
+
+import todoRoutes from "./routes/todos";
+import authRoutes from "./routes/auth";
+import authMiddleware from "./middleware/auth";
 
 export const config = {
   runtime: "edge",
@@ -9,10 +11,11 @@ export const config = {
 
 const app = new Hono().basePath("/api");
 
-app.use("/api/*", cors());
+app.use(authMiddleware);
 
 const routes = app
   .route("/todos", todoRoutes)
+  .route("/auth", authRoutes)
   .get("/", (c) => c.json({ message: "Hello Hono!" }));
 
 export default app;

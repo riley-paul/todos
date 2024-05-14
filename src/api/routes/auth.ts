@@ -29,7 +29,7 @@ const app = new Hono()
   .get(
     "/login/github/callback",
     zValidator(
-      "param",
+      "query",
       z.object({
         code: z.string(),
         state: z.string(),
@@ -40,7 +40,7 @@ const app = new Hono()
       z.object({ github_oauth_state: z.string().nullable() }),
     ),
     async (c) => {
-      const { code, state } = c.req.valid("param");
+      const { code, state } = c.req.valid("query");
       const { github_oauth_state } = c.req.valid("cookie");
 
       if (state !== github_oauth_state) {
@@ -122,6 +122,10 @@ const app = new Hono()
     );
 
     return c.redirect("/login");
+  })
+  .get("/me", async (c) => {
+    const user = c.get("user");
+    return c.json(user);
   });
 
 interface GitHubUser {
