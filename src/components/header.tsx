@@ -1,5 +1,6 @@
 import type React from "react";
 import { CircleCheckBig } from "lucide-react";
+import { Button } from "./ui/button";
 
 const Header: React.FC = () => {
   return (
@@ -9,6 +10,11 @@ const Header: React.FC = () => {
           <CircleCheckBig size="1.5rem" className="text-primary" />
           <div className="text-2xl font-bold">Todos</div>
         </div>
+        <form action="/api/auth/logout" method="POST">
+          <Button type="submit" variant="outline">
+            Logout
+          </Button>
+        </form>
       </div>
     </header>
   );

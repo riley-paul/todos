@@ -13,6 +13,9 @@ export const lucia = new Lucia(adapter, {
       secure: process.env.NODE_ENV === "production",
     },
   },
+  getUserAttributes: async (user) => {
+    return user;
+  },
 });
 
 // IMPORTANT!
@@ -23,7 +26,7 @@ declare module "lucia" {
   }
 }
 
-type DatabaseUserAttributes = Omit<User, "id" | "passwordHash">;
+type DatabaseUserAttributes = Omit<User, "id">;
 
 export const github = new GitHub(
   import.meta.env.GITHUB_CLIENT_ID,
