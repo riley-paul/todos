@@ -25,8 +25,10 @@ export const todoInsertSchema = createInsertSchema(todosTable);
 
 export const userTable = sqliteTable("user", {
   id: text("id").$defaultFn(uuid).primaryKey().unique(),
-  githubId: text("github_id").unique(),
-  username: text("username").notNull().unique(),
+  githubId: integer("github_id").unique(),
+  username: text("username").notNull(),
+  name: text("name").notNull(),
+  avatarUrl: text("avatar_url"),
 });
 
 export type User = typeof userTable.$inferSelect;

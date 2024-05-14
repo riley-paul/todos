@@ -75,16 +75,19 @@ const app = new Hono()
           return c.redirect("/");
         }
 
-        const userId = generateIdFromEntropySize(10); // 16 characters long
+        // add user to database
+        const user = await db
+          .insert(userTable)
+          .values({
+            githubId: githubUser.id,
+            username: githubUser.login,
+            name: githubUser.name,
+            avatarUrl: githubUser.avatar_url,
+          })
+          .returning()
+          .then((rows) => rows[0]);
 
-        // Replace this with your own DB client.
-        await db.insert(userTable).values({
-          id: userId,
-          githubId: githubUser.id,
-          username: githubUser.login,
-        });
-
-        const session = await lucia.createSession(userId, {});
+        const session = await lucia.createSession(user.id, {});
         const sessionCookie = lucia.createSessionCookie(session.id);
         setCookie(
           c,
@@ -94,10 +97,8 @@ const app = new Hono()
         );
         return c.redirect("/");
       } catch (e) {
-        // the specific error message depends on the provider
+        console.error(e);
         if (e instanceof OAuth2RequestError) {
-          // invalid code
-          console.log(e.message);
           return c.json({ error: "An OAuth error occured" }, 400);
         }
         return c.json({ error: "An error occurred" }, 500);
@@ -108,7 +109,7 @@ const app = new Hono()
     const session = c.get("session");
 
     if (!session) {
-      return c.json({ error: "No session" }, 400);
+      return c.redirect("/login");
     }
 
     await lucia.invalidateSession(session.id);
@@ -129,8 +130,10 @@ const app = new Hono()
   });
 
 interface GitHubUser {
-  id: string;
+  id: number;
   login: string;
+  name: string;
+  avatar_url: string;
 }
 
 export default app;
