@@ -1,6 +1,6 @@
 import { verifyRequestOrigin } from "lucia";
 import { defineMiddleware } from "astro:middleware";
-import { lucia } from "@/lib/auth";
+import { lucia } from "@/lib/lucia";
 
 export const onRequest = defineMiddleware(async (context, next) => {
 	if (context.request.method !== "GET") {

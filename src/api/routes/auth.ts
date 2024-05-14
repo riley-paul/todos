@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { generateState } from "arctic";
 import { setCookie } from "hono/cookie";
-import { github, lucia } from "@/lib/auth";
+import { github, lucia } from "@/lib/lucia";
 import { OAuth2RequestError } from "arctic";
 import { generateIdFromEntropySize } from "lucia";
 import { db } from "@/api/db";
@@ -9,7 +9,7 @@ import { userTable } from "@/api/db/schema";
 import { eq } from "drizzle-orm";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { luciaToHonoCookieAttributes, sameSiteConversion } from "../helpers";
+import { luciaToHonoCookieAttributes } from "../helpers/cookie-attributes";
 
 const app = new Hono()
   .get("/login/github", async (c) => {
@@ -126,7 +126,15 @@ const app = new Hono()
   })
   .get("/me", async (c) => {
     const user = c.get("user");
-    return c.json(user);
+    if (!user) {
+      return c.json({ error: "Not logged in" }, 401);
+    }
+    const data = await db
+      .select()
+      .from(userTable)
+      .where(eq(userTable.id, user.id))
+      .then((rows) => rows[0]);
+    return c.json(data);
   });
 
 interface GitHubUser {

@@ -1,8 +1,8 @@
 import { createMiddleware } from "hono/factory";
 import { verifyRequestOrigin } from "lucia";
 import { getCookie, setCookie } from "hono/cookie";
-import { lucia } from "@/lib/auth";
-import { luciaToHonoCookieAttributes } from "../helpers";
+import { lucia } from "@/lib/lucia";
+import { luciaToHonoCookieAttributes } from "../helpers/cookie-attributes";
 
 const authMiddleware = createMiddleware(async (c, next) => {
   if (c.req.method !== "GET") {
