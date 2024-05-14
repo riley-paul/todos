@@ -7,6 +7,7 @@ import { GitHub } from "arctic";
 const adapter = new DrizzleSQLiteAdapter(db, sessionTable, userTable);
 
 export const lucia = new Lucia(adapter, {
+  
   sessionCookie: {
     attributes: {
       // set to `true` when using HTTPS

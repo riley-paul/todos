@@ -9,3 +9,12 @@ export const getTodosQP = queryOptions({
     return res.json();
   },
 });
+
+export const getProfileQP = queryOptions({
+  queryKey: ["profile"],
+  queryFn: async () => {
+    const res = await api.auth.me.$get();
+    if (!res.ok) throw new Error(res.statusText);
+    return res.json();
+  },
+});
