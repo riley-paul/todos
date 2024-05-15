@@ -4,6 +4,7 @@ import react from "@astrojs/react";
 import vercel from "@astrojs/vercel/serverless";
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
+import { TanStackRouterVite } from "@tanstack/router-vite-plugin";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
@@ -17,6 +18,15 @@ export default defineConfig({
     react(),
   ],
   vite: {
+    plugins: [
+      TanStackRouterVite({
+        routesDirectory: path.resolve(__dirname, "./src/app/routes"),
+        generatedRouteTree: path.resolve(
+          __dirname,
+          "./src/app/routeTree.gen.ts",
+        ),
+      }),
+    ],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),

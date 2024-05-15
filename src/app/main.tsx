@@ -1,23 +1,26 @@
+import React, { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React from "react";
-import Adder from "./components/adder";
-import TodoList from "./components/todo-list";
-import Header from "./components/header";
+
+// Import the generated route tree
+import { routeTree } from "./routeTree.gen";
+
+// Create a new router instance
+const router = createRouter({ routeTree });
 
 const queryClient = new QueryClient();
 
-const App: React.FC = () => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Header />
-      <main className="container2 flex flex-col items-center gap-4 pt-6">
-        <article className="flex w-full flex-col gap-4">
-          <Adder />
-          <TodoList />
-        </article>
-      </main>
-    </QueryClientProvider>
-  );
-};
+// Register the router instance for type safety
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
+}
 
-export default App;
+// Render the app
+export default () => (
+  <QueryClientProvider client={queryClient}>
+    <RouterProvider router={router} />
+  </QueryClientProvider>
+);
