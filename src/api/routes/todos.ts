@@ -65,7 +65,7 @@ const app = new Hono()
         .update(todosTable)
         .set({ isCompleted: complete })
         .where(eq(todosTable.id, id));
-      return c.status(204);
+      return c.json({ success: true });
     },
   )
 
@@ -87,7 +87,7 @@ const app = new Hono()
         .update(todosTable)
         .set({ isDeleted: true })
         .where(eq(todosTable.id, id));
-      return c.status(204);
+      return c.json({ success: true });
     },
   )
 
@@ -96,7 +96,7 @@ const app = new Hono()
       .update(todosTable)
       .set({ isDeleted: true })
       .where(eq(todosTable.isCompleted, true));
-    return c.status(204);
+      return c.json({ success: true });
   });
 
 export default app;
