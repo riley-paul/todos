@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
-import Adder from "./adder";
-import TodoList from "./todo-list";
-import Header from "./header";
+import Adder from "./components/adder";
+import TodoList from "./components/todo-list";
+import Header from "./components/header";
 
 const queryClient = new QueryClient();
 
