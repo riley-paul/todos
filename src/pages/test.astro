@@ -1,10 +1,24 @@
 ---
 import app from "@/api";
 import api from "@/app/lib/client";
+import Root from "@/layouts/root.astro";
 
-const request = new Request(api.todos.$url(), Astro.request)
+const { origin } = new URL(Astro.request.url);
+console.log("original:", origin);
+const url = `${origin}/api/todos`;
+const request = new Request(url, {
+  method: "GET",
+  headers: Astro.request.headers,
+});
 console.log(request);
-const todos = await app.request(Astro.request);
+const res = await app.request(request);
+const todos = await res.json();
 
 console.log(todos);
 ---
+
+<Root>
+  <pre>
+    {JSON.stringify(todos, null, 2)}
+  </pre>
+</Root>
