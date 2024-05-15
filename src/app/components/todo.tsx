@@ -7,7 +7,7 @@ import type { Todo } from "@/api/db/schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import DeleteButton from "./ui/delete-button";
 import api from "@/app/lib/client";
-import { getTodosQP } from "@/app/lib/queries";
+import { todosQueryOptions } from "@/app/lib/queries";
 
 interface Props {
   todo: Todo;
@@ -23,14 +23,18 @@ const TodoItem: React.FC<Props> = (props) => {
         json: { id: todo.id, complete },
       }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: getTodosQP.queryKey });
+      await queryClient.invalidateQueries({
+        queryKey: todosQueryOptions.queryKey,
+      });
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: () => api.todos.delete.$post({ json: { id: todo.id } }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: getTodosQP.queryKey });
+      await queryClient.invalidateQueries({
+        queryKey: todosQueryOptions.queryKey,
+      });
     },
   });
 

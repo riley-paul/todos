@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { Loader2, Plus } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/app/lib/client";
-import { getTodosQP } from "@/app/lib/queries";
+import { todosQueryOptions } from "@/app/lib/queries";
 import { type TodoInsert } from "@/api/db/schema";
 
 export default function Adder(): ReturnType<React.FC> {
@@ -15,7 +15,9 @@ export default function Adder(): ReturnType<React.FC> {
   const createMutation = useMutation({
     mutationFn: (data: TodoInsert) => api.todos.$post({ json: data }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: getTodosQP.queryKey });
+      await queryClient.invalidateQueries({
+        queryKey: todosQueryOptions.queryKey,
+      });
     },
   });
 

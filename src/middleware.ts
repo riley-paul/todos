@@ -8,6 +8,5 @@ export const onRequest = defineMiddleware((context, next) => {
     return next();
   }
 
-  console.log(`Request: ${request.url}`);
   return context.redirect(`/#${url.pathname}`);
 });

@@ -13,7 +13,8 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as IndexImport } from './routes/index'
+import { Route as AuthenticatedImport } from './routes/_authenticated'
+import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index'
 
 // Create Virtual Routes
 
@@ -26,20 +27,25 @@ const WelcomeLazyRoute = WelcomeLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/welcome.lazy').then((d) => d.Route))
 
-const IndexRoute = IndexImport.update({
-  path: '/',
+const AuthenticatedRoute = AuthenticatedImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRoute,
+} as any)
+
+const AuthenticatedIndexRoute = AuthenticatedIndexImport.update({
+  path: '/',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedImport
       parentRoute: typeof rootRoute
     }
     '/welcome': {
@@ -49,11 +55,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WelcomeLazyImport
       parentRoute: typeof rootRoute
     }
+    '/_authenticated/': {
+      id: '/_authenticated/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedIndexImport
+      parentRoute: typeof AuthenticatedImport
+    }
   }
 }
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren({ IndexRoute, WelcomeLazyRoute })
+export const routeTree = rootRoute.addChildren({
+  AuthenticatedRoute: AuthenticatedRoute.addChildren({
+    AuthenticatedIndexRoute,
+  }),
+  WelcomeLazyRoute,
+})
 
 /* prettier-ignore-end */

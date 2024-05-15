@@ -1,4 +1,4 @@
-import { Link, createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { cn } from "@/app/lib/utils";
 import { CircleCheckBig } from "lucide-react";
 import { buttonVariants } from "@/app/components/ui/button";
@@ -33,6 +33,7 @@ const sampleTodos: Todo[] = [
 ];
 
 import React from "react";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
 
 const Welcome: React.FC = () => {
   return (
@@ -44,12 +45,13 @@ const Welcome: React.FC = () => {
         <h1 className="">Todos</h1>
         <p className="">A robust and feature-poor todo app</p>
       </section>
-      <Link
-        to="/"
-        className={cn("w-full", buttonVariants({ variant: "secondary" }))}
+      <a
+        className={cn(buttonVariants(), "w-full")}
+        href="/api/auth/login/github"
       >
-        Get Started
-      </Link>
+        <GitHubLogoIcon className="mr-2 h-5 w-5" />
+        Login with GitHub
+      </a>
       <div className="flex w-full flex-col gap-2">
         {sampleTodos.map((todo) => (
           <TodoItemSample key={todo.id} todo={todo} />

@@ -1,7 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import api from "./client";
 
-export const getTodosQP = queryOptions({
+export const todosQueryOptions = queryOptions({
   queryKey: ["todos"],
   queryFn: async () => {
     const res = await api.todos.$get();
@@ -10,7 +10,7 @@ export const getTodosQP = queryOptions({
   },
 });
 
-export const getProfileQP = queryOptions({
+export const userQueryOptions = queryOptions({
   queryKey: ["profile"],
   queryFn: async () => {
     const res = await api.auth.me.$get();
