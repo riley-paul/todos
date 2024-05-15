@@ -121,12 +121,12 @@ const app = new Hono()
       luciaToHonoCookieAttributes(sessionCookie.attributes),
     );
 
-    return c.redirect("/login");
+    return c.redirect("/");
   })
   .get("/me", async (c) => {
     const user = c.get("user");
     if (!user) {
-      return c.json({ error: "Not logged in" }, 401);
+      return c.json(null);
     }
     const data = await db
       .select()
