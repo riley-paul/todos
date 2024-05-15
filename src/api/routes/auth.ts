@@ -3,7 +3,6 @@ import { generateState } from "arctic";
 import { setCookie } from "hono/cookie";
 import { github, lucia } from "@/api/lib/lucia";
 import { OAuth2RequestError } from "arctic";
-import { generateIdFromEntropySize } from "lucia";
 import { db } from "@/api/db";
 import { userTable } from "@/api/db/schema";
 import { eq } from "drizzle-orm";

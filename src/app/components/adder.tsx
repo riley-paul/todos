@@ -3,8 +3,8 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Loader2, Plus } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/client";
-import { getTodosQP } from "@/lib/queries";
+import api from "@/app/lib/client";
+import { getTodosQP } from "@/app/lib/queries";
 import { type TodoInsert } from "@/api/db/schema";
 
 export default function Adder(): ReturnType<React.FC> {

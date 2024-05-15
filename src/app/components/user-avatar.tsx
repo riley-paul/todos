@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { getProfileQP } from "@/lib/queries";
+import { getProfileQP } from "@/app/lib/queries";
 import { Github, User } from "lucide-react";
 import {
   DropdownMenu,
@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button, buttonVariants } from "./ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/lib/utils";
 
 const UserAvatar: React.FC = () => {
   const profileQuery = useQuery(getProfileQP);

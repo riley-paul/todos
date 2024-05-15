@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "./ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/lib/utils";
 import { Card } from "./ui/card";
 import { Check } from "lucide-react";
 import type { Todo } from "@/api/db/schema";
