@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { Link, createLazyFileRoute } from "@tanstack/react-router";
 import { cn } from "@/app/lib/utils";
 import { CircleCheckBig } from "lucide-react";
 import { buttonVariants } from "@/app/components/ui/button";
@@ -44,16 +44,15 @@ const Welcome: React.FC = () => {
         <h1 className="">Todos</h1>
         <p className="">A robust and feature-poor todo app</p>
       </section>
-      <a
+      <Link
+        to="/"
         className={cn("w-full", buttonVariants({ variant: "secondary" }))}
-        href="/"
-        data-astro-prefetch
       >
         Get Started
-      </a>
+      </Link>
       <div className="flex w-full flex-col gap-2">
         {sampleTodos.map((todo) => (
-          <TodoItemSample todo={todo} />
+          <TodoItemSample key={todo.id} todo={todo} />
         ))}
       </div>
     </main>
