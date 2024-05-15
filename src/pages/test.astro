@@ -1,0 +1,10 @@
+---
+import app from "@/api";
+import api from "@/app/lib/client";
+
+const request = new Request(api.todos.$url(), Astro.request)
+console.log(request);
+const todos = await app.request(Astro.request);
+
+console.log(todos);
+---

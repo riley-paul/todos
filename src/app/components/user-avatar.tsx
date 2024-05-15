@@ -2,23 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { userQueryOptions } from "@/app/lib/queries";
-import { Github, User } from "lucide-react";
+import { User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button, buttonVariants } from "./ui/button";
 import { cn } from "@/app/lib/utils";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
 
 const UserAvatar: React.FC = () => {
   const profileQuery = useQuery(userQueryOptions);
@@ -26,7 +18,7 @@ const UserAvatar: React.FC = () => {
   if (!profileQuery.data) {
     return (
       <a className={cn(buttonVariants())} href="/api/auth/login/github">
-        <Github size="1rem" className="mr-2" />
+        <GitHubLogoIcon className="mr-2" />
         Login with GitHub
       </a>
     );
