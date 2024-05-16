@@ -11,7 +11,7 @@ const sampleTodos: Todo[] = [
     text: "Buy groceries",
     isCompleted: false,
     isDeleted: false,
-    createdAt: new Date().toISOString(),
+    createdAt: new Date(),
     userId: "1",
   },
   {
@@ -19,7 +19,7 @@ const sampleTodos: Todo[] = [
     text: "Find the meaning of life",
     isCompleted: false,
     isDeleted: false,
-    createdAt: new Date().toISOString(),
+    createdAt: new Date(),
     userId: "1",
   },
   {
@@ -27,7 +27,7 @@ const sampleTodos: Todo[] = [
     text: "Learn Astro web framework",
     isCompleted: true,
     isDeleted: false,
-    createdAt: new Date().toISOString(),
+    createdAt: new Date(),
     userId: "1",
   },
 ];

@@ -1,21 +1,23 @@
 import { sql } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { v4 as uuid } from "uuid";
+import {
+  boolean,
+  integer,
+  pgTableCreator,
+  timestamp,
+  varchar,
+} from "drizzle-orm/pg-core";
 
-export const todosTable = sqliteTable("todo", {
-  id: text("id").$defaultFn(uuid).primaryKey().unique(),
-  text: text("text").notNull(),
-  isCompleted: integer("is_completed", { mode: "boolean" })
-    .default(false)
-    .notNull(),
-  isDeleted: integer("is_deleted", { mode: "boolean" })
-    .default(false)
-    .notNull(),
-  userId: text("user_id", { length: 255 }).notNull(),
-  createdAt: text("created_at")
-    .default(sql`(CURRENT_TIMESTAMP)`)
-    .notNull(),
+const pgTable = pgTableCreator((name) => `todos_${name}`);
+
+export const todosTable = pgTable("todo", {
+  id: varchar("id").$defaultFn(uuid).primaryKey().unique(),
+  text: varchar("text").notNull(),
+  isCompleted: boolean("is_completed").default(false).notNull(),
+  isDeleted: boolean("is_deleted").default(false).notNull(),
+  userId: varchar("user_id", { length: 255 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export type Todo = typeof todosTable.$inferSelect;
@@ -23,22 +25,24 @@ export type TodoInsert = typeof todosTable.$inferInsert;
 export const todoSchema = createSelectSchema(todosTable);
 export const todoInsertSchema = createInsertSchema(todosTable);
 
-export const userTable = sqliteTable("user", {
-  id: text("id").$defaultFn(uuid).primaryKey().unique(),
+export const userTable = pgTable("user", {
+  id: varchar("id").$defaultFn(uuid).primaryKey().unique(),
   githubId: integer("github_id").unique(),
-  username: text("username").notNull(),
-  name: text("name").notNull(),
-  avatarUrl: text("avatar_url"),
+  username: varchar("username").notNull(),
+  name: varchar("name").notNull(),
+  avatarUrl: varchar("avatar_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export type User = typeof userTable.$inferSelect;
 
-export const sessionTable = sqliteTable("user_session", {
-  id: text("id").notNull().primaryKey(),
-  userId: text("user_id")
+export const sessionTable = pgTable("user_session", {
+  id: varchar("id").notNull().primaryKey(),
+  userId: varchar("user_id")
     .notNull()
     .references(() => userTable.id),
-  expiresAt: integer("expires_at").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export type Session = typeof sessionTable.$inferSelect;
