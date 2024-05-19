@@ -1,4 +1,5 @@
 import type { AppType } from "@/api";
+import type { AstroGlobal } from "astro";
 import { hc } from "hono/client";
 
 const client = hc<AppType>("/");

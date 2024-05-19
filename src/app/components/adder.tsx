@@ -13,7 +13,8 @@ export default function Adder(): ReturnType<React.FC> {
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
-    mutationFn: (data: TodoInsert) => api.todos.$post({ json: data }),
+    mutationFn: (data: Omit<TodoInsert, "userId">) =>
+      api.todos.$post({ json: data }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: todosQueryOptions.queryKey,
@@ -23,7 +24,7 @@ export default function Adder(): ReturnType<React.FC> {
 
   const create = () => {
     if (value) {
-      createMutation.mutate({ text: value, userId: "1" });
+      createMutation.mutate({ text: value });
       setValue("");
       inputRef.current?.focus();
     }

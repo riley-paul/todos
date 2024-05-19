@@ -1,20 +1,13 @@
 ---
-import app from "@/api";
-import api from "@/app/lib/client";
+import { type AppType } from "@/api";
 import Root from "@/layouts/root.astro";
+import { hc } from "hono/client";
 
-const { origin } = new URL(Astro.request.url);
-console.log("original:", origin);
-const url = `${origin}/api/todos`;
-const request = new Request(url, {
-  method: "GET",
-  headers: Astro.request.headers,
-});
-console.log(request);
-const res = await app.request(request);
+const headers = Object.fromEntries(Astro.request.headers);
+const client = hc<AppType>(Astro.url.origin, { headers });
+
+const res = await client.api.todos.$get();
 const todos = await res.json();
-
-console.log(todos);
 ---
 
 <Root>

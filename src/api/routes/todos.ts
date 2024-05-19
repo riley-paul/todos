@@ -7,19 +7,38 @@ import { z } from "zod";
 
 const app = new Hono()
   .get("/", async (c) => {
+    const userId = c.get("user")?.id;
+    if (!userId) {
+      return c.json({ error: "Not authenticated" }, 401);
+    }
+
     const todos = await db
       .select()
       .from(todosTable)
-      .where(and(eq(todosTable.isDeleted, false)))
+      .where(
+        and(eq(todosTable.isDeleted, false), eq(todosTable.userId, userId)),
+      )
       .orderBy(asc(todosTable.isCompleted), desc(todosTable.createdAt));
     return c.json(todos);
   })
 
-  .post("/", zValidator("json", todoInsertSchema), async (c) => {
-    const data = c.req.valid("json");
-    const todo = await db.insert(todosTable).values(data).returning();
-    return c.json(todo);
-  })
+  .post(
+    "/",
+    zValidator("json", todoInsertSchema.omit({ userId: true })),
+    async (c) => {
+      const userId = c.get("user")?.id;
+      if (!userId) {
+        return c.json({ error: "Not authenticated" }, 401);
+      }
+
+      const data = c.req.valid("json");
+      const todo = await db
+        .insert(todosTable)
+        .values({ ...data, userId })
+        .returning();
+      return c.json(todo);
+    },
+  )
 
   .post(
     "/update",
@@ -96,7 +115,7 @@ const app = new Hono()
       .update(todosTable)
       .set({ isDeleted: true })
       .where(eq(todosTable.isCompleted, true));
-      return c.json({ success: true });
+    return c.json({ success: true });
   });
 
 export default app;
