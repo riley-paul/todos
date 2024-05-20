@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import React from "react";
-import Header from "../../components/header";
 import Adder from "../../components/adder";
 import TodoList from "../../components/todo-list";
 

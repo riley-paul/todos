@@ -1,13 +1,18 @@
 import { defineMiddleware } from "astro:middleware";
+import { type AppType } from "@/api";
+import { hc } from "hono/client";
 
-export const onRequest = defineMiddleware((context, next) => {
-  // const { request } = context;
-  // const url = new URL(request.url);
+// export const onRequest = defineMiddleware(async (context, next) => {
+//   const { request, url } = context;
 
-  // if (url.pathname.startsWith("/api") || url.pathname === "/") {
-  //   return next();
-  // }
+//   const headers = Object.fromEntries(request.headers);
+//   const client = hc<AppType>(url.origin, { headers });
 
-  // return context.redirect(`/#${url.pathname}`);
-  return next();
-});
+//   const res = await client.api.auth.me.$get();
+//   const user = await res.json();
+//   if (!res.ok || !user) {
+//     return context.redirect("/welcome");
+//   }
+
+//   return next();
+// });
