@@ -52,7 +52,7 @@ const TodoList: React.FC = () => {
         {todosQuery.data?.map((todo) => (
           <TodoItem
             key={todo.id}
-            todo={{ ...todo, createdAt: new Date(todo.createdAt) }}
+            todo={todo}
           />
         ))}
       </div>
