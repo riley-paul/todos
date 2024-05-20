@@ -126,7 +126,7 @@ const app = new Hono()
   .get("/me", async (c) => {
     const user = c.get("user");
     if (!user) {
-      return c.json(null);
+      return c.json(null, 401);
     }
     const data = await db
       .select()
