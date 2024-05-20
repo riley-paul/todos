@@ -1,4 +1,3 @@
-import { neon } from "@neondatabase/serverless";
 import * as schema from "./schema";
 import { drizzle } from 'drizzle-orm/libsql';
 import { createClient } from '@libsql/client';

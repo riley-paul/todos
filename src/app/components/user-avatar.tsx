@@ -1,7 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { userQueryOptions } from "@/app/lib/queries";
 import { User as UserIcon } from "lucide-react";
 import {
   DropdownMenu,
