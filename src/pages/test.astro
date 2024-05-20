@@ -1,6 +1,6 @@
 ---
 import { type AppType } from "@/api";
-import Root from "@/layouts/root.astro";
+import RootLayout from "@/layouts/root-layout.astro";
 import { hc } from "hono/client";
 
 const headers = Object.fromEntries(Astro.request.headers);
@@ -10,8 +10,8 @@ const res = await client.api.todos.$get();
 const todos = await res.json();
 ---
 
-<Root>
+<RootLayout>
   <pre>
     {JSON.stringify(todos, null, 2)}
   </pre>
-</Root>
+</RootLayout>

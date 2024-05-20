@@ -1,0 +1,25 @@
+---
+import UserAvatar from "@/app/components/user-avatar";
+import { CircleCheckBig } from "lucide-react";
+import { hc } from "hono/client";
+import { type AppType } from "@/api";
+
+const headers = Object.fromEntries(Astro.request.headers);
+const client = hc<AppType>(Astro.url.origin, { headers });
+
+const res = await client.api.auth.me.$get();
+const user = await res.json();
+---
+
+<header class="sticky top-0 z-50 h-16 border-b bg-background">
+  <div class="container2 flex h-full items-center justify-between">
+    <a href="/">
+      <div class="flex items-center gap-2">
+        <CircleCheckBig size="1.5rem" className="text-primary" />
+        <div class="text-2xl font-bold">Todos</div>
+      </div>
+    </a>
+    <UserAvatar client:load user={user} />
+  </div>
+</header>
+<slot />

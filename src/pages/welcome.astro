@@ -1,0 +1,58 @@
+---
+import { cn } from "@/app/lib/utils";
+import { CircleCheckBig } from "lucide-react";
+import { buttonVariants } from "@/app/components/ui/button";
+import type { Todo } from "@/api/db/schema";
+import TodoItemSample from "@/app/components/todo-sample";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import RootLayout from "@/layouts/root-layout.astro";
+
+const sampleTodos: Todo[] = [
+  {
+    id: "1",
+    text: "Buy groceries",
+    isCompleted: false,
+    isDeleted: false,
+    createdAt: new Date(),
+    userId: "1",
+  },
+  {
+    id: "2",
+    text: "Find the meaning of life",
+    isCompleted: false,
+    isDeleted: false,
+    createdAt: new Date(),
+    userId: "1",
+  },
+  {
+    id: "3",
+    text: "Learn Astro web framework",
+    isCompleted: true,
+    isDeleted: false,
+    createdAt: new Date(),
+    userId: "1",
+  },
+];
+
+---
+
+<RootLayout>
+  <main class="container2 flex min-h-[100svh] flex-col gap-6 pt-[10vh]">
+    <div class="flex items-center justify-center">
+      <CircleCheckBig size="5rem" className="text-primary" />
+    </div>
+    <section
+      class="prose w-full max-w-none text-center dark:prose-invert prose-h1:mb-2 prose-h1:text-5xl"
+    >
+      <h1 class="">Todos</h1>
+      <p class="">A robust and feature-poor todo app</p>
+    </section>
+    <a class={cn(buttonVariants(), "w-full")} href="/api/auth/login/github">
+      <GitHubLogoIcon className="mr-2 h-5 w-5" />
+      Login with GitHub
+    </a>
+    <div class="flex w-full flex-col gap-2">
+      {sampleTodos.map((todo) => <TodoItemSample todo={todo} />)}
+    </div>
+  </main>
+</RootLayout>

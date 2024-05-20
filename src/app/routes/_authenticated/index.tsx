@@ -7,15 +7,12 @@ import TodoList from "../../components/todo-list";
 
 const Index: React.FC = () => {
   return (
-    <>
-      <Header />
-      <main className="container2 flex flex-col items-center gap-4 pt-6">
-        <article className="flex w-full flex-col gap-4">
-          <Adder />
-          <TodoList />
-        </article>
-      </main>
-    </>
+    <main className="container2 flex flex-col items-center gap-4 pt-6">
+      <article className="flex w-full flex-col gap-4">
+        <Adder />
+        <TodoList />
+      </article>
+    </main>
   );
 };
 

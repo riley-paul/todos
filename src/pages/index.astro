@@ -1,8 +1,11 @@
 ---
-import Root from "@/layouts/root.astro";
+import RootLayout from "@/layouts/root-layout.astro";
 import App from "@/app/main";
+import AppLayout from "@/layouts/app-layout.astro";
 ---
 
-<Root>
-  <App client:only="react" />
-</Root>
+<RootLayout>
+  <AppLayout>
+    <App client:only="react" />
+  </AppLayout>
+</RootLayout>

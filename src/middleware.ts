@@ -1,12 +1,13 @@
 import { defineMiddleware } from "astro:middleware";
 
-// export const onRequest = defineMiddleware((context, next) => {
-//   const { request } = context;
-//   const url = new URL(request.url);
+export const onRequest = defineMiddleware((context, next) => {
+  // const { request } = context;
+  // const url = new URL(request.url);
 
-//   if (url.pathname.startsWith("/api") || url.pathname === "/") {
-//     return next();
-//   }
+  // if (url.pathname.startsWith("/api") || url.pathname === "/") {
+  //   return next();
+  // }
 
-//   return context.redirect(`/#${url.pathname}`);
-// });
+  // return context.redirect(`/#${url.pathname}`);
+  return next();
+});
