@@ -104,11 +104,11 @@ const app = new Hono()
       }
     },
   )
-  .post("/logout", async (c) => {
+  .get("/logout", async (c) => {
     const session = c.get("session");
 
     if (!session) {
-      return c.redirect("/login");
+      return c.redirect("/");
     }
 
     await lucia.invalidateSession(session.id);

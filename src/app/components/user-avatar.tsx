@@ -4,9 +4,11 @@ import { User as UserIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Button, buttonVariants } from "./ui/button";
+import { buttonVariants } from "./ui/button";
 import { cn } from "@/app/lib/utils";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import type { User } from "@/api/db/schema";
@@ -36,11 +38,10 @@ const UserAvatar: React.FC<Props> = ({ user }) => {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <form action="/api/auth/logout" method="POST">
-          <Button type="submit" variant="outline">
-            Logout
-          </Button>
-        </form>
+        <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
+        <a href="/api/auth/logout">
+          <DropdownMenuItem>Logout</DropdownMenuItem>
+        </a>
       </DropdownMenuContent>
     </DropdownMenu>
   );
