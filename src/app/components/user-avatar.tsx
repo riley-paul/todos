@@ -1,11 +1,13 @@
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { User as UserIcon } from "lucide-react";
+import { LogOut, Trash, User as UserIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { buttonVariants } from "./ui/button";
@@ -37,10 +39,34 @@ const UserAvatar: React.FC<Props> = ({ user }) => {
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
+      <DropdownMenuContent align="end" className="min-w-60">
+        <div className="flex gap-4 p-2">
+          <Avatar className="h-16 w-16">
+            <AvatarImage src={user.avatarUrl ?? ""} alt={user.name} />
+            <AvatarFallback>
+              <UserIcon size="3rem" />
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col justify-center">
+            <h2 className="text-lg font-semibold">{user.name}</h2>
+            <p className="text-sm text-muted-foreground">{user.username}</p>
+          </div>
+        </div>
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel>Account Settings</DropdownMenuLabel>
+        <DropdownMenuItem disabled>
+          Delete Account
+          <DropdownMenuShortcut>
+            <Trash size="1rem" />
+          </DropdownMenuShortcut>
+        </DropdownMenuItem>
         <a href="/api/auth/logout">
-          <DropdownMenuItem>Logout</DropdownMenuItem>
+          <DropdownMenuItem>
+            Logout
+            <DropdownMenuShortcut>
+              <LogOut size="1rem" />
+            </DropdownMenuShortcut>
+          </DropdownMenuItem>
         </a>
       </DropdownMenuContent>
     </DropdownMenu>
