@@ -1,10 +1,18 @@
 import { createMiddleware } from "hono/factory";
-import { verifyRequestOrigin } from "lucia";
+import { verifyRequestOrigin, type Session } from "lucia";
 import { getCookie, setCookie } from "hono/cookie";
 import { lucia } from "@/api/lib/lucia";
 import { luciaToHonoCookieAttributes } from "../helpers/cookie-attributes";
+import type { User } from "lucia";
 
-const authMiddleware = createMiddleware(async (c, next) => {
+type Env = {
+  Variables: {
+    session: Session;
+    user: User;
+  };
+};
+
+const authMiddleware = createMiddleware<Env>(async (c, next) => {
   if (c.req.method !== "GET") {
     const originHeader = c.req.header("Origin");
     const hostHeader = c.req.header("Host");
@@ -19,9 +27,7 @@ const authMiddleware = createMiddleware(async (c, next) => {
 
   const sessionId = getCookie(c, lucia.sessionCookieName);
   if (!sessionId) {
-    c.set("user", null);
-    c.set("session", null);
-    return await next();
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   const { session, user } = await lucia.validateSession(sessionId);
@@ -34,6 +40,7 @@ const authMiddleware = createMiddleware(async (c, next) => {
       luciaToHonoCookieAttributes(sessionCookie.attributes),
     );
   }
+
   if (!session) {
     const sessionCookie = lucia.createBlankSessionCookie();
     setCookie(
@@ -42,6 +49,10 @@ const authMiddleware = createMiddleware(async (c, next) => {
       sessionCookie.value,
       luciaToHonoCookieAttributes(sessionCookie.attributes),
     );
+  }
+
+  if (!session || !user) {
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   c.set("session", session);

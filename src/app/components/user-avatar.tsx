@@ -14,12 +14,50 @@ import { buttonVariants } from "./ui/button";
 import { cn } from "@/app/lib/utils";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import type { User } from "@/api/db/schema";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/app/components/ui/alert-dialog";
+
+interface DialogProps {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+}
+
+const AccountDeletionConfirm: React.FC<DialogProps> = (props) => {
+  const { isOpen, setIsOpen } = props;
+  return (
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete your
+            account and remove your data from our servers.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction>Continue</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
 
 interface Props {
   user: User | null;
 }
 
 const UserAvatar: React.FC<Props> = ({ user }) => {
+  const [accountDeletionOpen, setAccountDeletionOpen] = React.useState(false);
+
   if (!user) {
     return (
       <a className={cn(buttonVariants())} href="/api/auth/login/github">
@@ -30,46 +68,52 @@ const UserAvatar: React.FC<Props> = ({ user }) => {
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Avatar>
-          <AvatarImage src={user.avatarUrl ?? ""} />
-          <AvatarFallback>
-            <UserIcon />
-          </AvatarFallback>
-        </Avatar>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-60">
-        <div className="flex gap-4 p-2">
-          <Avatar className="h-16 w-16">
-            <AvatarImage src={user.avatarUrl ?? ""} alt={user.name} />
+    <>
+      <AccountDeletionConfirm
+        isOpen={accountDeletionOpen}
+        setIsOpen={setAccountDeletionOpen}
+      />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Avatar>
+            <AvatarImage src={user.avatarUrl ?? ""} />
             <AvatarFallback>
-              <UserIcon size="3rem" />
+              <UserIcon />
             </AvatarFallback>
           </Avatar>
-          <div className="flex flex-col justify-center">
-            <h2 className="text-lg font-semibold">{user.name}</h2>
-            <p className="text-sm text-muted-foreground">{user.username}</p>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="min-w-60">
+          <div className="flex gap-4 p-2">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src={user.avatarUrl ?? ""} alt={user.name} />
+              <AvatarFallback>
+                <UserIcon size="3rem" />
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col justify-center">
+              <h2 className="text-lg font-semibold">{user.name}</h2>
+              <p className="text-sm text-muted-foreground">{user.username}</p>
+            </div>
           </div>
-        </div>
-        <DropdownMenuSeparator />
-        <DropdownMenuLabel>Account Settings</DropdownMenuLabel>
-        <DropdownMenuItem disabled>
-          Delete Account
-          <DropdownMenuShortcut>
-            <Trash size="1rem" />
-          </DropdownMenuShortcut>
-        </DropdownMenuItem>
-        <a href="/api/auth/logout">
-          <DropdownMenuItem>
-            Logout
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Account Settings</DropdownMenuLabel>
+          <DropdownMenuItem onClick={() => setAccountDeletionOpen(true)}>
+            Delete Account
             <DropdownMenuShortcut>
-              <LogOut size="1rem" />
+              <Trash size="1rem" />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
-        </a>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          <a href="/api/auth/logout">
+            <DropdownMenuItem>
+              Logout
+              <DropdownMenuShortcut>
+                <LogOut size="1rem" />
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </a>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 };
 
