@@ -9,11 +9,7 @@ import authMiddleware from "../middleware/auth.ts";
 const app = new Hono()
   .use(authMiddleware)
   .get("/", async (c) => {
-    const userId = c.get("user")?.id;
-    if (!userId) {
-      return c.json({ error: "Not authenticated" }, 401);
-    }
-
+    const userId = c.get("user").id;
     const todos = await db
       .select()
       .from(todosTable)
@@ -28,11 +24,7 @@ const app = new Hono()
     "/",
     zValidator("json", todoInsertSchema.omit({ userId: true })),
     async (c) => {
-      const userId = c.get("user")?.id;
-      if (!userId) {
-        return c.json({ error: "Not authenticated" }, 401);
-      }
-
+      const userId = c.get("user").id;
       const data = c.req.valid("json");
       const todo = await db
         .insert(todosTable)
@@ -50,7 +42,6 @@ const app = new Hono()
     ),
     async (c) => {
       const { id, data } = c.req.valid("json");
-
       const matchingIds = await db
         .select()
         .from(todosTable)
@@ -58,7 +49,6 @@ const app = new Hono()
       if (matchingIds.length === 0) {
         return c.notFound();
       }
-
       const todo = await db
         .update(todosTable)
         .set(data)
@@ -67,13 +57,11 @@ const app = new Hono()
       return c.json(todo);
     },
   )
-
   .post(
     "/toggle-complete",
     zValidator("json", z.object({ id: z.string(), complete: z.boolean() })),
     async (c) => {
       const { id, complete } = c.req.valid("json");
-
       const matchingIds = await db
         .select()
         .from(todosTable)
@@ -81,7 +69,6 @@ const app = new Hono()
       if (matchingIds.length === 0) {
         return c.notFound();
       }
-
       await db
         .update(todosTable)
         .set({ isCompleted: complete })
@@ -95,7 +82,6 @@ const app = new Hono()
     zValidator("json", z.object({ id: z.string() })),
     async (c) => {
       const { id } = c.req.valid("json");
-
       const matchingIds = await db
         .select()
         .from(todosTable)
@@ -103,7 +89,6 @@ const app = new Hono()
       if (matchingIds.length === 0) {
         return c.notFound();
       }
-
       await db
         .update(todosTable)
         .set({ isDeleted: true })
@@ -111,7 +96,6 @@ const app = new Hono()
       return c.json({ success: true });
     },
   )
-
   .post("/delete-completed", async (c) => {
     await db
       .update(todosTable)

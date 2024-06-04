@@ -1,6 +1,4 @@
 import { Hono } from "hono";
-import type { Session, User } from "lucia";
-
 import todoRoutes from "./routes/todos";
 import authRoutes from "./routes/auth";
 
@@ -17,10 +15,3 @@ const routes = app
 
 export default app;
 export type AppType = typeof routes;
-
-declare module "hono" {
-  interface ContextVariableMap {
-    session: Session | null;
-    user: User | null;
-  }
-}
