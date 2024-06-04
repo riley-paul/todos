@@ -136,13 +136,10 @@ const app = new Hono()
       .then((rows) => rows[0]);
     return c.json(data);
   })
-  .delete("/", authMiddleware, async (c) => {
+  .post("/delete", authMiddleware, async (c) => {
     const user = c.get("user");
-    if (!user) {
-      return c.json(null, 401);
-    }
     await db.delete(userTable).where(eq(userTable.id, user.id));
-    return c.json(null);
+    return c.redirect("/");
   });
 
 interface GitHubUser {

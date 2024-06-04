@@ -10,10 +10,6 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { buttonVariants } from "./ui/button";
-import { cn } from "@/app/lib/utils";
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
-import type { User } from "@/api/db/schema";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +20,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/app/components/ui/alert-dialog";
+import { buttonVariants } from "./ui/button";
+import { cn } from "@/app/lib/utils";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import type { User } from "@/api/db/schema";
 
 interface DialogProps {
   isOpen: boolean;
@@ -42,10 +42,12 @@ const AccountDeletionConfirm: React.FC<DialogProps> = (props) => {
             account and remove your data from our servers.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
-        </AlertDialogFooter>
+        <form method="POST" action="/api/auth/delete">
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction type="submit">Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </form>
       </AlertDialogContent>
     </AlertDialog>
   );
