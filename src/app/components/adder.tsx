@@ -2,25 +2,27 @@ import React from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Loader2, Plus } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/app/lib/client";
+import { useMutation } from "@tanstack/react-query";
+import { api, client } from "@/app/lib/client";
 import { todosQueryOptions } from "@/app/lib/queries";
 import { type TodoInsert } from "@/api/db/schema";
 
 export default function Adder(): ReturnType<React.FC> {
   const [value, setValue] = React.useState<string>("");
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const queryClient = useQueryClient();
 
-  const createMutation = useMutation({
-    mutationFn: (data: Omit<TodoInsert, "userId">) =>
-      api.todos.$post({ json: data }),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: todosQueryOptions.queryKey,
-      });
+  const createMutation = useMutation(
+    {
+      mutationFn: (data: Omit<TodoInsert, "userId">) =>
+        api.todos.$post({ json: data }),
+      onSuccess: async () => {
+        await client.invalidateQueries({
+          queryKey: todosQueryOptions.queryKey,
+        });
+      },
     },
-  });
+    client,
+  );
 
   const create = () => {
     if (value) {

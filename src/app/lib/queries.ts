@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import api from "./client";
+import { api } from "./client";
 
 export const todosQueryOptions = queryOptions({
   queryKey: ["todos"],

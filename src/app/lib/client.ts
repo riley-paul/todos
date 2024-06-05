@@ -1,7 +1,6 @@
 import type { AppType } from "@/api";
+import { QueryClient } from "@tanstack/react-query";
 import { hc } from "hono/client";
 
-const client = hc<AppType>("/");
-const api = client.api;
-
-export default api;
+export const api = hc<AppType>("/").api;
+export const client = new QueryClient();

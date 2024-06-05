@@ -4,9 +4,9 @@ import { cn } from "@/app/lib/utils";
 import { Card } from "./ui/card";
 import { Check, Loader2 } from "lucide-react";
 import type { Todo } from "@/api/db/schema";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import DeleteButton from "./ui/delete-button";
-import api from "@/app/lib/client";
+import { api, client } from "@/app/lib/client";
 import { todosQueryOptions } from "@/app/lib/queries";
 
 interface Props {
@@ -15,28 +15,30 @@ interface Props {
 
 const TodoItem: React.FC<Props> = (props) => {
   const { todo } = props;
-  const queryClient = useQueryClient();
+  const { queryKey } = todosQueryOptions;
 
-  const completeMutation = useMutation({
-    mutationFn: (complete: boolean) =>
-      api.todos["toggle-complete"].$post({
-        json: { id: todo.id, complete },
-      }),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: todosQueryOptions.queryKey,
-      });
+  const completeMutation = useMutation(
+    {
+      mutationFn: (complete: boolean) =>
+        api.todos["toggle-complete"].$post({
+          json: { id: todo.id, complete },
+        }),
+      onSuccess: async () => {
+        await client.invalidateQueries({ queryKey });
+      },
     },
-  });
+    client,
+  );
 
-  const deleteMutation = useMutation({
-    mutationFn: () => api.todos.delete.$post({ json: { id: todo.id } }),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: todosQueryOptions.queryKey,
-      });
+  const deleteMutation = useMutation(
+    {
+      mutationFn: () => api.todos.delete.$post({ json: { id: todo.id } }),
+      onSuccess: async () => {
+        await client.invalidateQueries({ queryKey });
+      },
     },
-  });
+    client,
+  );
 
   return (
     <Card
