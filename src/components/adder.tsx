@@ -10,15 +10,14 @@ import { type TodoInsert } from "@/api/db/schema";
 export default function Adder(): ReturnType<React.FC> {
   const [value, setValue] = React.useState<string>("");
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const { queryKey } = todosQueryOptions;
 
   const createMutation = useMutation(
     {
       mutationFn: (data: Omit<TodoInsert, "userId">) =>
         api.todos.$post({ json: data }),
       onSuccess: async () => {
-        await client.invalidateQueries({
-          queryKey: todosQueryOptions.queryKey,
-        });
+        await client.invalidateQueries({ queryKey });
       },
     },
     client,

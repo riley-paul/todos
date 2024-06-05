@@ -9,14 +9,13 @@ import { Skeleton } from "./ui/skeleton";
 
 const TodoList: React.FC = () => {
   const todosQuery = useQuery(todosQueryOptions, client);
+  const { queryKey } = todosQueryOptions;
 
   const deleteCompletedMutation = useMutation(
     {
       mutationFn: () => api.todos["delete-completed"].$post(),
       onSuccess: async () => {
-        await client.invalidateQueries({
-          queryKey: todosQueryOptions.queryKey,
-        });
+        await client.invalidateQueries({ queryKey });
       },
     },
     client,
