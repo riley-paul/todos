@@ -1,9 +1,9 @@
 ---
-import { cn } from "@/app/lib/utils";
+import { cn } from "@/lib/utils";
 import { CircleCheckBig } from "lucide-react";
-import { buttonVariants } from "@/app/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import type { Todo } from "@/api/db/schema";
-import TodoItemSample from "@/app/components/todo-sample";
+import TodoItemSample from "@/components/todo-sample";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import RootLayout from "@/layouts/root-layout.astro";
 
@@ -33,7 +33,6 @@ const sampleTodos: Todo[] = [
     userId: "1",
   },
 ];
-
 ---
 
 <RootLayout>

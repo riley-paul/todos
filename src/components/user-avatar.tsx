@@ -19,9 +19,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/app/components/ui/alert-dialog";
+} from "@/components/ui/alert-dialog";
 import { buttonVariants } from "./ui/button";
-import { cn } from "@/app/lib/utils";
+import { cn } from "@/lib/utils";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import type { User } from "@/api/db/schema";
 

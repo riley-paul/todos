@@ -1,13 +1,13 @@
 import React from "react";
 import { Button } from "./ui/button";
-import { cn } from "@/app/lib/utils";
+import { cn } from "@/lib/utils";
 import { Card } from "./ui/card";
 import { Check, Loader2 } from "lucide-react";
 import type { Todo } from "@/api/db/schema";
 import { useMutation } from "@tanstack/react-query";
 import DeleteButton from "./ui/delete-button";
-import { api, client } from "@/app/lib/client";
-import { todosQueryOptions } from "@/app/lib/queries";
+import { api, client } from "@/lib/client";
+import { todosQueryOptions } from "@/lib/queries";
 
 interface Props {
   todo: Todo;
