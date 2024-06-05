@@ -9,7 +9,7 @@ import { eq } from "drizzle-orm";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { luciaToHonoCookieAttributes } from "../helpers/cookie-attributes";
-import authMiddleware from "../middleware/auth";
+import authMiddleware from "../helpers/auth-middleware";
 
 const app = new Hono()
   .get("/login/github", async (c) => {

@@ -4,7 +4,7 @@ import { todoInsertSchema, todosTable } from "@/api/db/schema";
 import { and, asc, desc, eq } from "drizzle-orm";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import authMiddleware from "../middleware/auth.ts";
+import authMiddleware from "../helpers/auth-middleware.ts";
 
 const app = new Hono()
   .use(authMiddleware)
