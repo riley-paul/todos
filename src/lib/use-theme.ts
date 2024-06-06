@@ -1,9 +1,8 @@
 import React from "react";
 
+export type Theme = "light" | "dark" | "system";
 export default function useTheme() {
-  const [theme, setTheme] = React.useState<"light" | "dark" | "system">(
-    "light",
-  );
+  const [theme, setTheme] = React.useState<Theme>("light");
 
   React.useEffect(() => {
     const isDarkMode = document.documentElement.classList.contains("dark");
