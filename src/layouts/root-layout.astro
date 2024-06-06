@@ -1,17 +1,40 @@
 ---
 import "@/globals.css";
-import '@fontsource-variable/inter';
+import "@fontsource-variable/inter";
 ---
 
-<!doctype html>
-<html lang="en" class="dark">
+<script is:inline>
+  const getThemePreference = () => {
+    if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
+      return localStorage.getItem("theme");
+    }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  };
+  const isDark = getThemePreference() === "dark";
+  document.documentElement.classList[isDark ? "add" : "remove"]("dark");
+
+  if (typeof localStorage !== "undefined") {
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains("dark");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+  }
+</script>
+
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
     <link rel="manifest" href="manifest.json" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>Todos</title>
   </head>
   <body>

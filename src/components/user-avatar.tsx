@@ -1,13 +1,23 @@
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { LogOut, Trash, User as UserIcon } from "lucide-react";
+import {
+  Laptop,
+  LogOut,
+  Moon,
+  Sun,
+  Trash,
+  User as UserIcon,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import {
@@ -24,6 +34,7 @@ import { buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import type { User } from "@/api/db/schema";
+import useTheme from "@/lib/use-theme.ts";
 
 interface DialogProps {
   isOpen: boolean;
@@ -59,6 +70,7 @@ interface Props {
 
 const UserAvatar: React.FC<Props> = ({ user }) => {
   const [accountDeletionOpen, setAccountDeletionOpen] = React.useState(false);
+  const { setTheme } = useTheme();
 
   if (!user) {
     return (
@@ -99,18 +111,38 @@ const UserAvatar: React.FC<Props> = ({ user }) => {
           </div>
           <DropdownMenuSeparator />
           <DropdownMenuLabel>Account Settings</DropdownMenuLabel>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Sun className="mr-2 h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute mr-2 h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <span>Toggle theme</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem onClick={() => setTheme("light")}>
+                  <Sun className="mr-2 h-4 w-4" />
+                  <span>Light</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("dark")}>
+                  <Moon className="mr-2 h-4 w-4" />
+                  <span>Dark</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("system")}>
+                  <Laptop className="mr-2 h-4 w-4" />
+                  <span>System</span>
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
           <DropdownMenuItem onClick={() => setAccountDeletionOpen(true)}>
-            Delete Account
-            <DropdownMenuShortcut>
-              <Trash size="1rem" />
-            </DropdownMenuShortcut>
+            <Trash className="mr-2 h-4 w-4" />
+            <span>Delete Account</span>
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <a href="/api/auth/logout">
             <DropdownMenuItem>
-              Logout
-              <DropdownMenuShortcut>
-                <LogOut size="1rem" />
-              </DropdownMenuShortcut>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Logout</span>
             </DropdownMenuItem>
           </a>
         </DropdownMenuContent>
