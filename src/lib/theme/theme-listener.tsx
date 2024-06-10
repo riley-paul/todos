@@ -1,5 +1,5 @@
 import React from "react";
-import { useThemeStore } from "./store.ts";
+import { useThemeStore } from "./theme-store.ts";
 import { useCookies } from "react-cookie";
 
 const MEDIA_QUERY_STR = "(prefers-color-scheme: dark)";

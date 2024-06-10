@@ -32,7 +32,7 @@ import { buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import type { User } from "@/api/db/schema";
-import { useThemeStore, type Theme } from "@/lib/theme/store.ts";
+import { useThemeStore, type Theme } from "@/lib/theme/theme-store";
 
 interface DialogProps {
   isOpen: boolean;
