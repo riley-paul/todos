@@ -9,8 +9,8 @@ import TodoList from "@/components/todo-list.tsx";
   <AppLayout>
     <main class="container2 flex flex-col items-center gap-4 pt-6">
       <article class="flex w-full flex-col gap-4">
-        <Adder client:only="react" />
-        <TodoList client:only="react" />
+        <Adder client:load />
+        <TodoList client:load />
       </article>
     </main>
   </AppLayout>
