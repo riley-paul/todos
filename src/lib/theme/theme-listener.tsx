@@ -1,5 +1,6 @@
 import React from "react";
 import { useThemeStore } from "./store.ts";
+import { useCookies } from "react-cookie";
 
 const MEDIA_QUERY_STR = "(prefers-color-scheme: dark)";
 
@@ -16,14 +17,18 @@ const setSystemTheme = (mq: MediaQueryList) => {
 
 export function ThemeListener() {
   const { theme } = useThemeStore();
+  const [_, setCookie, removeCookie] = useCookies(["theme"]);
 
   React.useEffect(() => {
     const mq = window.matchMedia(MEDIA_QUERY_STR);
+    removeCookie("theme", { path: "/" });
+
     if (theme === "system") {
       setSystemTheme(mq);
       return;
     }
 
+    setCookie("theme", theme, { path: "/" });
     setAppTheme(theme);
   }, [theme]);
 
