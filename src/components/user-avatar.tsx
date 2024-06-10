@@ -32,7 +32,7 @@ import { buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import type { User } from "@/api/db/schema";
-import useTheme, { type Theme } from "@/lib/use-theme.ts";
+import { useThemeStore, type Theme } from "@/lib/theme/store.ts";
 
 interface DialogProps {
   isOpen: boolean;
@@ -68,7 +68,7 @@ interface Props {
 
 const UserAvatar: React.FC<Props> = ({ user }) => {
   const [accountDeletionOpen, setAccountDeletionOpen] = React.useState(false);
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme } = useThemeStore();
 
   if (!user) {
     return (
