@@ -28,11 +28,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { buttonVariants } from "./ui/button";
-import { cn } from "@/lib/utils";
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { useThemeStore, type Theme } from "@/lib/theme/theme-store";
 import type { User } from "astro:db";
+import LoginButton from "./login-button";
 
 interface DialogProps {
   isOpen: boolean;
@@ -71,12 +69,7 @@ const UserAvatar: React.FC<Props> = ({ user }) => {
   const { theme, setTheme } = useThemeStore();
 
   if (!user) {
-    return (
-      <a className={cn(buttonVariants())} href="/api/auth/login/github">
-        <GitHubLogoIcon className="mr-2" />
-        Login with GitHub
-      </a>
-    );
+    return <LoginButton />;
   }
 
   return (

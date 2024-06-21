@@ -2,6 +2,7 @@ import { Lucia } from "lucia";
 import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
 import { GitHub } from "arctic";
 import { User, db, UserSession } from "astro:db";
+import env from "@/api/env";
 
 // @ts-ignore
 const adapter = new DrizzleSQLiteAdapter(db, UserSession, User);
@@ -29,6 +30,6 @@ declare module "lucia" {
 type DatabaseUserAttributes = Omit<typeof User.$inferSelect, "id">;
 
 export const github = new GitHub(
-  import.meta.env.GITHUB_CLIENT_ID,
-  import.meta.env.GITHUB_CLIENT_SECRET,
+  env.GITHUB_CLIENT_ID,
+  env.GITHUB_CLIENT_SECRET,
 );

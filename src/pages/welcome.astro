@@ -1,11 +1,9 @@
 ---
-import { cn } from "@/lib/utils";
 import { CircleCheckBig } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
 import TodoItemSample from "@/components/todo-sample";
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import RootLayout from "@/layouts/root-layout.astro";
 import type { Todo } from "astro:db";
+import LoginButton from "@/components/login-button";
 
 const sampleTodos: (typeof Todo.$inferSelect)[] = [
   {
@@ -46,10 +44,7 @@ const sampleTodos: (typeof Todo.$inferSelect)[] = [
       <h1 class="">Todos</h1>
       <p class="">A robust and feature-poor todo app</p>
     </section>
-    <a class={cn(buttonVariants(), "w-full")} href="/api/auth/login/github">
-      <GitHubLogoIcon className="mr-2 h-5 w-5" />
-      Login with GitHub
-    </a>
+    <LoginButton className="w-full" />
     <div class="flex w-full flex-col gap-2">
       {sampleTodos.map((todo) => <TodoItemSample todo={todo} />)}
     </div>
