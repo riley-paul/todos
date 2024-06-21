@@ -14,6 +14,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as ListsListIdImport } from './routes/lists_.$listId'
 
 // Create Virtual Routes
 
@@ -28,6 +29,11 @@ const AboutLazyRoute = AboutLazyImport.update({
 
 const IndexRoute = IndexImport.update({
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ListsListIdRoute = ListsListIdImport.update({
+  path: '/lists/$listId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -49,12 +55,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
     }
+    '/lists/$listId': {
+      id: '/lists/$listId'
+      path: '/lists/$listId'
+      fullPath: '/lists/$listId'
+      preLoaderRoute: typeof ListsListIdImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren({ IndexRoute, AboutLazyRoute })
+export const routeTree = rootRoute.addChildren({
+  IndexRoute,
+  AboutLazyRoute,
+  ListsListIdRoute,
+})
 
 /* prettier-ignore-end */
 
@@ -65,7 +82,8 @@ export const routeTree = rootRoute.addChildren({ IndexRoute, AboutLazyRoute })
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/about"
+        "/about",
+        "/lists/$listId"
       ]
     },
     "/": {
@@ -73,6 +91,9 @@ export const routeTree = rootRoute.addChildren({ IndexRoute, AboutLazyRoute })
     },
     "/about": {
       "filePath": "about.lazy.tsx"
+    },
+    "/lists/$listId": {
+      "filePath": "lists_.$listId.tsx"
     }
   }
 }

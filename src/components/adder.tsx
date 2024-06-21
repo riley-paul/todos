@@ -6,12 +6,17 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/client";
 import { todosQueryOptions } from "@/lib/queries";
 import type { Todo } from "astro:db";
+import useListId from "@/app/hooks/use-list-id";
+import { toast } from "sonner";
 
 export default function Adder(): ReturnType<React.FC> {
-  const [value, setValue] = React.useState<string>("");
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  const { queryKey } = todosQueryOptions;
   const client = useQueryClient();
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const listId = useListId();
+
+  const [value, setValue] = React.useState<string>("");
+  const { queryKey } = todosQueryOptions;
 
   const createMutation = useMutation({
     mutationFn: (data: Omit<typeof Todo.$inferInsert, "userId">) =>
@@ -19,11 +24,15 @@ export default function Adder(): ReturnType<React.FC> {
     onSuccess: async () => {
       await client.invalidateQueries({ queryKey });
     },
+    onError: (error) => {
+      console.error(error);
+      toast.error("Failed to create todo");
+    },
   });
 
   const create = () => {
     if (value) {
-      createMutation.mutate({ text: value });
+      createMutation.mutate({ text: value, listId });
       setValue("");
       inputRef.current?.focus();
     }

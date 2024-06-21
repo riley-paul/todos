@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "sonner";
 
 const queryClient = new QueryClient();
 const hashHistory = createHashHistory();
@@ -26,6 +27,7 @@ declare module "@tanstack/react-router" {
 const App: React.FC = () => (
   <QueryClientProvider client={queryClient}>
     <RouterProvider router={router} />
+    <Toaster />
   </QueryClientProvider>
 );
 
