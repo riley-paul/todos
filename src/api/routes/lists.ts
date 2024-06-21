@@ -33,7 +33,17 @@ const app = new Hono()
       .orderBy(asc(Todo.isCompleted), desc(Todo.createdAt));
 
     return c.json({ ...list, todos });
-  });
+  })
+
+  .post(
+    "/delete",
+    zValidator("json", z.object({ id: z.string() })),
+    async (c) => {
+      const { id } = c.req.valid("json");
+      await db.delete(List).where(eq(List.id, id));
+      return c.json({ success: true });
+    },
+  );
 
 // .post("/", zValidator("json", listCreateSchema), async (c) => {
 //   const userId = c.get("user").id;
@@ -62,19 +72,5 @@ const app = new Hono()
 //     return c.json(todo);
 //   },
 // )
-
-// .post(
-//   "/delete",
-//   zValidator("json", z.object({ id: z.string() })),
-//   async (c) => {
-//     const { id } = c.req.valid("json");
-//     const matchingIds = await db.select().from(Todo).where(eq(Todo.id, id));
-//     if (matchingIds.length === 0) {
-//       return c.notFound();
-//     }
-//     await db.update(Todo).set({ isDeleted: true }).where(eq(Todo.id, id));
-//     return c.json({ success: true });
-//   },
-// );
 
 export default app;

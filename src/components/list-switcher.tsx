@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ChevronDown, Plus } from "lucide-react";
+import { ChevronDown, Home, Plus } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -38,6 +38,14 @@ const ListSwitcher: React.FC = () => {
           New List
         </DropdownMenuItem>
         <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() => {
+            navigate({ to: "/" });
+          }}
+        >
+          <Home size="1rem" className="mr-2 text-primary" />
+          Default
+        </DropdownMenuItem>
         {listsQuery.data?.map((list) => (
           <DropdownMenuItem
             key={list.id}

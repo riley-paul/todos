@@ -33,7 +33,7 @@ const Todo = defineTable({
   columns: {
     id: column.text({ primaryKey: true }),
     userId: column.text({ references: () => User.columns.id }),
-    listId: column.text({ references: () => List.columns.id }),
+    listId: column.text({ references: () => List.columns.id, optional: true }),
     text: column.text(),
     isCompleted: column.boolean({ default: false }),
     isDeleted: column.boolean({ default: false }),
