@@ -7,7 +7,7 @@ const User = defineTable({
     username: column.text({ unique: true }),
     name: column.text(),
     avatarUrl: column.text(),
-    createdAt: column.date({ default: NOW }),
+    createdAt: column.text({ default: NOW }),
   },
 });
 
@@ -16,18 +16,18 @@ const UserSession = defineTable({
     id: column.text({ primaryKey: true }),
     userId: column.text({ references: () => User.columns.id }),
     expiresAt: column.number(),
-    createdAt: column.date({ default: NOW }),
+    createdAt: column.text({ default: NOW }),
   },
 });
 
 const Todo = defineTable({
   columns: {
     id: column.text({ primaryKey: true }),
+    userId: column.text({ references: () => User.columns.id }),
     text: column.text(),
     isCompleted: column.boolean({ default: false }),
     isDeleted: column.boolean({ default: false }),
-    createdAt: column.date({ default: NOW }),
-    userId: column.text({ references: () => User.columns.id }),
+    createdAt: column.text({ default: NOW }),
   },
 });
 

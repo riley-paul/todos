@@ -3,11 +3,11 @@ import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { Card } from "./ui/card";
 import { Check } from "lucide-react";
-import type { Todo } from "@/api/db/schema";
 import DeleteButton from "./ui/delete-button";
+import type { Todo } from "astro:db";
 
 interface Props {
-  todo: Todo;
+  todo: typeof Todo.$inferSelect;
 }
 
 const TodoItemSample: React.FC<Props> = (props) => {

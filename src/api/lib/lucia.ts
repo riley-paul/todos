@@ -1,10 +1,10 @@
 import { Lucia } from "lucia";
 import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
-import { db } from "@/api/db";
-import { sessionTable, userTable, type User } from "@/api/db/schema";
 import { GitHub } from "arctic";
+import { User, db, UserSession } from "astro:db";
 
-const adapter = new DrizzleSQLiteAdapter(db, sessionTable, userTable);
+// @ts-ignore
+const adapter = new DrizzleSQLiteAdapter(db, UserSession, User);
 
 export const lucia = new Lucia(adapter, {
   sessionCookie: {
@@ -26,7 +26,7 @@ declare module "lucia" {
   }
 }
 
-type DatabaseUserAttributes = Omit<User, "id">;
+type DatabaseUserAttributes = Omit<typeof User.$inferSelect, "id">;
 
 export const github = new GitHub(
   import.meta.env.GITHUB_CLIENT_ID,

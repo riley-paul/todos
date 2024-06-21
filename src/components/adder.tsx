@@ -5,7 +5,7 @@ import { Loader2, Plus } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { api, client } from "@/lib/client";
 import { todosQueryOptions } from "@/lib/queries";
-import { type TodoInsert } from "@/api/db/schema";
+import type { Todo } from "astro:db";
 
 export default function Adder(): ReturnType<React.FC> {
   const [value, setValue] = React.useState<string>("");
@@ -14,7 +14,7 @@ export default function Adder(): ReturnType<React.FC> {
 
   const createMutation = useMutation(
     {
-      mutationFn: (data: Omit<TodoInsert, "userId">) =>
+      mutationFn: (data: Omit<typeof Todo.$inferInsert, "userId">) =>
         api.todos.$post({ json: data }),
       onSuccess: async () => {
         await client.invalidateQueries({ queryKey });

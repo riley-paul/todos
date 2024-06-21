@@ -3,14 +3,14 @@ import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { Card } from "./ui/card";
 import { Check, Loader2 } from "lucide-react";
-import type { Todo } from "@/api/db/schema";
 import { useMutation } from "@tanstack/react-query";
 import DeleteButton from "./ui/delete-button";
 import { api, client } from "@/lib/client";
 import { todosQueryOptions } from "@/lib/queries";
+import type { Todo } from "astro:db";
 
 interface Props {
-  todo: Todo;
+  todo: typeof Todo.$inferSelect;
 }
 
 const TodoItem: React.FC<Props> = (props) => {

@@ -2,12 +2,12 @@
 import { cn } from "@/lib/utils";
 import { CircleCheckBig } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
-import type { Todo } from "@/api/db/schema";
 import TodoItemSample from "@/components/todo-sample";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import RootLayout from "@/layouts/root-layout.astro";
+import type { Todo } from "astro:db";
 
-const sampleTodos: Todo[] = [
+const sampleTodos: (typeof Todo.$inferSelect)[] = [
   {
     id: "1",
     text: "Buy groceries",

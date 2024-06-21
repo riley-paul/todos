@@ -31,8 +31,8 @@ import {
 import { buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
-import type { User } from "@/api/db/schema";
 import { useThemeStore, type Theme } from "@/lib/theme/theme-store";
+import type { User } from "astro:db";
 
 interface DialogProps {
   isOpen: boolean;
@@ -63,7 +63,7 @@ const AccountDeletionConfirm: React.FC<DialogProps> = (props) => {
 };
 
 interface Props {
-  user: User | null;
+  user: typeof User.$inferSelect | null;
 }
 
 const UserAvatar: React.FC<Props> = ({ user }) => {

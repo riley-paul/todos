@@ -18,8 +18,8 @@ export default async function seed() {
   console.log(`User created with ID: ${userId}`);
 
   await db.insert(Todo).values([
-    { text: "Learn Astro", userId },
-    { text: "Build a website", userId },
-    { text: "Profit", userId },
+    { id: generateId(), text: "Learn Astro", userId },
+    { id: generateId(), text: "Build a website", userId },
+    { id: generateId(), text: "Profit", userId },
   ]);
 }
