@@ -6,11 +6,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/client";
 import { todosQueryOptions } from "@/lib/queries";
 import { Skeleton } from "./ui/skeleton";
+import useListId from "@/app/hooks/use-list-id";
 
 const TodoList: React.FC = () => {
-  const todosQuery = useQuery(todosQueryOptions);
+  const listId = useListId();
+  const todosQuery = useQuery(todosQueryOptions(listId));
   const client = useQueryClient();
-  const { queryKey } = todosQueryOptions;
+  const { queryKey } = todosQueryOptions(listId);
 
   const deleteCompletedMutation = useMutation({
     mutationFn: () => api.todos["delete-completed"].$post(),

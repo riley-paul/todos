@@ -8,6 +8,7 @@ import DeleteButton from "./ui/delete-button";
 import { api } from "@/lib/client";
 import { todosQueryOptions } from "@/lib/queries";
 import type { Todo } from "astro:db";
+import useListId from "@/app/hooks/use-list-id";
 
 interface Props {
   todo: typeof Todo.$inferSelect;
@@ -15,7 +16,8 @@ interface Props {
 
 const TodoItem: React.FC<Props> = (props) => {
   const { todo } = props;
-  const { queryKey } = todosQueryOptions;
+  const listId = useListId();
+  const { queryKey } = todosQueryOptions(listId);
   const client = useQueryClient();
 
   const completeMutation = useMutation({

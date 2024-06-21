@@ -33,7 +33,7 @@ const ListSwitcher: React.FC = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-[10rem]">
-        <DropdownMenuItem>
+        <DropdownMenuItem disabled>
           <Plus size="1rem" className="mr-2 text-primary" />
           New List
         </DropdownMenuItem>

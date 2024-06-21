@@ -14,9 +14,9 @@ export default function Adder(): ReturnType<React.FC> {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const listId = useListId();
+  const { queryKey } = todosQueryOptions(listId);
 
   const [value, setValue] = React.useState<string>("");
-  const { queryKey } = todosQueryOptions;
 
   const createMutation = useMutation({
     mutationFn: (data: Omit<typeof Todo.$inferInsert, "userId">) =>

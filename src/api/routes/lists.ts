@@ -1,22 +1,39 @@
 import { Hono } from "hono";
-import { and, asc, db, desc, eq, List } from "astro:db";
+import { and, asc, db, desc, eq, List, Todo } from "astro:db";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import authMiddleware from "@/api/helpers/auth-middleware.ts";
-import { generateId } from "../helpers/generate-id";
 
-const listCreateSchema = z.custom<Omit<typeof List.$inferInsert, "userId">>();
-const listUpdateSchema = z.custom<Partial<typeof List.$inferInsert>>();
+const app = new Hono()
+  .use(authMiddleware)
+  .get("/", async (c) => {
+    const userId = c.get("user").id;
+    const lists = await db
+      .select()
+      .from(List)
+      .where(eq(List.userId, userId))
+      .orderBy(desc(List.createdAt));
+    return c.json(lists);
+  })
 
-const app = new Hono().use(authMiddleware).get("/", async (c) => {
-  const userId = c.get("user").id;
-  const lists = await db
-    .select()
-    .from(List)
-    .where(eq(List.userId, userId))
-    .orderBy(desc(List.createdAt));
-  return c.json(lists);
-});
+  .get("/:id", zValidator("param", z.object({ id: z.string() })), async (c) => {
+    const userId = c.get("user").id;
+    const listId = c.req.valid("param").id;
+
+    const list = await db
+      .select()
+      .from(List)
+      .where(and(eq(List.userId, userId), eq(List.id, listId)))
+      .then((rows) => rows[0]);
+
+    const todos = await db
+      .select()
+      .from(Todo)
+      .where(and(eq(Todo.isDeleted, false), eq(Todo.userId, userId)))
+      .orderBy(asc(Todo.isCompleted), desc(Todo.createdAt));
+
+    return c.json({ ...list, todos });
+  });
 
 // .post("/", zValidator("json", listCreateSchema), async (c) => {
 //   const userId = c.get("user").id;

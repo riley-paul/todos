@@ -10,15 +10,27 @@ const todoUpdateSchema = z.custom<Partial<typeof Todo.$inferInsert>>();
 
 const app = new Hono()
   .use(authMiddleware)
-  .get("/", async (c) => {
-    const userId = c.get("user").id;
-    const todos = await db
-      .select()
-      .from(Todo)
-      .where(and(eq(Todo.isDeleted, false), eq(Todo.userId, userId)))
-      .orderBy(asc(Todo.isCompleted), desc(Todo.createdAt));
-    return c.json(todos);
-  })
+  .get(
+    "/",
+    zValidator("query", z.object({ listId: z.string().optional() })),
+    async (c) => {
+      const userId = c.get("user").id;
+      const listId = c.req.valid("query").listId;
+
+      const todos = await db
+        .select()
+        .from(Todo)
+        .where(
+          and(
+            eq(Todo.isDeleted, false),
+            eq(Todo.userId, userId),
+            listId ? eq(Todo.listId, listId) : undefined,
+          ),
+        )
+        .orderBy(asc(Todo.isCompleted), desc(Todo.createdAt));
+      return c.json(todos);
+    },
+  )
 
   .post("/", zValidator("json", todoCreateSchema), async (c) => {
     const userId = c.get("user").id;
