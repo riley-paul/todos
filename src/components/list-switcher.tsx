@@ -9,17 +9,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { useQuery } from "@tanstack/react-query";
+import { listsQueryOptions } from "@/lib/queries";
+import useListId from "@/app/hooks/use-list-id";
+import { useNavigate } from "@tanstack/react-router";
 
 const ListSwitcher: React.FC = () => {
+  const listsQuery = useQuery(listsQueryOptions);
+  const listId = useListId();
+  const navigate = useNavigate();
+
+  const currentList = listsQuery.data?.find((list) => list.id === listId);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          className="h-auto px-2 py-1 text-muted-foreground"
+          className="h-auto min-w-24 flex-row justify-between gap-2 px-2 py-1 text-muted-foreground"
           variant="ghost"
         >
-          Work
-          <ChevronDown size="1rem" className="ml-2" />
+          {currentList?.name || "Select List"}
+          <ChevronDown size="1rem" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-[10rem]">
@@ -28,10 +38,16 @@ const ListSwitcher: React.FC = () => {
           New List
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Profile</DropdownMenuItem>
-        <DropdownMenuItem>Billing</DropdownMenuItem>
-        <DropdownMenuItem>Team</DropdownMenuItem>
-        <DropdownMenuItem>Subscription</DropdownMenuItem>
+        {listsQuery.data?.map((list) => (
+          <DropdownMenuItem
+            key={list.id}
+            onClick={() => {
+              navigate({ to: "/lists/$listId", params: { listId: list.id } });
+            }}
+          >
+            {list.name}
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );
