@@ -29,8 +29,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useThemeStore, type Theme } from "@/lib/theme/theme-store";
-import type { User } from "astro:db";
 import LoginButton from "./login-button";
+import { useQuery } from "@tanstack/react-query";
+import { userQueryOptions } from "@/lib/queries";
 
 interface DialogProps {
   isOpen: boolean;
@@ -60,13 +61,21 @@ const AccountDeletionConfirm: React.FC<DialogProps> = (props) => {
   );
 };
 
-interface Props {
-  user: typeof User.$inferSelect | null;
-}
-
-const UserAvatar: React.FC<Props> = ({ user }) => {
+const UserAvatar: React.FC = () => {
   const [accountDeletionOpen, setAccountDeletionOpen] = React.useState(false);
   const { theme, setTheme } = useThemeStore();
+
+  const userQuery = useQuery(userQueryOptions);
+
+  if (userQuery.isLoading) {
+    return null;
+  }
+
+  if (userQuery.isError) {
+    return <div>Error loading user</div>;
+  }
+
+  const user = userQuery.data;
 
   if (!user) {
     return <LoginButton />;

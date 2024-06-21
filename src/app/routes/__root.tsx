@@ -17,7 +17,7 @@ export const Route = createRootRoute({
             </Link>
             <ListSwitcher />
           </div>
-          <UserAvatar user={null} />
+          <UserAvatar />
         </div>
       </header>
       <slot />
