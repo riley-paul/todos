@@ -1,12 +1,12 @@
+import { generateId } from "@/api/helpers/generate-id";
 import { Todo, User, db } from "astro:db";
-import { v4 as uuid } from "uuid";
 
 // https://astro.build/db/seed
 export default async function seed() {
   const { id: userId } = await db
     .insert(User)
     .values({
-      id: uuid(),
+      id: generateId(),
       githubId: 71047303,
       username: "rjp301",
       name: "Riley Paul",
