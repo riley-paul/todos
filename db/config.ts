@@ -24,7 +24,8 @@ const Todo = defineTable({
   columns: {
     id: column.text({ primaryKey: true }),
     text: column.text(),
-    completed: column.boolean({ default: false }),
+    isCompleted: column.boolean({ default: false }),
+    isDeleted: column.boolean({ default: false }),
     createdAt: column.date({ default: NOW }),
     userId: column.text({ references: () => User.columns.id }),
   },

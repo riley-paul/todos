@@ -21,7 +21,7 @@ export const sessionTable = sqliteTable("user_session", {
   id: text("id").notNull().primaryKey(),
   userId: text("user_id")
     .notNull()
-    .references(() => userTable.id),
+    .references(() => userTable.id, { onDelete: "cascade" }),
   expiresAt: integer("expires_at").notNull(),
   createdAt: text("created_at")
     .default(sql`(CURRENT_TIMESTAMP)`)
@@ -42,6 +42,9 @@ export const todosTable = sqliteTable("todo", {
   userId: text("user_id", { length: 255 }).references(() => userTable.id, {
     onDelete: "cascade",
   }),
+  listId: text("list_id", { length: 255 }).references(() => listsTable.id, {
+    onDelete: "cascade",
+  }),
   createdAt: text("created_at")
     .default(sql`(CURRENT_TIMESTAMP)`)
     .notNull(),
@@ -51,3 +54,19 @@ export type Todo = typeof todosTable.$inferSelect;
 export type TodoInsert = typeof todosTable.$inferInsert;
 export const todoSchema = createSelectSchema(todosTable);
 export const todoInsertSchema = createInsertSchema(todosTable);
+
+export const listsTable = sqliteTable("list", {
+  id: text("id").$defaultFn(uuid).primaryKey().unique(),
+  name: text("name").notNull().default(""),
+  userId: text("user_id", { length: 255 }).references(() => userTable.id, {
+    onDelete: "cascade",
+  }),
+  createdAt: text("created_at")
+    .default(sql`(CURRENT_TIMESTAMP)`)
+    .notNull(),
+});
+
+export type List = typeof listsTable.$inferSelect;
+export type ListInsert = typeof listsTable.$inferInsert;
+export const listSchema = createSelectSchema(listsTable);
+export const listInsertSchema = createInsertSchema(listsTable);
