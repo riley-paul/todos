@@ -15,8 +15,6 @@ export default async function seed() {
     .returning()
     .then((rows) => rows[0]);
 
-  console.log(`User created with ID: ${userId}`);
-
   await db.insert(Todo).values([
     { id: generateId(), text: "Learn Astro", userId },
     { id: generateId(), text: "Build a website", userId },
