@@ -20,10 +20,20 @@ const UserSession = defineTable({
   },
 });
 
+const List = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true }),
+    userId: column.text({ references: () => User.columns.id }),
+    name: column.text(),
+    createdAt: column.text({ default: NOW }),
+  },
+});
+
 const Todo = defineTable({
   columns: {
     id: column.text({ primaryKey: true }),
     userId: column.text({ references: () => User.columns.id }),
+    listId: column.text({ references: () => List.columns.id }),
     text: column.text(),
     isCompleted: column.boolean({ default: false }),
     isDeleted: column.boolean({ default: false }),
@@ -37,5 +47,6 @@ export default defineDb({
     User,
     UserSession,
     Todo,
+    List,
   },
 });
