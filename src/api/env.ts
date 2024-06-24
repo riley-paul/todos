@@ -5,6 +5,7 @@ const envSchema = z.object({
   DATABASE_AUTH_TOKEN: z.string(),
   GITHUB_CLIENT_ID: z.string(),
   GITHUB_CLIENT_SECRET: z.string(),
+  PROD: z.coerce.boolean().default(false),
 });
 
 export type EnvSchema = z.infer<typeof envSchema>;
