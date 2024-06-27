@@ -1,8 +1,6 @@
 import { z, ZodError } from "zod";
 
 const envSchema = z.object({
-  DATABASE_URL: z.string(),
-  DATABASE_AUTH_TOKEN: z.string(),
   GITHUB_CLIENT_ID: z.string(),
   GITHUB_CLIENT_SECRET: z.string(),
   PROD: z.coerce.boolean().default(false),
