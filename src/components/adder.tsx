@@ -20,7 +20,7 @@ export default function Adder(): ReturnType<React.FC> {
   const createMutation = useMutation({
     mutationFn: (text: string) =>
       api.todos.$post({
-        json: { text, listId: listId.length > 0 ? listId : undefined },
+        json: { text },
       }),
     onSuccess: async () => {
       await client.invalidateQueries({ queryKey });
