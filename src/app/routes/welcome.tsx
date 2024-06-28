@@ -45,7 +45,7 @@ export const Route = createFileRoute("/welcome")({
       <LoginButton className="w-full" />
       <div className="flex w-full flex-col gap-2">
         {sampleTodos.map((todo) => (
-          <TodoItemSample todo={todo} />
+          <TodoItemSample todo={todo} key={todo.text} />
         ))}
       </div>
     </main>
