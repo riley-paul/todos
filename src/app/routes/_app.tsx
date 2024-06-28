@@ -31,8 +31,9 @@ export const Route = createFileRoute("/_app")({
           <UserAvatar />
         </div>
       </header>
-      <slot />
-      <Outlet />
+      <main className="container2">
+        <Outlet />
+      </main>
     </>
   ),
 });
