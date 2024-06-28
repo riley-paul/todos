@@ -1,13 +1,13 @@
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
-  Laptop,
-  LogOut,
-  Moon,
-  Sun,
-  Trash,
-  User as UserIcon,
-} from "lucide-react";
+  FaLaptop,
+  FaRightFromBracket,
+  FaMoon,
+  FaSun,
+  FaTrash,
+  FaUser,
+} from "react-icons/fa6";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -92,7 +92,7 @@ const UserAvatar: React.FC = () => {
           <Avatar>
             <AvatarImage src={user.avatarUrl ?? ""} />
             <AvatarFallback>
-              <UserIcon />
+              <FaUser />
             </AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
@@ -101,7 +101,7 @@ const UserAvatar: React.FC = () => {
             <Avatar className="h-16 w-16">
               <AvatarImage src={user.avatarUrl ?? ""} alt={user.name} />
               <AvatarFallback>
-                <UserIcon size="3rem" />
+                <FaUser size="3rem" />
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col justify-center">
@@ -116,27 +116,27 @@ const UserAvatar: React.FC = () => {
             onValueChange={(v) => setTheme(v as Theme)}
           >
             <DropdownMenuRadioItem value="light">
-              <Sun className="mr-2 h-4 w-4" />
+              <FaSun className="mr-2" />
               <span>Light</span>
             </DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="dark">
-              <Moon className="mr-2 h-4 w-4" />
+              <FaMoon className="mr-2" />
               <span>Dark</span>
             </DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="system">
-              <Laptop className="mr-2 h-4 w-4" />
+              <FaLaptop className="mr-2" />
               <span>System</span>
             </DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>
           <DropdownMenuSeparator />
           <DropdownMenuLabel>Account Settings</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => setAccountDeletionOpen(true)}>
-            <Trash className="mr-2 h-4 w-4" />
+            <FaTrash className="mr-2" />
             <span>Delete Account</span>
           </DropdownMenuItem>
           <a href="/api/auth/logout">
             <DropdownMenuItem>
-              <LogOut className="mr-2 h-4 w-4" />
+              <FaRightFromBracket className="mr-2" />
               <span>Logout</span>
             </DropdownMenuItem>
           </a>

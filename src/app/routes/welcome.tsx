@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { CircleCheckBig } from "lucide-react";
 import TodoItemSample from "@/app/components/todo-sample";
 import type { Todo } from "astro:db";
 import LoginButton from "@/app/components/login-button";
+import { FaCircleCheck } from "react-icons/fa6";
 
 const sampleTodos: (typeof Todo.$inferSelect)[] = [
   {
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/welcome")({
   component: () => (
     <main className="container2 flex min-h-[100svh] flex-col gap-6 pt-[10vh]">
       <div className="flex items-center justify-center">
-        <CircleCheckBig size="5rem" className="text-primary" />
+        <FaCircleCheck size="5rem" className="text-primary" />
       </div>
       <section className="prose w-full max-w-none text-center dark:prose-invert prose-h1:mb-2 prose-h1:text-5xl">
         <h1 className="">Todos</h1>

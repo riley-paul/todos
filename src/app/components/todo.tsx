@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "./ui/button";
 import { cn } from "@/app/lib/utils";
 import { Card } from "./ui/card";
-import { Check, Loader2 } from "lucide-react";
+import { FaCheck, FaSpinner } from "react-icons/fa6";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import DeleteButton from "./ui/delete-button";
 import { api } from "@/app/lib/client";
@@ -46,15 +46,16 @@ const TodoItem: React.FC<Props> = (props) => {
       )}
     >
       <Button
+        className="rounded-full"
         variant={todo.isCompleted ? "secondary" : "ghost"}
         size="icon"
         disabled={completeMutation.isPending}
         onClick={() => completeMutation.mutate(!todo.isCompleted)}
       >
         {completeMutation.isPending ? (
-          <Loader2 size="1rem" className="animate-spin" />
+          <FaSpinner className="animate-spin" />
         ) : (
-          <Check size="1rem" />
+          <FaCheck />
         )}
       </Button>
       <span

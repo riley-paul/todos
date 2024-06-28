@@ -1,7 +1,12 @@
-import { Link, Outlet, createFileRoute, redirect } from "@tanstack/react-router";
+import {
+  Link,
+  Outlet,
+  createFileRoute,
+  redirect,
+} from "@tanstack/react-router";
 import { api } from "../lib/client";
-import { CircleCheckBig } from "lucide-react";
 import UserAvatar from "../components/user-avatar";
+import { FaCircleCheck } from "react-icons/fa6";
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: async ({ location }) => {
@@ -19,7 +24,7 @@ export const Route = createFileRoute("/_app")({
         <div className="container2 flex h-full items-center justify-between">
           <Link to="/">
             <div className="flex items-center gap-2">
-              <CircleCheckBig size="1.5rem" className="text-primary" />
+              <FaCircleCheck size="1.5rem" className="text-primary" />
               <div className="text-2xl font-bold">Todos</div>
             </div>
           </Link>

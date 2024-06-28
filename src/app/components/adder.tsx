@@ -1,12 +1,12 @@
 import React from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Loader2, Plus } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/app/lib/client";
 import { todosQueryOptions } from "@/app/lib/queries";
 import useListId from "@/app/hooks/use-list-id";
 import { toast } from "sonner";
+import { FaSpinner, FaPlus } from "react-icons/fa6";
 
 export default function Adder(): ReturnType<React.FC> {
   const client = useQueryClient();
@@ -57,9 +57,9 @@ export default function Adder(): ReturnType<React.FC> {
       />
       <Button onClick={create} disabled={!value}>
         {createMutation.isPending ? (
-          <Loader2 size="1.2rem" className="mr-2 animate-spin" />
+          <FaSpinner className="mr-2 animate-spin" />
         ) : (
-          <Plus size="1.2rem" className="mr-2" />
+          <FaPlus className="mr-2" />
         )}
         Add
       </Button>

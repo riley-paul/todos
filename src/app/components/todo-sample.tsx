@@ -2,9 +2,9 @@ import React from "react";
 import { Button } from "./ui/button";
 import { cn } from "@/app/lib/utils";
 import { Card } from "./ui/card";
-import { Check } from "lucide-react";
 import DeleteButton from "./ui/delete-button";
 import type { Todo } from "astro:db";
+import { FaCheck } from "react-icons/fa6";
 
 interface Props {
   todo: typeof Todo.$inferSelect;
@@ -20,8 +20,12 @@ const TodoItemSample: React.FC<Props> = (props) => {
         todo.isCompleted && "bg-card/50",
       )}
     >
-      <Button variant={todo.isCompleted ? "secondary" : "ghost"} size="icon">
-        <Check size="1rem" />
+      <Button
+        variant={todo.isCompleted ? "secondary" : "ghost"}
+        className="rounded-full"
+        size="icon"
+      >
+        <FaCheck />
       </Button>
       <span
         className={cn(
