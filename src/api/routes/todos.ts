@@ -4,6 +4,7 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import authMiddleware from "@/api/helpers/auth-middleware.ts";
 import { generateId } from "../helpers/generate-id";
+import { validIdSchema } from "../lib/validators";
 
 const todoCreateSchema = z.custom<Omit<typeof Todo.$inferInsert, "userId">>();
 const todoUpdateSchema = z.custom<Partial<typeof Todo.$inferInsert>>();
@@ -32,7 +33,10 @@ const app = new Hono()
 
   .post(
     "/update",
-    zValidator("json", z.object({ id: z.string(), data: todoUpdateSchema })),
+    zValidator(
+      "json",
+      z.object({ id: validIdSchema(Todo), data: todoUpdateSchema }),
+    ),
     async (c) => {
       const { id, data } = c.req.valid("json");
       const matchingIds = await db.select().from(Todo).where(eq(Todo.id, id));
@@ -49,7 +53,10 @@ const app = new Hono()
   )
   .post(
     "/toggle-complete",
-    zValidator("json", z.object({ id: z.string(), complete: z.boolean() })),
+    zValidator(
+      "json",
+      z.object({ id: validIdSchema(Todo), complete: z.boolean() }),
+    ),
     async (c) => {
       const { id, complete } = c.req.valid("json");
       const matchingIds = await db.select().from(Todo).where(eq(Todo.id, id));
@@ -66,7 +73,7 @@ const app = new Hono()
 
   .post(
     "/delete",
-    zValidator("json", z.object({ id: z.string() })),
+    zValidator("json", z.object({ id: validIdSchema(Todo) })),
     async (c) => {
       const { id } = c.req.valid("json");
       const matchingIds = await db.select().from(Todo).where(eq(Todo.id, id));
