@@ -3,8 +3,8 @@ import type React from "react";
 import { Button } from "./ui/button";
 import TodoItem from "./todo";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/client";
-import { todosQueryOptions } from "@/lib/queries";
+import { api } from "@/app/lib/client";
+import { todosQueryOptions } from "@/app/lib/queries";
 import { Skeleton } from "./ui/skeleton";
 import useListId from "@/app/hooks/use-list-id";
 

@@ -1,4 +1,4 @@
-import UserAvatar from "@/components/user-avatar";
+import UserAvatar from "@/app/components/user-avatar";
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { CircleCheckBig } from "lucide-react";
 

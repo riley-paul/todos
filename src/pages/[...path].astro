@@ -1,7 +1,8 @@
 ---
+import App from "@/app/main";
 import "@/globals.css";
-import { ThemeListener } from "@/lib/theme/theme-listener.tsx";
-import { cn } from "@/lib/utils.ts";
+import { ThemeListener } from "@/app/lib/theme/theme-listener";
+import { cn } from "@/app/lib/utils.ts";
 import "@fontsource-variable/inter";
 
 const theme = Astro.cookies.get("theme")?.value;
@@ -19,6 +20,6 @@ const theme = Astro.cookies.get("theme")?.value;
   </head>
   <body>
     <ThemeListener client:load />
-    <slot />
+    <App client:load />
   </body>
 </html>

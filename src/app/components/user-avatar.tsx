@@ -27,11 +27,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { useThemeStore, type Theme } from "@/lib/theme/theme-store";
+} from "@/app/components/ui/alert-dialog";
+import { useThemeStore, type Theme } from "@/app/lib/theme/theme-store";
 import LoginButton from "./login-button";
 import { useQuery } from "@tanstack/react-query";
-import { userQueryOptions } from "@/lib/queries";
+import { userQueryOptions } from "@/app/lib/queries";
 
 interface DialogProps {
   isOpen: boolean;

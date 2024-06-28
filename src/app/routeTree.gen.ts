@@ -13,54 +13,67 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as IndexImport } from './routes/index'
-import { Route as ListsListIdImport } from './routes/lists_.$listId'
+import { Route as WelcomeImport } from './routes/welcome'
+import { Route as AppImport } from './routes/_app'
+import { Route as AppIndexImport } from './routes/_app.index'
 
 // Create Virtual Routes
 
-const AboutLazyImport = createFileRoute('/about')()
+const AppAboutLazyImport = createFileRoute('/_app/about')()
 
 // Create/Update Routes
 
-const AboutLazyRoute = AboutLazyImport.update({
-  path: '/about',
+const WelcomeRoute = WelcomeImport.update({
+  path: '/welcome',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
+} as any)
 
-const IndexRoute = IndexImport.update({
+const AppRoute = AppImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AppIndexRoute = AppIndexImport.update({
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => AppRoute,
 } as any)
 
-const ListsListIdRoute = ListsListIdImport.update({
-  path: '/lists/$listId',
-  getParentRoute: () => rootRoute,
-} as any)
+const AppAboutLazyRoute = AppAboutLazyImport.update({
+  path: '/about',
+  getParentRoute: () => AppRoute,
+} as any).lazy(() => import('./routes/_app.about.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AppImport
       parentRoute: typeof rootRoute
     }
-    '/about': {
-      id: '/about'
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeImport
+      parentRoute: typeof rootRoute
+    }
+    '/_app/about': {
+      id: '/_app/about'
       path: '/about'
       fullPath: '/about'
-      preLoaderRoute: typeof AboutLazyImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AppAboutLazyImport
+      parentRoute: typeof AppImport
     }
-    '/lists/$listId': {
-      id: '/lists/$listId'
-      path: '/lists/$listId'
-      fullPath: '/lists/$listId'
-      preLoaderRoute: typeof ListsListIdImport
-      parentRoute: typeof rootRoute
+    '/_app/': {
+      id: '/_app/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AppIndexImport
+      parentRoute: typeof AppImport
     }
   }
 }
@@ -68,9 +81,8 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren({
-  IndexRoute,
-  AboutLazyRoute,
-  ListsListIdRoute,
+  AppRoute: AppRoute.addChildren({ AppAboutLazyRoute, AppIndexRoute }),
+  WelcomeRoute,
 })
 
 /* prettier-ignore-end */
@@ -81,19 +93,27 @@ export const routeTree = rootRoute.addChildren({
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
-        "/about",
-        "/lists/$listId"
+        "/_app",
+        "/welcome"
       ]
     },
-    "/": {
-      "filePath": "index.tsx"
+    "/_app": {
+      "filePath": "_app.tsx",
+      "children": [
+        "/_app/about",
+        "/_app/"
+      ]
     },
-    "/about": {
-      "filePath": "about.lazy.tsx"
+    "/welcome": {
+      "filePath": "welcome.tsx"
     },
-    "/lists/$listId": {
-      "filePath": "lists_.$listId.tsx"
+    "/_app/about": {
+      "filePath": "_app.about.lazy.tsx",
+      "parent": "/_app"
+    },
+    "/_app/": {
+      "filePath": "_app.index.tsx",
+      "parent": "/_app"
     }
   }
 }

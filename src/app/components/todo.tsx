@@ -1,12 +1,12 @@
 import React from "react";
 import { Button } from "./ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/lib/utils";
 import { Card } from "./ui/card";
 import { Check, Loader2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import DeleteButton from "./ui/delete-button";
-import { api } from "@/lib/client";
-import { todosQueryOptions } from "@/lib/queries";
+import { api } from "@/app/lib/client";
+import { todosQueryOptions } from "@/app/lib/queries";
 import type { Todo } from "astro:db";
 import useListId from "@/app/hooks/use-list-id";
 

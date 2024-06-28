@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/lib/utils";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import React from "react";
 import { buttonVariants } from "./ui/button";

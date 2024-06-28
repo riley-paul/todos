@@ -3,8 +3,8 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Loader2, Plus } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/client";
-import { todosQueryOptions } from "@/lib/queries";
+import { api } from "@/app/lib/client";
+import { todosQueryOptions } from "@/app/lib/queries";
 import useListId from "@/app/hooks/use-list-id";
 import { toast } from "sonner";
 
