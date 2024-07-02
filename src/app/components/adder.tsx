@@ -35,9 +35,9 @@ export default function Adder(): ReturnType<React.FC> {
       />
       <Button onClick={create} disabled={!value}>
         {createTodo.isPending ? (
-          <Loader2 size="1rem" className="mr-2 animate-spin" />
+          <Loader2 size="1.2rem" className="mr-2 animate-spin" />
         ) : (
-          <Plus size="1rem" className="mr-2" />
+          <Plus size="1.2rem" className="mr-2" />
         )}
         Add
       </Button>
