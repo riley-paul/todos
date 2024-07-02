@@ -19,17 +19,17 @@ export default async function seed() {
     {
       id: generateId(),
       userId,
-      text: "Finish the Astro tutorial",
+      text: "#fun Finish the Astro tutorial",
     },
     {
       id: generateId(),
       userId,
-      text: "Update hours on JIRA",
+      text: "#work Update hours on JIRA",
     },
     {
       id: generateId(),
       userId,
-      text: "Do the dishes",
+      text: "#chores Do the dishes",
     },
     {
       id: generateId(),
@@ -39,22 +39,22 @@ export default async function seed() {
     {
       id: generateId(),
       userId,
-      text: "Milk",
+      text: "#shopping Milk",
     },
     {
       id: generateId(),
       userId,
-      text: "Eggs",
+      text: "#shopping Eggs",
     },
     {
       id: generateId(),
       userId,
-      text: "Sugar",
+      text: "#shopping Sugar",
     },
     {
       id: generateId(),
       userId,
-      text: "Cereal",
+      text: "#shopping Cereal",
     },
   ]);
 }

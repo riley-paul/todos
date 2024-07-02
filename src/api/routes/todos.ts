@@ -5,6 +5,7 @@ import { z } from "zod";
 import authMiddleware from "@/api/helpers/auth-middleware.ts";
 import { generateId } from "../helpers/generate-id";
 import { validIdSchema } from "../lib/validators";
+import { like } from "drizzle-orm";
 
 const todoCreateSchema = z.custom<Omit<typeof Todo.$inferInsert, "userId">>();
 const todoUpdateSchema = z.custom<Partial<typeof Todo.$inferInsert>>();
@@ -13,12 +14,37 @@ const app = new Hono()
   .use(authMiddleware)
   .get("/", async (c) => {
     const userId = c.get("user").id;
+
+    const hashtags = await db
+      .select({ text: Todo.text })
+      .from(Todo)
+      .where(
+        and(
+          eq(Todo.isDeleted, false),
+          eq(Todo.userId, userId),
+          like(Todo.text, "%#%"),
+        ),
+      )
+      .then((rows) => rows.map((row) => row.text))
+      .then((texts) =>
+        texts.reduce((acc, val) => {
+          const matches = val.match(/#[a-zA-Z0-9]+/g);
+          if (matches) {
+            matches.forEach((match) => {
+              acc.add(match);
+            });
+          }
+          return acc;
+        }, new Set<string>()),
+      )
+      .then((set) => Array.from(set));
+
     const todos = await db
       .select()
       .from(Todo)
       .where(and(eq(Todo.isDeleted, false), eq(Todo.userId, userId)))
       .orderBy(asc(Todo.isCompleted), desc(Todo.createdAt));
-    return c.json(todos);
+    return c.json({ todos, hashtags });
   })
 
   .post("/", zValidator("json", todoCreateSchema), async (c) => {
