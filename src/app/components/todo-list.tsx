@@ -6,8 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { todosQueryOptions } from "@/app/lib/queries";
 import { Skeleton } from "./ui/skeleton";
 import useMutations from "../hooks/use-mutations";
-import { Badge } from "./ui/badge";
-import { Link } from "@tanstack/react-router";
+import Hashtag from "./hashtag";
 
 const TodoList: React.FC = () => {
   const { deleteCompleted } = useMutations();
@@ -46,11 +45,7 @@ const TodoList: React.FC = () => {
       {hashtags.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {hashtags.map((hashtag) => (
-            <Link to="/" search={{ tag: hashtag }}>
-              <Badge variant="secondary" key={hashtag}>
-                {hashtag}
-              </Badge>
-            </Link>
+            <Hashtag key={hashtag} hashtag={hashtag} />
           ))}
         </div>
       )}
