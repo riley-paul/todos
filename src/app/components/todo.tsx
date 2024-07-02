@@ -49,8 +49,8 @@ const TodoItem: React.FC<Props> = (props) => {
           const isTag = word.startsWith("#");
           if (isTag) {
             return (
-              <Link to="/" search={{ tag: word.slice(1) }}>
-                <span className="text-primary/70 underline transition-colors hover:text-primary">
+              <Link to="/" key={index} search={{ tag: word.slice(1) }}>
+                <span className="text-primary/70 transition-colors hover:text-primary">
                   {word}
                 </span>{" "}
               </Link>
