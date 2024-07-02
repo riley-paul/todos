@@ -6,7 +6,7 @@ import { api } from "@/app/lib/client";
 import { todosQueryOptions } from "@/app/lib/queries";
 import useListId from "@/app/hooks/use-list-id";
 import { toast } from "sonner";
-import { FaSpinner, FaPlus } from "react-icons/fa6";
+import { Loader2, Plus } from "lucide-react";
 
 export default function Adder(): ReturnType<React.FC> {
   const client = useQueryClient();
@@ -57,9 +57,9 @@ export default function Adder(): ReturnType<React.FC> {
       />
       <Button onClick={create} disabled={!value}>
         {createMutation.isPending ? (
-          <FaSpinner className="mr-2 animate-spin" />
+          <Loader2 size="1rem" className="mr-2 animate-spin" />
         ) : (
-          <FaPlus className="mr-2" />
+          <Plus size="1rem" className="mr-2" />
         )}
         Add
       </Button>

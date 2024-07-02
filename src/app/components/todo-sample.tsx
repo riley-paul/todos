@@ -4,7 +4,7 @@ import { cn } from "@/app/lib/utils";
 import { Card } from "./ui/card";
 import DeleteButton from "./ui/delete-button";
 import type { Todo } from "astro:db";
-import { FaCheck } from "react-icons/fa6";
+import { Check } from "lucide-react";
 
 interface Props {
   todo: typeof Todo.$inferSelect;
@@ -25,7 +25,7 @@ const TodoItemSample: React.FC<Props> = (props) => {
         className="rounded-full"
         size="icon"
       >
-        <FaCheck />
+        <Check size="1rem" />
       </Button>
       <span
         className={cn(

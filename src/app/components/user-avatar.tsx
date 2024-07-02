@@ -1,14 +1,6 @@
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
-  FaLaptop,
-  FaRightFromBracket,
-  FaMoon,
-  FaSun,
-  FaTrash,
-  FaUser,
-} from "react-icons/fa6";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -32,6 +24,7 @@ import { useThemeStore, type Theme } from "@/app/lib/theme/theme-store";
 import LoginButton from "./login-button";
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/app/lib/queries";
+import { Laptop, LogOut, Moon, Sun, Trash, User } from "lucide-react";
 
 interface DialogProps {
   isOpen: boolean;
@@ -92,7 +85,7 @@ const UserAvatar: React.FC = () => {
           <Avatar>
             <AvatarImage src={user.avatarUrl ?? ""} />
             <AvatarFallback>
-              <FaUser />
+              <User size="1rem" />
             </AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
@@ -101,7 +94,7 @@ const UserAvatar: React.FC = () => {
             <Avatar className="h-16 w-16">
               <AvatarImage src={user.avatarUrl ?? ""} alt={user.name} />
               <AvatarFallback>
-                <FaUser size="3rem" />
+                <User size="3rem" />
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col justify-center">
@@ -116,27 +109,27 @@ const UserAvatar: React.FC = () => {
             onValueChange={(v) => setTheme(v as Theme)}
           >
             <DropdownMenuRadioItem value="light">
-              <FaSun className="mr-2" />
+              <Sun size="1rem" className="mr-2" />
               <span>Light</span>
             </DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="dark">
-              <FaMoon className="mr-2" />
+              <Moon size="1rem" className="mr-2" />
               <span>Dark</span>
             </DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="system">
-              <FaLaptop className="mr-2" />
+              <Laptop size="1rem" className="mr-2" />
               <span>System</span>
             </DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>
           <DropdownMenuSeparator />
           <DropdownMenuLabel>Account Settings</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => setAccountDeletionOpen(true)}>
-            <FaTrash className="mr-2" />
+            <Trash size="1rem" className="mr-2" />
             <span>Delete Account</span>
           </DropdownMenuItem>
           <a href="/api/auth/logout">
             <DropdownMenuItem>
-              <FaRightFromBracket className="mr-2" />
+              <LogOut size="1rem" className="mr-2" />
               <span>Logout</span>
             </DropdownMenuItem>
           </a>
