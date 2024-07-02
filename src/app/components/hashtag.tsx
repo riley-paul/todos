@@ -10,7 +10,7 @@ type Props = {
 const Hashtag: React.FC<Props> = (props) => {
   const { hashtag } = props;
 
-  const { tags = [] } = useSearch({ from: "/_app/" });
+  const { tags } = useSearch({ from: "/_app/" });
   const isActive = tags?.includes(hashtag);
 
   return (
@@ -18,9 +18,16 @@ const Hashtag: React.FC<Props> = (props) => {
       to="/"
       search={(prev) => {
         const prevTags = prev.tags ?? [];
+        const isActive = prevTags.includes(hashtag);
+
+        if (isActive && prevTags.length === 1) {
+          return { ...prev, tags: undefined };
+        }
+
         if (prevTags.includes(hashtag)) {
           return { ...prev, tags: prevTags.filter((tag) => tag !== hashtag) };
         }
+
         return { ...prev, tags: [...prevTags, hashtag] };
       }}
     >

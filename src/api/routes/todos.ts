@@ -37,7 +37,8 @@ const app = new Hono()
           return acc;
         }, new Set<string>()),
       )
-      .then((set) => Array.from(set));
+      .then((set) => Array.from(set))
+      .then((arr) => arr.map((text) => text.replace("#", "")));
 
     const todos = await db
       .select()
