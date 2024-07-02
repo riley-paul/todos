@@ -2,24 +2,14 @@ import type React from "react";
 
 import { Button } from "./ui/button";
 import TodoItem from "./todo";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/app/lib/client";
+import { useQuery } from "@tanstack/react-query";
 import { todosQueryOptions } from "@/app/lib/queries";
 import { Skeleton } from "./ui/skeleton";
-import useListId from "@/app/hooks/use-list-id";
+import useMutations from "../hooks/use-mutations";
 
 const TodoList: React.FC = () => {
-  const listId = useListId();
-  const todosQuery = useQuery(todosQueryOptions(listId));
-  const client = useQueryClient();
-  const { queryKey } = todosQueryOptions(listId);
-
-  const deleteCompletedMutation = useMutation({
-    mutationFn: () => api.todos["delete-completed"].$post(),
-    onSuccess: async () => {
-      await client.invalidateQueries({ queryKey });
-    },
-  });
+  const todosQuery = useQuery(todosQueryOptions);
+  const { deleteCompleted } = useMutations();
 
   if (todosQuery.isLoading) {
     return (
@@ -59,8 +49,8 @@ const TodoList: React.FC = () => {
               className="w-full"
               variant="secondary"
               size="lg"
-              onClick={() => deleteCompletedMutation.mutate()}
-              disabled={deleteCompletedMutation.isPending}
+              onClick={() => deleteCompleted.mutate()}
+              disabled={deleteCompleted.isPending}
             >
               Delete Completed
             </Button>
