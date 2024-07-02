@@ -6,13 +6,15 @@ import { useQuery } from "@tanstack/react-query";
 import { todosQueryOptions } from "@/app/lib/queries";
 import { Skeleton } from "./ui/skeleton";
 import useMutations from "../hooks/use-mutations";
-import Hashtag from "./hashtag";
+import { useSearch } from "@tanstack/react-router";
 
 const TodoList: React.FC = () => {
   const { deleteCompleted } = useMutations();
-  const todosQuery = useQuery(todosQueryOptions);
 
-  const { todos = [], hashtags = [] } = todosQuery.data ?? {};
+  const { tag } = useSearch({ from: "/_app/" });
+  const todosQuery = useQuery(todosQueryOptions(tag));
+
+  const todos = todosQuery.data ?? [];
 
   if (todosQuery.isLoading) {
     return (
@@ -42,13 +44,6 @@ const TodoList: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      {hashtags.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {hashtags.map((hashtag) => (
-            <Hashtag key={hashtag} hashtag={hashtag} />
-          ))}
-        </div>
-      )}
       <div className="flex flex-col gap-2 overflow-auto">
         {todos.map((todo) => (
           <TodoItem key={todo.id} todo={todo} />
