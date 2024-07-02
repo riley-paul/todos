@@ -75,10 +75,6 @@
 }
 
 @layer base {
-  :root {
-    @apply text-lg sm:text-base;
-  }
-
   * {
     @apply border-border;
   }
