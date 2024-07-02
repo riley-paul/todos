@@ -6,6 +6,7 @@ import DeleteButton from "./ui/delete-button";
 import type { Todo } from "astro:db";
 import { Check, Loader2 } from "lucide-react";
 import useMutations from "../hooks/use-mutations";
+import { Link } from "@tanstack/react-router";
 
 interface Props {
   todo: typeof Todo.$inferSelect;
@@ -44,7 +45,19 @@ const TodoItem: React.FC<Props> = (props) => {
           todo.isCompleted && "text-muted-foreground line-through",
         )}
       >
-        {todo.text}
+        {todo.text.split(" ").map((word, index) => {
+          const isTag = word.startsWith("#");
+          if (isTag) {
+            return (
+              <Link to="/" search={{ tag: word.slice(1) }}>
+                <span className="text-primary/70 underline transition-colors hover:text-primary">
+                  {word}
+                </span>{" "}
+              </Link>
+            );
+          }
+          return <span key={index}>{word} </span>;
+        })}
       </span>
       <DeleteButton handleDelete={() => deleteTodo.mutate({ id: todo.id })} />
     </Card>
