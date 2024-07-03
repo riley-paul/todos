@@ -68,8 +68,8 @@ export const Route = createLazyFileRoute("/welcome")({
         <p className="">A robust and feature-poor todo app</p>
       </section>
       <div className="grid gap-2">
-        <LoginButton provider="google" />
         <LoginButton provider="github" />
+        <LoginButton provider="google" />
       </div>
 
       <div className="flex w-full flex-col gap-2">
