@@ -6,13 +6,12 @@ import { OAuth2RequestError } from "arctic";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { luciaToHonoCookieAttributes } from "@/api/helpers/cookie-attributes";
-import authMiddleware from "@/api/helpers/auth-middleware";
-import { Todo, User, UserSession, db, eq } from "astro:db";
-import { generateId } from "../helpers/generate-id";
-import env from "../env";
+import { User, db, eq } from "astro:db";
+import { generateId } from "../../helpers/generate-id";
+import env from "@/api/env";
 
 const app = new Hono()
-  .get("/login/github", async (c) => {
+  .get("/", async (c) => {
     const state = generateState();
     const url = await github.createAuthorizationURL(state);
 
@@ -27,7 +26,7 @@ const app = new Hono()
     return c.redirect(url.toString());
   })
   .get(
-    "/login/github/callback",
+    "/callback",
     zValidator(
       "query",
       z.object({
@@ -105,45 +104,7 @@ const app = new Hono()
         return c.json({ error: "An error occurred" }, 500);
       }
     },
-  )
-  .get("/logout", authMiddleware, async (c) => {
-    const session = c.get("session");
-
-    if (!session) {
-      return c.redirect("/");
-    }
-
-    await lucia.invalidateSession(session.id);
-
-    const sessionCookie = lucia.createBlankSessionCookie();
-    setCookie(
-      c,
-      sessionCookie.name,
-      sessionCookie.value,
-      luciaToHonoCookieAttributes(sessionCookie.attributes),
-    );
-
-    return c.redirect("/");
-  })
-  .get("/me", authMiddleware, async (c) => {
-    const user = c.get("user");
-    if (!user) {
-      return c.json(null, 401);
-    }
-    const data = await db
-      .select()
-      .from(User)
-      .where(eq(User.id, user.id))
-      .then((rows) => rows[0]);
-    return c.json(data);
-  })
-  .post("/delete", authMiddleware, async (c) => {
-    const userId = c.get("user").id;
-    await db.delete(UserSession).where(eq(UserSession.userId, userId));
-    await db.delete(Todo).where(eq(Todo.userId, userId));
-    await db.delete(User).where(eq(User.id, userId));
-    return c.redirect("/");
-  });
+  );
 
 interface GitHubUser {
   id: number;
