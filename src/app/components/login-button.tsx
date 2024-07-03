@@ -2,21 +2,24 @@ import { cn } from "@/app/lib/utils";
 import React from "react";
 import { buttonVariants } from "./ui/button";
 
-import { FaGithub, FaGoogle } from "react-icons/fa6";
+import { FaGithub } from "react-icons/fa6";
+import { FcGoogle } from "react-icons/fc";
 
 const authProviders: Record<
   string,
-  { name: string; url: string; icon: React.ReactNode }
+  { name: string; url: string; icon: React.ReactNode; className?: string }
 > = {
   github: {
     name: "GitHub",
     url: "/api/auth/login/github",
     icon: <FaGithub className="mr-2 h-5 w-5" />,
+    className: "bg-gray-900 text-white hover:bg-gray-800 border border-gray-700",
   },
   google: {
     name: "Google",
     url: "/api/auth/login/google",
-    icon: <FaGoogle className="mr-2 h-5 w-5" />,
+    icon: <FcGoogle className="mr-2 h-5 w-5" />,
+    className: "bg-white text-black hover:bg-gray-100",
   },
 };
 
@@ -30,7 +33,11 @@ const LoginButton: React.FC<Props> = (props) => {
   const authProvider = authProviders[provider];
   return (
     <a
-      className={cn(buttonVariants({ size: "lg" }), className)}
+      className={cn(
+        buttonVariants({ size: "lg", variant: "secondary" }),
+        authProvider.className,
+        className,
+      )}
       href={authProvider.url}
     >
       {authProvider.icon}

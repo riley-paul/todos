@@ -12,7 +12,6 @@ import { CircleCheckBig } from "lucide-react";
 export const Route = createFileRoute("/_app")({
   beforeLoad: async ({ location }) => {
     const me = await queryClient.ensureQueryData(userQueryOptions);
-    console.log("me", me);
     if (!me) {
       throw redirect({
         to: "/welcome",

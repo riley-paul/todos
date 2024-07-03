@@ -67,7 +67,11 @@ export const Route = createLazyFileRoute("/welcome")({
         <h1 className="">Todos</h1>
         <p className="">A robust and feature-poor todo app</p>
       </section>
-      <LoginButton className="w-full" provider="github" />
+      <div className="grid gap-2">
+        <LoginButton provider="google" />
+        <LoginButton provider="github" />
+      </div>
+
       <div className="flex w-full flex-col gap-2">
         {sampleTodos.map((todo) => (
           <TodoItemSample todo={todo} key={todo.text} />
