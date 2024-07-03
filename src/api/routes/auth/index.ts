@@ -12,7 +12,7 @@ const app = new Hono()
   .route("/login/github", githubRoutes)
   .route("/login/google", googleRoutes)
   .use(authMiddleware)
-  .get("/logout", async (c) => {
+  .post("/logout", async (c) => {
     const session = c.get("session");
 
     if (!session) {
@@ -29,7 +29,7 @@ const app = new Hono()
       luciaToHonoCookieAttributes(sessionCookie.attributes),
     );
 
-    return c.redirect("/");
+    return c.json({ success: true });
   })
   .get("/me", async (c) => {
     const user = c.get("user");

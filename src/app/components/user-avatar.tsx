@@ -23,10 +23,11 @@ import {
 import { useThemeStore, type Theme } from "@/app/lib/theme/theme-store";
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/app/lib/queries";
-import { Laptop, LogOut, Moon, Sun, Trash, User } from "lucide-react";
+import { Laptop, LogIn, LogOut, Moon, Sun, Trash, User } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { cn } from "../lib/utils";
 import { buttonVariants } from "./ui/button";
+import useMutations from "../hooks/use-mutations";
 
 interface DialogProps {
   isOpen: boolean;
@@ -62,6 +63,8 @@ const UserAvatar: React.FC = () => {
 
   const userQuery = useQuery(userQueryOptions);
 
+  const { logout } = useMutations();
+
   if (userQuery.isLoading) {
     return null;
   }
@@ -78,6 +81,7 @@ const UserAvatar: React.FC = () => {
         to="/welcome"
         className={cn(buttonVariants({ variant: "secondary" }))}
       >
+        <LogIn size="1rem" className="mr-2" />
         Login
       </Link>
     );
@@ -136,12 +140,10 @@ const UserAvatar: React.FC = () => {
             <Trash size="1rem" className="mr-2" />
             <span>Delete Account</span>
           </DropdownMenuItem>
-          <a href="/api/auth/logout">
-            <DropdownMenuItem>
-              <LogOut size="1rem" className="mr-2" />
-              <span>Logout</span>
-            </DropdownMenuItem>
-          </a>
+          <DropdownMenuItem onClick={() => logout.mutate()}>
+            <LogOut size="1rem" className="mr-2" />
+            <span>Logout</span>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </>
