@@ -1,6 +1,6 @@
 import { Lucia } from "lucia";
 import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
-import { GitHub } from "arctic";
+import { GitHub, Google } from "arctic";
 import { User, db, UserSession } from "astro:db";
 import env from "@/api/env";
 
@@ -32,4 +32,10 @@ type DatabaseUserAttributes = Omit<typeof User.$inferSelect, "id">;
 export const github = new GitHub(
   env.GITHUB_CLIENT_ID,
   env.GITHUB_CLIENT_SECRET,
+);
+
+export const google = new Google(
+  env.GOOGLE_CLIENT_ID,
+  env.GOOGLE_CLIENT_SECRET,
+  env.GOOGLE_REDIRECT_URI,
 );

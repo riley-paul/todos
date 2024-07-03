@@ -6,9 +6,11 @@ import authMiddleware from "@/api/helpers/auth-middleware";
 import { Todo, User, UserSession, db, eq } from "astro:db";
 
 import githubRoutes from "./github";
+import googleRoutes from "./google";
 
 const app = new Hono()
   .route("/login/github", githubRoutes)
+  .route("/login/google", googleRoutes)
   .use(authMiddleware)
   .get("/logout", async (c) => {
     const session = c.get("session");

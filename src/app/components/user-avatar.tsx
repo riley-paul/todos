@@ -21,10 +21,12 @@ import {
   AlertDialogTitle,
 } from "@/app/components/ui/alert-dialog";
 import { useThemeStore, type Theme } from "@/app/lib/theme/theme-store";
-import LoginButton from "./login-button";
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/app/lib/queries";
 import { Laptop, LogOut, Moon, Sun, Trash, User } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { cn } from "../lib/utils";
+import { buttonVariants } from "./ui/button";
 
 interface DialogProps {
   isOpen: boolean;
@@ -71,7 +73,14 @@ const UserAvatar: React.FC = () => {
   const user = userQuery.data;
 
   if (!user) {
-    return <LoginButton />;
+    return (
+      <Link
+        to="/welcome"
+        className={cn(buttonVariants({ variant: "secondary" }))}
+      >
+        Login
+      </Link>
+    );
   }
 
   return (

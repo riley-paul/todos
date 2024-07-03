@@ -13,20 +13,20 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as WelcomeImport } from './routes/welcome'
 import { Route as AppImport } from './routes/_app'
 import { Route as AppIndexImport } from './routes/_app.index'
 
 // Create Virtual Routes
 
+const WelcomeLazyImport = createFileRoute('/welcome')()
 const AppAboutLazyImport = createFileRoute('/_app/about')()
 
 // Create/Update Routes
 
-const WelcomeRoute = WelcomeImport.update({
+const WelcomeLazyRoute = WelcomeLazyImport.update({
   path: '/welcome',
   getParentRoute: () => rootRoute,
-} as any)
+} as any).lazy(() => import('./routes/welcome.lazy').then((d) => d.Route))
 
 const AppRoute = AppImport.update({
   id: '/_app',
@@ -58,7 +58,7 @@ declare module '@tanstack/react-router' {
       id: '/welcome'
       path: '/welcome'
       fullPath: '/welcome'
-      preLoaderRoute: typeof WelcomeImport
+      preLoaderRoute: typeof WelcomeLazyImport
       parentRoute: typeof rootRoute
     }
     '/_app/about': {
@@ -82,7 +82,7 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   AppRoute: AppRoute.addChildren({ AppAboutLazyRoute, AppIndexRoute }),
-  WelcomeRoute,
+  WelcomeLazyRoute,
 })
 
 /* prettier-ignore-end */
@@ -105,7 +105,7 @@ export const routeTree = rootRoute.addChildren({
       ]
     },
     "/welcome": {
-      "filePath": "welcome.tsx"
+      "filePath": "welcome.lazy.tsx"
     },
     "/_app/about": {
       "filePath": "_app.about.lazy.tsx",
