@@ -6,7 +6,7 @@ import { OAuth2RequestError } from "arctic";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { User, db, eq } from "astro:db";
-import { generateId } from "../../helpers/generate-id";
+import { generateId } from "@/api/helpers/generate-id";
 import env from "@/api/env";
 import getGithubUser from "./helpers/get-github-user";
 import setUserSession from "./helpers/set-user-session";
