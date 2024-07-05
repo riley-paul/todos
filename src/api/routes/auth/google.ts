@@ -1,15 +1,15 @@
 import { Hono } from "hono";
 import { generateCodeVerifier, generateState } from "arctic";
 import { setCookie } from "hono/cookie";
-import { google, lucia } from "@/api/lib/lucia";
+import { google } from "@/api/lib/lucia";
 import { OAuth2RequestError } from "arctic";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { luciaToHonoCookieAttributes } from "@/api/helpers/cookie-attributes";
 import { User, db, eq } from "astro:db";
 import { generateId } from "../../helpers/generate-id";
 import env from "@/api/env";
-import getGoogleUser from "@/api/routes/auth/helpers/get-google-user";
+import getGoogleUser from "./helpers/get-google-user";
+import setUserSession from "./helpers/set-user-session";
 
 const app = new Hono()
   .get("/", async (c) => {
@@ -75,39 +75,29 @@ const app = new Hono()
           .where(eq(User.email, googleUser.email))
           .then((rows) => rows[0]);
 
-        // if (existingUser) {
-        //   const session = await lucia.createSession(existingUser.id, {});
-        //   const sessionCookie = lucia.createSessionCookie(session.id);
-        //   setCookie(
-        //     c,
-        //     sessionCookie.name,
-        //     sessionCookie.value,
-        //     luciaToHonoCookieAttributes(sessionCookie.attributes),
-        //   );
-        //   return c.redirect("/");
-        // }
+        if (existingUser) {
+          await db
+            .update(User)
+            .set({ googleId: googleUser.id })
+            .where(eq(User.id, existingUser.id));
+          await setUserSession(c, existingUser.id);
+          return c.redirect("/");
+        }
 
-        // // add user to database
-        // const user = await db
-        //   .insert(User)
-        //   .values({
-        //     id: generateId(),
-        //     githubId: githubUser.id,
-        //     username: githubUser.login,
-        //     name: githubUser.name,
-        //     avatarUrl: githubUser.avatar_url,
-        //   })
-        //   .returning()
-        //   .then((rows) => rows[0]);
+        // add user to database
+        const user = await db
+          .insert(User)
+          .values({
+            id: generateId(),
+            email: googleUser.email,
+            googleId: googleUser.id,
+            name: googleUser.name,
+            avatarUrl: googleUser.picture,
+          })
+          .returning()
+          .then((rows) => rows[0]);
 
-        // const session = await lucia.createSession(user.id, {});
-        // const sessionCookie = lucia.createSessionCookie(session.id);
-        // setCookie(
-        //   c,
-        //   sessionCookie.name,
-        //   sessionCookie.value,
-        //   luciaToHonoCookieAttributes(sessionCookie.attributes),
-        // );
+        await setUserSession(c, user.id);
         return c.redirect("/");
       } catch (e) {
         console.error(e);

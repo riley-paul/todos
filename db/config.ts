@@ -11,7 +11,7 @@ const User = defineTable({
     googleId: column.text({ unique: true, optional: true }),
 
     name: column.text(),
-    avatarUrl: column.text(),
+    avatarUrl: column.text({ optional: true }),
     createdAt: column.text({ default: NOW }),
   },
 });

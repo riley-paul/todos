@@ -8,8 +8,8 @@ import { z } from "zod";
 import { User, db, eq } from "astro:db";
 import { generateId } from "../../helpers/generate-id";
 import env from "@/api/env";
-import getGithubUser from "@/api/routes/auth/helpers/get-github-user";
-import setUserSession from "@/api/routes/auth/helpers/set-user-session";
+import getGithubUser from "./helpers/get-github-user";
+import setUserSession from "./helpers/set-user-session";
 
 const app = new Hono()
   .get("/", async (c) => {
@@ -64,8 +64,7 @@ const app = new Hono()
             .update(User)
             .set({ githubId: githubUser.id })
             .where(eq(User.id, existingUser.id));
-
-          setUserSession(c, existingUser.id);
+          await setUserSession(c, existingUser.id);
           return c.redirect("/");
         }
 
@@ -83,7 +82,7 @@ const app = new Hono()
           .returning()
           .then((rows) => rows[0]);
 
-        setUserSession(c, user.id);
+        await setUserSession(c, user.id);
         return c.redirect("/");
       } catch (e) {
         console.error(e);
