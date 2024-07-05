@@ -7,8 +7,9 @@ export default async function seed() {
     .insert(User)
     .values({
       id: generateId(),
+      email: "rileypaul96@gmail.com",
       githubId: 71047303,
-      username: "rjp301",
+      githubUsername: "rjp301",
       name: "Riley Paul",
       avatarUrl: "https://avatars.githubusercontent.com/u/71047303?v=4",
     })

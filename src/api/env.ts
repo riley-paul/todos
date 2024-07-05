@@ -5,7 +5,7 @@ const envSchema = z.object({
   GITHUB_CLIENT_SECRET: z.string(),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
-  GOOGLE_REDIRECT_URI: z.string(),
+  PUBLIC_URL: z.string(),
   PROD: z.coerce.boolean().default(false),
 });
 

@@ -9,11 +9,14 @@ import { luciaToHonoCookieAttributes } from "@/api/helpers/cookie-attributes";
 import { User, db, eq } from "astro:db";
 import { generateId } from "../../helpers/generate-id";
 import env from "@/api/env";
+import getGithubUser from "@/api/helpers/get-github-user";
 
 const app = new Hono()
   .get("/", async (c) => {
     const state = generateState();
-    const url = await github.createAuthorizationURL(state);
+    const url = await github.createAuthorizationURL(state, {
+      scopes: ["user:email"],
+    });
 
     setCookie(c, "github_oauth_state", state, {
       path: "/",
@@ -48,21 +51,21 @@ const app = new Hono()
 
       try {
         const tokens = await github.validateAuthorizationCode(code);
-        const githubUserResponse = await fetch("https://api.github.com/user", {
-          headers: {
-            Authorization: `Bearer ${tokens.accessToken}`,
-          },
-        });
-        const githubUser: GitHubUser = await githubUserResponse.json();
+        const githubUser = await getGithubUser(tokens.accessToken);
 
         // Replace this with your own DB client.
         const existingUser = await db
           .select()
           .from(User)
-          .where(eq(User.githubId, githubUser.id))
+          .where(eq(User.email, githubUser.email))
           .then((rows) => rows[0]);
 
         if (existingUser) {
+          await db
+            .update(User)
+            .set({ githubId: githubUser.id })
+            .where(eq(User.id, existingUser.id));
+
           const session = await lucia.createSession(existingUser.id, {});
           const sessionCookie = lucia.createSessionCookie(session.id);
           setCookie(
@@ -79,8 +82,9 @@ const app = new Hono()
           .insert(User)
           .values({
             id: generateId(),
+            email: githubUser.email,
             githubId: githubUser.id,
-            username: githubUser.login,
+            githubUsername: githubUser.login,
             name: githubUser.name,
             avatarUrl: githubUser.avatar_url,
           })
@@ -105,12 +109,5 @@ const app = new Hono()
       }
     },
   );
-
-interface GitHubUser {
-  id: number;
-  login: string;
-  name: string;
-  avatar_url: string;
-}
 
 export default app;

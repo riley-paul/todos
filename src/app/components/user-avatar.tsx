@@ -112,7 +112,7 @@ const UserAvatar: React.FC = () => {
             </Avatar>
             <div className="flex flex-col justify-center">
               <h2 className="text-lg font-semibold">{user.name}</h2>
-              <p className="text-sm text-muted-foreground">{user.username}</p>
+              <p className="text-sm text-muted-foreground">{user.email}</p>
             </div>
           </div>
           <DropdownMenuSeparator />

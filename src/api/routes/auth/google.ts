@@ -15,7 +15,9 @@ const app = new Hono()
     const state = generateState();
     const codeVerifier = generateCodeVerifier();
 
-    const url: URL = await google.createAuthorizationURL(state, codeVerifier);
+    const url: URL = await google.createAuthorizationURL(state, codeVerifier, {
+      scopes: ["email", "profile"],
+    });
 
     setCookie(c, "google_oauth_state", state, {
       path: "/",
