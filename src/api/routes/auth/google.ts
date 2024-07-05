@@ -9,6 +9,7 @@ import { luciaToHonoCookieAttributes } from "@/api/helpers/cookie-attributes";
 import { User, db, eq } from "astro:db";
 import { generateId } from "../../helpers/generate-id";
 import env from "@/api/env";
+import getGoogleUser from "@/api/helpers/get-google-user";
 
 const app = new Hono()
   .get("/", async (c) => {
@@ -66,21 +67,13 @@ const app = new Hono()
           google_oauth_code_verifier,
         );
 
-        console.log("tokens", tokens);
+        const googleUser = await getGoogleUser(tokens.accessToken);
 
-        // const githubUserResponse = await fetch("https://api.github.com/user", {
-        //   headers: {
-        //     Authorization: `Bearer ${tokens.accessToken}`,
-        //   },
-        // });
-        // const githubUser: GitHubUser = await githubUserResponse.json();
-
-        // // Replace this with your own DB client.
-        // const existingUser = await db
-        //   .select()
-        //   .from(User)
-        //   .where(eq(User.githubId, githubUser.id))
-        //   .then((rows) => rows[0]);
+        const existingUser = await db
+          .select()
+          .from(User)
+          .where(eq(User.email, googleUser.email))
+          .then((rows) => rows[0]);
 
         // if (existingUser) {
         //   const session = await lucia.createSession(existingUser.id, {});

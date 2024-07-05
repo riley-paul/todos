@@ -1,15 +1,15 @@
 import { Hono } from "hono";
 import { generateState } from "arctic";
 import { setCookie } from "hono/cookie";
-import { github, lucia } from "@/api/lib/lucia";
+import { github } from "@/api/lib/lucia";
 import { OAuth2RequestError } from "arctic";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { luciaToHonoCookieAttributes } from "@/api/helpers/cookie-attributes";
 import { User, db, eq } from "astro:db";
 import { generateId } from "../../helpers/generate-id";
 import env from "@/api/env";
 import getGithubUser from "@/api/helpers/get-github-user";
+import setUserSession from "@/api/helpers/set-user-session";
 
 const app = new Hono()
   .get("/", async (c) => {
@@ -53,7 +53,6 @@ const app = new Hono()
         const tokens = await github.validateAuthorizationCode(code);
         const githubUser = await getGithubUser(tokens.accessToken);
 
-        // Replace this with your own DB client.
         const existingUser = await db
           .select()
           .from(User)
@@ -66,14 +65,7 @@ const app = new Hono()
             .set({ githubId: githubUser.id })
             .where(eq(User.id, existingUser.id));
 
-          const session = await lucia.createSession(existingUser.id, {});
-          const sessionCookie = lucia.createSessionCookie(session.id);
-          setCookie(
-            c,
-            sessionCookie.name,
-            sessionCookie.value,
-            luciaToHonoCookieAttributes(sessionCookie.attributes),
-          );
+          setUserSession(c, existingUser.id);
           return c.redirect("/");
         }
 
@@ -91,14 +83,7 @@ const app = new Hono()
           .returning()
           .then((rows) => rows[0]);
 
-        const session = await lucia.createSession(user.id, {});
-        const sessionCookie = lucia.createSessionCookie(session.id);
-        setCookie(
-          c,
-          sessionCookie.name,
-          sessionCookie.value,
-          luciaToHonoCookieAttributes(sessionCookie.attributes),
-        );
+        setUserSession(c, user.id);
         return c.redirect("/");
       } catch (e) {
         console.error(e);

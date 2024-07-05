@@ -4,8 +4,12 @@ const User = defineTable({
   columns: {
     id: column.text({ primaryKey: true }),
     email: column.text({ unique: true }),
-    githubId: column.number({ unique: true }),
-    githubUsername: column.text({ unique: true }),
+
+    githubId: column.number({ unique: true, optional: true }),
+    githubUsername: column.text({ unique: true, optional: true }),
+
+    googleId: column.text({ unique: true, optional: true }),
+
     name: column.text(),
     avatarUrl: column.text(),
     createdAt: column.text({ default: NOW }),
