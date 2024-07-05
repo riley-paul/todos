@@ -9,7 +9,7 @@ import { luciaToHonoCookieAttributes } from "@/api/helpers/cookie-attributes";
 import { User, db, eq } from "astro:db";
 import { generateId } from "../../helpers/generate-id";
 import env from "@/api/env";
-import getGoogleUser from "@/api/helpers/get-google-user";
+import getGoogleUser from "@/api/routes/auth/helpers/get-google-user";
 
 const app = new Hono()
   .get("/", async (c) => {

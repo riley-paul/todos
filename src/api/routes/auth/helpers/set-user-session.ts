@@ -1,7 +1,7 @@
 import type { Context } from "hono";
-import { lucia } from "../lib/lucia";
+import { lucia } from "../../../lib/lucia";
 import { setCookie } from "hono/cookie";
-import { luciaToHonoCookieAttributes } from "./cookie-attributes";
+import { luciaToHonoCookieAttributes } from "../../../helpers/cookie-attributes";
 
 export default async function setUserSession(c: Context, userId: string) {
   const session = await lucia.createSession(userId, {});

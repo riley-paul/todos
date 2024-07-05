@@ -8,8 +8,8 @@ import { z } from "zod";
 import { User, db, eq } from "astro:db";
 import { generateId } from "../../helpers/generate-id";
 import env from "@/api/env";
-import getGithubUser from "@/api/helpers/get-github-user";
-import setUserSession from "@/api/helpers/set-user-session";
+import getGithubUser from "@/api/routes/auth/helpers/get-github-user";
+import setUserSession from "@/api/routes/auth/helpers/set-user-session";
 
 const app = new Hono()
   .get("/", async (c) => {
