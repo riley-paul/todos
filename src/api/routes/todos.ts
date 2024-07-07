@@ -13,16 +13,10 @@ const app = new Hono()
   .use(authMiddleware)
   .get(
     "/",
-    zValidator(
-      "query",
-      z.object({
-        tag: z.string().optional(),
-      }),
-    ),
+    zValidator("query", z.object({ tag: z.string().optional() })),
     async (c) => {
       const userId = c.get("user").id;
-      const { tag = "" } = c.req.valid("query");
-
+      const { tag } = c.req.valid("query");
       const todos = await db
         .select()
         .from(Todo)
@@ -77,64 +71,43 @@ const app = new Hono()
     return c.json(todo);
   })
 
-  .post(
-    "/update",
-    zValidator(
-      "json",
-      z.object({ id: validIdSchema(Todo), data: todoUpdateSchema }),
-    ),
+  .patch(
+    "/:id",
+    zValidator("json", todoUpdateSchema),
+    zValidator("param", z.object({ id: validIdSchema(Todo) })),
     async (c) => {
-      const { id, data } = c.req.valid("json");
-      const matchingIds = await db.select().from(Todo).where(eq(Todo.id, id));
-      if (matchingIds.length === 0) {
-        return c.notFound();
-      }
+      const userId = c.get("user").id;
+      const { id } = c.req.valid("param");
+      const data = c.req.valid("json");
       const todo = await db
         .update(Todo)
         .set(data)
-        .where(eq(Todo.id, id))
+        .where(and(eq(Todo.id, id), eq(Todo.userId, userId)))
         .returning();
       return c.json(todo);
     },
   )
-  .post(
-    "/toggle-complete",
-    zValidator(
-      "json",
-      z.object({ id: validIdSchema(Todo), complete: z.boolean() }),
-    ),
+
+  .delete(
+    "/:id",
+    zValidator("param", z.object({ id: validIdSchema(Todo) })),
     async (c) => {
-      const { id, complete } = c.req.valid("json");
-      const matchingIds = await db.select().from(Todo).where(eq(Todo.id, id));
-      if (matchingIds.length === 0) {
-        return c.notFound();
-      }
+      const userId = c.get("user").id;
+      const { id } = c.req.valid("param");
       await db
         .update(Todo)
-        .set({ isCompleted: complete })
-        .where(eq(Todo.id, id));
+        .set({ isDeleted: true })
+        .where(and(eq(Todo.id, id), eq(Todo.userId, userId)));
       return c.json({ success: true });
     },
   )
 
-  .post(
-    "/delete",
-    zValidator("json", z.object({ id: validIdSchema(Todo) })),
-    async (c) => {
-      const { id } = c.req.valid("json");
-      const matchingIds = await db.select().from(Todo).where(eq(Todo.id, id));
-      if (matchingIds.length === 0) {
-        return c.notFound();
-      }
-      await db.update(Todo).set({ isDeleted: true }).where(eq(Todo.id, id));
-      return c.json({ success: true });
-    },
-  )
-  .post("/delete-completed", async (c) => {
+  .delete("/completed", async (c) => {
+    const userId = c.get("user").id;
     await db
       .update(Todo)
       .set({ isDeleted: true })
-      .where(eq(Todo.isCompleted, true));
+      .where(and(eq(Todo.isCompleted, true), eq(Todo.userId, userId)));
     return c.json({ success: true });
   });
 

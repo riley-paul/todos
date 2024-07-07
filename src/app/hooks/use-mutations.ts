@@ -49,7 +49,10 @@ export default function useMutations() {
   const completeTodo = useMutation({
     mutationFn: async (props: { id: string; complete: boolean }) => {
       const { id, complete } = props;
-      await api.todos["toggle-complete"].$post({ json: { id, complete } });
+      await api.todos[":id"].$patch({
+        json: { isCompleted: complete },
+        param: { id },
+      });
     },
     onSuccess: () => {
       invalidateQueries([todosQueryKey, tagsQueryKey]);
@@ -60,7 +63,7 @@ export default function useMutations() {
   const deleteTodo = useMutation({
     mutationFn: async (props: { id: string }) => {
       const { id } = props;
-      await api.todos.delete.$post({ json: { id } });
+      await api.todos[":id"].$delete({ param: { id } });
     },
     onSuccess: () => {
       invalidateQueries([todosQueryKey, tagsQueryKey]);
@@ -69,7 +72,7 @@ export default function useMutations() {
   });
 
   const deleteCompleted = useMutation({
-    mutationFn: () => api.todos["delete-completed"].$post(),
+    mutationFn: () => api.todos.completed.$delete(),
     onSuccess: () => {
       invalidateQueries([todosQueryKey, tagsQueryKey]);
     },
