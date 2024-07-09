@@ -87,5 +87,23 @@ export default function useMutations() {
     onError,
   });
 
-  return { logout, completeTodo, deleteTodo, deleteCompleted, createTodo };
+  const updateTodo = useMutation({
+    mutationFn: async (props: { id: string; text: string }) => {
+      const { id, text } = props;
+      await api.todos[":id"].$patch({ json: { text }, param: { id } });
+    },
+    onSuccess: () => {
+      invalidateQueries([todosQueryKey, tagsQueryKey]);
+    },
+    onError,
+  });
+
+  return {
+    logout,
+    completeTodo,
+    deleteTodo,
+    deleteCompleted,
+    createTodo,
+    updateTodo,
+  };
 }

@@ -9,6 +9,11 @@ import { validIdSchema } from "../lib/validators";
 const todoCreateSchema = z.custom<Omit<typeof Todo.$inferInsert, "userId">>();
 const todoUpdateSchema = z.custom<Partial<typeof Todo.$inferInsert>>();
 
+const todoIdValidator = zValidator(
+  "param",
+  z.object({ id: validIdSchema(Todo) }),
+);
+
 const app = new Hono()
   .use(authMiddleware)
   .get(
@@ -74,7 +79,7 @@ const app = new Hono()
   .patch(
     "/:id",
     zValidator("json", todoUpdateSchema),
-    zValidator("param", z.object({ id: validIdSchema(Todo) })),
+    todoIdValidator,
     async (c) => {
       const userId = c.get("user").id;
       const { id } = c.req.valid("param");
@@ -88,19 +93,15 @@ const app = new Hono()
     },
   )
 
-  .delete(
-    "/:id",
-    zValidator("param", z.object({ id: validIdSchema(Todo) })),
-    async (c) => {
-      const userId = c.get("user").id;
-      const { id } = c.req.valid("param");
-      await db
-        .update(Todo)
-        .set({ isDeleted: true })
-        .where(and(eq(Todo.id, id), eq(Todo.userId, userId)));
-      return c.json({ success: true });
-    },
-  )
+  .delete("/:id", todoIdValidator, async (c) => {
+    const userId = c.get("user").id;
+    const { id } = c.req.valid("param");
+    await db
+      .update(Todo)
+      .set({ isDeleted: true })
+      .where(and(eq(Todo.id, id), eq(Todo.userId, userId)));
+    return c.json({ success: true });
+  })
 
   .delete("/completed", async (c) => {
     const userId = c.get("user").id;
