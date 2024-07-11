@@ -27,7 +27,7 @@ const Hashtag: React.FC<Props> = (props) => {
     >
       <Badge
         variant="secondary"
-        className={cn(isActive && "outline outline-primary")}
+        className={cn(isActive && "outline outline-2 outline-primary")}
       >
         {hashtag}
       </Badge>
