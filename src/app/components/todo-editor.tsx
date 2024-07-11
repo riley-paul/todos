@@ -4,6 +4,7 @@ import AdvancedDialog from "./advanced-dialog";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import useMutations from "../hooks/use-mutations";
+import { Edit } from "lucide-react";
 
 type Props = {
   todo: TodoSelect;
@@ -24,13 +25,14 @@ const TodoEditor: React.FC<Props> = (props) => {
       setIsOpen={setIsOpen}
       title="Edit Todo"
       description="Change your mind?"
+      icon={Edit}
       footer={
         <>
-          <Button type="submit" form={formId}>
-            Submit
-          </Button>
           <Button onClick={() => setIsOpen(false)} variant="outline">
             Cancel
+          </Button>
+          <Button type="submit" form={formId}>
+            Submit
           </Button>
         </>
       }
