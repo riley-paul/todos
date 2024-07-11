@@ -47,7 +47,7 @@ const AdvancedDialog: React.FC<Props> = (props) => {
   if (isMobile) {
     return (
       <Drawer open={isOpen} onOpenChange={setIsOpen}>
-        <DrawerContent className="grid gap-4 px-6 pb-4">
+        <DrawerContent className="grid gap-4 px-6 pb-8">
           <Header {...props} />
           {children}
           {footer && (
