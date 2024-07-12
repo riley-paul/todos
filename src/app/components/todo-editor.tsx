@@ -47,10 +47,10 @@ const TodoEditor: React.FC<Props> = (props) => {
       >
         <Textarea
           className="bg-input/50"
+          rows={5}
           placeholder="What needs to be done?"
           value={todoText}
           onChange={(e) => setTodoText(e.target.value)}
-          onFocus={(e) => e.target.select()}
         />
         <input type="hidden" />
       </form>
