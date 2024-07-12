@@ -1,14 +1,10 @@
 ---
 import App from "@/app/main";
 import "@/globals.css";
-import { ThemeListener } from "@/app/lib/theme/theme-listener";
-import { cn } from "@/app/lib/utils.ts";
 import "@fontsource-variable/inter";
-
-const theme = Astro.cookies.get("theme")?.value;
 ---
 
-<html lang="en" class={cn(theme === "dark" && "dark")}>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="favicon.ico" />
@@ -19,7 +15,6 @@ const theme = Astro.cookies.get("theme")?.value;
     <title>Todos</title>
   </head>
   <body>
-    <ThemeListener client:load />
     <App client:load />
   </body>
 </html>

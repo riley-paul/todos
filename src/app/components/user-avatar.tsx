@@ -5,8 +5,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
@@ -20,10 +18,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/app/components/ui/alert-dialog";
-import { useThemeStore, type Theme } from "@/app/lib/theme/theme-store";
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/app/lib/queries";
-import { Laptop, LogIn, LogOut, Moon, Sun, Trash, User } from "lucide-react";
+import { LogIn, LogOut, Trash, User } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { cn } from "../lib/utils";
 import { buttonVariants } from "./ui/button";
@@ -59,10 +56,8 @@ const AccountDeletionConfirm: React.FC<DialogProps> = (props) => {
 
 const UserAvatar: React.FC = () => {
   const [accountDeletionOpen, setAccountDeletionOpen] = React.useState(false);
-  const { theme, setTheme } = useThemeStore();
 
   const userQuery = useQuery(userQueryOptions);
-
   const { logout } = useMutations();
 
   if (userQuery.isLoading) {
@@ -115,25 +110,6 @@ const UserAvatar: React.FC = () => {
               <p className="text-sm text-muted-foreground">{user.email}</p>
             </div>
           </div>
-          <DropdownMenuSeparator />
-          <DropdownMenuLabel>Theme</DropdownMenuLabel>
-          <DropdownMenuRadioGroup
-            value={theme}
-            onValueChange={(v) => setTheme(v as Theme)}
-          >
-            <DropdownMenuRadioItem value="light">
-              <Sun size="1rem" className="mr-2" />
-              <span>Light</span>
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="dark">
-              <Moon size="1rem" className="mr-2" />
-              <span>Dark</span>
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="system">
-              <Laptop size="1rem" className="mr-2" />
-              <span>System</span>
-            </DropdownMenuRadioItem>
-          </DropdownMenuRadioGroup>
           <DropdownMenuSeparator />
           <DropdownMenuLabel>Account Settings</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => setAccountDeletionOpen(true)}>
