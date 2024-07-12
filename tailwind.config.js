@@ -16,7 +16,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inconsolata Variable', ...defaultTheme.fontFamily.mono],
+        sans: ['Inter Variable', ...defaultTheme.fontFamily.sans],
       },
       colors: {
         border: "hsl(var(--border))",
