@@ -6,7 +6,7 @@ import DeleteButton from "./ui/delete-button";
 import { Check, Loader2 } from "lucide-react";
 import useMutations from "../hooks/use-mutations";
 import { Link } from "@tanstack/react-router";
-import type { TodoSelect } from "@/api/lib/types";
+import type { TodoSelect } from "@/lib/types";
 import TodoEditor from "./todo-editor";
 
 interface Props {
@@ -15,7 +15,7 @@ interface Props {
 
 const TodoItem: React.FC<Props> = (props) => {
   const { todo } = props;
-  const { deleteTodo, completeTodo } = useMutations();
+  const { deleteTodo, updateTodo } = useMutations();
 
   const [editorOpen, setEditorOpen] = React.useState(false);
 
@@ -33,12 +33,15 @@ const TodoItem: React.FC<Props> = (props) => {
           className="rounded-full"
           variant={todo.isCompleted ? "secondary" : "ghost"}
           size="icon"
-          disabled={completeTodo.isPending}
+          disabled={updateTodo.isPending}
           onClick={() =>
-            completeTodo.mutate({ id: todo.id, complete: !todo.isCompleted })
+            updateTodo.mutate({
+              id: todo.id,
+              data: { isCompleted: !todo.isCompleted },
+            })
           }
         >
-          {completeTodo.isPending ? (
+          {updateTodo.isPending ? (
             <Loader2 size="1rem" className="animate-spin" />
           ) : (
             <Check size="1rem" />

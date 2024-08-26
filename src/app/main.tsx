@@ -1,10 +1,13 @@
 import React from "react";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
-import { queryClient } from "./lib/client";
 import ErrorPage from "./components/error-page";
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
+});
 
 const router = createRouter({
   routeTree,

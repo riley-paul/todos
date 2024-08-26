@@ -1,13 +1,28 @@
 import { defineAction, z } from "astro:actions";
 import { isAuthorized } from "./_helpers";
-import { and, db, eq, like, Todo } from "astro:db";
+import { and, asc, db, desc, eq, like, Todo } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 
+const todoUpdateSchema = z.custom<Partial<typeof Todo.$inferInsert>>();
+
 export const getTodos = defineAction({
-  handler: async (_, c) => {
+  input: z.object({
+    tag: z.string().optional(),
+  }),
+  handler: async ({ tag }, c) => {
     const userId = isAuthorized(c).id;
-    const todos = db.select().from(Todo).where(eq(Todo.userId, userId));
+    const todos = await db
+      .select()
+      .from(Todo)
+      .where(
+        and(
+          eq(Todo.isDeleted, false),
+          eq(Todo.userId, userId),
+          tag ? like(Todo.text, `%#${tag}%`) : undefined,
+        ),
+      )
+      .orderBy(asc(Todo.isCompleted), desc(Todo.createdAt));
     return todos;
   },
 });
@@ -46,13 +61,13 @@ export const getHashtags = defineAction({
 
 export const createTodo = defineAction({
   input: z.object({
-    text: z.string(),
+    data: todoUpdateSchema,
   }),
-  handler: async (input, c) => {
+  handler: async ({ data }, c) => {
     const userId = isAuthorized(c).id;
     const todo = await db
       .insert(Todo)
-      .values({ ...input, userId, id: uuid() })
+      .values({ id: uuid(), text: "", ...data, userId })
       .returning();
     return todo;
   },
@@ -88,5 +103,17 @@ export const deleteTodo = defineAction({
       .returning()
       .then((rows) => rows[0]);
     return todo;
+  },
+});
+
+export const deleteCompletedTodos = defineAction({
+  handler: async (_, c) => {
+    const userId = isAuthorized(c).id;
+    const todos = await db
+      .update(Todo)
+      .set({ isDeleted: true })
+      .where(and(eq(Todo.isCompleted, true), eq(Todo.userId, userId)))
+      .returning();
+    return todos;
   },
 });

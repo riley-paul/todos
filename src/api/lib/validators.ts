@@ -1,6 +1,6 @@
 import { db, eq } from "astro:db";
 import { z } from "zod";
-import type { TableUnion } from "./types";
+import type { TableUnion } from "../../lib/types";
 
 export const validIdSchema = (table: TableUnion) =>
   z.string().refine(async (value) => {

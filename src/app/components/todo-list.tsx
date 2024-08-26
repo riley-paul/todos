@@ -56,7 +56,7 @@ const TodoList: React.FC = () => {
               className="w-full"
               variant="secondary"
               size="lg"
-              onClick={() => deleteCompleted.mutate()}
+              onClick={() => deleteCompleted.mutate({})}
               disabled={deleteCompleted.isPending}
             >
               Delete Completed

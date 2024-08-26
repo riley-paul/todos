@@ -11,7 +11,7 @@ export default function Adder(): ReturnType<React.FC> {
 
   const create = () => {
     if (value) {
-      createTodo.mutate(value);
+      createTodo.mutate({ data: { text: value } });
       setValue("");
       inputRef.current?.focus();
     }

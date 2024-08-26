@@ -1,5 +1,5 @@
 import React from "react";
-import type { TodoSelect } from "@/api/lib/types";
+import type { TodoSelect } from "@/lib/types";
 import AdvancedDialog from "./advanced-dialog";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
@@ -41,7 +41,10 @@ const TodoEditor: React.FC<Props> = (props) => {
         id={formId}
         onSubmit={async (e) => {
           e.preventDefault();
-          await updateTodo.mutateAsync({ id: todo.id, text: todoText });
+          await updateTodo.mutateAsync({
+            id: todo.id,
+            data: { text: todoText },
+          });
           setIsOpen(false);
         }}
       >

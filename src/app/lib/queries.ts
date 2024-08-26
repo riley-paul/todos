@@ -5,7 +5,7 @@ import { actions } from "astro:actions";
 export const todosQueryOptions = (tag?: string) =>
   queryOptions({
     queryKey: ["todos", tag],
-    queryFn: () => actions.getTodos().then((res) => res.data),
+    queryFn: () => actions.getTodos({ tag }).then((res) => res.data),
   });
 
 export const hashtagQueryOptions = queryOptions({

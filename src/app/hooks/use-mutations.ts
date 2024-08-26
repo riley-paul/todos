@@ -3,11 +3,11 @@ import {
   useQueryClient,
   type QueryKey,
 } from "@tanstack/react-query";
-import { api } from "../lib/client";
 import { hashtagQueryOptions, todosQueryOptions } from "../lib/queries";
 import { toast } from "sonner";
 import React from "react";
 import { useSearch } from "@tanstack/react-router";
+import { actions } from "astro:actions";
 
 export default function useMutations() {
   const client = useQueryClient();
@@ -26,14 +26,8 @@ export default function useMutations() {
     queryKeys.forEach((queryKey) => client.invalidateQueries({ queryKey }));
   };
 
-  const completeTodo = useMutation({
-    mutationFn: async (props: { id: string; complete: boolean }) => {
-      const { id, complete } = props;
-      await api.todos[":id"].$patch({
-        json: { isCompleted: complete },
-        param: { id },
-      });
-    },
+  const updateTodo = useMutation({
+    mutationFn: actions.updateTodo,
     onSuccess: () => {
       invalidateQueries([todosQueryKey, tagsQueryKey]);
     },
@@ -41,10 +35,7 @@ export default function useMutations() {
   });
 
   const deleteTodo = useMutation({
-    mutationFn: async (props: { id: string }) => {
-      const { id } = props;
-      await api.todos[":id"].$delete({ param: { id } });
-    },
+    mutationFn: actions.deleteTodo,
     onSuccess: () => {
       invalidateQueries([todosQueryKey, tagsQueryKey]);
     },
@@ -52,7 +43,7 @@ export default function useMutations() {
   });
 
   const deleteCompleted = useMutation({
-    mutationFn: () => api.todos.completed.$delete(),
+    mutationFn: actions.deleteCompletedTodos,
     onSuccess: () => {
       invalidateQueries([todosQueryKey, tagsQueryKey]);
     },
@@ -60,18 +51,7 @@ export default function useMutations() {
   });
 
   const createTodo = useMutation({
-    mutationFn: (text: string) => api.todos.$post({ json: { text } }),
-    onSuccess: () => {
-      invalidateQueries([todosQueryKey, tagsQueryKey]);
-    },
-    onError,
-  });
-
-  const updateTodo = useMutation({
-    mutationFn: async (props: { id: string; text: string }) => {
-      const { id, text } = props;
-      await api.todos[":id"].$patch({ json: { text }, param: { id } });
-    },
+    mutationFn: actions.createTodo,
     onSuccess: () => {
       invalidateQueries([todosQueryKey, tagsQueryKey]);
     },
@@ -79,10 +59,9 @@ export default function useMutations() {
   });
 
   return {
-    completeTodo,
+    updateTodo,
     deleteTodo,
     deleteCompleted,
     createTodo,
-    updateTodo,
   };
 }
