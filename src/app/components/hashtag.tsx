@@ -16,14 +16,10 @@ const Hashtag: React.FC<Props> = (props) => {
   return (
     <Link
       to="/"
-      search={(prev) => {
-        const isActive = prev.tag === hashtag;
-        if (isActive) {
-          return { ...prev, tag: undefined };
-        }
-
-        return { ...prev, tag: hashtag };
-      }}
+      search={(prev) => ({
+        ...prev,
+        tag: prev.tag === hashtag ? undefined : hashtag,
+      })}
     >
       <Badge
         variant="secondary"

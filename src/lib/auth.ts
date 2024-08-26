@@ -39,5 +39,5 @@ export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET);
 export const google = new Google(
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
-  import.meta.env.site + "/login/google/callback",
+  import.meta.env.SITE + "/login/google/callback",
 );

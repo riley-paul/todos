@@ -12,6 +12,9 @@ const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 // https://astro.build/config
 export default defineConfig({
   prefetch: true,
+  site: import.meta.env.PROD
+    ? "https://todos.rileys-projects.com"
+    : "http://localhost:4321",
   integrations: [
     tailwind({
       applyBaseStyles: false,
