@@ -7,8 +7,8 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { User, db, eq } from "astro:db";
 import { generateId } from "@/api/helpers/generate-id";
-import getGoogleUser from "./helpers/get-google-user";
-import setUserSession from "./helpers/set-user-session";
+import getGoogleUser from "../../../lib/helpers/get-google-user";
+import setUserSession from "../../../lib/helpers/set-user-session";
 
 const app = new Hono()
   .get("/", async (c) => {

@@ -11,14 +11,14 @@ const authProviders: Record<
 > = {
   github: {
     name: "GitHub",
-    url: "/api/auth/login/github",
+    url: "/login/github",
     icon: <FaGithub className="mr-2 h-5 w-5" />,
     className:
       "bg-gray-900 text-white hover:bg-gray-800 border border-gray-700 shadow",
   },
   google: {
     name: "Google",
-    url: "/api/auth/login/google",
+    url: "/login/google",
     icon: <FcGoogle className="mr-2 h-5 w-5" />,
     className:
       "bg-white text-black hover:bg-gray-100 shadow border border-gray-300",
