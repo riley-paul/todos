@@ -24,7 +24,6 @@ import { LogIn, LogOut, Trash, User } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { cn } from "../lib/utils";
 import { buttonVariants } from "./ui/button";
-import useMutations from "../hooks/use-mutations";
 
 interface DialogProps {
   isOpen: boolean;
@@ -58,7 +57,6 @@ const UserAvatar: React.FC = () => {
   const [accountDeletionOpen, setAccountDeletionOpen] = React.useState(false);
 
   const userQuery = useQuery(userQueryOptions);
-  const { logout } = useMutations();
 
   if (userQuery.isLoading) {
     return null;
@@ -116,10 +114,12 @@ const UserAvatar: React.FC = () => {
             <Trash size="1rem" className="mr-2" />
             <span>Delete Account</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => logout.mutate()}>
-            <LogOut size="1rem" className="mr-2" />
-            <span>Logout</span>
-          </DropdownMenuItem>
+          <a href="/logout">
+            <DropdownMenuItem>
+              <LogOut size="1rem" className="mr-2" />
+              <span>Logout</span>
+            </DropdownMenuItem>
+          </a>
         </DropdownMenuContent>
       </DropdownMenu>
     </>

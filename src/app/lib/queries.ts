@@ -1,14 +1,11 @@
 import { queryOptions } from "@tanstack/react-query";
 import { api } from "./client";
+import { actions } from "astro:actions";
 
 export const todosQueryOptions = (tag?: string) =>
   queryOptions({
     queryKey: ["todos", tag],
-    queryFn: async () => {
-      const res = await api.todos.$get({ query: { tag } });
-      if (!res.ok) throw new Error(res.statusText);
-      return res.json();
-    },
+    queryFn: () => actions.getTodos().then((res) => res.data),
   });
 
 export const hashtagQueryOptions = queryOptions({
@@ -23,9 +20,5 @@ export const hashtagQueryOptions = queryOptions({
 export const userQueryOptions = queryOptions({
   queryKey: ["profile"],
   retry: false,
-  queryFn: async () => {
-    const res = await api.auth.me.$get();
-    if (!res.ok) return null;
-    return await res.json();
-  },
+  queryFn: () => actions.getMe().then((res) => res.data),
 });
