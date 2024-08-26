@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { generateState } from "arctic";
 import { setCookie } from "hono/cookie";
-import { github } from "@/api/lib/lucia";
+import { github } from "@/lib/auth";
 import { OAuth2RequestError } from "arctic";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";

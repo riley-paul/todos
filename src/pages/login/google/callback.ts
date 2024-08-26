@@ -1,4 +1,4 @@
-import { google } from "@/api/lib/lucia";
+import { google } from "@/lib/auth";
 import { OAuth2RequestError } from "arctic";
 
 import type { APIContext } from "astro";

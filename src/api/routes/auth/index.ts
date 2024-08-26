@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { setCookie } from "hono/cookie";
-import { lucia } from "@/api/lib/lucia";
+import { lucia } from "@/lib/auth";
 import { luciaToHonoCookieAttributes } from "@/api/helpers/cookie-attributes";
 import authMiddleware from "@/api/helpers/auth-middleware";
 import { Todo, User, UserSession, db, eq } from "astro:db";

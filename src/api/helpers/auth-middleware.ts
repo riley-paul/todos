@@ -1,7 +1,7 @@
 import { createMiddleware } from "hono/factory";
 import { verifyRequestOrigin, type Session } from "lucia";
 import { getCookie, setCookie } from "hono/cookie";
-import { lucia } from "@/api/lib/lucia";
+import { lucia } from "@/lib/auth";
 import { luciaToHonoCookieAttributes } from "./cookie-attributes";
 import type { User } from "lucia";
 

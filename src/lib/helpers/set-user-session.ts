@@ -1,5 +1,5 @@
 import type { APIContext } from "astro";
-import { lucia } from "../../api/lib/lucia";
+import { lucia } from "../auth";
 
 export default async function setUserSession(
   context: APIContext,

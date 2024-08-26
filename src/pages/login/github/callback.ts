@@ -1,4 +1,4 @@
-import { github } from "@/api/lib/lucia";
+import { github } from "@/lib/auth";
 import { OAuth2RequestError } from "arctic";
 
 import type { APIContext } from "astro";
