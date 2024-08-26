@@ -15,13 +15,7 @@ export default defineConfig({
   site: import.meta.env.PROD
     ? "https://todos.rileys-projects.com"
     : "http://localhost:4321",
-  integrations: [
-    tailwind({
-      applyBaseStyles: false,
-    }),
-    react(),
-    db(),
-  ],
+  integrations: [tailwind({ applyBaseStyles: false }), react(), db()],
   vite: {
     plugins: [
       TanStackRouterVite({
@@ -36,12 +30,8 @@ export default defineConfig({
     },
   },
   output: "server",
-  adapter: node({
-    mode: "standalone",
-  }),
-  security: {
-    checkOrigin: true,
-  },
+  adapter: node({ mode: "standalone" }),
+  security: { checkOrigin: true },
   experimental: {
     actions: true,
     env: {
