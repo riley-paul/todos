@@ -4,13 +4,14 @@ import {
   createFileRoute,
   redirect,
 } from "@tanstack/react-router";
-import { queryClient } from "../lib/client";
 import UserAvatar from "../components/user-avatar";
 import { userQueryOptions } from "../lib/queries";
 import { CircleCheckBig } from "lucide-react";
 
 export const Route = createFileRoute("/_app")({
-  beforeLoad: async ({ location }) => {
+  beforeLoad: async ({ location, context }) => {
+    // @ts-ignore
+    const { queryClient } = context;
     const me = await queryClient.ensureQueryData(userQueryOptions);
     if (!me) {
       throw redirect({

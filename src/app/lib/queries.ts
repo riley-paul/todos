@@ -1,5 +1,4 @@
 import { queryOptions } from "@tanstack/react-query";
-import { api } from "./client";
 import { actions } from "astro:actions";
 
 export const todosQueryOptions = (tag?: string) =>
@@ -10,11 +9,7 @@ export const todosQueryOptions = (tag?: string) =>
 
 export const hashtagQueryOptions = queryOptions({
   queryKey: ["hashtags"],
-  queryFn: async () => {
-    const res = await api.todos.hashtags.$get();
-    if (!res.ok) throw new Error(res.statusText);
-    return res.json();
-  },
+  queryFn: () => actions.getHashtags().then((res) => res.data),
 });
 
 export const userQueryOptions = queryOptions({
