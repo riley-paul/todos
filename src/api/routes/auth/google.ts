@@ -7,7 +7,6 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { User, db, eq } from "astro:db";
 import { generateId } from "@/api/helpers/generate-id";
-import env from "@/api/env";
 import getGoogleUser from "./helpers/get-google-user";
 import setUserSession from "./helpers/set-user-session";
 
@@ -22,14 +21,14 @@ const app = new Hono()
 
     setCookie(c, "google_oauth_state", state, {
       path: "/",
-      secure: env.PROD,
+      secure: Boolean(import.meta.env.PROD),
       httpOnly: true,
       maxAge: 60 * 10, // 10 min
     });
 
     setCookie(c, "google_oauth_code_verifier", codeVerifier, {
       path: "/",
-      secure: env.PROD,
+      secure: Boolean(import.meta.env.PROD),
       httpOnly: true,
       maxAge: 60 * 10, // 10 min
     });

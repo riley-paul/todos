@@ -2,33 +2,64 @@ import path from "node:path";
 import url from "node:url";
 import react from "@astrojs/react";
 import vercel from "@astrojs/vercel/serverless";
-import { defineConfig } from "astro/config";
+import { defineConfig, envField } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import db from "@astrojs/db";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import node from "@astrojs/node";
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
-
 // https://astro.build/config
 export default defineConfig({
   prefetch: true,
-  integrations: [tailwind({
-    applyBaseStyles: false
-  }), react(), db()],
+  integrations: [
+    tailwind({
+      applyBaseStyles: false,
+    }),
+    react(),
+    db(),
+  ],
   vite: {
-    plugins: [TanStackRouterVite({
-      routesDirectory: "./src/app/routes",
-      generatedRouteTree: "./src/app/routeTree.gen.ts"
-    })],
+    plugins: [
+      TanStackRouterVite({
+        routesDirectory: "./src/app/routes",
+        generatedRouteTree: "./src/app/routeTree.gen.ts",
+      }),
+    ],
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "./src")
-      }
-    }
+        "@": path.resolve(__dirname, "./src"),
+      },
+    },
   },
   output: "server",
   adapter: node({
-    mode: "standalone"
-  })
+    mode: "standalone",
+  }),
+  security: {
+    checkOrigin: true,
+  },
+  experimental: {
+    actions: true,
+    env: {
+      schema: {
+        GITHUB_CLIENT_ID: envField.string({
+          context: "server",
+          access: "secret",
+        }),
+        GITHUB_CLIENT_SECRET: envField.string({
+          context: "server",
+          access: "secret",
+        }),
+        GOOGLE_CLIENT_ID: envField.string({
+          context: "server",
+          access: "secret",
+        }),
+        GOOGLE_CLIENT_SECRET: envField.string({
+          context: "server",
+          access: "secret",
+        }),
+      },
+    },
+  },
 });
