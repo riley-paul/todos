@@ -1,16 +1,12 @@
 import type React from "react";
 
-import { Button } from "./ui/button";
 import TodoItem from "./todo";
 import { useQuery } from "@tanstack/react-query";
 import { todosQueryOptions } from "@/app/lib/queries";
 import { Skeleton } from "./ui/skeleton";
-import useMutations from "../hooks/use-mutations";
 import { useSearch } from "@tanstack/react-router";
 
 const TodoList: React.FC = () => {
-  const { deleteCompleted } = useMutations();
-
   const { tag } = useSearch({ from: "/_app/" });
   const todosQuery = useQuery(todosQueryOptions(tag));
 
@@ -20,7 +16,7 @@ const TodoList: React.FC = () => {
     return (
       <div className="flex flex-col gap-2">
         {new Array(3).fill(null).map((_, i) => (
-          <Skeleton key={i} className="h-12 w-full" />
+          <Skeleton key={i} className="h-[58px] w-full" />
         ))}
       </div>
     );
@@ -43,26 +39,10 @@ const TodoList: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-2 overflow-auto">
-        {todos.map((todo) => (
-          <TodoItem key={todo.id} todo={todo} />
-        ))}
-      </div>
-      {todosQuery.isSuccess &&
-        todos.filter((i) => i.isCompleted).length > 0 && (
-          <footer className="sticky bottom-0 z-40 bg-background py-4 pb-10">
-            <Button
-              className="w-full"
-              variant="secondary"
-              size="lg"
-              onClick={() => deleteCompleted.mutate({})}
-              disabled={deleteCompleted.isPending}
-            >
-              Delete Completed
-            </Button>
-          </footer>
-        )}
+    <div className="flex flex-col gap-2">
+      {todos.map((todo) => (
+        <TodoItem key={todo.id} todo={todo} />
+      ))}
     </div>
   );
 };
