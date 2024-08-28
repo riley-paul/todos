@@ -24,7 +24,7 @@ const TodoItem: React.FC<Props> = (props) => {
       <TodoEditor todo={todo} isOpen={editorOpen} setIsOpen={setEditorOpen} />
       <Card
         className={cn(
-          "flex items-center gap-2 rounded-md p-2 text-sm",
+          "flex items-center gap-2 rounded-md p-2 pr-4 text-sm",
           todo.isCompleted && "bg-card/50",
           deleteTodo.isPending && "opacity-50",
         )}

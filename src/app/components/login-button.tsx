@@ -36,14 +36,15 @@ const LoginButton: React.FC<Props> = (props) => {
   return (
     <a
       className={cn(
+        "relative",
         buttonVariants({ size: "lg", variant: "secondary" }),
         authProvider.className,
         className,
       )}
       href={authProvider.url}
     >
-      {authProvider.icon}
-      Login with {authProvider.name}
+      <span className="absolute left-6">{authProvider.icon}</span>
+      <span>Continue with {authProvider.name}</span>
     </a>
   );
 };

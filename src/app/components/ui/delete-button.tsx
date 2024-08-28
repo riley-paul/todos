@@ -1,5 +1,7 @@
 import React from "react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "../ui/button";
+import { Check, X } from "lucide-react";
+import { useOnClickOutside } from "usehooks-ts";
 
 interface Props {
   handleDelete: () => void;
@@ -9,22 +11,18 @@ interface Props {
 const DeleteButton: React.FC<Props> = (props) => {
   const { handleDelete, noConfirm } = props;
 
+  const ref = React.useRef<HTMLButtonElement>(null);
   const [isConfirming, setIsConfirming] = React.useState(false);
-  const cancelDelete = () => setIsConfirming(false);
 
-  React.useEffect(() => {
-    if (!isConfirming) return;
-
-    window.addEventListener("click", cancelDelete);
-    return () => window.removeEventListener("click", cancelDelete);
-  }, [isConfirming]);
+  useOnClickOutside(ref, () => setIsConfirming(false));
 
   return (
     <Button
-      size="sm"
+      ref={ref}
+      size="icon"
       variant={isConfirming ? "destructive" : "ghostMuted"}
-      onClick={(ev) => {
-        ev.stopPropagation();
+      className="size-7 shrink-0 rounded-full"
+      onClick={() => {
         if (noConfirm) {
           handleDelete();
           return;
@@ -39,7 +37,7 @@ const DeleteButton: React.FC<Props> = (props) => {
         setIsConfirming(true);
       }}
     >
-      {isConfirming ? "sure?" : "delete"}
+      {isConfirming ? <Check className="size-4" /> : <X className="size-4" />}
     </Button>
   );
 };
