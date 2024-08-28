@@ -1,10 +1,16 @@
 import React from "react";
 import type { TodoSelect } from "@/lib/types";
-import AdvancedDialog from "./advanced-dialog";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import useMutations from "../hooks/use-mutations";
-import { Edit } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 
 type Props = {
   todo: TodoSelect;
@@ -20,44 +26,43 @@ const TodoEditor: React.FC<Props> = (props) => {
   const formId = `edit-todo-${todo.id}`;
 
   return (
-    <AdvancedDialog
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-      title="Edit Todo"
-      description="Change your mind?"
-      icon={Edit}
-      footer={
-        <>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit Todo</DialogTitle>
+          <DialogDescription>Change your mind?</DialogDescription>
+        </DialogHeader>
+
+        <form
+          id={formId}
+          onSubmit={async (e) => {
+            e.preventDefault();
+            await updateTodo.mutateAsync({
+              id: todo.id,
+              data: { text: todoText },
+            });
+            setIsOpen(false);
+          }}
+        >
+          <Textarea
+            className="bg-input/50"
+            rows={5}
+            placeholder="What needs to be done?"
+            value={todoText}
+            onChange={(e) => setTodoText(e.target.value)}
+          />
+          <input type="hidden" />
+        </form>
+        <DialogFooter>
           <Button onClick={() => setIsOpen(false)} variant="outline">
             Cancel
           </Button>
           <Button type="submit" form={formId}>
             Submit
           </Button>
-        </>
-      }
-    >
-      <form
-        id={formId}
-        onSubmit={async (e) => {
-          e.preventDefault();
-          await updateTodo.mutateAsync({
-            id: todo.id,
-            data: { text: todoText },
-          });
-          setIsOpen(false);
-        }}
-      >
-        <Textarea
-          className="bg-input/50"
-          rows={5}
-          placeholder="What needs to be done?"
-          value={todoText}
-          onChange={(e) => setTodoText(e.target.value)}
-        />
-        <input type="hidden" />
-      </form>
-    </AdvancedDialog>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
