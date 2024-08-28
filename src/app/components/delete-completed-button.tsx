@@ -25,7 +25,7 @@ const DeleteCompletedButton: React.FC<Props> = (props) => {
 
   return (
     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-muted">
-      <div className="container2 py-4">
+      <div className="container2 py-10">
         <Button
           className="w-full shadow-lg"
           variant="secondary"
