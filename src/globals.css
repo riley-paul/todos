@@ -42,7 +42,7 @@ body,
 
     --ring: 187 69% 22%;
 
-    --radius: 0.5rem;
+    --radius: 0.7rem;
   }
 
   @media (prefers-color-scheme: dark) {

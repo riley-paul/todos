@@ -111,12 +111,12 @@ const UserAvatar: React.FC = () => {
           <DropdownMenuSeparator />
           <DropdownMenuLabel>Account Settings</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => setAccountDeletionOpen(true)}>
-            <Trash size="1rem" className="mr-2" />
+            <Trash className="mr-2 size-4 text-destructive" />
             <span>Delete Account</span>
           </DropdownMenuItem>
           <a href="/logout">
             <DropdownMenuItem>
-              <LogOut size="1rem" className="mr-2" />
+              <LogOut className="mr-2 size-4 text-primary" />
               <span>Logout</span>
             </DropdownMenuItem>
           </a>
