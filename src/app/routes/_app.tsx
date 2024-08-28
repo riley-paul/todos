@@ -13,7 +13,7 @@ import { cn } from "../lib/utils";
 const Component: React.FC = () => {
   const { listRef, isScrolled } = useScrollShadow();
   return (
-    <div className="relative flex h-screen flex-col overflow-hidden">
+    <div className="relative flex h-[100svh] flex-col overflow-hidden">
       <header
         className={cn(
           "z-50 h-16 shrink-0 border-b bg-background",
