@@ -1,8 +1,9 @@
-import { defineAction, z } from "astro:actions";
+import { defineAction } from "astro:actions";
 import { isAuthorized } from "./_helpers";
 import { and, asc, db, desc, eq, like, Todo } from "astro:db";
 
 import { v4 as uuid } from "uuid";
+import { z } from "zod";
 
 const todoUpdateSchema = z.custom<Partial<typeof Todo.$inferInsert>>();
 

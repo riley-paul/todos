@@ -33,7 +33,6 @@ export default defineConfig({
   adapter: node({ mode: "standalone" }),
   security: { checkOrigin: true },
   experimental: {
-    actions: true,
     env: {
       schema: {
         GITHUB_CLIENT_ID: envField.string({

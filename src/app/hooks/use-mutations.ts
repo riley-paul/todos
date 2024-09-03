@@ -27,7 +27,7 @@ export default function useMutations() {
   };
 
   const updateTodo = useMutation({
-    mutationFn: actions.updateTodo,
+    mutationFn: actions.updateTodo.orThrow,
     onSuccess: () => {
       invalidateQueries([todosQueryKey, tagsQueryKey]);
     },
@@ -35,7 +35,7 @@ export default function useMutations() {
   });
 
   const deleteTodo = useMutation({
-    mutationFn: actions.deleteTodo,
+    mutationFn: actions.deleteTodo.orThrow,
     onSuccess: () => {
       invalidateQueries([todosQueryKey, tagsQueryKey]);
     },
@@ -43,7 +43,7 @@ export default function useMutations() {
   });
 
   const deleteCompleted = useMutation({
-    mutationFn: actions.deleteCompletedTodos,
+    mutationFn: actions.deleteCompletedTodos.orThrow,
     onSuccess: () => {
       invalidateQueries([todosQueryKey, tagsQueryKey]);
     },
@@ -51,7 +51,7 @@ export default function useMutations() {
   });
 
   const createTodo = useMutation({
-    mutationFn: actions.createTodo,
+    mutationFn: actions.createTodo.orThrow,
     onSuccess: () => {
       invalidateQueries([todosQueryKey, tagsQueryKey]);
     },

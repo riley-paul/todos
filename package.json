@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.3",
-    "@astrojs/db": "^0.13.2",
+    "@astrojs/db": "^0.14.0",
     "@astrojs/node": "^8.3.3",
     "@astrojs/react": "^3.6.2",
     "@astrojs/tailwind": "^5.1.0",
@@ -36,7 +36,7 @@
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
     "arctic": "^1.8.1",
-    "astro": "^4.14.5",
+    "astro": "^4.15.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.31.2",

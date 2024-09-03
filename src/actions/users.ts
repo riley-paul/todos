@@ -21,6 +21,6 @@ export const deleteUser = defineAction({
   handler: async (_, c) => {
     const userId = isAuthorized(c).id;
     await db.delete(User).where(eq(User.id, userId));
-    return c.redirect("/");
+    return true;
   },
 });
