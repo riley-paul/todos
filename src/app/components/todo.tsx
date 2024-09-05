@@ -64,7 +64,7 @@ const TodoItem: React.FC<Props> = (props) => {
                   search={{ tag: word.slice(1) }}
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <span className="text-primary/70 transition-colors hover:text-primary">
+                  <span className="text-primary transition-all hover:underline">
                     {word}
                   </span>{" "}
                 </Link>
