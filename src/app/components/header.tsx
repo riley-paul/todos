@@ -1,11 +1,13 @@
+import { Link, CircleCheckBig } from "lucide-react";
 import React from "react";
+import { cn } from "../lib/utils";
+import UserAvatar from "./user-avatar";
 
 const Header: React.FC = () => {
   return (
     <header
       className={cn(
-        "z-50 h-16 shrink-0 border-b bg-background",
-        isScrolled && "shadow-md",
+        "sticky top-0 z-50 h-16 shrink-0 border-b bg-background/30 backdrop-blur",
       )}
     >
       <div className="container2 flex h-full items-center justify-between">

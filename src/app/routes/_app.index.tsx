@@ -3,7 +3,7 @@ import Adder from "../components/adder";
 import TodoList from "../components/todo-list";
 import { z } from "zod";
 import HashtagList from "../components/hashtag-list";
-import DeleteCompletedButton from "../components/delete-completed-button";
+// import DeleteCompletedButton from "../components/delete-completed-button";
 
 export const Route = createFileRoute("/_app/")({
   validateSearch: (search) =>
