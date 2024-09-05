@@ -3,18 +3,16 @@ import {
   useQueryClient,
   type QueryKey,
 } from "@tanstack/react-query";
-import { hashtagQueryOptions, todosQueryOptions } from "../lib/queries";
+import { hashtagQueryOptions } from "../lib/queries";
 import { toast } from "sonner";
 import React from "react";
-import { useSearch } from "@tanstack/react-router";
 import { actions } from "astro:actions";
 
 export default function useMutations() {
   const client = useQueryClient();
   const toastId = React.useRef<string | number | undefined>();
 
-  const { tag } = useSearch({ from: "/_app/" });
-  const todosQueryKey = todosQueryOptions(tag).queryKey;
+  const todosQueryKey = ["todos"];
   const tagsQueryKey = hashtagQueryOptions.queryKey;
 
   const onError = (error: Error) => {
