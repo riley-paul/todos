@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_app/")({
       <Adder />
       <HashtagList />
       <TodoList />
-      <DeleteCompletedButton />
+      {/* <DeleteCompletedButton /> */}
     </article>
   ),
 });

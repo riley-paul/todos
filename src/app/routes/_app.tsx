@@ -7,17 +7,14 @@ import {
 import UserAvatar from "../components/user-avatar";
 import { userQueryOptions } from "../lib/queries";
 import { CircleCheckBig } from "lucide-react";
-import useScrollShadow from "../hooks/use-scroll-shadow";
 import { cn } from "../lib/utils";
 
 const Component: React.FC = () => {
-  const { listRef, isScrolled } = useScrollShadow();
   return (
-    <div className="relative flex h-[100svh] flex-col overflow-hidden">
+    <>
       <header
         className={cn(
-          "z-50 h-16 shrink-0 border-b bg-background",
-          isScrolled && "shadow-md",
+          "sticky top-0 z-50 h-16 shrink-0 border-b bg-background/30 backdrop-blur",
         )}
       >
         <div className="container2 flex h-full items-center justify-between">
@@ -30,12 +27,12 @@ const Component: React.FC = () => {
           <UserAvatar />
         </div>
       </header>
-      <main ref={listRef} className="flex-1 overflow-auto">
+      <main className="">
         <div className="container2">
           <Outlet />
         </div>
       </main>
-    </div>
+    </>
   );
 };
 
