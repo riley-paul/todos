@@ -34,10 +34,29 @@ export default function useMutations() {
     onError,
   });
 
-  const deleteTodo = useMutation({
-    mutationFn: actions.deleteTodo.orThrow,
+  const undoDeleteTodo = useMutation({
+    mutationFn: actions.undoDeleteTodo.orThrow,
+    onMutate: () => {
+      toastId.current = toast.loading("Restoring todo...");
+    },
     onSuccess: () => {
       invalidateQueries([todosQueryKey, tagsQueryKey]);
+      toast.success("Todo restored", { id: toastId.current });
+    },
+    onError,
+  });
+
+  const deleteTodo = useMutation({
+    mutationFn: actions.deleteTodo.orThrow,
+    onMutate: () => {
+      toastId.current = toast.loading("Deleting todo...");
+    },
+    onSuccess: (id) => {
+      invalidateQueries([todosQueryKey, tagsQueryKey]);
+      toast.success("Todo deleted", {
+        id: toastId.current,
+        action: { label: "Undo", onClick: () => undoDeleteTodo.mutate({ id }) },
+      });
     },
     onError,
   });

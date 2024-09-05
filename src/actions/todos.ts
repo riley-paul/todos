@@ -1,6 +1,6 @@
 import { defineAction } from "astro:actions";
 import { isAuthorized } from "./_helpers";
-import { and, asc, db, desc, eq, like, Todo } from "astro:db";
+import { and, asc, db, desc, eq, like, notIlike, Todo } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
@@ -103,7 +103,23 @@ export const deleteTodo = defineAction({
       .where(and(eq(Todo.id, id), eq(Todo.userId, userId)))
       .returning()
       .then((rows) => rows[0]);
-    return todo;
+    return todo.id;
+  },
+});
+
+export const undoDeleteTodo = defineAction({
+  input: z.object({
+    id: z.string(),
+  }),
+  handler: async ({ id }, c) => {
+    const userId = isAuthorized(c).id;
+    const todo = await db
+      .update(Todo)
+      .set({ isDeleted: false })
+      .where(and(eq(Todo.id, id), eq(Todo.userId, userId)))
+      .returning()
+      .then((rows) => rows[0]);
+    return todo.id;
   },
 });
 

@@ -13,6 +13,7 @@ const HashtagList: React.FC = () => {
   return (
     hashtagQuery.data.length > 0 && (
       <div className="flex flex-wrap gap-1.5">
+        <Hashtag hashtag="~" />
         {hashtagQuery.data.map((hashtag) => (
           <Hashtag key={hashtag} hashtag={hashtag} />
         ))}
