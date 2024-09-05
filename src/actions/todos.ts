@@ -1,6 +1,6 @@
 import { defineAction } from "astro:actions";
 import { isAuthorized } from "./_helpers";
-import { and, asc, db, desc, eq, like, notIlike, Todo } from "astro:db";
+import { and, asc, db, desc, eq, like, not, or, Todo } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
@@ -20,7 +20,10 @@ export const getTodos = defineAction({
         and(
           eq(Todo.isDeleted, false),
           eq(Todo.userId, userId),
-          tag ? like(Todo.text, `%#${tag}%`) : undefined,
+          or(
+            tag ? like(Todo.text, `%#${tag}%`) : undefined,
+            tag === "~" ? not(like(Todo.text, "%#%")) : undefined,
+          ),
         ),
       )
       .orderBy(asc(Todo.isCompleted), desc(Todo.createdAt));

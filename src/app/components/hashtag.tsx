@@ -20,6 +20,7 @@ const Hashtag: React.FC<Props> = (props) => {
         ...prev,
         tag: prev.tag === hashtag ? undefined : hashtag,
       })}
+      title={hashtag === "~" ? "No tag" : `Tag: ${hashtag}`}
     >
       <Badge
         variant="secondary"
