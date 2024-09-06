@@ -12,21 +12,22 @@ const isEmptyString = (value: string) => value.trim() === "";
 
 export default function Adder(): ReturnType<React.FC> {
   const { tag } = useSelectedTag();
+  const defaultValue = tag === "~" ? "" : `#${tag} `;
 
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const [value, setValue] = React.useState<string>("");
+  const [value, setValue] = React.useState<string>(defaultValue);
   const { createTodo } = useMutations();
 
   React.useEffect(() => {
     if (tag && (isOnlyHashtag(value) || isEmptyString(value))) {
-      setValue(tag === "~" ? "" : `#${tag}`);
+      setValue(defaultValue);
     }
   }, [tag]);
 
   const create = () => {
     if (value) {
       createTodo.mutate({ data: { text: value } });
-      setValue("");
+      setValue(defaultValue);
       inputRef.current?.focus();
     }
   };
