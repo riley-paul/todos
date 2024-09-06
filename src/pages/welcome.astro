@@ -1,0 +1,46 @@
+---
+import LoginButton from "@/app/components/login-button";
+import { TodoItemSample, type SampleTodo } from "@/app/components/todo-sample";
+import RootLayout from "@/layouts/root-layout.astro";
+import { CircleCheckBig } from "lucide-react";
+
+const sampleTodos: SampleTodo[] = [
+  {
+    id: "1",
+    text: "Buy groceries",
+    isCompleted: false,
+  },
+  {
+    id: "2",
+    text: "Find the meaning of life",
+    isCompleted: false,
+  },
+  {
+    id: "3",
+    text: "Learn Astro web framework",
+    isCompleted: true,
+  },
+];
+---
+
+<RootLayout>
+  <main class="container2 flex min-h-[100svh] flex-col gap-6 pt-[10vh]">
+    <div class="flex items-center justify-center">
+      <CircleCheckBig size="5rem" className="text-primary" />
+    </div>
+    <section
+      class="prose w-full max-w-none text-center dark:prose-invert prose-h1:mb-2 prose-h1:text-5xl"
+    >
+      <h1>Todos</h1>
+      <p>A robust and feature-poor todo app</p>
+    </section>
+    <div class="grid gap-2">
+      <LoginButton provider="github" />
+      <LoginButton provider="google" />
+    </div>
+
+    <div class="flex w-full flex-col gap-2">
+      {sampleTodos.map((todo) => <TodoItemSample todo={todo} />)}
+    </div>
+  </main>
+</RootLayout>
