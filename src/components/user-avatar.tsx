@@ -17,9 +17,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/app/components/ui/alert-dialog";
+} from "@/components/ui/alert-dialog";
 import { useQuery } from "@tanstack/react-query";
-import { userQueryOptions } from "@/app/lib/queries";
+import { userQueryOptions } from "@/lib/queries";
 import { LogIn, LogOut, Trash, User } from "lucide-react";
 import { cn } from "../lib/utils";
 import { buttonVariants } from "./ui/button";

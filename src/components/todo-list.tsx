@@ -2,7 +2,7 @@ import type React from "react";
 
 import TodoItem from "./todo";
 import { useQuery } from "@tanstack/react-query";
-import { todosQueryOptions } from "@/app/lib/queries";
+import { todosQueryOptions } from "@/lib/queries";
 import { Skeleton } from "./ui/skeleton";
 import useSelectedTag from "../hooks/use-selected-tag";
 

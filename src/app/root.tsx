@@ -1,8 +1,8 @@
 import React from "react";
-import Header from "./components/header";
-import Adder from "./components/adder";
-import HashtagList from "./components/hashtag-list";
-import TodoList from "./components/todo-list";
+import Header from "@/components/header";
+import Adder from "@/components/adder";
+import HashtagList from "@/components/hashtag-list";
+import TodoList from "@/components/todo-list";
 
 const Root: React.FC = () => {
   return (
