@@ -32,7 +32,14 @@ export default function Adder(): ReturnType<React.FC> {
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (isEmptyString(value) || isOnlyHashtag(value)) return;
+        create();
+      }}
+      className="flex items-center gap-2"
+    >
       <Input
         autoFocus
         ref={inputRef}
@@ -45,13 +52,12 @@ export default function Adder(): ReturnType<React.FC> {
             e.target.select();
           }
         }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            create();
-          }
-        }}
       />
-      <Button onClick={create} disabled={!value}>
+      <input type="submit" hidden />
+      <Button
+        type="submit"
+        disabled={isEmptyString(value) || isOnlyHashtag(value)}
+      >
         {createTodo.isPending ? (
           <Loader2 size="1.2rem" className="mr-2 animate-spin" />
         ) : (
@@ -59,6 +65,6 @@ export default function Adder(): ReturnType<React.FC> {
         )}
         Add
       </Button>
-    </div>
+    </form>
   );
 }
