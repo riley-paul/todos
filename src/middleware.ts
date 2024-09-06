@@ -1,7 +1,7 @@
 import { lucia } from "@/lib/auth";
-import { defineMiddleware } from "astro:middleware";
+import { defineMiddleware, sequence } from "astro:middleware";
 
-export const onRequest = defineMiddleware(async (context, next) => {
+const userValidation = defineMiddleware(async (context, next) => {
   const sessionId = context.cookies.get(lucia.sessionCookieName)?.value ?? null;
   if (!sessionId) {
     context.locals.user = null;
@@ -30,3 +30,16 @@ export const onRequest = defineMiddleware(async (context, next) => {
   context.locals.user = user;
   return next();
 });
+
+const WHITE_LIST = ["/welcome", "/login"];
+const routeGuarding = defineMiddleware(async (context, next) => {
+  const isWhiteListed = WHITE_LIST.some((path) =>
+    context.url.pathname.startsWith(path),
+  );
+  if (!isWhiteListed && !context.locals.user) {
+    return context.redirect("/welcome");
+  }
+  return next();
+});
+
+export const onRequest = sequence(userValidation, routeGuarding);
