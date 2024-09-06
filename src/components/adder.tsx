@@ -6,7 +6,7 @@ import useMutations from "../hooks/use-mutations";
 import useSelectedTag from "../hooks/use-selected-tag";
 
 const isOnlyHashtag = (value: string) =>
-  value.startsWith("#") && value.split(" ").length === 1;
+  value.startsWith("#") && value.trim().split(" ").length === 1;
 
 const isEmptyString = (value: string) => value.trim() === "";
 
