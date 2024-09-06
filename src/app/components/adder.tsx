@@ -3,7 +3,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Loader2, Plus } from "lucide-react";
 import useMutations from "../hooks/use-mutations";
-import { useSearch } from "@tanstack/react-router";
+import useSelectedTag from "../hooks/use-selected-tag";
 
 const isOnlyHashtag = (value: string) =>
   value.startsWith("#") && value.split(" ").length === 1;
@@ -11,7 +11,7 @@ const isOnlyHashtag = (value: string) =>
 const isEmptyString = (value: string) => value.trim() === "";
 
 export default function Adder(): ReturnType<React.FC> {
-  const { tag } = useSearch({ from: "/_app/" });
+  const { tag } = useSelectedTag();
 
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [value, setValue] = React.useState<string>("");

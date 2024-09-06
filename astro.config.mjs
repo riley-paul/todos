@@ -17,12 +17,6 @@ export default defineConfig({
     : "http://localhost:4321",
   integrations: [tailwind({ applyBaseStyles: false }), react(), db()],
   vite: {
-    plugins: [
-      TanStackRouterVite({
-        routesDirectory: "./src/app/routes",
-        generatedRouteTree: "./src/app/routeTree.gen.ts",
-      }),
-    ],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),

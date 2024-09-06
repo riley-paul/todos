@@ -3,15 +3,15 @@ import { Button } from "./ui/button";
 import useMutations from "../hooks/use-mutations";
 import { X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useSearch } from "@tanstack/react-router";
 import { todosQueryOptions } from "../lib/queries";
+import useSelectedTag from "../hooks/use-selected-tag";
 
 type Props = {};
 
 const DeleteCompletedButton: React.FC<Props> = (props) => {
   const {} = props;
 
-  const { tag } = useSearch({ from: "/_app/" });
+  const { tag } = useSelectedTag();
   const todosQuery = useQuery(todosQueryOptions(tag));
   const { deleteCompleted } = useMutations();
 

@@ -4,10 +4,10 @@ import TodoItem from "./todo";
 import { useQuery } from "@tanstack/react-query";
 import { todosQueryOptions } from "@/app/lib/queries";
 import { Skeleton } from "./ui/skeleton";
-import { useSearch } from "@tanstack/react-router";
+import useSelectedTag from "../hooks/use-selected-tag";
 
 const TodoList: React.FC = () => {
-  const { tag } = useSearch({ from: "/_app/" });
+  const { tag } = useSelectedTag();
   const todosQuery = useQuery(todosQueryOptions(tag));
 
   const todos = todosQuery.data ?? [];

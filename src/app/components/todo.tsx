@@ -5,9 +5,9 @@ import { Card } from "./ui/card";
 import DeleteButton from "./ui/delete-button";
 import { Check, Loader2 } from "lucide-react";
 import useMutations from "../hooks/use-mutations";
-import { Link } from "@tanstack/react-router";
 import type { TodoSelect } from "@/lib/types";
 import TodoEditor from "./todo-editor";
+import { Link } from "react-router-dom";
 
 interface Props {
   todo: TodoSelect;

@@ -2,7 +2,7 @@ import { CircleCheckBig } from "lucide-react";
 import React from "react";
 import { cn } from "../lib/utils";
 import UserAvatar from "./user-avatar";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 
 const Header: React.FC = () => {
   return (

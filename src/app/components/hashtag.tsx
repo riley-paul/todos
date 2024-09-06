@@ -1,7 +1,7 @@
-import { Link, useSearch } from "@tanstack/react-router";
 import React from "react";
 import { Badge } from "./ui/badge";
 import { cn } from "../lib/utils";
+import useSelectedTag from "../hooks/use-selected-tag";
 
 type Props = {
   hashtag: string;
@@ -10,16 +10,12 @@ type Props = {
 const Hashtag: React.FC<Props> = (props) => {
   const { hashtag } = props;
 
-  const { tag } = useSearch({ from: "/_app/" });
+  const { tag, toggleTag } = useSelectedTag();
   const isActive = tag === hashtag;
 
   return (
-    <Link
-      to="/"
-      search={(prev) => ({
-        ...prev,
-        tag: prev.tag === hashtag ? undefined : hashtag,
-      })}
+    <button
+      onClick={() => toggleTag(hashtag)}
       title={hashtag === "~" ? "No tag" : `Tag: ${hashtag}`}
     >
       <Badge
@@ -28,7 +24,7 @@ const Hashtag: React.FC<Props> = (props) => {
       >
         {hashtag}
       </Badge>
-    </Link>
+    </button>
   );
 };
 
