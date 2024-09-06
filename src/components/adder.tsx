@@ -12,7 +12,7 @@ const isEmptyString = (value: string) => value.trim() === "";
 
 export default function Adder(): ReturnType<React.FC> {
   const { tag } = useSelectedTag();
-  const defaultValue = tag === "~" ? "" : `#${tag} `;
+  const defaultValue = tag === "~" || tag === "" ? "" : `#${tag} `;
 
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [value, setValue] = React.useState<string>(defaultValue);
