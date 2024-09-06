@@ -21,7 +21,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/app/lib/queries";
 import { LogIn, LogOut, Trash, User } from "lucide-react";
-import { Link } from "@tanstack/react-router";
 import { cn } from "../lib/utils";
 import { buttonVariants } from "./ui/button";
 
@@ -70,13 +69,13 @@ const UserAvatar: React.FC = () => {
 
   if (!user) {
     return (
-      <Link
-        to="/welcome"
+      <a
+        href="/welcome"
         className={cn(buttonVariants({ variant: "secondary" }))}
       >
         <LogIn size="1rem" className="mr-2" />
-        Login
-      </Link>
+        <span>Login</span>
+      </a>
     );
   }
 
