@@ -1,14 +1,6 @@
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -18,11 +10,20 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+import LoginButton from "./login-button";
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/lib/queries";
-import { LogIn, LogOut, Trash, User } from "lucide-react";
-import { cn } from "../lib/utils";
-import { buttonVariants } from "./ui/button";
+import { LogOut, Trash, User } from "lucide-react";
+import { Button, buttonVariants } from "./ui/button";
+import { cn } from "@/lib/utils";
+import useMutations from "@/hooks/use-mutations";
 
 interface DialogProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ interface DialogProps {
 
 const AccountDeletionConfirm: React.FC<DialogProps> = (props) => {
   const { isOpen, setIsOpen } = props;
+  const { deleteUser } = useMutations();
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogContent>
@@ -41,12 +43,14 @@ const AccountDeletionConfirm: React.FC<DialogProps> = (props) => {
             account and remove your data from our servers.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <form method="POST" action="/api/auth/delete">
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction type="submit">Continue</AlertDialogAction>
-          </AlertDialogFooter>
-        </form>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction type="submit" asChild>
+            <Button variant="destructive" onClick={() => deleteUser.mutate({})}>
+              Continue
+            </Button>
+          </AlertDialogAction>
+        </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );
@@ -69,13 +73,10 @@ const UserAvatar: React.FC = () => {
 
   if (!user) {
     return (
-      <a
-        href="/welcome"
-        className={cn(buttonVariants({ variant: "secondary" }))}
-      >
-        <LogIn size="1rem" className="mr-2" />
-        <span>Login</span>
-      </a>
+      <span className="flex gap-1">
+        <LoginButton provider="github" />
+        <LoginButton provider="google" />
+      </span>
     );
   }
 
@@ -85,18 +86,18 @@ const UserAvatar: React.FC = () => {
         isOpen={accountDeletionOpen}
         setIsOpen={setAccountDeletionOpen}
       />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+      <Popover>
+        <PopoverTrigger asChild title="User settings">
           <Avatar>
             <AvatarImage src={user.avatarUrl ?? ""} />
             <AvatarFallback>
               <User size="1rem" />
             </AvatarFallback>
           </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="min-w-60">
-          <div className="flex gap-4 p-2">
-            <Avatar className="h-16 w-16">
+        </PopoverTrigger>
+        <PopoverContent align="end" className="grid w-auto min-w-52 gap-4">
+          <div className="flex max-w-min gap-4">
+            <Avatar className="size-16">
               <AvatarImage src={user.avatarUrl ?? ""} alt={user.name} />
               <AvatarFallback>
                 <User size="3rem" />
@@ -107,20 +108,29 @@ const UserAvatar: React.FC = () => {
               <p className="text-sm text-muted-foreground">{user.email}</p>
             </div>
           </div>
-          <DropdownMenuSeparator />
-          <DropdownMenuLabel>Account Settings</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => setAccountDeletionOpen(true)}>
-            <Trash className="mr-2 size-4 text-destructive" />
-            <span>Delete Account</span>
-          </DropdownMenuItem>
-          <a href="/logout">
-            <DropdownMenuItem>
-              <LogOut className="mr-2 size-4 text-primary" />
+
+          <div className="grid w-full gap-2">
+            <a
+              href="/logout"
+              className={cn(
+                buttonVariants({ variant: "secondary" }),
+                "relative",
+              )}
+            >
+              <LogOut className="absolute left-4 mr-2 size-4" />
               <span>Logout</span>
-            </DropdownMenuItem>
-          </a>
-        </DropdownMenuContent>
-      </DropdownMenu>
+            </a>
+            <Button
+              variant="destructive"
+              onClick={() => setAccountDeletionOpen(true)}
+              className="relative"
+            >
+              <Trash className="absolute left-4 mr-2 size-4" />
+              <span>Delete Account</span>
+            </Button>
+          </div>
+        </PopoverContent>
+      </Popover>
     </>
   );
 };

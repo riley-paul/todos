@@ -75,10 +75,20 @@ export default function useMutations() {
     onError,
   });
 
+  const deleteUser = useMutation({
+    mutationFn: actions.deleteUser.orThrow,
+    onSuccess: () => {
+      client.clear();
+      window.location.href = "/";
+    },
+    onError,
+  });
+
   return {
     updateTodo,
     deleteTodo,
     deleteCompleted,
     createTodo,
+    deleteUser,
   };
 }

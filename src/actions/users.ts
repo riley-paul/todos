@@ -1,5 +1,5 @@
 import { defineAction } from "astro:actions";
-import { db, eq, User } from "astro:db";
+import { db, eq, Todo, User, UserSession } from "astro:db";
 import { isAuthorized } from "./_helpers";
 
 export const getMe = defineAction({
@@ -20,6 +20,8 @@ export const getMe = defineAction({
 export const deleteUser = defineAction({
   handler: async (_, c) => {
     const userId = isAuthorized(c).id;
+    await db.delete(UserSession).where(eq(UserSession.userId, userId));
+    await db.delete(Todo).where(eq(Todo.userId, userId));
     await db.delete(User).where(eq(User.id, userId));
     return true;
   },
