@@ -5,19 +5,18 @@ import Hashtag from "./hashtag";
 
 const HashtagList: React.FC = () => {
   const hashtagQuery = useQuery(hashtagQueryOptions);
+  const hashtags = hashtagQuery.data ?? [];
 
-  if (!hashtagQuery.data) {
+  if (hashtags.length === 0 || hashtags.every((hashtag) => hashtag === "~")) {
     return null;
   }
 
   return (
-    hashtagQuery.data.length > 0 && (
-      <div className="flex flex-wrap gap-1.5">
-        {hashtagQuery.data.map((hashtag) => (
-          <Hashtag key={hashtag} hashtag={hashtag} />
-        ))}
-      </div>
-    )
+    <div className="flex flex-wrap gap-1.5">
+      {hashtags.map((hashtag) => (
+        <Hashtag key={hashtag} hashtag={hashtag} />
+      ))}
+    </div>
   );
 };
 

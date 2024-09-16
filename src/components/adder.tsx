@@ -4,6 +4,8 @@ import { Button } from "./ui/button";
 import { Loader2, Plus } from "lucide-react";
 import useMutations from "../hooks/use-mutations";
 import useSelectedTag from "../hooks/use-selected-tag";
+import { useMediaQuery } from "usehooks-ts";
+import { MOBILE_MEDIA_QUERY } from "@/lib/constants";
 
 const isOnlyHashtag = (value: string) =>
   value.startsWith("#") && value.trim().split(" ").length === 1;
@@ -32,6 +34,8 @@ export default function Adder(): ReturnType<React.FC> {
     }
   };
 
+  const isMobile = useMediaQuery(MOBILE_MEDIA_QUERY);
+
   return (
     <form
       onSubmit={(e) => {
@@ -57,14 +61,16 @@ export default function Adder(): ReturnType<React.FC> {
       <input type="submit" hidden />
       <Button
         type="submit"
+        size={isMobile ? "icon" : "default"}
+        className="shrink-0"
         disabled={isEmptyString(value) || isOnlyHashtag(value)}
       >
         {createTodo.isPending ? (
-          <Loader2 size="1.2rem" className="mr-2 animate-spin" />
+          <Loader2 size="1.2rem" className="animate-spin" />
         ) : (
-          <Plus size="1.2rem" className="mr-2" />
+          <Plus size="1.2rem" />
         )}
-        Add
+        {!isMobile && <span className="ml-2">Add</span>}
       </Button>
     </form>
   );
