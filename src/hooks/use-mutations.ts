@@ -1,28 +1,16 @@
-import {
-  useMutation,
-  useQueryClient,
-  type QueryKey,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { hashtagQueryOptions } from "../lib/queries";
 import { toast } from "sonner";
-import React from "react";
 import { actions } from "astro:actions";
+import useMutationHelpers from "./use-mutation-helpers";
 
 export default function useMutations() {
   const client = useQueryClient();
-  const toastId = React.useRef<string | number | undefined>();
-
   const todosQueryKey = ["todos"];
   const tagsQueryKey = hashtagQueryOptions.queryKey;
 
-  const onError = (error: Error) => {
-    console.error(error);
-    toast.error(error.message, { id: toastId.current });
-  };
-
-  const invalidateQueries = (queryKeys: QueryKey[]) => {
-    queryKeys.forEach((queryKey) => client.invalidateQueries({ queryKey }));
-  };
+  const { onError, onMutateMessage, invalidateQueries, toastId } =
+    useMutationHelpers();
 
   const updateTodo = useMutation({
     mutationFn: actions.updateTodo.orThrow,
@@ -35,7 +23,7 @@ export default function useMutations() {
   const undoDeleteTodo = useMutation({
     mutationFn: actions.undoDeleteTodo.orThrow,
     onMutate: () => {
-      toastId.current = toast.loading("Restoring todo...");
+      onMutateMessage("Restoring todo...");
     },
     onSuccess: () => {
       invalidateQueries([todosQueryKey, tagsQueryKey]);
@@ -47,7 +35,7 @@ export default function useMutations() {
   const deleteTodo = useMutation({
     mutationFn: actions.deleteTodo.orThrow,
     onMutate: () => {
-      toastId.current = toast.loading("Deleting todo...");
+      onMutateMessage("Deleting todo...");
     },
     onSuccess: (id) => {
       invalidateQueries([todosQueryKey, tagsQueryKey]);
