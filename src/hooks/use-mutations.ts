@@ -1,23 +1,38 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { hashtagQueryOptions } from "../lib/queries";
 import { toast } from "sonner";
 import { actions } from "astro:actions";
 import useMutationHelpers from "./use-mutation-helpers";
+import { type TodoSelect } from "@/lib/types";
+import { hashtagQueryOptions } from "@/lib/queries";
 
 export default function useMutations() {
   const client = useQueryClient();
   const todosQueryKey = ["todos"];
   const tagsQueryKey = hashtagQueryOptions.queryKey;
 
-  const { onError, onMutateMessage, invalidateQueries, toastId } =
-    useMutationHelpers();
+  const {
+    onError,
+    onMutateMessage,
+    toastId,
+    optimisticUpdate,
+    onErrorOptimistic,
+  } = useMutationHelpers();
 
   const updateTodo = useMutation({
     mutationFn: actions.updateTodo.orThrow,
-    onSuccess: () => {
-      invalidateQueries([todosQueryKey, tagsQueryKey]);
+    onMutate: async ({ id, data }) => {
+      optimisticUpdate<TodoSelect[]>(tagsQueryKey, (prev) =>
+        prev.map((todo) => (todo.id === id ? { ...todo, ...data } : todo)),
+      );
+      return optimisticUpdate<TodoSelect[]>(todosQueryKey, (prev) =>
+        prev.map((todo) => (todo.id === id ? { ...todo, ...data } : todo)),
+      );
     },
-    onError,
+    onError: (error, _, context) => {
+      onErrorOptimistic(tagsQueryKey, context);
+      onErrorOptimistic(todosQueryKey, context);
+      onError(error);
+    },
   });
 
   const undoDeleteTodo = useMutation({
@@ -26,7 +41,6 @@ export default function useMutations() {
       onMutateMessage("Restoring todo...");
     },
     onSuccess: () => {
-      invalidateQueries([todosQueryKey, tagsQueryKey]);
       toast.success("Todo restored", { id: toastId.current });
     },
     onError,
@@ -34,32 +48,35 @@ export default function useMutations() {
 
   const deleteTodo = useMutation({
     mutationFn: actions.deleteTodo.orThrow,
-    onMutate: () => {
+    onMutate: ({ id }) => {
       onMutateMessage("Deleting todo...");
+      optimisticUpdate<TodoSelect[]>(tagsQueryKey, (prev) =>
+        prev.filter((todo) => todo.id !== id),
+      );
+      return optimisticUpdate<TodoSelect[]>(todosQueryKey, (prev) =>
+        prev.filter((todo) => todo.id !== id),
+      );
     },
     onSuccess: (id) => {
-      invalidateQueries([todosQueryKey, tagsQueryKey]);
       toast.success("Todo deleted", {
         id: toastId.current,
         action: { label: "Undo", onClick: () => undoDeleteTodo.mutate({ id }) },
       });
     },
-    onError,
+    onError: (error, _, context) => {
+      onErrorOptimistic(tagsQueryKey, context);
+      onErrorOptimistic(todosQueryKey, context);
+      onError(error);
+    },
   });
 
   const deleteCompleted = useMutation({
     mutationFn: actions.deleteCompletedTodos.orThrow,
-    onSuccess: () => {
-      invalidateQueries([todosQueryKey, tagsQueryKey]);
-    },
     onError,
   });
 
   const createTodo = useMutation({
     mutationFn: actions.createTodo.orThrow,
-    onSuccess: () => {
-      invalidateQueries([todosQueryKey, tagsQueryKey]);
-    },
     onError,
   });
 
