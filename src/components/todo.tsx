@@ -7,7 +7,8 @@ import { Check, Loader2 } from "lucide-react";
 import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import TodoEditor from "./todo-editor";
-import useSelectedTag from "@/hooks/use-selected-tag";
+import TodoText from "./todo-text";
+import { useEventListener, useOnClickOutside } from "usehooks-ts";
 
 interface Props {
   todo: TodoSelect;
@@ -16,38 +17,53 @@ interface Props {
 const TodoItem: React.FC<Props> = (props) => {
   const { todo } = props;
   const { deleteTodo, updateTodo } = useMutations();
-  const { toggleTag } = useSelectedTag();
 
   const [editorOpen, setEditorOpen] = React.useState(false);
 
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  useOnClickOutside(ref, () => {
+    if (editorOpen) {
+      setEditorOpen(false);
+    }
+  });
+
+  useEventListener("keydown", (e) => {
+    if (e.key === "Escape" && editorOpen) {
+      setEditorOpen(false);
+    }
+  });
+
   return (
-    <>
-      <TodoEditor todo={todo} isOpen={editorOpen} setIsOpen={setEditorOpen} />
-      <Card
-        className={cn(
-          "flex items-center gap-2 rounded-md p-2 pr-4 text-sm",
-          todo.isCompleted && "bg-card/50",
-          deleteTodo.isPending && "opacity-50",
-        )}
+    <Card
+      ref={ref}
+      className={cn(
+        "flex items-center gap-2 rounded-md p-2 pr-4 text-sm",
+        todo.isCompleted && "bg-card/50",
+        deleteTodo.isPending && "opacity-50",
+      )}
+    >
+      <Button
+        className="shrink-0 rounded-full"
+        variant={todo.isCompleted ? "secondary" : "ghost"}
+        size="icon"
+        disabled={updateTodo.isPending}
+        onClick={() =>
+          updateTodo.mutate({
+            id: todo.id,
+            data: { isCompleted: !todo.isCompleted },
+          })
+        }
       >
-        <Button
-          className="rounded-full"
-          variant={todo.isCompleted ? "secondary" : "ghost"}
-          size="icon"
-          disabled={updateTodo.isPending}
-          onClick={() =>
-            updateTodo.mutate({
-              id: todo.id,
-              data: { isCompleted: !todo.isCompleted },
-            })
-          }
-        >
-          {updateTodo.isPending ? (
-            <Loader2 size="1rem" className="animate-spin" />
-          ) : (
-            <Check size="1rem" />
-          )}
-        </Button>
+        {updateTodo.isPending ? (
+          <Loader2 size="1rem" className="animate-spin" />
+        ) : (
+          <Check size="1rem" />
+        )}
+      </Button>
+      {editorOpen ? (
+        <TodoEditor todo={todo} onSubmit={() => setEditorOpen(false)} />
+      ) : (
         <button
           onClick={() => setEditorOpen(true)}
           className={cn(
@@ -55,31 +71,11 @@ const TodoItem: React.FC<Props> = (props) => {
             todo.isCompleted && "text-muted-foreground line-through",
           )}
         >
-          {todo.text.split(" ").map((word, index) => {
-            const isTag = word.startsWith("#");
-            if (isTag) {
-              return (
-                <>
-                  <button
-                    key={index}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleTag(word.slice(1));
-                    }}
-                  >
-                    <span className="text-primary transition-all hover:underline">
-                      {word}
-                    </span>
-                  </button>{" "}
-                </>
-              );
-            }
-            return <span key={index}>{word} </span>;
-          })}
+          <TodoText text={todo.text} />
         </button>
-        <DeleteButton handleDelete={() => deleteTodo.mutate({ id: todo.id })} />
-      </Card>
-    </>
+      )}
+      <DeleteButton handleDelete={() => deleteTodo.mutate({ id: todo.id })} />
+    </Card>
   );
 };
 
