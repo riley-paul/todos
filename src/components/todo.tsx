@@ -34,6 +34,10 @@ const TodoItem: React.FC<Props> = (props) => {
     }
   });
 
+  React.useEffect(() => {
+    setEditorOpen(false);
+  }, [todo]);
+
   return (
     <Card
       ref={ref}
