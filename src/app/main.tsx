@@ -6,9 +6,11 @@ import {
 } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 import ErrorPage from "@/components/error-page";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import Root from "./root";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import SharedTags from "./shared-tags";
+import Header from "@/components/header";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -22,8 +24,25 @@ const queryClient = new QueryClient({
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Root />,
+    element: (
+      <>
+        <Header />
+        <main className="container2">
+          <Outlet />
+        </main>
+      </>
+    ),
     errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true,
+        element: <Root />,
+      },
+      {
+        path: "shared",
+        element: <SharedTags />,
+      },
+    ],
   },
 ]);
 
