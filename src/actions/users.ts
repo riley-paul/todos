@@ -1,6 +1,7 @@
 import { defineAction } from "astro:actions";
 import { db, eq, Todo, User, UserSession } from "astro:db";
 import { isAuthorized } from "./_helpers";
+import { z } from "zod";
 
 export const getMe = defineAction({
   handler: async (_, c) => {
@@ -24,5 +25,15 @@ export const deleteUser = defineAction({
     await db.delete(Todo).where(eq(Todo.userId, userId));
     await db.delete(User).where(eq(User.id, userId));
     return true;
+  },
+});
+
+export const checkIfUserEmailExists = defineAction({
+  input: z.object({
+    email: z.string().email(),
+  }),
+  handler: async ({ email }) => {
+    const data = await db.select().from(User).where(eq(User.email, email));
+    return data.length > 0;
   },
 });

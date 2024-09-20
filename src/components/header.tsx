@@ -3,6 +3,7 @@ import React from "react";
 import { cn } from "../lib/utils";
 import UserAvatar from "./user-avatar";
 import { Link } from "react-router-dom";
+import SharedTagEditor from "./shared-tag-editor";
 
 const Header: React.FC = () => {
   return (
@@ -18,7 +19,10 @@ const Header: React.FC = () => {
             <div className="text-2xl font-bold">Todos</div>
           </div>
         </Link>
-        <UserAvatar />
+        <div className="flex items-center gap-3">
+          <SharedTagEditor />
+          <UserAvatar />
+        </div>
       </div>
     </header>
   );
