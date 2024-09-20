@@ -12,6 +12,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import useMutations from "@/hooks/use-mutations";
 
 const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
   if (query.isLoading) {
@@ -49,11 +50,17 @@ const SharedTagCreator: React.FC = () => {
     enabled: z.string().email().safeParse(email).success,
   });
 
+  const { createSharedTag } = useMutations();
+
   return (
     <form
       className="grid gap-3"
       onSubmit={(e) => {
         e.preventDefault();
+        createSharedTag.mutate({ tag, email });
+
+        setEmail("");
+        setTag("");
       }}
     >
       <Label>
@@ -82,7 +89,7 @@ const SharedTagCreator: React.FC = () => {
       </div>
       <Button
         type="submit"
-        disabled={!sharedUserQuery.data}
+        disabled={!sharedUserQuery.data || createSharedTag.isPending}
         size="sm"
         variant="secondary"
       >

@@ -89,11 +89,17 @@ export default function useMutations() {
     onError,
   });
 
+  const createSharedTag = useMutation({
+    mutationFn: actions.createSharedTag.orThrow,
+    onError,
+  });
+
   return {
     updateTodo,
     deleteTodo,
     deleteCompleted,
     createTodo,
     deleteUser,
+    createSharedTag,
   };
 }
