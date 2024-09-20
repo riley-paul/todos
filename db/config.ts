@@ -1,4 +1,5 @@
 import { NOW, column, defineDb, defineTable } from "astro:db";
+import { create } from "domain";
 
 const User = defineTable({
   columns: {
@@ -36,11 +37,22 @@ const Todo = defineTable({
   },
 });
 
+const SharedTags = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true }),
+    tag: column.text(),
+    userId: column.text({ references: () => User.columns.id }),
+    sharedUserId: column.text({ references: () => User.columns.id }),
+    createdAt: column.text({ default: NOW }),
+  },
+});
+
 // https://astro.build/db/config
 export default defineDb({
   tables: {
     User,
     UserSession,
     Todo,
+    SharedTags,
   },
 });
