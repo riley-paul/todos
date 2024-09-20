@@ -57,8 +57,9 @@ export const deleteSharedTag = defineAction({
   }),
   handler: async ({ id }, c) => {
     const userId = isAuthorized(c).id;
-    return db
+    await db
       .delete(SharedTags)
       .where(and(eq(SharedTags.id, id), eq(SharedTags.userId, userId)));
+    return true;
   },
 });

@@ -94,6 +94,11 @@ export default function useMutations() {
     onError,
   });
 
+  const deleteSharedTag = useMutation({
+    mutationFn: actions.deleteSharedTag.orThrow,
+    onError,
+  });
+
   return {
     updateTodo,
     deleteTodo,
@@ -101,5 +106,6 @@ export default function useMutations() {
     createTodo,
     deleteUser,
     createSharedTag,
+    deleteSharedTag,
   };
 }

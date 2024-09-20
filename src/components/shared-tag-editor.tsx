@@ -12,9 +12,13 @@ import { Separator } from "./ui/separator";
 import SharedTagCreator from "./shared-tag-creator";
 import { Card } from "./ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import useMutations from "@/hooks/use-mutations";
+import DeleteButton from "./ui/delete-button";
 
 const SharedTagEditor: React.FC = () => {
   const { data = [] } = useQuery(sharedTagsQueryOptions);
+
+  const { deleteSharedTag } = useMutations();
 
   return (
     <Popover>
@@ -30,21 +34,30 @@ const SharedTagEditor: React.FC = () => {
 
         <div className="grid gap-1">
           {data.map((tag) => (
-            <Card
-              key={tag.SharedTags.id}
-              className="flex justify-between bg-background px-4 py-2"
-            >
-              <span>{tag.SharedTags.tag}</span>
-              <span className="flex gap-2 text-sm text-muted-foreground">
-                {tag.User.name}
-                <Avatar className="size-5">
-                  <AvatarImage src={tag.User.avatarUrl ?? ""} />
-                  <AvatarFallback>
-                    {tag.User.name.slice(0, 1).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-              </span>
-            </Card>
+            <div className="flex w-full items-center gap-2">
+              <Card
+                key={tag.SharedTags.id}
+                className="flex flex-1 justify-between bg-background px-4 py-2"
+              >
+                <span className="font-bold text-primary">
+                  {tag.SharedTags.tag}
+                </span>
+                <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                  {tag.User.name}
+                  <Avatar className="size-5">
+                    <AvatarImage src={tag.User.avatarUrl ?? ""} />
+                    <AvatarFallback>
+                      {tag.User.name.slice(0, 1).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </span>
+              </Card>
+              <DeleteButton
+                handleDelete={() =>
+                  deleteSharedTag.mutate({ id: tag.SharedTags.id })
+                }
+              />
+            </div>
           ))}
         </div>
         <Separator />
