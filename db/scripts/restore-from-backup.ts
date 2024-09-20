@@ -18,11 +18,11 @@ async function restoreFromBackup({ table, name }: AnyTable) {
 export default async function restoreAll() {
   for (const table of allTables.toReversed()) {
     await db.delete(table.table);
-    console.log(`Deleted ${table.name}`);
+    console.log(`🗑️ Deleted ${table.name}`);
   }
 
   for (const table of allTables) {
-    console.log(`Restoring ${table.name}`);
     await restoreFromBackup(table);
+    console.log(`✅ Restored ${table.name}`);
   }
 }
