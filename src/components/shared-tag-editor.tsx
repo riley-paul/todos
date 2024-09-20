@@ -8,7 +8,6 @@ import {
 import { Button } from "./ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { sharedTagsQueryOptions } from "@/lib/queries";
-import { Separator } from "./ui/separator";
 import SharedTagCreator from "./shared-tag-creator";
 import { Card } from "./ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -62,7 +61,6 @@ const SharedTagEditor: React.FC = () => {
             </div>
           ))}
         </div>
-        <Separator />
         <SharedTagCreator />
       </PopoverContent>
     </Popover>

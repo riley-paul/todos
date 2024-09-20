@@ -1,4 +1,3 @@
-import useSelectedTag from "@/hooks/use-selected-tag";
 import React from "react";
 import HashtagLink from "./hashtag-link";
 
@@ -8,7 +7,6 @@ type Props = {
 
 const TodoText: React.FC<Props> = (props) => {
   const { text } = props;
-  const { toggleTag } = useSelectedTag();
 
   return text.split(" ").map((word, index) => {
     const isTag = word.startsWith("#");

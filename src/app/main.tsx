@@ -28,7 +28,9 @@ const router = createBrowserRouter([
       <>
         <Header />
         <main className="container2">
-          <Outlet />
+          <div className="pb-28 pt-6">
+            <Outlet />
+          </div>
         </main>
       </>
     ),

@@ -2,7 +2,7 @@ import { CircleCheckBig, Share } from "lucide-react";
 import React from "react";
 import { cn } from "../lib/utils";
 import UserAvatar from "./user-avatar";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { buttonVariants } from "./ui/button";
 
 const Header: React.FC = () => {
@@ -20,13 +20,20 @@ const Header: React.FC = () => {
           </div>
         </Link>
         <div className="flex items-center gap-3">
-          <Link
+          <NavLink
             to="/shared"
-            className={cn(buttonVariants({ variant: "link", size: "sm" }))}
+            className={({ isActive }) =>
+              cn(
+                buttonVariants({
+                  variant: isActive ? "secondary" : "link",
+                  size: "sm",
+                }),
+              )
+            }
           >
             <Share className="mr-2 size-4" />
             <span>Shared</span>
-          </Link>
+          </NavLink>
           <UserAvatar />
         </div>
       </div>
