@@ -18,7 +18,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
+} from "@/components/ui/card";
 
 const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
   if (query.isLoading) {
@@ -53,7 +53,7 @@ const SharedTagCreator: React.FC = () => {
 
   const sharedUserQuery = useQuery({
     ...userByEmailQueryOptions(email),
-    enabled: z.string().email().safeParse(email).success,
+    enabled: email.length > 0,
   });
 
   const { createSharedTag } = useMutations();
@@ -63,6 +63,7 @@ const SharedTagCreator: React.FC = () => {
       <CardHeader>
         <CardTitle>
           <span>Share a Tag</span>
+          <i className="fa-solid fa-plus ml-2 text-primary" />
         </CardTitle>
         <CardDescription>
           Share todos with others by creating a shared tag
@@ -99,15 +100,20 @@ const SharedTagCreator: React.FC = () => {
               </div>
             </div>
           </div>
-          <Button
-            type="submit"
-            disabled={!sharedUserQuery.data || createSharedTag.isPending}
-            size="sm"
-            variant="secondary"
-          >
-            <i className="fa-solid fa-paper-plane mr-2" />
-            <span>Share</span>
-          </Button>
+          <div className="grid gap-2">
+            <Button
+              type="submit"
+              disabled={!sharedUserQuery.data || createSharedTag.isPending}
+              size="sm"
+              variant="secondary"
+            >
+              <i className="fa-solid fa-paper-plane mr-2" />
+              <span>Share</span>
+            </Button>
+            <small className="text-center text-xs text-muted-foreground">
+              Any todo with this tag will be shared with the user you specify
+            </small>
+          </div>
         </form>
       </CardContent>
     </Card>

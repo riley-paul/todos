@@ -1,4 +1,4 @@
-import { CircleCheckBig, Share } from "lucide-react";
+import { CircleCheckBig } from "lucide-react";
 import React from "react";
 import { cn } from "../lib/utils";
 import UserAvatar from "./user-avatar";
@@ -25,13 +25,13 @@ const Header: React.FC = () => {
             className={({ isActive }) =>
               cn(
                 buttonVariants({
-                  variant: isActive ? "secondary" : "link",
+                  variant: isActive ? "secondary" : "ghost",
                   size: "sm",
                 }),
               )
             }
           >
-            <Share className="mr-2 size-4" />
+            <i className="fa-solid fa-share mr-2" />
             <span>Shared</span>
           </NavLink>
           <UserAvatar />

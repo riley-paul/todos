@@ -1,6 +1,6 @@
 import { ActionError, defineAction } from "astro:actions";
 import { isAuthorized } from "./_helpers";
-import { db, SharedTags, eq, desc, and, User } from "astro:db";
+import { db, SharedTag, eq, desc, and, User } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
@@ -10,10 +10,10 @@ export const getSharedTags = defineAction({
     const userId = isAuthorized(c).id;
     return db
       .select()
-      .from(SharedTags)
-      .where(eq(SharedTags.userId, userId))
-      .innerJoin(User, eq(User.id, SharedTags.sharedUserId))
-      .orderBy(desc(SharedTags.createdAt));
+      .from(SharedTag)
+      .where(eq(SharedTag.userId, userId))
+      .innerJoin(User, eq(User.id, SharedTag.sharedUserId))
+      .orderBy(desc(SharedTag.createdAt));
   },
 });
 
@@ -39,7 +39,7 @@ export const createSharedTag = defineAction({
     }
 
     return db
-      .insert(SharedTags)
+      .insert(SharedTag)
       .values({
         id: uuid(),
         tag,
@@ -58,8 +58,8 @@ export const deleteSharedTag = defineAction({
   handler: async ({ id }, c) => {
     const userId = isAuthorized(c).id;
     await db
-      .delete(SharedTags)
-      .where(and(eq(SharedTags.id, id), eq(SharedTags.userId, userId)));
+      .delete(SharedTag)
+      .where(and(eq(SharedTag.id, id), eq(SharedTag.userId, userId)));
     return true;
   },
 });
