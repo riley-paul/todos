@@ -1,6 +1,8 @@
 # Created by https://www.toptal.com/developers/gitignore/api/node,react,vercel
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,react,vercel
 
+db/data
+
 ### Node ###
 # Logs
 logs

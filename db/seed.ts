@@ -17,8 +17,10 @@ export default async function seed() {
     })
     .returning()
     .then((rows) => rows[0]);
+  console.log("✅ Seeded user");
 
   await db
     .insert(Todo)
     .values(todoText.map((text) => ({ id: uuid(), userId, text })));
+  console.log("✅ Seeded todos");
 }
