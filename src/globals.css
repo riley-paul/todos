@@ -82,9 +82,9 @@
     @apply mx-auto w-full max-w-md px-4 lg:max-w-xl;
   }
 
-  @media (pointer: coarse) {
+  /* @media (pointer: coarse) {
     :root {
       @apply text-lg;
     }
-  }
+  } */
 }

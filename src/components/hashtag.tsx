@@ -5,10 +5,11 @@ import useSelectedTag from "../hooks/use-selected-tag";
 
 type Props = {
   hashtag: string;
+  isGhost?: boolean;
 };
 
 const Hashtag: React.FC<Props> = (props) => {
-  const { hashtag } = props;
+  const { hashtag, isGhost } = props;
 
   const { tag, toggleTag } = useSelectedTag();
   const isActive = tag === hashtag;
@@ -17,10 +18,14 @@ const Hashtag: React.FC<Props> = (props) => {
     <button
       onClick={() => toggleTag(hashtag)}
       title={hashtag === "~" ? "No tag" : `Tag: ${hashtag}`}
+      className={cn(isGhost && "opacity-50")}
     >
       <Badge
         variant="secondary"
-        className={cn(isActive && "outline outline-2 outline-primary")}
+        className={cn(
+          isActive && "outline outline-2 outline-primary",
+          isGhost && "outline-dashed",
+        )}
       >
         {hashtag}
       </Badge>

@@ -14,6 +14,7 @@ import { Card } from "./ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import useMutations from "@/hooks/use-mutations";
 import DeleteButton from "./ui/delete-button";
+import HashtagLink from "./hashtag-link";
 
 const SharedTagEditor: React.FC = () => {
   const { data = [] } = useQuery(sharedTagsQueryOptions);
@@ -37,12 +38,13 @@ const SharedTagEditor: React.FC = () => {
             <div className="flex w-full items-center gap-2">
               <Card
                 key={tag.SharedTags.id}
-                className="flex flex-1 justify-between bg-background px-4 py-2"
+                className="flex flex-1 justify-between bg-background px-4 py-2 text-sm"
               >
-                <span className="font-bold text-primary">
-                  {tag.SharedTags.tag}
-                </span>
-                <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                <HashtagLink
+                  tag={tag.SharedTags.tag}
+                  string={tag.SharedTags.tag}
+                />
+                <span className="flex items-center gap-2 text-muted-foreground">
                   {tag.User.name}
                   <Avatar className="size-5">
                     <AvatarImage src={tag.User.avatarUrl ?? ""} />
