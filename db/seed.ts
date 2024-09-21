@@ -2,6 +2,7 @@ import { SharedTag, Todo, User, db } from "astro:db";
 import { todoText } from "./seeds/todo-text";
 
 import { v4 as uuid } from "uuid";
+import { randomItemFromArray } from "./seeds/helpers";
 
 // https://astro.build/db/seed
 export default async function seed() {
@@ -35,7 +36,13 @@ export default async function seed() {
 
   await db
     .insert(Todo)
-    .values(todoText.map((text) => ({ id: uuid(), userId: userIds[0], text })));
+    .values(
+      todoText.map((text) => ({
+        id: uuid(),
+        userId: randomItemFromArray(userIds),
+        text,
+      })),
+    );
   console.log("✅ Seeded todos");
 
   await db.insert(SharedTag).values([

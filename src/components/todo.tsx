@@ -3,12 +3,18 @@ import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { Card } from "./ui/card";
 import DeleteButton from "./ui/delete-button";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Link2, Loader2 } from "lucide-react";
 import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import TodoEditor from "./todo-editor";
 import TodoText from "./todo-text";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Props {
   todo: TodoSelect;
@@ -77,6 +83,16 @@ const TodoItem: React.FC<Props> = (props) => {
         >
           <TodoText text={todo.text} />
         </button>
+      )}
+      {todo.isShared && (
+        <Tooltip>
+          <TooltipTrigger>
+            <Link2 className="size-4" />
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            Created by {todo.user.name}
+          </TooltipContent>
+        </Tooltip>
       )}
       <DeleteButton handleDelete={() => deleteTodo.mutate({ id: todo.id })} />
     </Card>

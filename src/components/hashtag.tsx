@@ -2,6 +2,7 @@ import React from "react";
 import { Badge } from "./ui/badge";
 import { cn } from "../lib/utils";
 import useSelectedTag from "../hooks/use-selected-tag";
+import { Link } from "react-router-dom";
 
 type Props = {
   hashtag: string;
@@ -11,12 +12,12 @@ type Props = {
 const Hashtag: React.FC<Props> = (props) => {
   const { hashtag, isGhost } = props;
 
-  const { tag, toggleTag } = useSelectedTag();
+  const { tag } = useSelectedTag();
   const isActive = tag === hashtag;
 
   return (
-    <button
-      onClick={() => toggleTag(hashtag)}
+    <Link
+      to={isActive ? "/" : `/?tag=${hashtag}`}
       title={hashtag === "~" ? "No tag" : `Tag: ${hashtag}`}
       className={cn(isGhost && "opacity-50")}
     >
@@ -29,7 +30,7 @@ const Hashtag: React.FC<Props> = (props) => {
       >
         {hashtag}
       </Badge>
-    </button>
+    </Link>
   );
 };
 
