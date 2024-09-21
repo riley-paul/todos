@@ -14,7 +14,6 @@ import {
   Todo,
   User,
 } from "astro:db";
-import { inArray } from "drizzle-orm";
 
 export const isAuthorized = (context: ActionAPIContext) => {
   const user = context.locals.user;
@@ -27,19 +26,19 @@ export const isAuthorized = (context: ActionAPIContext) => {
   return user;
 };
 
-type GetTodoProps = {
-  tag?: string;
-  c: ActionAPIContext;
-};
-
 const todoContainsTag = (tag: string) => like(Todo.text, `%#${tag}%`);
 const todoHasNoTag = not(like(Todo.text, "%#%"));
 
-const filterTodoByTag = (tag: string | undefined) =>
-  or(
-    tag ? todoContainsTag(tag) : undefined,
-    tag === "~" ? todoHasNoTag : undefined,
-  );
+const filterTodoByTag = (tag: string | undefined) => {
+  if (tag === "~") return todoHasNoTag;
+  if (tag) return todoContainsTag(tag);
+  return;
+};
+
+type GetTodoProps = {
+  tag: string | undefined;
+  c: ActionAPIContext;
+};
 
 export const queryTodos = async ({
   tag,
@@ -49,23 +48,30 @@ export const queryTodos = async ({
   const sharedTags = await db
     .select()
     .from(SharedTag)
-    .where(or(eq(SharedTag.id, userId), eq(SharedTag.sharedUserId, userId)));
+    .where(
+      and(
+        eq(SharedTag.isPending, false),
+        or(eq(SharedTag.userId, userId), eq(SharedTag.sharedUserId, userId)),
+      ),
+    );
 
-  const sharedTagNames = sharedTags.map(({ tag }) => tag);
-  const sharedTagUserIds = [
-    ...sharedTags.map(({ userId }) => userId),
-    ...sharedTags.map(({ sharedUserId }) => sharedUserId),
-  ];
+  const sharedTagCriteria = () => {
+    if (!sharedTags.length) return;
+    return or(
+      ...sharedTags.map(({ userId, tag }) =>
+        and(eq(Todo.userId, userId), todoContainsTag(tag)),
+      ),
+    );
+  };
 
   const todos = await db
     .select()
     .from(Todo)
     .where(
       and(
+        or(eq(Todo.userId, userId), sharedTagCriteria()),
         eq(Todo.isDeleted, false),
-        or(eq(Todo.userId, userId), inArray(Todo.userId, sharedTagUserIds)),
         filterTodoByTag(tag),
-        or(...sharedTagNames.map(todoContainsTag)),
       ),
     )
     .innerJoin(User, eq(User.id, Todo.userId))
