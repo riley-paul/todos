@@ -2,7 +2,6 @@ import React from "react";
 
 import { useQuery } from "@tanstack/react-query";
 import { sharedTagsQueryOptions } from "@/lib/queries";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import useMutations from "@/hooks/use-mutations";
 import DeleteButton from "./ui/delete-button";
 import HashtagLink from "./hashtag-link";
@@ -19,6 +18,7 @@ import { cn } from "@/lib/utils";
 import type { SharedTagSelect, UserSelect } from "@/lib/types";
 import { Check, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
+import OtherUserAvatar from "./other-user-avatar";
 
 const ListPlaceholder: React.FC<React.PropsWithChildren> = ({ children }) => (
   <span
@@ -35,16 +35,6 @@ const ListPlaceholder: React.FC<React.PropsWithChildren> = ({ children }) => (
 const ListHeader: React.FC<React.PropsWithChildren> = ({ children }) => (
   <span className="text-xs font-bold uppercase text-muted-foreground">
     {children}
-  </span>
-);
-
-const UserAvatar: React.FC<{ user: UserSelect }> = ({ user }) => (
-  <span className="flex h-full items-center justify-end gap-2 text-xs text-muted-foreground">
-    {user.name}
-    <Avatar className="size-6">
-      <AvatarImage src={user.avatarUrl ?? ""} />
-      <AvatarFallback>{user.name.slice(0, 1).toUpperCase()}</AvatarFallback>
-    </Avatar>
   </span>
 );
 
@@ -77,7 +67,7 @@ const SharedTagItem: React.FC<{
       <div className="flex-1">
         <HashtagLink tag={tag.tag} string={tag.tag} />
       </div>
-      <UserAvatar user={user} />
+      <OtherUserAvatar user={user} />
       {showApproveButton && (
         <Button
           size="sm"
