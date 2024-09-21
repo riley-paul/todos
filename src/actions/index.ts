@@ -1,5 +1,5 @@
 import * as todos from "./todos";
 import * as users from "./users";
-import * as sharedTags from "./shared-tags";
+import * as hashtags from "./hashtags";
 
-export const server = { ...todos, ...users, ...sharedTags };
+export const server = { ...todos, ...users, ...hashtags };
