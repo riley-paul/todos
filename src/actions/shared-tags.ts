@@ -8,12 +8,25 @@ import { z } from "zod";
 export const getSharedTags = defineAction({
   handler: async (_, c) => {
     const userId = isAuthorized(c).id;
-    return db
+
+    const sharedToUser = await db
+      .select()
+      .from(SharedTag)
+      .where(eq(SharedTag.sharedUserId, userId))
+      .innerJoin(User, eq(User.id, SharedTag.userId))
+      .orderBy(desc(SharedTag.createdAt));
+
+    const sharedByUser = await db
       .select()
       .from(SharedTag)
       .where(eq(SharedTag.userId, userId))
       .innerJoin(User, eq(User.id, SharedTag.sharedUserId))
       .orderBy(desc(SharedTag.createdAt));
+
+    return {
+      sharedToUser,
+      sharedByUser,
+    };
   },
 });
 
