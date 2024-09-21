@@ -12,9 +12,9 @@ const TodoText: React.FC<Props> = (props) => {
     const isTag = word.startsWith("#");
     if (isTag) {
       return (
-        <>
-          <HashtagLink key={index} tag={word.slice(1)} string={word} />{" "}
-        </>
+        <React.Fragment key={index}>
+          <HashtagLink tag={word.slice(1)} string={word} />{" "}
+        </React.Fragment>
       );
     }
     return <span key={index}>{word} </span>;

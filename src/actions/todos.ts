@@ -1,6 +1,6 @@
 import { defineAction } from "astro:actions";
-import { isAuthorized } from "./_helpers";
-import { and, asc, db, desc, eq, like, not, or, Todo } from "astro:db";
+import { isAuthorized, queryTodos } from "./_helpers";
+import { and, db, eq, Todo } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
@@ -12,22 +12,7 @@ export const getTodos = defineAction({
     tag: z.string().optional(),
   }),
   handler: async ({ tag }, c) => {
-    const userId = isAuthorized(c).id;
-    const todos = await db
-      .select()
-      .from(Todo)
-      .where(
-        and(
-          eq(Todo.isDeleted, false),
-          eq(Todo.userId, userId),
-          or(
-            tag ? like(Todo.text, `%#${tag}%`) : undefined,
-            tag === "~" ? not(like(Todo.text, "%#%")) : undefined,
-          ),
-        ),
-      )
-      .orderBy(asc(Todo.isCompleted), desc(Todo.createdAt));
-    return todos;
+    return await queryTodos({ tag, c });
   },
 });
 

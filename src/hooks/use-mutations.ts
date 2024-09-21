@@ -2,37 +2,15 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { actions } from "astro:actions";
 import useMutationHelpers from "./use-mutation-helpers";
-import { type TodoSelect } from "@/lib/types";
-import { hashtagQueryOptions } from "@/lib/queries";
 
 export default function useMutations() {
   const client = useQueryClient();
-  const todosQueryKey = ["todos"];
-  const tagsQueryKey = hashtagQueryOptions.queryKey;
 
-  const {
-    onError,
-    onMutateMessage,
-    toastId,
-    optimisticUpdate,
-    onErrorOptimistic,
-  } = useMutationHelpers();
+  const { onError, onMutateMessage, toastId } = useMutationHelpers();
 
   const updateTodo = useMutation({
     mutationFn: actions.updateTodo.orThrow,
-    onMutate: async ({ id, data }) => {
-      optimisticUpdate<TodoSelect[]>(tagsQueryKey, (prev) =>
-        prev.map((todo) => (todo.id === id ? { ...todo, ...data } : todo)),
-      );
-      return optimisticUpdate<TodoSelect[]>(todosQueryKey, (prev) =>
-        prev.map((todo) => (todo.id === id ? { ...todo, ...data } : todo)),
-      );
-    },
-    onError: (error, _, context) => {
-      onErrorOptimistic(tagsQueryKey, context);
-      onErrorOptimistic(todosQueryKey, context);
-      onError(error);
-    },
+    onError,
   });
 
   const undoDeleteTodo = useMutation({
@@ -48,26 +26,13 @@ export default function useMutations() {
 
   const deleteTodo = useMutation({
     mutationFn: actions.deleteTodo.orThrow,
-    onMutate: ({ id }) => {
-      onMutateMessage("Deleting todo...");
-      optimisticUpdate<TodoSelect[]>(tagsQueryKey, (prev) =>
-        prev.filter((todo) => todo.id !== id),
-      );
-      return optimisticUpdate<TodoSelect[]>(todosQueryKey, (prev) =>
-        prev.filter((todo) => todo.id !== id),
-      );
-    },
     onSuccess: (id) => {
       toast.success("Todo deleted", {
         id: toastId.current,
         action: { label: "Undo", onClick: () => undoDeleteTodo.mutate({ id }) },
       });
     },
-    onError: (error, _, context) => {
-      onErrorOptimistic(tagsQueryKey, context);
-      onErrorOptimistic(todosQueryKey, context);
-      onError(error);
-    },
+    onError,
   });
 
   const deleteCompleted = useMutation({
