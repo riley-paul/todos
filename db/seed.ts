@@ -22,6 +22,12 @@ export default async function seed() {
         name: "John Doe",
         avatarUrl: "https://randomuser.me/api/portraits/men/91.jpg",
       },
+      {
+        id: uuid(),
+        email: "hello2@example.com",
+        name: "Jill Power",
+        avatarUrl: "https://randomuser.me/api/portraits/women/27.jpg",
+      },
     ])
     .returning({ id: User.id })
     .then((users) => users.map((user) => user.id));
@@ -51,6 +57,32 @@ export default async function seed() {
       tag: "work",
       userId: userIds[1],
       sharedUserId: userIds[0],
+    },
+    {
+      id: uuid(),
+      tag: "house",
+      userId: userIds[1],
+      isPending: false,
+      sharedUserId: userIds[0],
+    },
+    {
+      id: uuid(),
+      tag: "chores",
+      userId: userIds[1],
+      sharedUserId: userIds[0],
+    },
+    {
+      id: uuid(),
+      tag: "house",
+      userId: userIds[2],
+      isPending: false,
+      sharedUserId: userIds[0],
+    },
+    {
+      id: uuid(),
+      tag: "chores",
+      userId: userIds[0],
+      sharedUserId: userIds[2],
     },
   ]);
 }

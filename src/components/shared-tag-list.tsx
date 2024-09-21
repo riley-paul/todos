@@ -15,7 +15,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import type { SharedTagSelect, UserSelect } from "@/lib/types";
 import { Check, Loader2 } from "lucide-react";
@@ -54,10 +53,11 @@ const SharedTagItem: React.FC<{
   user: UserSelect;
   createdByUser?: boolean;
 }> = ({ tag, user, createdByUser }) => {
-  const { deleteSharedTag } = useMutations();
+  const { deleteSharedTag, approveSharedTag } = useMutations();
+  const showApproveButton = tag.isPending && !createdByUser;
   return (
-    <TableRow>
-      <TableCell className="w-4 pr-0 text-center">
+    <div className="flex min-h-11 items-center gap-2 px-2 text-sm transition-colors ease-in hover:bg-muted/20">
+      <div className="w-4 text-center">
         {tag.isPending ? (
           <Tooltip>
             <TooltipTrigger>
@@ -73,27 +73,25 @@ const SharedTagItem: React.FC<{
             <TooltipContent side="left">Approved</TooltipContent>
           </Tooltip>
         )}
-      </TableCell>
-      <TableCell>
+      </div>
+      <div className="flex-1">
         <HashtagLink tag={tag.tag} string={tag.tag} />
-      </TableCell>
-      <TableCell className="text-right">
-        <UserAvatar user={user} />
-      </TableCell>
-      <TableCell className="w-4 text-center">
-        <span className="flex items-center gap-1">
-          {tag.isPending && !createdByUser && (
-            <Button size="sm" variant="outline">
-              <Check className="mr-2 size-4" />
-              <span>Approve</span>
-            </Button>
-          )}
-          <DeleteButton
-            handleDelete={() => deleteSharedTag.mutate({ id: tag.id })}
-          />
-        </span>
-      </TableCell>
-    </TableRow>
+      </div>
+      <UserAvatar user={user} />
+      {showApproveButton && (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => approveSharedTag.mutate({ id: tag.id })}
+        >
+          <Check className="mr-2 size-4" />
+          <span>Approve</span>
+        </Button>
+      )}
+      <DeleteButton
+        handleDelete={() => deleteSharedTag.mutate({ id: tag.id })}
+      />
+    </div>
   );
 };
 
@@ -117,17 +115,15 @@ const SharedTagList: React.FC = () => {
           <>
             <ListHeader>Shared by you</ListHeader>
             {data.sharedByUser.length > 0 ? (
-              <Table>
-                <TableBody>
-                  {data.sharedByUser.map((tag) => (
-                    <SharedTagItem
-                      createdByUser
-                      tag={tag.SharedTag}
-                      user={tag.User}
-                    />
-                  ))}
-                </TableBody>
-              </Table>
+              <div className="grid divide-y">
+                {data.sharedByUser.map((tag) => (
+                  <SharedTagItem
+                    createdByUser
+                    tag={tag.SharedTag}
+                    user={tag.User}
+                  />
+                ))}
+              </div>
             ) : (
               <ListPlaceholder>You haven't shared any tags</ListPlaceholder>
             )}
@@ -136,13 +132,11 @@ const SharedTagList: React.FC = () => {
 
             <ListHeader>Shared with you</ListHeader>
             {data.sharedToUser.length > 0 ? (
-              <Table>
-                <TableBody>
-                  {data.sharedToUser.map((tag) => (
-                    <SharedTagItem tag={tag.SharedTag} user={tag.User} />
-                  ))}
-                </TableBody>
-              </Table>
+              <div className="grid divide-y">
+                {data.sharedToUser.map((tag) => (
+                  <SharedTagItem tag={tag.SharedTag} user={tag.User} />
+                ))}
+              </div>
             ) : (
               <ListPlaceholder>
                 No one has shared a tag with you

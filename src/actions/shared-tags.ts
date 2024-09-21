@@ -1,9 +1,10 @@
 import { ActionError, defineAction } from "astro:actions";
 import { isAuthorized } from "./_helpers";
-import { db, SharedTag, eq, desc, and, User } from "astro:db";
+import { db, SharedTag, eq, and, User, or } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
+import { asc } from "astro:db";
 
 export const getSharedTags = defineAction({
   handler: async (_, c) => {
@@ -14,14 +15,14 @@ export const getSharedTags = defineAction({
       .from(SharedTag)
       .where(eq(SharedTag.sharedUserId, userId))
       .innerJoin(User, eq(User.id, SharedTag.userId))
-      .orderBy(desc(SharedTag.createdAt));
+      .orderBy(asc(SharedTag.isPending), asc(SharedTag.tag));
 
     const sharedByUser = await db
       .select()
       .from(SharedTag)
       .where(eq(SharedTag.userId, userId))
       .innerJoin(User, eq(User.id, SharedTag.sharedUserId))
-      .orderBy(desc(SharedTag.createdAt));
+      .orderBy(asc(SharedTag.isPending), asc(SharedTag.tag));
 
     return {
       sharedToUser,
@@ -72,7 +73,29 @@ export const deleteSharedTag = defineAction({
     const userId = isAuthorized(c).id;
     await db
       .delete(SharedTag)
-      .where(and(eq(SharedTag.id, id), eq(SharedTag.userId, userId)));
+      .where(
+        and(
+          eq(SharedTag.id, id),
+          or(eq(SharedTag.userId, userId), eq(SharedTag.sharedUserId, userId)),
+        ),
+      );
     return true;
+  },
+});
+
+export const approveSharedTag = defineAction({
+  input: z.object({
+    id: z.string(),
+  }),
+  handler: async ({ id }, c) => {
+    const userId = isAuthorized(c).id;
+    const sharedTag = await db
+      .update(SharedTag)
+      .set({ isPending: false })
+      .where(and(eq(SharedTag.id, id), eq(SharedTag.sharedUserId, userId)))
+      .returning()
+      .then((rows) => rows[0]);
+
+    return sharedTag;
   },
 });

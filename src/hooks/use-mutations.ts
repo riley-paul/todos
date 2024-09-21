@@ -99,6 +99,11 @@ export default function useMutations() {
     onError,
   });
 
+  const approveSharedTag = useMutation({
+    mutationFn: actions.approveSharedTag.orThrow,
+    onError,
+  });
+
   return {
     updateTodo,
     deleteTodo,
@@ -107,5 +112,6 @@ export default function useMutations() {
     deleteUser,
     createSharedTag,
     deleteSharedTag,
+    approveSharedTag,
   };
 }
