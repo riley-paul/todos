@@ -35,16 +35,7 @@ const filterTodoByTag = (tag: string | undefined) => {
   return;
 };
 
-type GetTodoProps = {
-  tag: string | undefined;
-  c: ActionAPIContext;
-};
-
-export const queryTodos = async ({
-  tag,
-  c,
-}: GetTodoProps): Promise<TodoSelect[]> => {
-  const userId = isAuthorized(c).id;
+export const filterTodoBySharedTag = async (userId: string) => {
   const sharedTags = await db
     .select()
     .from(SharedTag)
@@ -55,21 +46,27 @@ export const queryTodos = async ({
       ),
     );
 
-  const sharedTagCriteria = () => {
-    if (!sharedTags.length) return;
-    return or(
-      ...sharedTags.map(({ userId, tag }) =>
-        and(eq(Todo.userId, userId), todoContainsTag(tag)),
-      ),
-    );
-  };
+  if (sharedTags.length === 0) return;
+
+  return or(
+    ...sharedTags.map(({ userId, tag }) =>
+      and(eq(Todo.userId, userId), todoContainsTag(tag)),
+    ),
+  );
+};
+
+export const queryTodos = async (
+  tag: string | undefined,
+  userId: string,
+): Promise<TodoSelect[]> => {
+  const sharedTagCriteria = await filterTodoBySharedTag(userId);
 
   const todos = await db
     .select()
     .from(Todo)
     .where(
       and(
-        or(eq(Todo.userId, userId), sharedTagCriteria()),
+        or(eq(Todo.userId, userId), sharedTagCriteria),
         eq(Todo.isDeleted, false),
         filterTodoByTag(tag),
       ),
@@ -84,4 +81,25 @@ export const queryTodos = async ({
       })),
     );
   return todos;
+};
+
+export const queryHashtags = async (userId: string): Promise<string[]> => {
+  const todos = await queryTodos(undefined, userId);
+  const areUntaggedTodos = todos.some((todo) => !todo.text.includes("#"));
+
+  const tags = todos.reduce((acc, todo) => {
+    const matches = todo.text.match(/#[a-zA-Z0-9]+/g);
+    matches?.forEach((match) => {
+      acc.add(match);
+    });
+    return acc;
+  }, new Set<string>());
+
+  const hashtags = Array.from(tags).map((tag) => tag.replace("#", ""));
+
+  if (areUntaggedTodos) {
+    hashtags.unshift("~");
+  }
+
+  return hashtags;
 };

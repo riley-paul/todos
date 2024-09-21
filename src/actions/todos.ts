@@ -12,7 +12,8 @@ export const getTodos = defineAction({
     tag: z.string().optional(),
   }),
   handler: async ({ tag }, c) => {
-    return await queryTodos({ tag, c });
+    const userId = isAuthorized(c).id;
+    return await queryTodos(tag, userId);
   },
 });
 
