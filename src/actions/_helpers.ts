@@ -1,4 +1,4 @@
-import type { TodoSelect } from "@/lib/types";
+import type { TagSelect, TodoSelect } from "@/lib/types";
 import type { ActionAPIContext } from "astro/actions/runtime/utils.js";
 import { ActionError } from "astro:actions";
 import {
@@ -83,7 +83,7 @@ export const queryTodos = async (
   return todos;
 };
 
-export const queryHashtags = async (userId: string): Promise<string[]> => {
+export const queryHashtags = async (userId: string): Promise<TagSelect[]> => {
   const todos = await queryTodos(undefined, userId);
   const areUntaggedTodos = todos.some((todo) => !todo.text.includes("#"));
 
@@ -95,11 +95,26 @@ export const queryHashtags = async (userId: string): Promise<string[]> => {
     return acc;
   }, new Set<string>());
 
-  const hashtags = Array.from(tags).map((tag) => tag.replace("#", ""));
+  const sharedTags = await db
+    .select({ tag: SharedTag.tag })
+    .from(SharedTag)
+    .where(
+      and(or(eq(SharedTag.userId, userId), eq(SharedTag.sharedUserId, userId))),
+    )
+    .then((rows) => rows.map((row) => row.tag));
+  console.log(sharedTags);
+
+  const hashtags: TagSelect[] = Array.from(tags)
+    .map((tag) => tag.replace("#", ""))
+    .map((tag) => ({
+      tag,
+      isShared: sharedTags.includes(tag),
+    }));
 
   if (areUntaggedTodos) {
-    hashtags.unshift("~");
+    hashtags.unshift({ tag: "~", isShared: false });
   }
 
+  console.log(hashtags);
   return hashtags;
 };
