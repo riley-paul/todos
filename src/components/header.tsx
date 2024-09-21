@@ -4,8 +4,15 @@ import { cn } from "../lib/utils";
 import UserAvatar from "./user-avatar";
 import { Link, NavLink } from "react-router-dom";
 import { buttonVariants } from "./ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { sharedTagsQueryOptions } from "@/lib/queries";
+import { Badge } from "./ui/badge";
 
 const Header: React.FC = () => {
+  const { data } = useQuery(sharedTagsQueryOptions);
+  const pendingSharedTagsCount =
+    data?.sharedToUser.filter((i) => i.SharedTag.isPending).length ?? 0;
+
   return (
     <header
       className={cn(
@@ -24,6 +31,7 @@ const Header: React.FC = () => {
             to="/shared"
             className={({ isActive }) =>
               cn(
+                "gap-2",
                 buttonVariants({
                   variant: isActive ? "secondary" : "ghost",
                   size: "sm",
@@ -31,8 +39,11 @@ const Header: React.FC = () => {
               )
             }
           >
-            <i className="fa-solid fa-share mr-2" />
+            <i className="fa-solid fa-share" />
             <span>Shared</span>
+            {pendingSharedTagsCount > 0 && (
+              <Badge variant="secondary">{pendingSharedTagsCount}</Badge>
+            )}
           </NavLink>
           <UserAvatar />
         </div>

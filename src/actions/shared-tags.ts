@@ -15,14 +15,14 @@ export const getSharedTags = defineAction({
       .from(SharedTag)
       .where(eq(SharedTag.sharedUserId, userId))
       .innerJoin(User, eq(User.id, SharedTag.userId))
-      .orderBy(asc(SharedTag.isPending), asc(SharedTag.tag));
+      .orderBy(asc(SharedTag.isPending), asc(SharedTag.createdAt));
 
     const sharedByUser = await db
       .select()
       .from(SharedTag)
       .where(eq(SharedTag.userId, userId))
       .innerJoin(User, eq(User.id, SharedTag.sharedUserId))
-      .orderBy(asc(SharedTag.isPending), asc(SharedTag.tag));
+      .orderBy(asc(SharedTag.isPending), asc(SharedTag.createdAt));
 
     return {
       sharedToUser,
