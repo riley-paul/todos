@@ -35,8 +35,8 @@ const filterTodoByTag = (tag: string | undefined) => {
   return;
 };
 
-export const filterTodoBySharedTag = async (userId: string) => {
-  const sharedTags = await db
+const querySharedTags = (userId: string) =>
+  db
     .select()
     .from(SharedTag)
     .where(
@@ -45,6 +45,9 @@ export const filterTodoBySharedTag = async (userId: string) => {
         or(eq(SharedTag.userId, userId), eq(SharedTag.sharedUserId, userId)),
       ),
     );
+
+export const filterTodoBySharedTag = async (userId: string) => {
+  const sharedTags = await querySharedTags(userId);
 
   if (sharedTags.length === 0) return;
 
@@ -95,14 +98,9 @@ export const queryHashtags = async (userId: string): Promise<TagSelect[]> => {
     return acc;
   }, new Set<string>());
 
-  const sharedTags = await db
-    .select({ tag: SharedTag.tag })
-    .from(SharedTag)
-    .where(
-      and(or(eq(SharedTag.userId, userId), eq(SharedTag.sharedUserId, userId))),
-    )
-    .then((rows) => rows.map((row) => row.tag));
-  console.log(sharedTags);
+  const sharedTags = await querySharedTags(userId).then((rows) =>
+    rows.map((row) => row.tag),
+  );
 
   const hashtags: TagSelect[] = Array.from(tags)
     .map((tag) => tag.replace("#", ""))
