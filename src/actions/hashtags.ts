@@ -5,6 +5,7 @@ import { db, SharedTag, eq, and, User, or } from "astro:db";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
 import { asc } from "astro:db";
+import invalidateUsers from "./helpers/invalidate-users";
 
 export const getSharedTags = defineAction({
   handler: async (_, c) => {
@@ -59,7 +60,7 @@ export const createSharedTag = defineAction({
       });
     }
 
-    return db
+    const newTag = await db
       .insert(SharedTag)
       .values({
         id: uuid(),
@@ -69,6 +70,9 @@ export const createSharedTag = defineAction({
       })
       .returning()
       .then((rows) => rows[0]);
+
+    invalidateUsers([sharedUserId, userId]);
+    return newTag;
   },
 });
 
@@ -78,14 +82,18 @@ export const deleteSharedTag = defineAction({
   }),
   handler: async ({ id }, c) => {
     const userId = isAuthorized(c).id;
-    await db
+    const deleted = await db
       .delete(SharedTag)
       .where(
         and(
           eq(SharedTag.id, id),
           or(eq(SharedTag.userId, userId), eq(SharedTag.sharedUserId, userId)),
         ),
-      );
+      )
+      .returning()
+      .then((rows) => rows[0]);
+
+    invalidateUsers([deleted.sharedUserId, userId]);
     return true;
   },
 });
@@ -103,6 +111,7 @@ export const approveSharedTag = defineAction({
       .returning()
       .then((rows) => rows[0]);
 
+    invalidateUsers([sharedTag.sharedUserId, userId]);
     return sharedTag;
   },
 });

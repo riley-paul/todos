@@ -46,6 +46,38 @@ const querySharedTags = (userId: string) =>
       ),
     );
 
+export const getUsersOfTodo = async (todoId: string): Promise<string[]> => {
+  const todo = await db
+    .select()
+    .from(Todo)
+    .where(eq(Todo.id, todoId))
+    .then((rows) => rows[0]);
+
+  if (!todo) {
+    throw new ActionError({
+      code: "NOT_FOUND",
+      message: "Todo not found.",
+    });
+  }
+
+  const userIds = [todo.userId];
+
+  const sharedTags = await querySharedTags(todo.userId);
+  const todoTags = [...new Set(todo.text.match(/#[a-zA-Z0-9]+/g))].map((tag) =>
+    tag.replace("#", ""),
+  );
+
+  for (let sharedTag of sharedTags) {
+    if (todoTags.includes(sharedTag.tag)) {
+      userIds.push(sharedTag.sharedUserId);
+      userIds.push(sharedTag.userId);
+    }
+  }
+
+  console.log("affected users", userIds);
+  return userIds;
+};
+
 export const filterTodoBySharedTag = async (userId: string) => {
   const sharedTags = await querySharedTags(userId);
 

@@ -1,10 +1,15 @@
 import { defineAction } from "astro:actions";
-import { filterTodoBySharedTag, isAuthorized, queryTodos } from "./_helpers";
+import {
+  filterTodoBySharedTag,
+  getUsersOfTodo,
+  isAuthorized,
+  queryTodos,
+} from "./_helpers";
 import { and, db, eq, or, Todo } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
-import InvalidationController from "@/lib/invalidation-controller";
+import invalidateUsers from "./helpers/invalidate-users";
 
 const todoUpdateSchema = z.custom<Partial<typeof Todo.$inferInsert>>();
 
@@ -27,7 +32,10 @@ export const createTodo = defineAction({
     const todo = await db
       .insert(Todo)
       .values({ id: uuid(), text: "", ...data, userId })
-      .returning();
+      .returning()
+      .then((rows) => rows[0]);
+
+    invalidateUsers(await getUsersOfTodo(todo.id));
     return todo;
   },
 });
@@ -48,8 +56,7 @@ export const updateTodo = defineAction({
       .returning()
       .then((rows) => rows[0]);
 
-    InvalidationController.getInstance().invalidateKey([userId]);
-
+    invalidateUsers(await getUsersOfTodo(todo.id));
     return todo;
   },
 });
@@ -67,6 +74,8 @@ export const deleteTodo = defineAction({
       .where(and(eq(Todo.id, id), or(eq(Todo.userId, userId), sharedTagFilter)))
       .returning()
       .then((rows) => rows[0]);
+
+    invalidateUsers(await getUsersOfTodo(todo.id));
     return todo.id;
   },
 });
@@ -84,6 +93,8 @@ export const undoDeleteTodo = defineAction({
       .where(and(eq(Todo.id, id), or(eq(Todo.userId, userId), sharedTagFilter)))
       .returning()
       .then((rows) => rows[0]);
+
+    invalidateUsers(await getUsersOfTodo(todo.id));
     return todo.id;
   },
 });
