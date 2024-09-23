@@ -79,7 +79,7 @@ const SharedTagCreator: React.FC = () => {
             setTag("");
           }}
         >
-          <div className="grid grid-cols-[2fr_3fr] gap-2">
+          <div className="grid gap-2 sm:grid-cols-[2fr_3fr]">
             <Input
               type="text"
               placeholder="Tag name"

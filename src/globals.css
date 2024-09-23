@@ -84,7 +84,7 @@
 
   @media (pointer: coarse) {
     :root {
-      @apply text-lg;
+      font-size: 18px;
     }
   }
 }

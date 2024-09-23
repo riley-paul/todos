@@ -4,7 +4,7 @@ import React from "react";
 
 const SharedTags: React.FC = () => {
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-6 max-w-full">
       <SharedTagCreator />
       <SharedTagList />
     </div>

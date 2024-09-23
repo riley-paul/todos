@@ -19,6 +19,8 @@ import type { SharedTagSelect, UserSelect } from "@/lib/types";
 import { Check, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import OtherUserAvatar from "./other-user-avatar";
+import { useMediaQuery } from "usehooks-ts";
+import { MOBILE_MEDIA_QUERY } from "@/lib/constants";
 
 const ListPlaceholder: React.FC<React.PropsWithChildren> = ({ children }) => (
   <span
@@ -44,6 +46,7 @@ const SharedTagItem: React.FC<{
   createdByUser?: boolean;
 }> = ({ tag, user, createdByUser }) => {
   const { deleteSharedTag, approveSharedTag } = useMutations();
+  const isMobile = useMediaQuery(MOBILE_MEDIA_QUERY);
   const showApproveButton = tag.isPending && !createdByUser;
   return (
     <div className="flex min-h-11 items-center gap-2 px-2 text-sm transition-colors ease-in hover:bg-muted/20">
@@ -70,12 +73,18 @@ const SharedTagItem: React.FC<{
       <OtherUserAvatar user={user} />
       {showApproveButton && (
         <Button
-          size="sm"
+          size={isMobile ? "icon" : "sm"}
           variant="outline"
           onClick={() => approveSharedTag.mutate({ id: tag.id })}
         >
-          <Check className="mr-2 size-4" />
-          <span>Approve</span>
+          {isMobile ? (
+            <Check className="size-4" />
+          ) : (
+            <>
+              <Check className="mr-2 size-4" />
+              <span>Approve</span>
+            </>
+          )}
         </Button>
       )}
       <DeleteButton
