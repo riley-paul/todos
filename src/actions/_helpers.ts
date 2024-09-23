@@ -116,6 +116,5 @@ export const queryHashtags = async (userId: string): Promise<TagSelect[]> => {
     hashtags.unshift({ tag: "~", isShared: false });
   }
 
-  console.log(hashtags);
   return hashtags;
 };

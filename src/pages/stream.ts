@@ -1,3 +1,4 @@
+import RoomController, { type RoomData } from "@/lib/room-controller";
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async ({ request, locals }) => {
@@ -12,12 +13,13 @@ export const GET: APIRoute = async ({ request, locals }) => {
       const encoder = new TextEncoder();
 
       // Send event to client
-      const sendEvent = (data: any) => {
-        const message = `data: ${JSON.stringify(data)}\n\n`;
+      const sendEvent = (data: RoomData) => {
+        if (!data.userIds.includes(userId)) return;
+        const message = `data: ${JSON.stringify(data.key)}\n\n`;
         controller.enqueue(encoder.encode(message));
       };
 
-      sendEvent("Hello, world!");
+      RoomController.getInstance().subscribe(sendEvent);
 
       // Handle the connection closing
       request.signal.addEventListener("abort", () => {

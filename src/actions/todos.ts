@@ -4,6 +4,7 @@ import { and, db, eq, or, Todo } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
+import RoomController from "@/lib/room-controller";
 
 const todoUpdateSchema = z.custom<Partial<typeof Todo.$inferInsert>>();
 
@@ -38,6 +39,7 @@ export const updateTodo = defineAction({
   }),
   handler: async ({ id, data }, c) => {
     const userId = isAuthorized(c).id;
+
     const sharedTagFilter = await filterTodoBySharedTag(userId);
     const todo = await db
       .update(Todo)
@@ -45,6 +47,12 @@ export const updateTodo = defineAction({
       .where(and(eq(Todo.id, id), or(eq(Todo.userId, userId), sharedTagFilter)))
       .returning()
       .then((rows) => rows[0]);
+
+    RoomController.getInstance().invalidateKey({
+      key: ["todos"],
+      userIds: [userId],
+    });
+
     return todo;
   },
 });
