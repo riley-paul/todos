@@ -7,7 +7,9 @@ export default function useQueryStream(queryClient: QueryClient) {
 
     const messageListener = (event: MessageEvent) => {
       console.log(event.data);
-      if (event.data === "invalidate") {
+      const data = JSON.parse(event.data);
+      if (data === "invalidate") {
+        console.log("Invalidating queries");
         queryClient.invalidateQueries();
       }
     };
