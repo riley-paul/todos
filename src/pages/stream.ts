@@ -1,4 +1,4 @@
-import RoomController, { type RoomData } from "@/lib/room-controller";
+import InvalidationController from "@/lib/invalidation-controller";
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async ({ request, locals }) => {
@@ -13,13 +13,15 @@ export const GET: APIRoute = async ({ request, locals }) => {
       const encoder = new TextEncoder();
 
       // Send event to client
-      const sendEvent = (data: RoomData) => {
-        if (!data.userIds.includes(userId)) return;
-        const message = `data: ${JSON.stringify(data.key)}\n\n`;
+      const sendEvent = (data: any) => {
+        const message = `data: ${JSON.stringify(data)}\n\n`;
         controller.enqueue(encoder.encode(message));
       };
 
-      RoomController.getInstance().subscribe(sendEvent);
+      InvalidationController.getInstance().subscribe((userIds) => {
+        if (!userIds.includes(userId)) return;
+        sendEvent("invalidate");
+      });
 
       // Handle the connection closing
       request.signal.addEventListener("abort", () => {

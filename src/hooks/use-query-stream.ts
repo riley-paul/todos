@@ -1,8 +1,5 @@
-import { type QueryKey, type QueryClient } from "@tanstack/react-query";
+import { type QueryClient } from "@tanstack/react-query";
 import React from "react";
-import { z } from "zod";
-
-const queryKeySchema = z.custom<QueryKey>();
 
 export default function useQueryStream(queryClient: QueryClient) {
   React.useEffect(() => {
@@ -10,10 +7,9 @@ export default function useQueryStream(queryClient: QueryClient) {
 
     const messageListener = (event: MessageEvent) => {
       console.log(event.data);
-      const data = JSON.parse(event.data);
-      const queryKey = queryKeySchema.safeParse(data);
-      if (!queryKey.success) return;
-      queryClient.setQueryData(queryKey.data, data.data);
+      if (event.data === "invalidate") {
+        queryClient.invalidateQueries();
+      }
     };
 
     const errorListener = (event: MessageEvent) => {

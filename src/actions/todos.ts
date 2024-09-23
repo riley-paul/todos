@@ -4,7 +4,7 @@ import { and, db, eq, or, Todo } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
-import RoomController from "@/lib/room-controller";
+import InvalidationController from "@/lib/invalidation-controller";
 
 const todoUpdateSchema = z.custom<Partial<typeof Todo.$inferInsert>>();
 
@@ -48,10 +48,7 @@ export const updateTodo = defineAction({
       .returning()
       .then((rows) => rows[0]);
 
-    RoomController.getInstance().invalidateKey({
-      key: ["todos"],
-      userIds: [userId],
-    });
+    InvalidationController.getInstance().invalidateKey([userId]);
 
     return todo;
   },
