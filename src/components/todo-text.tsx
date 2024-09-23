@@ -1,5 +1,5 @@
-import useSelectedTag from "@/hooks/use-selected-tag";
 import React from "react";
+import HashtagLink from "./hashtag-link";
 
 type Props = {
   text: string;
@@ -7,25 +7,14 @@ type Props = {
 
 const TodoText: React.FC<Props> = (props) => {
   const { text } = props;
-  const { toggleTag } = useSelectedTag();
 
   return text.split(" ").map((word, index) => {
     const isTag = word.startsWith("#");
     if (isTag) {
       return (
-        <>
-          <button
-            key={index}
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleTag(word.slice(1));
-            }}
-          >
-            <span className="text-primary transition-all hover:underline">
-              {word}
-            </span>
-          </button>{" "}
-        </>
+        <React.Fragment key={index}>
+          <HashtagLink tag={word.slice(1)} string={word} />{" "}
+        </React.Fragment>
       );
     }
     return <span key={index}>{word} </span>;

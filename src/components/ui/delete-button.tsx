@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "../ui/button";
 import { Check, X } from "lucide-react";
-import { useOnClickOutside } from "usehooks-ts";
+import { useEventListener, useOnClickOutside } from "usehooks-ts";
 
 interface Props {
   handleDelete: () => void;
@@ -15,6 +15,12 @@ const DeleteButton: React.FC<Props> = (props) => {
   const [isConfirming, setIsConfirming] = React.useState(false);
 
   useOnClickOutside(ref, () => setIsConfirming(false));
+  useEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      setIsConfirming(false);
+      ref.current?.blur();
+    }
+  });
 
   return (
     <Button

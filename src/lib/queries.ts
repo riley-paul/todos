@@ -17,3 +17,15 @@ export const userQueryOptions = queryOptions({
   retry: false,
   queryFn: () => actions.getMe.orThrow(),
 });
+
+export const sharedTagsQueryOptions = queryOptions({
+  queryKey: ["sharedTags"],
+  queryFn: () => actions.getSharedTags.orThrow(),
+});
+
+export const userByEmailQueryOptions = (email: string) =>
+  queryOptions({
+    queryKey: ["userByEmail", email],
+    queryFn: () => actions.checkIfUserEmailExists.orThrow({ email }),
+    retry: false,
+  });

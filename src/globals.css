@@ -63,7 +63,7 @@
       --destructive: 0 84% 60%;
       --destructive-foreground: 0 0% 98%;
 
-      --border: 180 25% 14%;
+      --border: 180 20% 14%;
       --input: 173 9% 18%;
       --ring: 173 80% 40%;
     }
@@ -82,9 +82,9 @@
     @apply mx-auto w-full max-w-md px-4 lg:max-w-xl;
   }
 
-  @media (pointer: coarse) {
+  /* @media (pointer: coarse) {
     :root {
       @apply text-lg;
     }
-  }
+  } */
 }

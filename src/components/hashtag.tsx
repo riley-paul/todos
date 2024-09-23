@@ -2,29 +2,38 @@ import React from "react";
 import { Badge } from "./ui/badge";
 import { cn } from "../lib/utils";
 import useSelectedTag from "../hooks/use-selected-tag";
+import { Link } from "react-router-dom";
+import type { TagSelect } from "@/lib/types";
+import { Link2 } from "lucide-react";
 
 type Props = {
-  hashtag: string;
+  hashtag: TagSelect;
+  isGhost?: boolean;
 };
 
 const Hashtag: React.FC<Props> = (props) => {
-  const { hashtag } = props;
+  const { hashtag, isGhost } = props;
 
-  const { tag, toggleTag } = useSelectedTag();
-  const isActive = tag === hashtag;
+  const { tag } = useSelectedTag();
+  const isActive = tag === hashtag.tag;
 
   return (
-    <button
-      onClick={() => toggleTag(hashtag)}
-      title={hashtag === "~" ? "No tag" : `Tag: ${hashtag}`}
+    <Link
+      to={isActive ? "/" : `/?tag=${hashtag.tag}`}
+      title={hashtag.tag === "~" ? "No tag" : `Tag: ${hashtag}`}
+      className={cn(isGhost && "opacity-50")}
     >
       <Badge
-        variant="secondary"
-        className={cn(isActive && "outline outline-2 outline-primary")}
+        variant={isActive ? "default" : "secondary"}
+        className={cn(
+          isGhost && "outline-dashed",
+          "flex items-center gap-1",
+        )}
       >
-        {hashtag}
+        {hashtag.tag}
+        {hashtag.isShared && <Link2 className="size-4" />}
       </Badge>
-    </button>
+    </Link>
   );
 };
 

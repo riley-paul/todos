@@ -1,6 +1,6 @@
 import { defineAction } from "astro:actions";
-import { isAuthorized } from "./_helpers";
-import { and, asc, count, db, desc, eq, like, not, or, Todo } from "astro:db";
+import { isAuthorized, queryTodos } from "./_helpers";
+import { and, db, eq, Todo } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
@@ -13,69 +13,7 @@ export const getTodos = defineAction({
   }),
   handler: async ({ tag }, c) => {
     const userId = isAuthorized(c).id;
-    const todos = await db
-      .select()
-      .from(Todo)
-      .where(
-        and(
-          eq(Todo.isDeleted, false),
-          eq(Todo.userId, userId),
-          or(
-            tag ? like(Todo.text, `%#${tag}%`) : undefined,
-            tag === "~" ? not(like(Todo.text, "%#%")) : undefined,
-          ),
-        ),
-      )
-      .orderBy(asc(Todo.isCompleted), desc(Todo.createdAt));
-    return todos;
-  },
-});
-
-export const getHashtags = defineAction({
-  handler: async (_, c) => {
-    const userId = isAuthorized(c).id;
-    const hashtags = await db
-      .select({ text: Todo.text })
-      .from(Todo)
-      .where(
-        and(
-          eq(Todo.isDeleted, false),
-          eq(Todo.userId, userId),
-          like(Todo.text, "%#%"),
-        ),
-      )
-      .then((rows) => rows.map((row) => row.text))
-      .then((texts) =>
-        texts.reduce((acc, val) => {
-          const matches = val.match(/#[a-zA-Z0-9]+/g);
-          if (matches) {
-            matches.forEach((match) => {
-              acc.add(match);
-            });
-          }
-          return acc;
-        }, new Set<string>()),
-      )
-      .then((set) => Array.from(set))
-      .then((arr) => arr.map((text) => text.replace("#", "")));
-
-    const untaggedTodos = await db
-      .select({ count: count(Todo.id) })
-      .from(Todo)
-      .where(
-        and(
-          eq(Todo.isDeleted, false),
-          eq(Todo.userId, userId),
-          not(like(Todo.text, "%#%")),
-        ),
-      )
-      .then((rows) => rows[0].count);
-
-    if (untaggedTodos > 0) {
-      hashtags.unshift("~");
-    }
-
-    return hashtags;
+    return await queryTodos(tag, userId);
   },
 });
 

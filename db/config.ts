@@ -36,11 +36,23 @@ const Todo = defineTable({
   },
 });
 
+const SharedTag = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true }),
+    tag: column.text(),
+    isPending: column.boolean({ default: true }),
+    userId: column.text({ references: () => User.columns.id }),
+    sharedUserId: column.text({ references: () => User.columns.id }),
+    createdAt: column.text({ default: NOW }),
+  },
+});
+
 // https://astro.build/db/config
 export default defineDb({
   tables: {
     User,
     UserSession,
     Todo,
+    SharedTag,
   },
 });
