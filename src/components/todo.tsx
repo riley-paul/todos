@@ -48,53 +48,57 @@ const TodoItem: React.FC<Props> = (props) => {
     <Card
       ref={ref}
       className={cn(
-        "flex items-center gap-2 rounded-md p-2 pr-4 text-sm",
+        "flex items-center gap-2 rounded-md p-2 text-sm",
         todo.isCompleted && "bg-card/50",
         deleteTodo.isPending && "opacity-50",
       )}
     >
-      <Button
-        className="shrink-0 rounded-full"
-        variant={todo.isCompleted ? "secondary" : "ghost"}
-        size="icon"
-        disabled={updateTodo.isPending}
-        onClick={() =>
-          updateTodo.mutate({
-            id: todo.id,
-            data: { isCompleted: !todo.isCompleted },
-          })
-        }
-      >
-        {updateTodo.isPending ? (
-          <Loader2 size="1rem" className="animate-spin" />
-        ) : (
-          <Check size="1rem" />
-        )}
-      </Button>
       {editorOpen ? (
         <TodoEditor todo={todo} onSubmit={() => setEditorOpen(false)} />
       ) : (
-        <button
-          onClick={() => setEditorOpen(true)}
-          className={cn(
-            "flex-1 text-left",
-            todo.isCompleted && "text-muted-foreground line-through",
+        <>
+          <Button
+            className="shrink-0 rounded-full"
+            variant={todo.isCompleted ? "secondary" : "ghost"}
+            size="icon"
+            disabled={updateTodo.isPending}
+            onClick={() =>
+              updateTodo.mutate({
+                id: todo.id,
+                data: { isCompleted: !todo.isCompleted },
+              })
+            }
+          >
+            {updateTodo.isPending ? (
+              <Loader2 size="1rem" className="animate-spin" />
+            ) : (
+              <Check size="1rem" />
+            )}
+          </Button>
+          <button
+            onClick={() => setEditorOpen(true)}
+            className={cn(
+              "flex-1 text-left",
+              todo.isCompleted && "text-muted-foreground line-through",
+            )}
+          >
+            <TodoText text={todo.text} />
+          </button>
+          {todo.isShared && (
+            <Tooltip>
+              <TooltipTrigger>
+                <Link2 className="size-4" />
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                Created by {todo.user.name}
+              </TooltipContent>
+            </Tooltip>
           )}
-        >
-          <TodoText text={todo.text} />
-        </button>
+          <DeleteButton
+            handleDelete={() => deleteTodo.mutate({ id: todo.id })}
+          />
+        </>
       )}
-      {todo.isShared && (
-        <Tooltip>
-          <TooltipTrigger>
-            <Link2 className="size-4" />
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            Created by {todo.user.name}
-          </TooltipContent>
-        </Tooltip>
-      )}
-      <DeleteButton handleDelete={() => deleteTodo.mutate({ id: todo.id })} />
     </Card>
   );
 };
