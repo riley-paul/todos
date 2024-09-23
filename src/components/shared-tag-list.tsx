@@ -16,7 +16,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import type { SharedTagSelect, UserSelect } from "@/lib/types";
-import { Check, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import OtherUserAvatar from "./other-user-avatar";
 import { useMediaQuery } from "usehooks-ts";
@@ -77,14 +77,8 @@ const SharedTagItem: React.FC<{
           variant="outline"
           onClick={() => approveSharedTag.mutate({ id: tag.id })}
         >
-          {isMobile ? (
-            <Check className="size-4" />
-          ) : (
-            <>
-              <Check className="mr-2 size-4" />
-              <span>Approve</span>
-            </>
-          )}
+          <i className="fa-solid fa-check" />
+          {!isMobile && <span className="ml-2">Approve</span>}
         </Button>
       )}
       <DeleteButton

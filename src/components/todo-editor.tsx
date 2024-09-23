@@ -47,14 +47,8 @@ const TodoEditor: React.FC<Props> = (props) => {
         type="submit"
         form={formId}
       >
-        {isMobile ? (
-          <Save className="size-4" />
-        ) : (
-          <>
-            <Save className="mr-2 size-4" />
-            <span>Save</span>
-          </>
-        )}
+        <Save className="size-4" />
+        {!isMobile && <span className="ml-2">Save</span>}
       </Button>
     </form>
   );
