@@ -1,6 +1,6 @@
 import { defineAction } from "astro:actions";
-import { isAuthorized, queryTodos } from "./_helpers";
-import { and, db, eq, Todo } from "astro:db";
+import { filterTodoBySharedTag, isAuthorized, queryTodos } from "./_helpers";
+import { and, db, eq, or, Todo } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
@@ -38,10 +38,11 @@ export const updateTodo = defineAction({
   }),
   handler: async ({ id, data }, c) => {
     const userId = isAuthorized(c).id;
+    const sharedTagFilter = await filterTodoBySharedTag(userId);
     const todo = await db
       .update(Todo)
       .set({ ...data, userId })
-      .where(and(eq(Todo.id, id), eq(Todo.userId, userId)))
+      .where(and(eq(Todo.id, id), or(eq(Todo.userId, userId), sharedTagFilter)))
       .returning()
       .then((rows) => rows[0]);
     return todo;
@@ -54,10 +55,11 @@ export const deleteTodo = defineAction({
   }),
   handler: async ({ id }, c) => {
     const userId = isAuthorized(c).id;
+    const sharedTagFilter = await filterTodoBySharedTag(userId);
     const todo = await db
       .update(Todo)
       .set({ isDeleted: true })
-      .where(and(eq(Todo.id, id), eq(Todo.userId, userId)))
+      .where(and(eq(Todo.id, id), or(eq(Todo.userId, userId), sharedTagFilter)))
       .returning()
       .then((rows) => rows[0]);
     return todo.id;
@@ -70,10 +72,11 @@ export const undoDeleteTodo = defineAction({
   }),
   handler: async ({ id }, c) => {
     const userId = isAuthorized(c).id;
+    const sharedTagFilter = await filterTodoBySharedTag(userId);
     const todo = await db
       .update(Todo)
       .set({ isDeleted: false })
-      .where(and(eq(Todo.id, id), eq(Todo.userId, userId)))
+      .where(and(eq(Todo.id, id), or(eq(Todo.userId, userId), sharedTagFilter)))
       .returning()
       .then((rows) => rows[0]);
     return todo.id;

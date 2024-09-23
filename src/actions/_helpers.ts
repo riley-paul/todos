@@ -52,8 +52,11 @@ export const filterTodoBySharedTag = async (userId: string) => {
   if (sharedTags.length === 0) return;
 
   return or(
-    ...sharedTags.map(({ userId, tag }) =>
-      and(eq(Todo.userId, userId), todoContainsTag(tag)),
+    ...sharedTags.map(({ userId, sharedUserId, tag }) =>
+      and(
+        or(eq(Todo.userId, userId), eq(Todo.userId, sharedUserId)),
+        todoContainsTag(tag),
+      ),
     ),
   );
 };
