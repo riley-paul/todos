@@ -5,8 +5,7 @@ export default function useQueryStream(queryClient: QueryClient) {
   React.useEffect(() => {
     const eventSource = new EventSource("/stream");
 
-    const messageListener = (event: MessageEvent) => {
-      console.log(event.data);
+    eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data === "invalidate") {
         console.log("Invalidating queries");
@@ -14,18 +13,13 @@ export default function useQueryStream(queryClient: QueryClient) {
       }
     };
 
-    const errorListener = (event: MessageEvent) => {
+    eventSource.onerror = (event) => {
       console.error(event);
       eventSource.close();
     };
 
-    eventSource.addEventListener("message", messageListener);
-    eventSource.addEventListener("error", errorListener);
-
     return () => {
-      eventSource.removeEventListener("message", messageListener);
-      eventSource.removeEventListener("error", errorListener);
       eventSource.close();
     };
-  }, []);
+  }, [queryClient]);
 }

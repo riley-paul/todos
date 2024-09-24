@@ -12,10 +12,15 @@ export const GET: APIRoute = async ({ request, locals }) => {
       // Text encoder to convert strings to Uint8Array
       const encoder = new TextEncoder();
 
+      const intervalId = setInterval(() => {
+        const message = `data: "ping"\n\n`;
+        controller.enqueue(encoder.encode(message));
+      }, 1000 * 3);
+
       // Send event to client
       const invalidateUsers = (userIds: string[]) => {
         if (!userIds.includes(userId)) return;
-        const message = `data: invalidate\n\n`;
+        const message = `data: "invalidate"\n\n`;
         controller.enqueue(encoder.encode(message));
       };
 
@@ -25,6 +30,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
       request.signal.addEventListener("abort", () => {
         InvalidationController.getInstance().unsubscribe(invalidateUsers);
         controller.close();
+        clearInterval(intervalId);
       });
     },
   });
