@@ -13,18 +13,17 @@ export const GET: APIRoute = async ({ request, locals }) => {
       const encoder = new TextEncoder();
 
       // Send event to client
-      const sendEvent = (data: any) => {
-        const message = `data: ${JSON.stringify(data)}\n\n`;
+      const invalidateUsers = (userIds: string[]) => {
+        if (!userIds.includes(userId)) return;
+        const message = `data: invalidate\n\n`;
         controller.enqueue(encoder.encode(message));
       };
 
-      InvalidationController.getInstance().subscribe((userIds) => {
-        if (!userIds.includes(userId)) return;
-        sendEvent("invalidate");
-      });
+      InvalidationController.getInstance().subscribe(invalidateUsers);
 
       // Handle the connection closing
       request.signal.addEventListener("abort", () => {
+        InvalidationController.getInstance().unsubscribe(invalidateUsers);
         controller.close();
       });
     },
