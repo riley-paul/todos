@@ -5,7 +5,7 @@ import TodoList from "@/components/todo-list";
 
 const Root: React.FC = () => {
   return (
-    <div className="grid w-full gap-4">
+    <div className="grid w-full gap-6">
       <Adder />
       <HashtagList />
       <TodoList />

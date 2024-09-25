@@ -42,6 +42,7 @@ const Todo = defineTable({
       references: () => List.columns.id,
       optional: true,
     }),
+    sortOrder: column.number({ default: 0 }),
     text: column.text(),
     isCompleted: column.boolean({ default: false }),
     isDeleted: column.boolean({ default: false }),

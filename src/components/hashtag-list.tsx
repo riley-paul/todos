@@ -15,7 +15,7 @@ const HashtagList: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-wrap gap-1.5">
+    <div className="flex flex-wrap gap-1.5 px-3">
       {hashtags.map((hashtag) => (
         <Hashtag key={hashtag.tag} hashtag={hashtag} />
       ))}
