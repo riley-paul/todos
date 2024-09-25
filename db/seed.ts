@@ -1,8 +1,9 @@
-import { SharedTag, Todo, User, db } from "astro:db";
+import { List, SharedTag, Todo, User, db } from "astro:db";
 import { todoText } from "./seeds/todo-text";
 
 import { v4 as uuid } from "uuid";
 import { randomItemFromArray } from "./seeds/helpers";
+import { listNames } from "./seeds/list-names";
 
 // https://astro.build/db/seed
 export default async function seed() {
@@ -34,15 +35,32 @@ export default async function seed() {
     .then((users) => users.map((user) => user.id));
   console.log("✅ Seeded user");
 
-  await db
-    .insert(Todo)
+  const lists = await db
+    .insert(List)
     .values(
-      todoText.map((text) => ({
+      listNames.map((name) => ({
         id: uuid(),
         userId: randomItemFromArray(userIds),
-        text,
+        name,
       })),
-    );
+    )
+    .returning();
+
+  await db.insert(Todo).values(
+    todoText.map((text) => {
+      const listId = randomItemFromArray([
+        null,
+        null,
+        randomItemFromArray(lists).id,
+      ]);
+      return {
+        id: uuid(),
+        userId: randomItemFromArray(userIds),
+        listId,
+        text,
+      };
+    }),
+  );
   console.log("✅ Seeded todos");
 
   await db.insert(SharedTag).values([
