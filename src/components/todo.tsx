@@ -1,7 +1,5 @@
 import React from "react";
-import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
-import { Card } from "./ui/card";
 import DeleteButton from "./ui/delete-button";
 import { Check, Link2, Loader2 } from "lucide-react";
 import useMutations from "@/hooks/use-mutations";
@@ -15,6 +13,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Checkbox } from "./ui/checkbox";
 
 interface Props {
   todo: TodoSelect;
@@ -45,11 +44,11 @@ const TodoItem: React.FC<Props> = (props) => {
   }, [todo]);
 
   return (
-    <Card
+    <div
       ref={ref}
       className={cn(
-        "flex items-center gap-2 rounded-md p-2 text-sm",
-        todo.isCompleted && "bg-card/50",
+        "flex h-10 items-center gap-2 rounded-md px-3 text-sm transition-colors ease-out hover:bg-muted/20",
+        todo.isCompleted && "opacity-50",
         deleteTodo.isPending && "opacity-50",
       )}
     >
@@ -57,12 +56,11 @@ const TodoItem: React.FC<Props> = (props) => {
         <TodoEditor todo={todo} onSubmit={() => setEditorOpen(false)} />
       ) : (
         <>
-          <Button
+          <Checkbox
             className="shrink-0 rounded-full"
-            variant={todo.isCompleted ? "secondary" : "ghost"}
-            size="icon"
             disabled={updateTodo.isPending}
-            onClick={() =>
+            checked={todo.isCompleted}
+            onCheckedChange={() =>
               updateTodo.mutate({
                 id: todo.id,
                 data: { isCompleted: !todo.isCompleted },
@@ -74,7 +72,7 @@ const TodoItem: React.FC<Props> = (props) => {
             ) : (
               <Check size="1rem" />
             )}
-          </Button>
+          </Checkbox>
           <button
             onClick={() => setEditorOpen(true)}
             className={cn(
@@ -99,7 +97,7 @@ const TodoItem: React.FC<Props> = (props) => {
           />
         </>
       )}
-    </Card>
+    </div>
   );
 };
 
