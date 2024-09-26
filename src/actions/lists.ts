@@ -1,6 +1,6 @@
 import { defineAction } from "astro:actions";
 import { isAuthorized } from "./_helpers";
-import { and, db, eq, List } from "astro:db";
+import { and, db, eq, List, ListShares } from "astro:db";
 import { z } from "zod";
 
 export const getLists = defineAction({
@@ -20,6 +20,12 @@ export const getList = defineAction({
       .from(List)
       .where(and(eq(List.id, id), eq(List.userId, userId)))
       .then((rows) => rows[0]);
-    return list;
+
+    const shares = await db
+      .select()
+      .from(ListShares)
+      .where(eq(ListShares.listId, id));
+
+    return { ...list, shares };
   },
 });
