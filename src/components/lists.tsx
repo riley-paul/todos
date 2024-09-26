@@ -3,16 +3,18 @@ import React from "react";
 import { listsQueryOptions } from "../lib/queries";
 import { Badge, badgeVariants } from "./ui/badge";
 import { Separator } from "./ui/separator";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { useLongPress } from "react-use";
+import { cn } from "@/lib/utils";
 
-const List: React.FC<{ name: string; link: string; noEdit?: boolean }> = ({
-  name,
-  link,
-  noEdit,
-}) => {
+const List: React.FC<
+  React.PropsWithChildren<{ link: string; noEdit?: boolean }>
+> = ({ children, link, noEdit }) => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const isActive = pathname === link;
+
   const longPress = useLongPress(
     () => {
       if (noEdit) return;
@@ -22,14 +24,10 @@ const List: React.FC<{ name: string; link: string; noEdit?: boolean }> = ({
   );
 
   return (
-    <NavLink
-      to={link}
-      {...longPress}
-      className={({ isActive }) =>
-        badgeVariants({ variant: isActive ? "default" : "secondary" })
-      }
-    >
-      {name}
+    <NavLink to={link} {...longPress}>
+      <Badge variant={isActive ? "default" : "secondary"} className="h-6">
+        {children}
+      </Badge>
     </NavLink>
   );
 };
@@ -39,16 +37,22 @@ const Lists: React.FC = () => {
   const lists = listsQuery.data ?? [];
 
   return (
-    <div className="flex flex-wrap gap-1.5 px-3">
-      <List name="Inbox" link="/" noEdit />
-      <List name="All" link="/all" noEdit />
+    <div className="flex flex-wrap items-center gap-1.5 px-3">
+      <List link="/" noEdit>
+        Inbox
+      </List>
+      <List link="/all" noEdit>
+        All
+      </List>
       <Separator orientation="vertical" />
       {lists.map((list) => (
-        <List key={list.id} name={list.name} link={`/list/${list.id}`} />
+        <List key={list.id} link={`/list/${list.id}`}>
+          {list.name}
+        </List>
       ))}
-      <Badge variant="secondary">
-        <Plus className="size-4" />
-      </Badge>
+      <List link="/list/add" noEdit>
+        <i className="fa-solid fa-plus" />
+      </List>
     </div>
   );
 };

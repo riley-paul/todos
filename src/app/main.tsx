@@ -13,6 +13,7 @@ import SharedTags from "./shared-tags";
 import Header from "@/components/header";
 import useQueryStream from "@/hooks/use-query-stream";
 import EditList from "./edit-list";
+import AddList from "./add-list";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
       {
         path: "list/:listId/edit",
         element: <EditList />,
+      },
+      {
+        path: "list/add",
+        element: <AddList />,
       },
       {
         path: "shared",
