@@ -34,6 +34,17 @@ const List = defineTable({
   },
 });
 
+const ListShares = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true }),
+    listId: column.text({ references: () => List.columns.id }),
+    userId: column.text({ references: () => User.columns.id }),
+    sharedUserId: column.text({ references: () => User.columns.id }),
+    isPending: column.boolean({ default: true }),
+    createdAt: column.text({ default: NOW }),
+  },
+});
+
 const Todo = defineTable({
   columns: {
     id: column.text({ primaryKey: true }),
@@ -66,6 +77,7 @@ export default defineDb({
   tables: {
     User,
     List,
+    ListShares,
     UserSession,
     Todo,
     SharedTag,
