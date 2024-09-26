@@ -42,6 +42,14 @@ const router = createBrowserRouter([
         element: <Root />,
       },
       {
+        path: "all",
+        element: <Root />,
+      },
+      {
+        path: "list/:listId",
+        element: <Root />,
+      },
+      {
         path: "shared",
         element: <SharedTags />,
       },
