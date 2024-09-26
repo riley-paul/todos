@@ -40,7 +40,7 @@ export default async function seed() {
     .values(
       listNames.map((name) => ({
         id: uuid(),
-        userId: randomItemFromArray(userIds),
+        userId: userIds[0],
         name,
       })),
     )
@@ -49,7 +49,6 @@ export default async function seed() {
   await db.insert(Todo).values(
     todoText.map((text) => {
       const listId = randomItemFromArray([
-        null,
         null,
         randomItemFromArray(lists).id,
       ]);

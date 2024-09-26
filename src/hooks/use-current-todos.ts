@@ -14,8 +14,12 @@ export default function useTodosQuery() {
     return "inbox";
   }, [pathname]);
 
+  React.useEffect(() => {
+    console.log(listId);
+  }, [listId]);
+
   const todosQuery = useQuery({
-    queryKey: ["todos", { type }],
+    queryKey: ["todos", { type, listId }],
     queryFn: () => actions.getTodos.orThrow({ type, listId }),
   });
 
