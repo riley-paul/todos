@@ -43,7 +43,7 @@ export default function Adder(): ReturnType<React.FC> {
         if (isEmptyString(value) || isOnlyHashtag(value)) return;
         create();
       }}
-      className="flex items-center gap-2"
+      className="flex items-center gap-2 px-3"
     >
       <Input
         autoFocus

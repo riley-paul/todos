@@ -29,3 +29,8 @@ export const userByEmailQueryOptions = (email: string) =>
     queryFn: () => actions.checkIfUserEmailExists.orThrow({ email }),
     retry: false,
   });
+
+export const listsQueryOptions = queryOptions({
+  queryKey: ["lists"],
+  queryFn: () => actions.getLists.orThrow(),
+});
