@@ -55,7 +55,7 @@ export default async function seed() {
       ]);
       return {
         id: uuid(),
-        userId: randomItemFromArray(userIds),
+        userId: userIds[0],
         listId,
         text,
       };

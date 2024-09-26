@@ -12,6 +12,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import SharedTags from "./shared-tags";
 import Header from "@/components/header";
 import useQueryStream from "@/hooks/use-query-stream";
+import EditList from "./edit-list";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
       {
         path: "list/:listId",
         element: <Root />,
+      },
+      {
+        path: "list/:listId/edit",
+        element: <EditList />,
       },
       {
         path: "shared",
