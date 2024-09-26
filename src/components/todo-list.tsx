@@ -1,10 +1,8 @@
 import type React from "react";
 
 import TodoItem from "./todo";
-import { useQuery } from "@tanstack/react-query";
-import { todosQueryOptions } from "@/lib/queries";
 import { Skeleton } from "./ui/skeleton";
-import useSelectedTag from "../hooks/use-selected-tag";
+import useTodosQuery from "@/hooks/use-current-todos";
 
 const ListHeader: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
@@ -13,9 +11,7 @@ const ListHeader: React.FC<React.PropsWithChildren> = ({ children }) => {
 };
 
 const TodoList: React.FC = () => {
-  const { tag } = useSelectedTag();
-  const todosQuery = useQuery(todosQueryOptions(tag));
-
+  const todosQuery = useTodosQuery();
   const todos = todosQuery.data ?? [];
 
   if (todosQuery.isLoading) {
