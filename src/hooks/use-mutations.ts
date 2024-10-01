@@ -2,9 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { actions } from "astro:actions";
 import useMutationHelpers from "./use-mutation-helpers";
+import { useNavigate } from "react-router-dom";
 
 export default function useMutations() {
   const client = useQueryClient();
+  const navigate = useNavigate();
 
   const { onError, onMutateMessage, toastId } = useMutationHelpers();
 
@@ -77,6 +79,9 @@ export default function useMutations() {
   const createList = useMutation({
     mutationFn: actions.createList.orThrow,
     onError,
+    onSuccess: ({ id }) => {
+      navigate(`/list/${id}`);
+    },
   });
 
   return {

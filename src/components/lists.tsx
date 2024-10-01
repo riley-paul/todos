@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { listsQueryOptions } from "../lib/queries";
-import { Badge } from "./ui/badge";
+import { Badge, badgeVariants } from "./ui/badge";
 import { Separator } from "./ui/separator";
 import { NavLink, useLocation } from "react-router-dom";
 import { useLongPress } from "react-use";
@@ -11,6 +11,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import type { ListSelect } from "@/lib/types";
 import useMutations from "@/hooks/use-mutations";
+import { cn } from "@/lib/utils";
 
 type ListFormProps = {
   list?: ListSelect;
@@ -43,6 +44,7 @@ const ListForm: React.FC<ListFormProps> = (props) => {
           id="name"
           autoFocus
           value={name}
+          placeholder="List name"
           onChange={(e) => setName(e.target.value)}
         />
       </div>
@@ -52,7 +54,7 @@ const ListForm: React.FC<ListFormProps> = (props) => {
 };
 
 type ListProps = React.PropsWithChildren<{
-  link: string;
+  link?: string;
   list?: ListSelect;
   noEdit?: boolean;
 }>;
@@ -74,11 +76,21 @@ const List: React.FC<ListProps> = (props) => {
 
   return (
     <>
-      <NavLink to={link} {...longPress}>
-        <Badge variant={isActive ? "default" : "secondary"} className="h-6">
+      {link ? (
+        <NavLink to={link} {...longPress}>
+          <Badge variant={isActive ? "default" : "secondary"} className="h-6">
+            {children}
+          </Badge>
+        </NavLink>
+      ) : (
+        <button
+          className={cn(badgeVariants({ variant: "secondary" }), "h-6")}
+          onClick={() => setDialogOpen(true)}
+        >
           {children}
-        </Badge>
-      </NavLink>
+        </button>
+      )}
+
       <ResponsiveDialog
         isOpen={dialogOpen}
         setIsOpen={setDialogOpen}
@@ -113,7 +125,7 @@ const Lists: React.FC = () => {
           {list.name}
         </List>
       ))}
-      <List link="/list/add" noEdit>
+      <List noEdit>
         <i className="fa-solid fa-plus" />
       </List>
     </div>
