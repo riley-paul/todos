@@ -1,18 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
-import { listsQueryOptions } from "../lib/queries";
-import { Badge, badgeVariants } from "./ui/badge";
-import { Separator } from "./ui/separator";
+import { listsQueryOptions } from "@/lib/queries";
+import { Badge, badgeVariants } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { NavLink, useLocation } from "react-router-dom";
 import { useLongPress } from "react-use";
-import ResponsiveDialog from "./responsive-dialog";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import ResponsiveDialog from "@/components/ui/responsive-dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import type { ListSelect } from "@/lib/types";
 import useMutations from "@/hooks/use-mutations";
 import { cn } from "@/lib/utils";
-import DeleteButton from "./ui/delete-button";
+import DeleteButton from "@/components/ui/delete-button";
 
 type ListFormProps = {
   list?: ListSelect;
