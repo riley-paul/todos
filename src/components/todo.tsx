@@ -5,7 +5,6 @@ import { Check, Link2, Loader2 } from "lucide-react";
 import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import TodoEditor from "./todo-editor";
-import TodoText from "./todo-text";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 
 import {
@@ -80,7 +79,7 @@ const TodoItem: React.FC<Props> = (props) => {
               todo.isCompleted && "text-muted-foreground line-through",
             )}
           >
-            <TodoText text={todo.text} />
+            {todo.text}
           </button>
           {todo.isShared && (
             <Tooltip>
