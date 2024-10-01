@@ -34,7 +34,7 @@ const List = defineTable({
   },
 });
 
-const ListShares = defineTable({
+const ListShare = defineTable({
   columns: {
     id: column.text({ primaryKey: true }),
     listId: column.text({ references: () => List.columns.id }),
@@ -77,7 +77,7 @@ export default defineDb({
   tables: {
     User,
     List,
-    ListShares,
+    ListShare,
     UserSession,
     Todo,
     SharedTag,
