@@ -12,6 +12,7 @@ import { Button } from "./ui/button";
 import type { ListSelect } from "@/lib/types";
 import useMutations from "@/hooks/use-mutations";
 import { cn } from "@/lib/utils";
+import { useEventListener, useOnClickOutside } from "usehooks-ts";
 
 type ListFormProps = {
   list?: ListSelect;
@@ -20,9 +21,19 @@ type ListFormProps = {
 
 const ListForm: React.FC<ListFormProps> = (props) => {
   const { list, onSubmit } = props;
-  const { updateList, createList } = useMutations();
+  const { updateList, createList, deleteList } = useMutations();
 
   const [name, setName] = React.useState(list?.name ?? "");
+
+  const [confirmingDelete, setConfirmingDelete] = React.useState(false);
+
+  const deleteRef = React.useRef<HTMLButtonElement>(null);
+  useOnClickOutside(deleteRef, () => setConfirmingDelete(false));
+  useEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      setConfirmingDelete(false);
+    }
+  });
 
   return (
     <form
@@ -48,7 +59,28 @@ const ListForm: React.FC<ListFormProps> = (props) => {
           onChange={(e) => setName(e.target.value)}
         />
       </div>
-      <Button type="submit">Save changes</Button>
+      <div className="flex items-center gap-2">
+        <Button type="submit" className="flex-1">
+          Save changes
+        </Button>
+        {list && (
+          <Button
+            ref={deleteRef}
+            onClick={
+              confirmingDelete
+                ? () => deleteList.mutate({ id: list.id })
+                : () => setConfirmingDelete(true)
+            }
+            type="button"
+            variant="destructive"
+            className="transition-all"
+            size={confirmingDelete ? "default" : "icon"}
+          >
+            <i className="fa-solid fa-trash" />
+            {confirmingDelete && <span className="ml-2">You sure?</span>}
+          </Button>
+        )}
+      </div>
     </form>
   );
 };

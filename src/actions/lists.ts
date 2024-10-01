@@ -1,6 +1,6 @@
 import { defineAction } from "astro:actions";
 import { isAuthorized } from "./_helpers";
-import { and, db, eq, List, ListShares } from "astro:db";
+import { and, db, eq, List, ListShares, Todo } from "astro:db";
 import { z } from "zod";
 import type { ListSelect } from "@/lib/types";
 import { v4 as uuid } from "uuid";
@@ -59,5 +59,17 @@ export const createList = defineAction({
       .returning()
       .then((rows) => rows[0]);
     return result;
+  },
+});
+
+export const deleteList = defineAction({
+  input: z.object({ id: z.string() }),
+  handler: async ({ id }, c) => {
+    const userId = isAuthorized(c).id;
+    await db
+      .delete(Todo)
+      .where(and(eq(Todo.listId, id), eq(Todo.userId, userId)));
+    await db.delete(List).where(and(eq(List.id, id), eq(List.userId, userId)));
+    return true;
   },
 });

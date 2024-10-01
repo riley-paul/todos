@@ -84,6 +84,14 @@ export default function useMutations() {
     },
   });
 
+  const deleteList = useMutation({
+    mutationFn: actions.deleteList.orThrow,
+    onError,
+    onSuccess: () => {
+      navigate("/");
+    },
+  });
+
   return {
     updateTodo,
     deleteTodo,
@@ -95,5 +103,6 @@ export default function useMutations() {
     approveSharedTag,
     updateList,
     createList,
+    deleteList,
   };
 }
