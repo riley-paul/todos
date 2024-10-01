@@ -4,7 +4,7 @@ import {
   getUsersOfTodo,
   isAuthorized,
 } from "./_helpers";
-import { and, db, eq, isNull, or, Todo, User } from "astro:db";
+import { and, db, desc, eq, isNull, or, Todo, User } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
@@ -31,6 +31,7 @@ export const getTodos = defineAction({
           type === "inbox" ? isNull(Todo.listId) : undefined,
         ),
       )
+      .orderBy(desc(Todo.createdAt))
       .innerJoin(User, eq(User.id, Todo.userId))
       .then((rows) =>
         rows.map((row) => ({ ...row.Todo, user: row.User, isShared: false })),

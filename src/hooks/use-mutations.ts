@@ -89,6 +89,7 @@ export default function useMutations() {
     onError,
     onSuccess: () => {
       navigate("/");
+      toast.success("List deleted", { id: toastId.current });
     },
   });
 

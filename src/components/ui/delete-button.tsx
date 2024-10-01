@@ -26,6 +26,7 @@ const DeleteButton: React.FC<Props> = (props) => {
     <Button
       ref={ref}
       size="icon"
+      type="button"
       variant={isConfirming ? "destructive" : "ghostMuted"}
       className="size-7 shrink-0 rounded-full"
       onClick={() => {
