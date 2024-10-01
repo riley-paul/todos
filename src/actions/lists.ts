@@ -2,6 +2,8 @@ import { defineAction } from "astro:actions";
 import { isAuthorized } from "./_helpers";
 import { and, db, eq, List, ListShares } from "astro:db";
 import { z } from "zod";
+import type { ListSelect } from "@/lib/types";
+import { v4 as uuid } from "uuid";
 
 export const getLists = defineAction({
   handler: async (_, c) => {
@@ -27,5 +29,35 @@ export const getList = defineAction({
       .where(eq(ListShares.listId, id));
 
     return { ...list, shares };
+  },
+});
+
+export const updateList = defineAction({
+  input: z.object({
+    id: z.string(),
+    data: z.custom<Partial<ListSelect>>(),
+  }),
+  handler: async ({ id, data }, c) => {
+    const userId = isAuthorized(c).id;
+    const result = await db
+      .update(List)
+      .set(data)
+      .where(and(eq(List.id, id), eq(List.userId, userId)))
+      .returning()
+      .then((rows) => rows[0]);
+    return result;
+  },
+});
+
+export const createList = defineAction({
+  input: z.object({ name: z.string() }),
+  handler: async ({ name }, c) => {
+    const userId = isAuthorized(c).id;
+    const result = await db
+      .insert(List)
+      .values({ id: uuid(), name, userId })
+      .returning()
+      .then((rows) => rows[0]);
+    return result;
   },
 });

@@ -69,6 +69,16 @@ export default function useMutations() {
     onError,
   });
 
+  const updateList = useMutation({
+    mutationFn: actions.updateList.orThrow,
+    onError,
+  });
+
+  const createList = useMutation({
+    mutationFn: actions.createList.orThrow,
+    onError,
+  });
+
   return {
     updateTodo,
     deleteTodo,
@@ -78,5 +88,7 @@ export default function useMutations() {
     createSharedTag,
     deleteSharedTag,
     approveSharedTag,
+    updateList,
+    createList,
   };
 }

@@ -10,6 +10,46 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import type { ListSelect } from "@/lib/types";
+import useMutations from "@/hooks/use-mutations";
+
+type ListFormProps = {
+  list?: ListSelect;
+  onSubmit?: () => void;
+};
+
+const ListForm: React.FC<ListFormProps> = (props) => {
+  const { list, onSubmit } = props;
+  const { updateList, createList } = useMutations();
+
+  const [name, setName] = React.useState(list?.name ?? "");
+
+  return (
+    <form
+      className={"grid items-start gap-4"}
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (list) {
+          updateList.mutate({ id: list.id, data: { name } });
+        } else {
+          createList.mutate({ name });
+        }
+        onSubmit?.();
+      }}
+    >
+      <div className="grid gap-2">
+        <Label htmlFor="name">Name</Label>
+        <Input
+          type="name"
+          id="name"
+          autoFocus
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </div>
+      <Button type="submit">Save changes</Button>
+    </form>
+  );
+};
 
 type ListProps = React.PropsWithChildren<{
   link: string;
@@ -49,22 +89,7 @@ const List: React.FC<ListProps> = (props) => {
             : "Create a new list to organize your tasks"
         }
       >
-        <form
-          className={"grid items-start gap-4"}
-          onSubmit={(e) => {
-            e.preventDefault();
-          }}
-        >
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input type="email" id="email" defaultValue="shadcn@example.com" />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="username">Username</Label>
-            <Input id="username" defaultValue="@shadcn" />
-          </div>
-          <Button type="submit">Save changes</Button>
-        </form>
+        <ListForm list={list} onSubmit={() => setDialogOpen(false)} />
       </ResponsiveDialog>
     </>
   );
