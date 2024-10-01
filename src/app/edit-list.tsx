@@ -1,6 +1,6 @@
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import ConditionalValueEditor from "@/components/conditional-value-editor";
+import { buttonVariants } from "@/components/ui/button";
+import useMutations from "@/hooks/use-mutations";
 import { listQueryOptions } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -10,6 +10,8 @@ import { Link, useParams } from "react-router-dom";
 const EditList: React.FC = () => {
   const { listId } = useParams();
   const listQuery = useQuery(listQueryOptions(listId ?? ""));
+
+  const {} = useMutations();
 
   if (listQuery.isLoading) {
     return <div>Loading...</div>;
@@ -44,20 +46,14 @@ const EditList: React.FC = () => {
         </div>
         <div className="grid gap-1">
           <span className="text-sm text-muted-foreground">List</span>
-          <h2 className="text-3xl font-bold">{list.name}</h2>
+          <ConditionalValueEditor
+            initialValue={list.name}
+            saveValue={() => {}}
+            displayClassName="text-2xl font-bold"
+            placeholder="List name"
+          />
         </div>
       </div>
-
-      <form className="grid gap-6 px-3 pt-8">
-        <div className="grid gap-2">
-          <Label>Name</Label>
-          <Input placeholder="What should your list be called?" />
-        </div>
-        <div className="grid gap-4">
-          <Label>Shared with</Label>
-          list od shares
-        </div>
-      </form>
     </div>
   );
 };
