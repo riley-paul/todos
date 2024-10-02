@@ -2,6 +2,10 @@ import { List, ListShare, Todo, User, db } from "astro:db";
 import { faker } from "@faker-js/faker";
 import { v4 as uuid } from "uuid";
 
+function capitalize(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 // https://astro.build/db/seed
 export default async function seed() {
   const userIds = await db
@@ -32,7 +36,7 @@ export default async function seed() {
       Array.from({ length: 20 }).map(() => ({
         id: uuid(),
         userId: faker.helpers.arrayElement(userIds),
-        name: faker.lorem.word(),
+        name: capitalize(faker.lorem.word()),
       })),
     )
     .returning();

@@ -2,7 +2,6 @@ import useMutations from "@/hooks/use-mutations";
 import type { ListSelect } from "@/lib/types";
 import React from "react";
 import { Button } from "./ui/button";
-import DeleteButton from "./ui/delete-button";
 import { Input } from "./ui/input";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -16,6 +15,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import useDeleteButton from "@/hooks/use-delete-button";
+import { cn } from "@/lib/utils";
 
 const schema = z.object({
   name: z.string().min(3).max(50),
@@ -43,10 +44,18 @@ const ListForm: React.FC<Props> = (props) => {
 
   const { handleSubmit, control } = handlers;
 
+  const {
+    ref: deleteRef,
+    isConfirming,
+    handleClick,
+  } = useDeleteButton({
+    handleDelete: () => deleteList.mutate({ id: list?.id ?? "" }),
+  });
+
   return (
     <Form {...handlers}>
       <form
-        className={"grid items-start gap-4"}
+        className="grid items-start gap-4"
         onSubmit={handleSubmit((data) => {
           if (list) {
             updateList.mutate({ id: list.id, data: { name: data.name } });
@@ -70,15 +79,22 @@ const ListForm: React.FC<Props> = (props) => {
           )}
         />
 
-        <div className="flex items-center gap-2">
-          <Button type="submit" className="flex-1">
-            Save changes
-          </Button>
+        <div className={cn("grid grid-cols-2 gap-2")}>
           {list && (
-            <DeleteButton
-              handleDelete={() => deleteList.mutate({ id: list.id })}
-            />
+            <Button
+              type="button"
+              ref={deleteRef}
+              variant={isConfirming ? "destructive" : "secondary"}
+              onClick={handleClick}
+            >
+              <i className="fa-solid fa-trash mr-2" />
+              <span>{isConfirming ? "Confirm?" : "Delete list"}</span>
+            </Button>
           )}
+          <Button type="submit" className="flex-1">
+            <i className="fa-solid fa-save mr-2" />
+            <span>Save changes</span>
+          </Button>
         </div>
       </form>
     </Form>
