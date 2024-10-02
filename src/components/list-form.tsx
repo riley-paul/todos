@@ -34,9 +34,9 @@ const ListForm: React.FC<Props> = (props) => {
   const { updateList, createList, deleteList } = useMutations();
 
   const handlers = useForm<Schema>({
-    defaultValues: {
-      name: list?.name,
-      shares: list?.shares.map((i) => i.sharedUser.email),
+    values: {
+      name: list?.name ?? "",
+      shares: list?.shares.map((i) => i.sharedUser.email) ?? [],
     },
     resolver: zodResolver(schema),
   });
@@ -69,6 +69,7 @@ const ListForm: React.FC<Props> = (props) => {
             </FormItem>
           )}
         />
+
         <div className="flex items-center gap-2">
           <Button type="submit" className="flex-1">
             Save changes

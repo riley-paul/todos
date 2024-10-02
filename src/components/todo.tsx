@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import DeleteButton from "./ui/delete-button";
-import { Check, Link2, Loader2 } from "lucide-react";
+import { Link2 } from "lucide-react";
 import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import TodoEditor from "./todo-editor";
@@ -46,7 +46,7 @@ const TodoItem: React.FC<Props> = (props) => {
     <div
       ref={ref}
       className={cn(
-        "flex h-10 items-center gap-2 rounded-md px-3 text-sm transition-colors ease-out hover:bg-muted/20",
+        "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ease-out hover:bg-muted/20",
         todo.isCompleted && "opacity-50",
         deleteTodo.isPending && "opacity-50",
       )}
@@ -65,13 +65,7 @@ const TodoItem: React.FC<Props> = (props) => {
                 data: { isCompleted: !todo.isCompleted },
               })
             }
-          >
-            {updateTodo.isPending ? (
-              <Loader2 size="1rem" className="animate-spin" />
-            ) : (
-              <Check size="1rem" />
-            )}
-          </Checkbox>
+          />
           <button
             onClick={() => setEditorOpen(true)}
             className={cn(

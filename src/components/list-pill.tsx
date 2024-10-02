@@ -34,6 +34,9 @@ const ListPill: React.FC<ListProps> = (props) => {
         <NavLink to={link} {...longPress}>
           <Badge variant={isActive ? "default" : "secondary"} className="h-6">
             {children}
+            {list && list.shares.length > 0 && (
+              <i className="fa-solid fa-link ml-2" />
+            )}
           </Badge>
         </NavLink>
       ) : (
