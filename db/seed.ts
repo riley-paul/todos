@@ -43,7 +43,10 @@ export default async function seed() {
       return {
         id: uuid(),
         userId: faker.helpers.arrayElement(userIds),
-        listId: faker.helpers.arrayElement(lists).id,
+        listId: faker.helpers.maybe(
+          () => faker.helpers.arrayElement(lists).id,
+          { probability: 0.8 },
+        ),
         text: faker.lorem.sentence(),
       };
     }),
