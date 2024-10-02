@@ -1,6 +1,6 @@
 import { defineAction } from "astro:actions";
 import { isAuthorized } from "./_helpers";
-import { and, db, eq, List, ListShare, or, Todo } from "astro:db";
+import { and, db, eq, List, ListShare, or, Todo, User } from "astro:db";
 import { z } from "zod";
 import type { ListSelect } from "@/lib/types";
 import { v4 as uuid } from "uuid";
@@ -13,6 +13,13 @@ export const getLists = defineAction({
       .from(ListShare)
       .where(
         or(eq(ListShare.userId, userId), eq(ListShare.sharedUserId, userId)),
+      )
+      .innerJoin(User, eq(User.id, ListShare.sharedUserId))
+      .then((rows) =>
+        rows.map((row) => ({
+          ...row.ListShare,
+          sharedUser: row.User,
+        })),
       );
 
     const lists = await db
