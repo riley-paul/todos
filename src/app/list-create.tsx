@@ -9,11 +9,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import useMutations from "@/hooks/use-mutations";
+import { Link } from "react-router-dom";
 
 const schema = z.object({
   name: z.string().min(3).max(50),
@@ -28,8 +29,8 @@ const ListCreate: React.FC = () => {
   const { createList } = useMutations();
 
   return (
-    <div className="grid gap-5 px-3">
-      <PageHeader title="Create list" backLink="/" />
+    <div className="grid gap-4 px-3">
+      <PageHeader title="Create list" />
       <Form {...form}>
         <form
           className="grid items-start gap-4"
@@ -50,10 +51,15 @@ const ListCreate: React.FC = () => {
             )}
           />
 
-          <Button type="submit" className="flex-1">
-            <i className="fa-solid fa-plus mr-2" />
-            <span>Create list</span>
-          </Button>
+          <div className="grid grid-cols-2 gap-2">
+            <Link to="/" className={buttonVariants({ variant: "secondary" })}>
+              Cancel
+            </Link>
+            <Button type="submit" className="flex-1">
+              <i className="fa-solid fa-plus mr-2" />
+              <span>Create list</span>
+            </Button>
+          </div>
         </form>
       </Form>
     </div>
