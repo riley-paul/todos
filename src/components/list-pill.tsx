@@ -19,7 +19,7 @@ type ListProps = React.PropsWithChildren<{
 }>;
 
 const ListPill: React.FC<ListProps> = (props) => {
-  const { children, link, linkLongPress, isAdmin, listAdmin } = props;
+  const { children, link, linkLongPress, isShared, listAdmin } = props;
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const isActive = pathname === link;
@@ -37,7 +37,7 @@ const ListPill: React.FC<ListProps> = (props) => {
     <NavLink to={link} {...longPress}>
       <Badge variant={isActive ? "default" : "secondary"} className="h-6">
         {children}
-        {!isAdmin && (
+        {isShared && (
           <Tooltip>
             <TooltipTrigger>
               <i className="fa-solid fa-link ml-2" />
