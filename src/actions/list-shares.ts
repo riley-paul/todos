@@ -100,6 +100,19 @@ export const deleteListShare = defineAction({
   },
 });
 
+export const leaveListShare = defineAction({
+  input: z.object({ listId: z.string() }),
+  handler: async ({ listId }, c) => {
+    const userId = isAuthorized(c).id;
+    await db
+      .delete(ListShare)
+      .where(
+        and(eq(ListShare.listId, listId), eq(ListShare.sharedUserId, userId)),
+      );
+    return true;
+  },
+});
+
 export const acceptListShare = defineAction({
   input: z.object({ id: z.string() }),
   handler: async ({ id }, c) => {

@@ -24,17 +24,22 @@ import invariant from "tiny-invariant";
 const ListEdit: React.FC = () => {
   const { listId = "" } = useParams();
 
-  const { deleteList, updateList, createListShare, deleteListShare } =
-    useMutations();
+  const {
+    deleteList,
+    updateList,
+    createListShare,
+    deleteListShare,
+    leaveListShare,
+  } = useMutations();
 
   const listQuery = useQuery(listQueryOptions(listId));
 
-  const {
-    ref: confirmRef,
-    isConfirming,
-    buttonProps,
-  } = useConfirmButton({
-    handleConfirm: () => deleteList.mutate({ id: listId ?? "" }),
+  const deleteConfirm = useConfirmButton({
+    handleConfirm: () => deleteList.mutate({ id: listId }),
+  });
+
+  const leaveConfirm = useConfirmButton({
+    handleConfirm: () => leaveListShare.mutate({ listId }),
   });
 
   const emailInputRef = React.useRef<HTMLInputElement>(null);
@@ -139,9 +144,27 @@ const ListEdit: React.FC = () => {
             )}
           </div>
 
-          <Button size="sm" ref={confirmRef} {...buttonProps}>
-            <span>{isConfirming ? "You're sure?" : "Delete"}</span>
-          </Button>
+          {list.isAdmin ? (
+            <Button
+              size="sm"
+              ref={deleteConfirm.ref}
+              {...deleteConfirm.buttonProps}
+            >
+              <span>
+                {deleteConfirm.isConfirming ? "You're sure?" : "Delete"}
+              </span>
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              ref={leaveConfirm.ref}
+              {...leaveConfirm.buttonProps}
+            >
+              <span>
+                {leaveConfirm.isConfirming ? "You're sure?" : "Leave"}
+              </span>
+            </Button>
+          )}
         </div>
       )}
     </QueryGuard>

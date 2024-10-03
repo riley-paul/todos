@@ -93,6 +93,17 @@ export default function useMutations() {
     },
   });
 
+  const leaveListShare = useMutation({
+    mutationFn: actions.leaveListShare.orThrow,
+    onError,
+    onSuccess: () => {
+      toast.success("You no longer have access to this list", {
+        id: toastId.current,
+      });
+      navigate("/");
+    },
+  });
+
   return {
     updateTodo,
     deleteTodo,
@@ -104,5 +115,6 @@ export default function useMutations() {
     createListShare,
     deleteListShare,
     acceptListShare,
+    leaveListShare,
   };
 }
