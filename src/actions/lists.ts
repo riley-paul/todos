@@ -5,6 +5,35 @@ import { z } from "zod";
 import type { ListSelect } from "@/lib/types";
 import { v4 as uuid } from "uuid";
 
+export const getList = defineAction({
+  input: z.object({ id: z.string() }),
+  handler: async ({ id }, c) => {
+    const userId = isAuthorized(c).id;
+    const list = await db
+      .select()
+      .from(List)
+      .leftJoin(ListShare, eq(ListShare.listId, List.id))
+      .where(
+        and(
+          eq(List.id, id),
+          or(
+            eq(List.userId, userId),
+            eq(ListShare.sharedUserId, userId),
+            eq(ListShare.userId, userId),
+          ),
+        ),
+      )
+      .then((rows) => rows[0].List);
+
+    const shares = await db
+      .select()
+      .from(ListShare)
+      .where(eq(ListShare.listId, id));
+
+    return { ...list, shares, isShared: list.userId !== userId };
+  },
+});
+
 export const getLists = defineAction({
   handler: async (_, c): Promise<ListSelect[]> => {
     const userId = isAuthorized(c).id;
