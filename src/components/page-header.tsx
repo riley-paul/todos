@@ -12,13 +12,13 @@ const PageHeader: React.FC<Props> = (props) => {
   const { backLink, title } = props;
 
   return (
-    <header className="flex items-center gap-2">
+    <header className="flex items-center gap-1">
       {backLink && (
         <Link
           to={backLink}
           className={cn(
             buttonVariants({ variant: "ghostMuted", size: "icon" }),
-            "rounded-full",
+            "rounded-full size-5 text-xs",
           )}
         >
           <i className="fa-solid fa-arrow-left" />

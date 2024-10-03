@@ -41,11 +41,12 @@ const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
 
 type Props = {
   setValue: (email: string) => void;
+  setValid: (valid: boolean) => void;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 };
 
 const VerifiedEmailInput: React.FC<Props> = (props) => {
-  const { setValue, inputProps } = props;
+  const { setValue, setValid, inputProps } = props;
 
   const [email, setEmail] = useDebounceValue("", 500);
 
@@ -53,6 +54,10 @@ const VerifiedEmailInput: React.FC<Props> = (props) => {
     ...userByEmailQueryOptions(email),
     enabled: email.length > 0,
   });
+
+  React.useEffect(() => {
+    setValid(sharedUserQuery.status === "success" && sharedUserQuery.data);
+  }, [sharedUserQuery.status, sharedUserQuery.data, setValid]);
 
   return (
     <div className="relative">

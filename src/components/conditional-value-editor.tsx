@@ -38,6 +38,7 @@ const ConditionalValueEditor: React.FC<Props> = (props) => {
         <Input
           autoFocus
           value={value}
+          onFocus={(e) => e.target.select()}
           onChange={(e) => setValue(e.target.value)}
           placeholder={placeholder}
         />

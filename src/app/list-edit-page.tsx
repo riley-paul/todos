@@ -1,8 +1,8 @@
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import useDeleteButton from "@/hooks/use-delete-button";
 import useMutations from "@/hooks/use-mutations";
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/tooltip";
 
 import PageHeader from "@/components/page-header";
-import ServerInput from "@/components/server-input";
 import { useQuery } from "@tanstack/react-query";
 import { listQueryOptions } from "@/lib/queries";
 import QueryGuard from "@/components/query-guard";
@@ -36,28 +35,26 @@ const ListEdit: React.FC = () => {
     handleDelete: () => deleteList.mutate({ id: listId ?? "" }),
   });
 
+  const [email, setEmail] = React.useState("");
+  const [valid, setValid] = React.useState(false);
+
   return (
     <QueryGuard query={listQuery}>
       {(list) => (
-        <div className="grid gap-6 px-3">
-          <PageHeader title={`Update ${list.name}`} />
-
-          <ConditionalValueEditor
-            initialValue={list.name}
-            displayClassName="text-2xl font-bold leading-tight"
-            saveValue={(name) =>
-              updateList.mutate({ id: listId, data: { name } })
-            }
-          />
-          <div>Created by {list.listAdmin.name}</div>
-
-          <ServerInput
-            placeholder="List name..."
-            currentValue={list.name}
-            onUpdate={(name) =>
-              updateList.mutate({ id: listId, data: { name } })
-            }
-          />
+        <div className="grid gap-8 px-3">
+          <div className="grid gap-1">
+            <PageHeader title="Edit List" backLink={`/list/${listId}`} />
+            <ConditionalValueEditor
+              initialValue={list.name}
+              displayClassName="text-2xl font-bold leading-tight"
+              saveValue={(name) =>
+                updateList.mutate({ id: listId, data: { name } })
+              }
+            />
+            <div className="text-xs text-muted-foreground">
+              Created by {list.listAdmin.name}
+            </div>
+          </div>
 
           <div className="grid gap-3">
             <Label>Shared With</Label>
@@ -93,24 +90,36 @@ const ListEdit: React.FC = () => {
                 </div>
               ))}
             </div>
-            <VerifiedEmailInput setValue={() => {}} />
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!valid) return;
+                // shareList.mutate({ listId, email });
+              }}
+              className="grid grid-cols-[1fr_auto] items-center gap-2"
+            >
+              <VerifiedEmailInput
+                setValue={(email) => setEmail(email)}
+                setValid={(valid) => setValid(valid)}
+                inputProps={{ placeholder: "Share list by email..." }}
+              />
+              <input type="submit" hidden />
+              <Button type="submit" variant="ghost" disabled={!valid}>
+                <i className="fa-solid fa-paper-plane mr-2" />
+                <span>Share</span>
+              </Button>
+            </form>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              type="button"
-              ref={deleteRef}
-              variant={isConfirming ? "destructive" : "secondary"}
-              onClick={handleClick}
-            >
-              {isConfirming && <i className="fa-solid fa-trash mr-2" />}
-              <span>{isConfirming ? "Confirm?" : "Delete list"}</span>
-            </Button>
-            <Link to={`/list/${listId}`} className={buttonVariants()}>
-              <i className="fa-solid fa-check mr-2" />
-              <span>Done</span>
-            </Link>
-          </div>
+          <Button
+            type="button"
+            ref={deleteRef}
+            variant={isConfirming ? "destructive" : "secondary"}
+            onClick={handleClick}
+          >
+            <span>{isConfirming ? "You're sure?" : "Delete"}</span>
+          </Button>
         </div>
       )}
     </QueryGuard>
