@@ -37,11 +37,6 @@ export default function useMutations() {
     onError,
   });
 
-  const deleteCompleted = useMutation({
-    mutationFn: actions.deleteCompletedTodos.orThrow,
-    onError,
-  });
-
   const createTodo = useMutation({
     mutationFn: actions.createTodo.orThrow,
     onError,
@@ -53,21 +48,6 @@ export default function useMutations() {
       client.clear();
       window.location.href = "/";
     },
-    onError,
-  });
-
-  const createSharedTag = useMutation({
-    mutationFn: actions.createSharedTag.orThrow,
-    onError,
-  });
-
-  const deleteSharedTag = useMutation({
-    mutationFn: actions.deleteSharedTag.orThrow,
-    onError,
-  });
-
-  const approveSharedTag = useMutation({
-    mutationFn: actions.approveSharedTag.orThrow,
     onError,
   });
 
@@ -103,19 +83,26 @@ export default function useMutations() {
     onError,
   });
 
+  const acceptListShare = useMutation({
+    mutationFn: actions.acceptListShare.orThrow,
+    onError,
+    onSuccess: () => {
+      toast.success("You now have access to this list", {
+        id: toastId.current,
+      });
+    },
+  });
+
   return {
     updateTodo,
     deleteTodo,
-    deleteCompleted,
     createTodo,
     deleteUser,
-    createSharedTag,
-    deleteSharedTag,
-    approveSharedTag,
     updateList,
     createList,
     deleteList,
     createListShare,
     deleteListShare,
+    acceptListShare,
   };
 }

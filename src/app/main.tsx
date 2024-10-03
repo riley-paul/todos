@@ -9,7 +9,6 @@ import ErrorPage from "@/app/error-page";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import Root from "./root";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import SharedTags from "./shared-tags";
 import Header from "@/components/header";
 import useQueryStream from "@/hooks/use-query-stream";
 import ListEdit from "./list-edit-page";
@@ -58,10 +57,6 @@ const router = createBrowserRouter([
       {
         path: "list/new",
         element: <ListCreate />,
-      },
-      {
-        path: "shared",
-        element: <SharedTags />,
       },
     ],
   },
