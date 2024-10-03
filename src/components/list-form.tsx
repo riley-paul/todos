@@ -37,7 +37,7 @@ const ListForm: React.FC<Props> = (props) => {
   const handlers = useForm<Schema>({
     values: {
       name: list?.name ?? "",
-      shares: list?.shares.map((i) => i.sharedUser.email) ?? [],
+      shares: [],
     },
     resolver: zodResolver(schema),
   });
@@ -79,7 +79,7 @@ const ListForm: React.FC<Props> = (props) => {
           )}
         />
 
-        <div className={cn("grid grid-cols-2 gap-2")}>
+        <div className={cn("grid gap-2", list && "grid-cols-2")}>
           {list && (
             <Button
               type="button"
