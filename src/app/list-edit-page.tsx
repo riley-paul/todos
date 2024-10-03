@@ -89,6 +89,11 @@ const ListEdit: React.FC = () => {
                   <DeleteButton handleDelete={() => {}} />
                 </div>
               ))}
+              {list.shares.length === 0 && (
+                <div className="px-2 py-8 text-center text-xs text-muted-foreground">
+                  No one else has access to this list
+                </div>
+              )}
             </div>
 
             <form
@@ -114,6 +119,7 @@ const ListEdit: React.FC = () => {
 
           <Button
             type="button"
+            size="sm"
             ref={deleteRef}
             variant={isConfirming ? "destructive" : "secondary"}
             onClick={handleClick}

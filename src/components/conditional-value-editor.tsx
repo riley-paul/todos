@@ -57,7 +57,7 @@ const ConditionalValueEditor: React.FC<Props> = (props) => {
 
   return (
     <div className="flex w-full items-center gap-2">
-      <span className={cn(displayClassName, "flex-1")}>{initialValue}</span>
+      <span className={cn(displayClassName, "flex-1")}>{value}</span>
       <Button
         variant="ghostMuted"
         size="icon"

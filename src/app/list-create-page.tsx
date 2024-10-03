@@ -29,7 +29,7 @@ const ListCreate: React.FC = () => {
 
   return (
     <div className="grid gap-4 px-3">
-      <PageHeader title="Create list" />
+      <PageHeader title="Create list" backLink="/" />
       <Form {...form}>
         <form
           className="grid items-start gap-4"

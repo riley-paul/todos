@@ -60,6 +60,7 @@ export default async function seed() {
           userId,
           listId,
           sharedUserId,
+          isPending: Math.random() > 0.5,
         });
       });
     });
