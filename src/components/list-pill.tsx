@@ -9,6 +9,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Link2 } from "lucide-react";
 
 type ListProps = React.PropsWithChildren<{
   link: string;
@@ -40,7 +41,7 @@ const ListPill: React.FC<ListProps> = (props) => {
         {isShared && (
           <Tooltip>
             <TooltipTrigger>
-              <i className="fa-solid fa-link ml-2" />
+              <Link2 className="size-4 ml-2" />
             </TooltipTrigger>
             {listAdmin && (
               <TooltipContent>Shared by {listAdmin.name}</TooltipContent>

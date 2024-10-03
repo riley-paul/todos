@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import useDeleteButton from "@/hooks/use-delete-button";
+import useConfirmButton from "@/hooks/use-confirm-button";
 import useMutations from "@/hooks/use-mutations";
 import React from "react";
 import { useParams } from "react-router-dom";
@@ -30,11 +30,11 @@ const ListEdit: React.FC = () => {
   const listQuery = useQuery(listQueryOptions(listId));
 
   const {
-    ref: deleteRef,
+    ref: confirmRef,
     isConfirming,
-    handleClick,
-  } = useDeleteButton({
-    handleDelete: () => deleteList.mutate({ id: listId ?? "" }),
+    buttonProps,
+  } = useConfirmButton({
+    handleConfirm: () => deleteList.mutate({ id: listId ?? "" }),
   });
 
   const emailInputRef = React.useRef<HTMLInputElement>(null);
@@ -47,13 +47,19 @@ const ListEdit: React.FC = () => {
         <div className="grid gap-8 px-3">
           <div className="grid gap-1">
             <PageHeader title="Edit List" backLink={`/list/${listId}`} />
-            <ConditionalValueEditor
-              initialValue={list.name}
-              displayClassName="text-2xl font-bold leading-tight"
-              saveValue={(name) =>
-                updateList.mutate({ id: listId, data: { name } })
-              }
-            />
+            {list.isAdmin ? (
+              <ConditionalValueEditor
+                initialValue={list.name}
+                displayClassName="text-2xl font-bold leading-tight"
+                saveValue={(name) =>
+                  updateList.mutate({ id: listId, data: { name } })
+                }
+              />
+            ) : (
+              <h2 className="flex h-10 items-center text-2xl font-bold leading-tight">
+                {list.name}
+              </h2>
+            )}
             <div className="text-xs text-muted-foreground">
               Created by {list.listAdmin.name}
             </div>
@@ -89,53 +95,51 @@ const ListEdit: React.FC = () => {
                       </TooltipContent>
                     </Tooltip>
                   )}
-                  <DeleteButton
-                    handleDelete={() =>
-                      deleteListShare.mutate({ id: share.id })
-                    }
-                  />
+                  {list.isAdmin && (
+                    <DeleteButton
+                      handleDelete={() =>
+                        deleteListShare.mutate({ id: share.id })
+                      }
+                    />
+                  )}
                 </div>
               ))}
               {list.shares.length === 0 && (
-                <div className="px-2 py-8 text-center text-xs text-muted-foreground">
+                <div className="flex h-[54px] items-center justify-center px-2 text-xs text-muted-foreground">
                   No one else has access to this list
                 </div>
               )}
             </div>
 
-            <form
-              onSubmit={(e) => {
-                const input = emailInputRef.current;
-                invariant(input);
+            {list.isAdmin && (
+              <form
+                onSubmit={(e) => {
+                  const input = emailInputRef.current;
+                  invariant(input);
 
-                e.preventDefault();
-                if (!valid) return;
-                createListShare.mutate({ listId, email });
-                input.value = "";
-              }}
-              className="grid grid-cols-[1fr_auto] items-center gap-2"
-            >
-              <VerifiedEmailInput
-                ref={emailInputRef}
-                setValue={(email) => setEmail(email)}
-                setValid={(valid) => setValid(valid)}
-                inputProps={{ placeholder: "Share list by email..." }}
-              />
-              <input type="submit" hidden />
-              <Button type="submit" variant="ghost" disabled={!valid}>
-                <i className="fa-solid fa-paper-plane mr-2" />
-                <span>Share</span>
-              </Button>
-            </form>
+                  e.preventDefault();
+                  if (!valid) return;
+                  createListShare.mutate({ listId, email });
+                  input.value = "";
+                }}
+                className="grid grid-cols-[1fr_auto] items-center gap-2"
+              >
+                <VerifiedEmailInput
+                  ref={emailInputRef}
+                  setValue={(email) => setEmail(email)}
+                  setValid={(valid) => setValid(valid)}
+                  inputProps={{ placeholder: "Share list by email..." }}
+                />
+                <input type="submit" hidden />
+                <Button type="submit" variant="ghost" disabled={!valid}>
+                  <i className="fa-solid fa-paper-plane mr-2" />
+                  <span>Share</span>
+                </Button>
+              </form>
+            )}
           </div>
 
-          <Button
-            type="button"
-            size="sm"
-            ref={deleteRef}
-            variant={isConfirming ? "destructive" : "secondary"}
-            onClick={handleClick}
-          >
+          <Button size="sm" ref={confirmRef} {...buttonProps}>
             <span>{isConfirming ? "You're sure?" : "Delete"}</span>
           </Button>
         </div>

@@ -1,12 +1,22 @@
+import type { ButtonProps } from "@/components/ui/button";
 import React from "react";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 
 interface Props {
-  handleDelete: () => void;
+  handleConfirm: () => void;
   noConfirm?: boolean;
+  buttonVariantIdle?: ButtonProps["variant"];
+  buttonVariantConfirm?: ButtonProps["variant"];
 }
 
-export default function useDeleteButton({ handleDelete, noConfirm }: Props) {
+export default function useConfirmButton(props: Props) {
+  const {
+    handleConfirm,
+    noConfirm,
+    buttonVariantIdle = "secondary",
+    buttonVariantConfirm = "destructive",
+  } = props;
+
   const ref = React.useRef<HTMLButtonElement>(null);
   const [isConfirming, setIsConfirming] = React.useState(false);
 
@@ -20,12 +30,12 @@ export default function useDeleteButton({ handleDelete, noConfirm }: Props) {
 
   const handleClick = () => {
     if (noConfirm) {
-      handleDelete();
+      handleConfirm();
       return;
     }
 
     if (isConfirming) {
-      handleDelete();
+      handleConfirm();
       setIsConfirming(false);
       return;
     }
@@ -33,9 +43,14 @@ export default function useDeleteButton({ handleDelete, noConfirm }: Props) {
     setIsConfirming(true);
   };
 
+  const buttonProps: ButtonProps = {
+    variant: isConfirming ? buttonVariantConfirm : buttonVariantIdle,
+    onClick: handleClick,
+  };
+
   return {
     ref,
     isConfirming,
-    handleClick,
+    buttonProps,
   };
 }

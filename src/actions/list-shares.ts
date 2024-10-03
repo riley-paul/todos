@@ -1,5 +1,5 @@
 import { ActionError, defineAction } from "astro:actions";
-import { db, ListShare, eq, User, and, List, desc } from "astro:db";
+import { db, ListShare, eq, User, and, List, desc, or } from "astro:db";
 import { z } from "zod";
 import { isAuthorized } from "./_helpers";
 import { v4 as uuid } from "uuid";
@@ -90,7 +90,12 @@ export const deleteListShare = defineAction({
     const userId = isAuthorized(c).id;
     await db
       .delete(ListShare)
-      .where(and(eq(ListShare.id, id), eq(ListShare.userId, userId)));
+      .where(
+        and(
+          eq(ListShare.id, id),
+          or(eq(ListShare.userId, userId), eq(ListShare.sharedUserId, userId)),
+        ),
+      );
     return true;
   },
 });
