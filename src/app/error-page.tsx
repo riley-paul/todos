@@ -1,7 +1,8 @@
 import { Bug } from "lucide-react";
 import React from "react";
-import { Button, buttonVariants } from "./ui/button";
+import { Button, buttonVariants } from "../components/ui/button";
 import { isRouteErrorResponse, Link, useRouteError } from "react-router-dom";
+import { isActionError } from "astro:actions";
 
 interface Props {
   showGoHome?: boolean;
@@ -21,8 +22,13 @@ const ErrorPage: React.FC<Props> = (props) => {
     message = error.statusText;
   }
 
+  if (isActionError(error)) {
+    status = error.status;
+    message = error.message;
+  }
+
   return (
-    <div className="flex h-full flex-1 items-center justify-center">
+    <div className="flex h-full min-h-[80vh] flex-1 items-center justify-center">
       <div className="flex h-full max-h-[50%] w-full max-w-sm flex-col gap-4 p-4">
         <div className="flex flex-row items-center gap-4">
           <Bug size="3rem" className="flex-shrink-0 text-primary" />

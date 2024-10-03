@@ -5,15 +5,15 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { Toaster } from "sonner";
-import ErrorPage from "@/components/error-page";
+import ErrorPage from "@/app/error-page";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import Root from "./root";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import SharedTags from "./shared-tags";
 import Header from "@/components/header";
 import useQueryStream from "@/hooks/use-query-stream";
-import ListEdit from "./list-edit";
-import ListCreate from "./list-create";
+import ListEdit from "./list-edit-page";
+import ListCreate from "./list-create-page";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },

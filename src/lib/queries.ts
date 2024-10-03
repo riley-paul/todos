@@ -42,3 +42,9 @@ export const listSharesQueryOptions = (listId: string) =>
     queryKey: ["listShares", listId],
     queryFn: () => actions.getListShares.orThrow({ listId }),
   });
+
+export const listQueryOptions = (listId: string) =>
+  queryOptions({
+    queryKey: ["list", listId],
+    queryFn: () => actions.getList.orThrow({ id: listId }),
+  });

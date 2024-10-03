@@ -1,4 +1,4 @@
-import { defineAction } from "astro:actions";
+import { ActionError, defineAction } from "astro:actions";
 import { isAuthorized } from "./_helpers";
 import { and, db, eq, List, ListShare, or, Todo } from "astro:db";
 import { z } from "zod";
@@ -23,14 +23,21 @@ export const getList = defineAction({
           ),
         ),
       )
-      .then((rows) => rows[0].List);
+      .then((rows) => rows[0]);
+
+    if (!list) {
+      throw new ActionError({
+        message: "List not found",
+        code: "NOT_FOUND",
+      });
+    }
 
     const shares = await db
       .select()
       .from(ListShare)
       .where(eq(ListShare.listId, id));
 
-    return { ...list, shares, isShared: list.userId !== userId };
+    return { ...list.List, shares, isShared: list.List.userId !== userId };
   },
 });
 
