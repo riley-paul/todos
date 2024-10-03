@@ -45,36 +45,37 @@ type Props = {
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 };
 
-const VerifiedEmailInput: React.FC<Props> = (props) => {
-  const { setValue, setValid, inputProps } = props;
+const VerifiedEmailInput = React.forwardRef<HTMLInputElement, Props>(
+  ({ setValue, setValid, inputProps }, ref) => {
+    const [email, setEmail] = useDebounceValue("", 500);
 
-  const [email, setEmail] = useDebounceValue("", 500);
+    const sharedUserQuery = useQuery({
+      ...userByEmailQueryOptions(email),
+      enabled: email.length > 0,
+    });
 
-  const sharedUserQuery = useQuery({
-    ...userByEmailQueryOptions(email),
-    enabled: email.length > 0,
-  });
+    React.useEffect(() => {
+      setValid(sharedUserQuery.status === "success" && sharedUserQuery.data);
+    }, [sharedUserQuery.status, sharedUserQuery.data, setValid]);
 
-  React.useEffect(() => {
-    setValid(sharedUserQuery.status === "success" && sharedUserQuery.data);
-  }, [sharedUserQuery.status, sharedUserQuery.data, setValid]);
-
-  return (
-    <div className="relative">
-      <Input
-        type="email"
-        onChange={(e) => {
-          setEmail(e.target.value);
-          setValue(e.target.value);
-        }}
-        className={cn("relative truncate pr-9", inputProps?.className)}
-        {...inputProps}
-      />
-      <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-        {getIcon(sharedUserQuery)}
+    return (
+      <div className="relative">
+        <Input
+          ref={ref}
+          type="email"
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setValue(e.target.value);
+          }}
+          className={cn("relative truncate pr-9", inputProps?.className)}
+          {...inputProps}
+        />
+        <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+          {getIcon(sharedUserQuery)}
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  },
+);
 
 export default VerifiedEmailInput;

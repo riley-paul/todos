@@ -19,11 +19,13 @@ import ConditionalValueEditor from "@/components/conditional-value-editor";
 import DeleteButton from "@/components/ui/delete-button";
 import { Label } from "@/components/ui/label";
 import VerifiedEmailInput from "@/components/verified-email-input";
+import invariant from "tiny-invariant";
 
 const ListEdit: React.FC = () => {
   const { listId = "" } = useParams();
 
-  const { deleteList, updateList } = useMutations();
+  const { deleteList, updateList, createListShare, deleteListShare } =
+    useMutations();
 
   const listQuery = useQuery(listQueryOptions(listId));
 
@@ -35,6 +37,7 @@ const ListEdit: React.FC = () => {
     handleDelete: () => deleteList.mutate({ id: listId ?? "" }),
   });
 
+  const emailInputRef = React.useRef<HTMLInputElement>(null);
   const [email, setEmail] = React.useState("");
   const [valid, setValid] = React.useState(false);
 
@@ -86,7 +89,11 @@ const ListEdit: React.FC = () => {
                       </TooltipContent>
                     </Tooltip>
                   )}
-                  <DeleteButton handleDelete={() => {}} />
+                  <DeleteButton
+                    handleDelete={() =>
+                      deleteListShare.mutate({ id: share.id })
+                    }
+                  />
                 </div>
               ))}
               {list.shares.length === 0 && (
@@ -98,13 +105,18 @@ const ListEdit: React.FC = () => {
 
             <form
               onSubmit={(e) => {
+                const input = emailInputRef.current;
+                invariant(input);
+
                 e.preventDefault();
                 if (!valid) return;
-                // shareList.mutate({ listId, email });
+                createListShare.mutate({ listId, email });
+                input.value = "";
               }}
               className="grid grid-cols-[1fr_auto] items-center gap-2"
             >
               <VerifiedEmailInput
+                ref={emailInputRef}
                 setValue={(email) => setEmail(email)}
                 setValid={(valid) => setValid(valid)}
                 inputProps={{ placeholder: "Share list by email..." }}

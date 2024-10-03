@@ -93,6 +93,16 @@ export default function useMutations() {
     },
   });
 
+  const createListShare = useMutation({
+    mutationFn: actions.createListShare.orThrow,
+    onError,
+  });
+
+  const deleteListShare = useMutation({
+    mutationFn: actions.deleteListShare.orThrow,
+    onError,
+  });
+
   return {
     updateTodo,
     deleteTodo,
@@ -105,5 +115,7 @@ export default function useMutations() {
     updateList,
     createList,
     deleteList,
+    createListShare,
+    deleteListShare,
   };
 }
