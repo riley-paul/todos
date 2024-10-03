@@ -10,19 +10,19 @@ const Lists: React.FC = () => {
 
   return (
     <div className="flex flex-wrap items-center gap-1.5 px-3">
-      <ListPill link="/" noEdit>
-        Inbox
-      </ListPill>
-      <ListPill link="/all" noEdit>
-        All
-      </ListPill>
+      <ListPill link="/">Inbox</ListPill>
+      <ListPill link="/all">All</ListPill>
       <Separator orientation="vertical" className="h-6" />
       {lists.map((list) => (
-        <ListPill key={list.id} link={`/list/${list.id}`} list={list}>
+        <ListPill
+          key={list.id}
+          link={`/list/${list.id}`}
+          linkLongPress={`/list/${list.id}/edit`}
+        >
           {list.name}
         </ListPill>
       ))}
-      <ListPill noEdit>
+      <ListPill link="/list/new">
         <i className="fa-solid fa-plus" />
       </ListPill>
     </div>
