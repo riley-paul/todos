@@ -1,18 +1,9 @@
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import useDeleteButton from "@/hooks/use-delete-button";
 import useMutations from "@/hooks/use-mutations";
-import { cn } from "@/lib/utils";
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import ListForm from "@/components/list-form";
 import PageHeader from "@/components/page-header";
 
@@ -30,16 +21,9 @@ const ListEdit: React.FC = () => {
   });
 
   return (
-    <div className="grid gap-5">
+    <div className="grid gap-5 px-3">
       <PageHeader title="Update list" backLink={`/list/${listId}`} />
-      <Card>
-        <CardHeader>
-          <CardTitle>Info</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ListForm />
-        </CardContent>
-      </Card>
+      <ListForm />
 
       <Button
         type="button"

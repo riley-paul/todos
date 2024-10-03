@@ -80,7 +80,7 @@ export default function useMutations() {
     mutationFn: actions.createList.orThrow,
     onError,
     onSuccess: ({ id }) => {
-      navigate(`/list/${id}`);
+      navigate(`/list/${id}/edit`);
     },
   });
 
