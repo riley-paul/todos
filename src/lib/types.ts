@@ -11,7 +11,9 @@ export type TagSelect = { tag: string; isShared: boolean };
 
 export type ListShareSelect = typeof ListShare.$inferSelect;
 export type ListSelect = typeof List.$inferSelect & {
-  shares: ListShareSelect[];
+  isAdmin: boolean;
+  isShared: boolean;
+  listAdmin: UserSelect | null;
 };
 
 export type TableUnion = typeof User | typeof Todo;

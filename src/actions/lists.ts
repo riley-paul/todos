@@ -1,6 +1,6 @@
 import { ActionError, defineAction } from "astro:actions";
 import { isAuthorized } from "./_helpers";
-import { and, db, eq, List, ListShare, or, Todo } from "astro:db";
+import { and, db, eq, List, ListShare, or, Todo, User } from "astro:db";
 import { z } from "zod";
 import type { ListSelect } from "@/lib/types";
 import { v4 as uuid } from "uuid";
@@ -35,6 +35,10 @@ export const getList = defineAction({
     const shares = await db
       .select()
       .from(ListShare)
+      .innerJoin(
+        User,
+        or(eq(User.id, ListShare.userId), eq(User.id, ListShare.sharedUserId)),
+      )
       .where(eq(ListShare.listId, id));
 
     return { ...list.List, shares, isShared: list.List.userId !== userId };
@@ -49,6 +53,7 @@ export const getLists = defineAction({
       .select()
       .from(List)
       .leftJoin(ListShare, eq(ListShare.listId, List.id))
+      .leftJoin(User, eq(User.id, ListShare.userId))
       .where(
         or(
           eq(List.userId, userId),
@@ -57,25 +62,16 @@ export const getLists = defineAction({
         ),
       );
 
-    const result = lists.reduce(
-      (acc, val) => {
-        if (!acc[val.List.id]) {
-          acc[val.List.id] = {
-            ...val.List,
-            shares: [],
-          };
-        }
-
-        const shared = val.ListShare;
-        if (shared) {
-          acc[val.List.id].shares.push(shared);
-        }
-        return acc;
-      },
-      {} as Record<string, ListSelect>,
+    const result = new Set(
+      lists.map((list) => ({
+        ...list.List,
+        isAdmin: list.List.userId !== userId,
+        isShared: list.ListShare !== null,
+        listAdmin: list.User,
+      })),
     );
 
-    return Object.values(result);
+    return new Array(...result);
   },
 });
 

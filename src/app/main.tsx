@@ -37,7 +37,7 @@ const router = createBrowserRouter([
         </main>
       </>
     ),
-    errorElement: <ErrorPage />,
+    errorElement: <ErrorPage showGoHome />,
     children: [
       {
         index: true,

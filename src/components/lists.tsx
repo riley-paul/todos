@@ -18,6 +18,9 @@ const Lists: React.FC = () => {
           key={list.id}
           link={`/list/${list.id}`}
           linkLongPress={`/list/${list.id}/edit`}
+          isShared={list.isShared}
+          isAdmin={list.isAdmin}
+          listAdmin={list.listAdmin}
         >
           {list.name}
         </ListPill>
