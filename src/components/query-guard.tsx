@@ -1,6 +1,7 @@
 import React from "react";
 import type { UseQueryResult } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+import ErrorPage from "@/app/error-page";
 
 // Define the props type, where each query result can have a different type
 interface QueryResultsProps<T extends any[]> {
@@ -26,7 +27,12 @@ const QueryGuard = <T extends any[]>({
   if (error) {
     return (
       <div className="flex h-full min-h-32 items-center justify-center text-sm text-muted-foreground">
-        Error: {error instanceof Error ? error.message : "Unknown error"}
+        <ErrorPage
+          error={error}
+          retry={() => queries.forEach((query) => query.refetch())}
+          notFullHeight
+          showGoHome
+        />
       </div>
     );
   }
