@@ -8,7 +8,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
@@ -20,6 +19,7 @@ import QueryGuard from "@/components/query-guard";
 import ConditionalValueEditor from "@/components/conditional-value-editor";
 import DeleteButton from "@/components/ui/delete-button";
 import { Label } from "@/components/ui/label";
+import VerifiedEmailInput from "@/components/verified-email-input";
 
 const ListEdit: React.FC = () => {
   const { listId = "" } = useParams();
@@ -93,6 +93,7 @@ const ListEdit: React.FC = () => {
                 </div>
               ))}
             </div>
+            <VerifiedEmailInput setValue={() => {}} />
           </div>
 
           <div className="grid grid-cols-2 gap-2">
