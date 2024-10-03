@@ -4,7 +4,7 @@ import {
   getUsersOfTodo,
   isAuthorized,
 } from "./_helpers";
-import { and, db, desc, eq, isNull, or, Todo, User } from "astro:db";
+import { and, db, desc, eq, isNull, ListShare, or, Todo, User } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
@@ -23,10 +23,15 @@ export const getTodos = defineAction({
     const todos: TodoSelect[] = await db
       .select()
       .from(Todo)
+      .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
       .where(
         and(
           eq(Todo.isDeleted, false),
-          eq(Todo.userId, userId),
+          or(
+            eq(Todo.userId, userId),
+            eq(ListShare.sharedUserId, userId),
+            eq(ListShare.userId, userId),
+          ),
           type === "list" ? eq(Todo.listId, listId ?? "") : undefined,
           type === "inbox" ? isNull(Todo.listId) : undefined,
         ),
@@ -34,7 +39,11 @@ export const getTodos = defineAction({
       .orderBy(desc(Todo.createdAt))
       .innerJoin(User, eq(User.id, Todo.userId))
       .then((rows) =>
-        rows.map((row) => ({ ...row.Todo, user: row.User, isShared: false })),
+        rows.map((row) => ({
+          ...row.Todo,
+          user: row.User,
+          isShared: row.Todo?.userId !== userId,
+        })),
       );
     return todos;
   },

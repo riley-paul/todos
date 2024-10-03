@@ -33,7 +33,7 @@ export default async function seed() {
   const lists = await db
     .insert(List)
     .values(
-      Array.from({ length: 20 }).map(() => ({
+      Array.from({ length: 15 }).map(() => ({
         id: uuid(),
         userId: faker.helpers.arrayElement(userIds),
         name: capitalize(faker.lorem.word()),
