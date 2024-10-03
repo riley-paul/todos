@@ -5,7 +5,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { z } from "zod";
@@ -42,7 +41,6 @@ const ListCreate: React.FC = () => {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="sr-only">Name</FormLabel>
                 <FormControl>
                   <Input autoFocus placeholder="List name..." {...field} />
                 </FormControl>
