@@ -27,24 +27,27 @@ export const getTodos = defineAction({
       .where(
         and(
           eq(Todo.isDeleted, false),
-          or(
-            eq(Todo.userId, userId),
-            eq(ListShare.sharedUserId, userId),
-            eq(ListShare.userId, userId),
-          ),
+          or(eq(Todo.userId, userId), eq(ListShare.sharedUserId, userId)),
           type === "list" ? eq(Todo.listId, listId ?? "") : undefined,
           type === "inbox" ? isNull(Todo.listId) : undefined,
         ),
       )
       .orderBy(desc(Todo.createdAt))
       .innerJoin(User, eq(User.id, Todo.userId))
-      .then((rows) =>
-        rows.map((row) => ({
-          ...row.Todo,
-          user: row.User,
-          isShared: row.Todo?.userId !== userId,
-        })),
-      );
+      .then((rows) => {
+        const ids = new Set<string>();
+        return rows
+          .filter((row) => {
+            if (ids.has(row.Todo.id)) return false;
+            ids.add(row.Todo.id);
+            return true;
+          })
+          .map((row) => ({
+            ...row.Todo,
+            user: row.User,
+            isShared: row.Todo.userId !== userId,
+          }));
+      });
     return todos;
   },
 });

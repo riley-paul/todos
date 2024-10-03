@@ -18,7 +18,7 @@ const PageHeader: React.FC<Props> = (props) => {
           to={backLink}
           className={cn(
             buttonVariants({ variant: "ghostMuted", size: "icon" }),
-            "rounded-full size-5 text-xs",
+            "rounded-full h-5 w-7 text-xs",
           )}
         >
           <i className="fa-solid fa-arrow-left" />

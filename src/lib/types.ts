@@ -14,6 +14,7 @@ export type ListShareSelect = typeof ListShare.$inferSelect & {
 };
 export type ListShareInsert = typeof ListShare.$inferInsert;
 
+export type ListInsert = typeof List.$inferInsert;
 export type ListSelect = typeof List.$inferSelect & {
   isAdmin: boolean;
   isShared: boolean;

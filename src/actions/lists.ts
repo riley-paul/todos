@@ -1,6 +1,6 @@
 import { ActionError, defineAction } from "astro:actions";
 import { isAuthorized } from "./_helpers";
-import { and, db, eq, List, ListShare, or, Todo, User } from "astro:db";
+import { and, db, desc, eq, List, ListShare, or, Todo, User } from "astro:db";
 import { z } from "zod";
 import type { ListSelect, ListShareSelect } from "@/lib/types";
 import { v4 as uuid } from "uuid";
@@ -13,15 +13,10 @@ export const getList = defineAction({
       .select()
       .from(List)
       .leftJoin(ListShare, eq(ListShare.listId, List.id))
-      .innerJoin(User, eq(User.id, List.userId))
       .where(
         and(
           eq(List.id, id),
-          or(
-            eq(List.userId, userId),
-            eq(ListShare.sharedUserId, userId),
-            eq(ListShare.userId, userId),
-          ),
+          or(eq(List.userId, userId), eq(ListShare.sharedUserId, userId)),
         ),
       )
       .then((rows) => rows[0]);
@@ -42,11 +37,17 @@ export const getList = defineAction({
         rows.map((row) => ({ ...row.ListShare, user: row.User })),
       );
 
+    const listAdmin = await db
+      .select()
+      .from(User)
+      .where(eq(User.id, list.List.userId))
+      .then((rows) => rows[0]);
+
     return {
       ...list.List,
       shares,
       isAdmin: list.List.userId === userId,
-      listAdmin: list.User,
+      listAdmin,
     };
   },
 });
@@ -60,23 +61,25 @@ export const getLists = defineAction({
       .from(List)
       .leftJoin(ListShare, eq(ListShare.listId, List.id))
       .leftJoin(User, eq(User.id, ListShare.userId))
-      .where(or(eq(List.userId, userId), eq(ListShare.sharedUserId, userId)));
-
-    const resultIds = new Set<string>();
-    const result: ListSelect[] = [];
-
-    lists.forEach((list) => {
-      if (resultIds.has(list.List.id)) return;
-      resultIds.add(list.List.id);
-      result.push({
-        ...list.List,
-        isAdmin: list.List.userId !== userId,
-        isShared: list.ListShare !== null,
-        listAdmin: list.User,
+      .where(or(eq(List.userId, userId), eq(ListShare.sharedUserId, userId)))
+      .orderBy(desc(List.createdAt))
+      .then((rows) => {
+        const ids = new Set<string>();
+        return rows
+          .filter((row) => {
+            if (ids.has(row.List.id)) return false;
+            ids.add(row.List.id);
+            return true;
+          })
+          .map((list) => ({
+            ...list.List,
+            isAdmin: list.List.userId !== userId,
+            isShared: list.ListShare !== null,
+            listAdmin: list.User,
+          }));
       });
-    });
 
-    return result;
+    return lists;
   },
 });
 
@@ -117,6 +120,9 @@ export const deleteList = defineAction({
     await db
       .delete(Todo)
       .where(and(eq(Todo.listId, id), eq(Todo.userId, userId)));
+    await db
+      .delete(ListShare)
+      .where(and(eq(ListShare.listId, id), eq(ListShare.userId, userId)));
     await db.delete(List).where(and(eq(List.id, id), eq(List.userId, userId)));
     return true;
   },
