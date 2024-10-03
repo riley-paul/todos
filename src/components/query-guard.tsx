@@ -4,19 +4,16 @@ import { Loader2 } from "lucide-react";
 import ErrorPage from "@/app/error-page";
 
 // Define the props type, where each query result can have a different type
-interface QueryResultsProps<T extends any[]> {
-  queries: { [K in keyof T]: UseQueryResult<T[K], unknown> }; // Queries is a tuple of UseQueryResult
-  children: (results: T) => React.ReactNode; // Callback function to render React Node with results
+interface QueryResultsProps<T> {
+  query: UseQueryResult<T, unknown>;
+  children: (results: T) => React.ReactNode;
 }
 
-const QueryGuard = <T extends any[]>({
-  queries,
+const QueryGuard = <T,>({
+  query,
   children,
-}: QueryResultsProps<T>) => {
-  const isLoading = queries.some((query) => query.isLoading);
-  const error = queries.find((query) => query.isError)?.error;
-
-  if (isLoading) {
+}: QueryResultsProps<T>): React.ReactNode => {
+  if (query.isLoading) {
     return (
       <div className="flex h-full min-h-32 items-center justify-center">
         <Loader2 className="size-6 animate-spin text-primary" />
@@ -24,12 +21,12 @@ const QueryGuard = <T extends any[]>({
     );
   }
 
-  if (error) {
+  if (query.isError || !query.data) {
     return (
       <div className="flex h-full min-h-32 items-center justify-center text-sm text-muted-foreground">
         <ErrorPage
-          error={error}
-          retry={() => queries.forEach((query) => query.refetch())}
+          error={query.error}
+          retry={() => query.refetch()}
           notFullHeight
           showGoHome
         />
@@ -37,10 +34,7 @@ const QueryGuard = <T extends any[]>({
     );
   }
 
-  // Once all queries are done loading and have no errors, pass the data to the children callback
-  const results = queries.map((query) => query.data!) as T; // Ensure correct tuple type
-
-  return <>{children(results)}</>;
+  return <>{children(query.data)}</>;
 };
 
 export default QueryGuard;

@@ -65,7 +65,7 @@ export default async function seed() {
     });
 
     await db.insert(Todo).values(
-      Array.from({ length: 100 }).map(() => {
+      Array.from({ length: 50 }).map(() => {
         return {
           id: uuid(),
           userId,

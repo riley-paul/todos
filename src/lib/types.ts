@@ -9,7 +9,9 @@ export type UserSelect = typeof User.$inferSelect;
 export type SharedTagSelect = typeof SharedTag.$inferSelect;
 export type TagSelect = { tag: string; isShared: boolean };
 
-export type ListShareSelect = typeof ListShare.$inferSelect;
+export type ListShareSelect = typeof ListShare.$inferSelect & {
+  user: UserSelect;
+};
 export type ListSelect = typeof List.$inferSelect & {
   isAdmin: boolean;
   isShared: boolean;

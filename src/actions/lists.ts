@@ -2,7 +2,7 @@ import { ActionError, defineAction } from "astro:actions";
 import { isAuthorized } from "./_helpers";
 import { and, db, eq, List, ListShare, or, Todo, User } from "astro:db";
 import { z } from "zod";
-import type { ListSelect } from "@/lib/types";
+import type { ListSelect, ListShareSelect } from "@/lib/types";
 import { v4 as uuid } from "uuid";
 
 export const getList = defineAction({
@@ -13,6 +13,7 @@ export const getList = defineAction({
       .select()
       .from(List)
       .leftJoin(ListShare, eq(ListShare.listId, List.id))
+      .innerJoin(User, eq(User.id, List.userId))
       .where(
         and(
           eq(List.id, id),
@@ -32,16 +33,21 @@ export const getList = defineAction({
       });
     }
 
-    const shares = await db
+    const shares: ListShareSelect[] = await db
       .select()
       .from(ListShare)
-      .innerJoin(
-        User,
-        or(eq(User.id, ListShare.userId), eq(User.id, ListShare.sharedUserId)),
-      )
-      .where(eq(ListShare.listId, id));
+      .innerJoin(User, eq(User.id, ListShare.sharedUserId))
+      .where(eq(ListShare.listId, id))
+      .then((rows) =>
+        rows.map((row) => ({ ...row.ListShare, user: row.User })),
+      );
 
-    return { ...list.List, shares, isShared: list.List.userId !== userId };
+    return {
+      ...list.List,
+      shares,
+      isAdmin: list.List.userId === userId,
+      listAdmin: list.User,
+    };
   },
 });
 
@@ -54,24 +60,23 @@ export const getLists = defineAction({
       .from(List)
       .leftJoin(ListShare, eq(ListShare.listId, List.id))
       .leftJoin(User, eq(User.id, ListShare.userId))
-      .where(
-        or(
-          eq(List.userId, userId),
-          eq(ListShare.sharedUserId, userId),
-          eq(ListShare.userId, userId),
-        ),
-      );
+      .where(or(eq(List.userId, userId), eq(ListShare.sharedUserId, userId)));
 
-    const result = new Set(
-      lists.map((list) => ({
+    const resultIds = new Set<string>();
+    const result: ListSelect[] = [];
+
+    lists.forEach((list) => {
+      if (resultIds.has(list.List.id)) return;
+      resultIds.add(list.List.id);
+      result.push({
         ...list.List,
         isAdmin: list.List.userId !== userId,
         isShared: list.ListShare !== null,
         listAdmin: list.User,
-      })),
-    );
+      });
+    });
 
-    return new Array(...result);
+    return result;
   },
 });
 
