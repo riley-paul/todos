@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "../ui/button";
+import { Button } from "./button";
 import { Check, X } from "lucide-react";
 import useConfirmButton from "@/hooks/use-confirm-button";
 

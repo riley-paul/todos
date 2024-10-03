@@ -1,4 +1,4 @@
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/components/base/page-header";
 import React from "react";
 import {
   Form,

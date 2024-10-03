@@ -1,7 +1,7 @@
 import React from "react";
 import { useOnClickOutside } from "usehooks-ts";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 
 interface Props {

@@ -11,14 +11,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/components/base/page-header";
 import { useQuery } from "@tanstack/react-query";
 import { listQueryOptions } from "@/lib/queries";
-import QueryGuard from "@/components/query-guard";
-import ConditionalValueEditor from "@/components/conditional-value-editor";
+import QueryGuard from "@/components/base/query-guard";
+import ConditionalValueEditor from "@/components/base/conditional-value-editor";
 import DeleteButton from "@/components/ui/delete-button";
 import { Label } from "@/components/ui/label";
-import VerifiedEmailInput from "@/components/verified-email-input";
+import VerifiedEmailInput from "@/components/base/verified-email-input";
 import invariant from "tiny-invariant";
 
 const ListEdit: React.FC = () => {
