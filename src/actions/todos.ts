@@ -3,23 +3,52 @@ import {
   filterTodoBySharedTag,
   getUsersOfTodo,
   isAuthorized,
-  queryTodos,
 } from "./_helpers";
-import { and, db, eq, or, Todo } from "astro:db";
+import { and, db, desc, eq, isNull, ListShare, or, Todo, User } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
 import invalidateUsers from "./helpers/invalidate-users";
+import type { TodoSelect } from "@/lib/types";
 
 const todoUpdateSchema = z.custom<Partial<typeof Todo.$inferInsert>>();
 
 export const getTodos = defineAction({
   input: z.object({
-    tag: z.string().optional(),
+    type: z.enum(["inbox", "all", "list"]),
+    listId: z.string().optional(),
   }),
-  handler: async ({ tag }, c) => {
+  handler: async ({ type, listId }, c) => {
     const userId = isAuthorized(c).id;
-    return await queryTodos(tag, userId);
+    const todos: TodoSelect[] = await db
+      .select()
+      .from(Todo)
+      .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
+      .where(
+        and(
+          eq(Todo.isDeleted, false),
+          or(eq(Todo.userId, userId), eq(ListShare.sharedUserId, userId)),
+          type === "list" ? eq(Todo.listId, listId ?? "") : undefined,
+          type === "inbox" ? isNull(Todo.listId) : undefined,
+        ),
+      )
+      .orderBy(desc(Todo.createdAt))
+      .innerJoin(User, eq(User.id, Todo.userId))
+      .then((rows) => {
+        const ids = new Set<string>();
+        return rows
+          .filter((row) => {
+            if (ids.has(row.Todo.id)) return false;
+            ids.add(row.Todo.id);
+            return true;
+          })
+          .map((row) => ({
+            ...row.Todo,
+            user: row.User,
+            isShared: row.Todo.userId !== userId,
+          }));
+      });
+    return todos;
   },
 });
 

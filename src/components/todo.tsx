@@ -1,13 +1,10 @@
 import React from "react";
-import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
-import { Card } from "./ui/card";
 import DeleteButton from "./ui/delete-button";
-import { Check, Link2, Loader2 } from "lucide-react";
+import { Link2 } from "lucide-react";
 import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import TodoEditor from "./todo-editor";
-import TodoText from "./todo-text";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 
 import {
@@ -15,6 +12,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Checkbox } from "./ui/checkbox";
 
 interface Props {
   todo: TodoSelect;
@@ -45,11 +43,11 @@ const TodoItem: React.FC<Props> = (props) => {
   }, [todo]);
 
   return (
-    <Card
+    <div
       ref={ref}
       className={cn(
-        "flex items-center gap-2 rounded-md p-2 text-sm",
-        todo.isCompleted && "bg-card/50",
+        "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ease-out hover:bg-muted/20",
+        todo.isCompleted && "opacity-50",
         deleteTodo.isPending && "opacity-50",
       )}
     >
@@ -57,24 +55,17 @@ const TodoItem: React.FC<Props> = (props) => {
         <TodoEditor todo={todo} onSubmit={() => setEditorOpen(false)} />
       ) : (
         <>
-          <Button
+          <Checkbox
             className="shrink-0 rounded-full"
-            variant={todo.isCompleted ? "secondary" : "ghost"}
-            size="icon"
             disabled={updateTodo.isPending}
-            onClick={() =>
+            checked={todo.isCompleted}
+            onCheckedChange={() =>
               updateTodo.mutate({
                 id: todo.id,
                 data: { isCompleted: !todo.isCompleted },
               })
             }
-          >
-            {updateTodo.isPending ? (
-              <Loader2 size="1rem" className="animate-spin" />
-            ) : (
-              <Check size="1rem" />
-            )}
-          </Button>
+          />
           <button
             onClick={() => setEditorOpen(true)}
             className={cn(
@@ -82,7 +73,7 @@ const TodoItem: React.FC<Props> = (props) => {
               todo.isCompleted && "text-muted-foreground line-through",
             )}
           >
-            <TodoText text={todo.text} />
+            {todo.text}
           </button>
           {todo.isShared && (
             <Tooltip>
@@ -99,7 +90,7 @@ const TodoItem: React.FC<Props> = (props) => {
           />
         </>
       )}
-    </Card>
+    </div>
   );
 };
 

@@ -25,10 +25,35 @@ const UserSession = defineTable({
   },
 });
 
+const List = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true }),
+    userId: column.text({ references: () => User.columns.id }),
+    name: column.text(),
+    createdAt: column.text({ default: NOW }),
+  },
+});
+
+const ListShare = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true }),
+    listId: column.text({ references: () => List.columns.id }),
+    userId: column.text({ references: () => User.columns.id }),
+    sharedUserId: column.text({ references: () => User.columns.id }),
+    isPending: column.boolean({ default: true }),
+    createdAt: column.text({ default: NOW }),
+  },
+});
+
 const Todo = defineTable({
   columns: {
     id: column.text({ primaryKey: true }),
     userId: column.text({ references: () => User.columns.id }),
+    listId: column.text({
+      references: () => List.columns.id,
+      optional: true,
+    }),
+    sortOrder: column.number({ default: 0 }),
     text: column.text(),
     isCompleted: column.boolean({ default: false }),
     isDeleted: column.boolean({ default: false }),
@@ -51,6 +76,8 @@ const SharedTag = defineTable({
 export default defineDb({
   tables: {
     User,
+    List,
+    ListShare,
     UserSession,
     Todo,
     SharedTag,

@@ -3,9 +3,9 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Loader2, Plus } from "lucide-react";
 import useMutations from "../hooks/use-mutations";
-import useSelectedTag from "../hooks/use-selected-tag";
 import { useMediaQuery } from "usehooks-ts";
 import { MOBILE_MEDIA_QUERY } from "@/lib/constants";
+import { useParams } from "react-router-dom";
 
 const isOnlyHashtag = (value: string) =>
   value.startsWith("#") && value.trim().split(" ").length === 1;
@@ -13,23 +13,16 @@ const isOnlyHashtag = (value: string) =>
 const isEmptyString = (value: string) => value.trim() === "";
 
 export default function Adder(): ReturnType<React.FC> {
-  const { tag } = useSelectedTag();
-  const defaultValue = tag === "~" || tag === "" ? "" : `#${tag} `;
-
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  const [value, setValue] = React.useState<string>(defaultValue);
+  const { listId } = useParams();
   const { createTodo } = useMutations();
 
-  React.useEffect(() => {
-    if (tag && (isOnlyHashtag(value) || isEmptyString(value))) {
-      setValue(defaultValue);
-    }
-  }, [tag]);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const [value, setValue] = React.useState("");
 
   const create = () => {
     if (value) {
-      createTodo.mutate({ data: { text: value } });
-      setValue(defaultValue);
+      createTodo.mutate({ data: { text: value, listId } });
+      setValue("");
       inputRef.current?.focus();
     }
   };
@@ -43,7 +36,7 @@ export default function Adder(): ReturnType<React.FC> {
         if (isEmptyString(value) || isOnlyHashtag(value)) return;
         create();
       }}
-      className="flex items-center gap-2"
+      className="flex items-center gap-2 px-3"
     >
       <Input
         autoFocus

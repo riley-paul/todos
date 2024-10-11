@@ -2,9 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { actions } from "astro:actions";
 import useMutationHelpers from "./use-mutation-helpers";
+import { useNavigate } from "react-router-dom";
 
 export default function useMutations() {
   const client = useQueryClient();
+  const navigate = useNavigate();
 
   const { onError, onMutateMessage, toastId } = useMutationHelpers();
 
@@ -35,11 +37,6 @@ export default function useMutations() {
     onError,
   });
 
-  const deleteCompleted = useMutation({
-    mutationFn: actions.deleteCompletedTodos.orThrow,
-    onError,
-  });
-
   const createTodo = useMutation({
     mutationFn: actions.createTodo.orThrow,
     onError,
@@ -54,29 +51,70 @@ export default function useMutations() {
     onError,
   });
 
-  const createSharedTag = useMutation({
-    mutationFn: actions.createSharedTag.orThrow,
+  const updateList = useMutation({
+    mutationFn: actions.updateList.orThrow,
     onError,
   });
 
-  const deleteSharedTag = useMutation({
-    mutationFn: actions.deleteSharedTag.orThrow,
+  const createList = useMutation({
+    mutationFn: actions.createList.orThrow,
+    onError,
+    onSuccess: ({ id }) => {
+      navigate(`/list/${id}/edit`);
+    },
+  });
+
+  const deleteList = useMutation({
+    mutationFn: actions.deleteList.orThrow,
+    onError,
+    onSuccess: () => {
+      navigate("/");
+      toast.success("List deleted", { id: toastId.current });
+    },
+  });
+
+  const createListShare = useMutation({
+    mutationFn: actions.createListShare.orThrow,
     onError,
   });
 
-  const approveSharedTag = useMutation({
-    mutationFn: actions.approveSharedTag.orThrow,
+  const deleteListShare = useMutation({
+    mutationFn: actions.deleteListShare.orThrow,
     onError,
+  });
+
+  const acceptListShare = useMutation({
+    mutationFn: actions.acceptListShare.orThrow,
+    onError,
+    onSuccess: () => {
+      toast.success("You now have access to this list", {
+        id: toastId.current,
+      });
+    },
+  });
+
+  const leaveListShare = useMutation({
+    mutationFn: actions.leaveListShare.orThrow,
+    onError,
+    onSuccess: () => {
+      toast.success("You no longer have access to this list", {
+        id: toastId.current,
+      });
+      navigate("/");
+    },
   });
 
   return {
     updateTodo,
     deleteTodo,
-    deleteCompleted,
     createTodo,
     deleteUser,
-    createSharedTag,
-    deleteSharedTag,
-    approveSharedTag,
+    updateList,
+    createList,
+    deleteList,
+    createListShare,
+    deleteListShare,
+    acceptListShare,
+    leaveListShare,
   };
 }

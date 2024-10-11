@@ -1,8 +1,10 @@
-import { SharedTag, Todo, User, db } from "astro:db";
-import { todoText } from "./seeds/todo-text";
-
+import { List, ListShare, Todo, User, db } from "astro:db";
+import { faker } from "@faker-js/faker";
 import { v4 as uuid } from "uuid";
-import { randomItemFromArray } from "./seeds/helpers";
+
+function capitalize(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 // https://astro.build/db/seed
 export default async function seed() {
@@ -17,79 +19,65 @@ export default async function seed() {
         name: "Riley Paul",
         avatarUrl: "https://avatars.githubusercontent.com/u/71047303?v=4",
       },
-      {
+      ...Array.from({ length: 20 }).map(() => ({
         id: uuid(),
-        email: "hello@example.com",
-        name: "John Doe",
-        avatarUrl: "https://randomuser.me/api/portraits/men/91.jpg",
-      },
-      {
-        id: uuid(),
-        email: "hello2@example.com",
-        name: "Jill Power",
-        avatarUrl: "https://randomuser.me/api/portraits/women/27.jpg",
-      },
+        email: faker.internet.email(),
+        name: faker.person.fullName(),
+        avatarUrl: faker.image.avatarGitHub(),
+      })),
     ])
     .returning({ id: User.id })
     .then((users) => users.map((user) => user.id));
-  console.log("✅ Seeded user");
+  console.log("✅ Seeded users");
 
-  await db
-    .insert(Todo)
-    .values(
-      todoText.map((text) => ({
-        id: uuid(),
-        userId: randomItemFromArray(userIds),
-        text,
-      })),
+  userIds.forEach(async (userId) => {
+    const listIds = await db
+      .insert(List)
+      .values(
+        Array.from({ length: faker.number.int({ min: 3, max: 8 }) }).map(
+          () => ({
+            id: uuid(),
+            userId,
+            name: capitalize(faker.lorem.word()),
+          }),
+        ),
+      )
+      .returning()
+      .then((lists) => lists.map((list) => list.id));
+
+    listIds.forEach(async (listId) => {
+      const isShared = faker.helpers.maybe(() => true, { probability: 0.3 });
+      if (!isShared) return;
+
+      const sharedUserIds = faker.helpers.arrayElements(
+        userIds.filter((id) => id !== userId),
+        faker.number.int(7),
+      );
+
+      sharedUserIds.forEach(async (sharedUserId) => {
+        await db.insert(ListShare).values({
+          id: uuid(),
+          userId,
+          listId,
+          sharedUserId,
+          isPending: Math.random() > 0.5,
+        });
+      });
+    });
+
+    await db.insert(Todo).values(
+      Array.from({ length: 50 }).map(() => {
+        return {
+          id: uuid(),
+          userId,
+          listId: faker.helpers.maybe(
+            () => faker.helpers.arrayElement(listIds),
+            { probability: 0.8 },
+          ),
+          text: faker.lorem.sentence(),
+        };
+      }),
     );
-  console.log("✅ Seeded todos");
-
-  await db.insert(SharedTag).values([
-    {
-      id: uuid(),
-      tag: "react",
-      userId: userIds[0],
-      sharedUserId: userIds[1],
-    },
-    {
-      id: uuid(),
-      tag: "shopping",
-      userId: userIds[0],
-      isPending: false,
-      sharedUserId: userIds[1],
-    },
-    {
-      id: uuid(),
-      tag: "work",
-      userId: userIds[1],
-      sharedUserId: userIds[0],
-    },
-    {
-      id: uuid(),
-      tag: "house",
-      userId: userIds[1],
-      isPending: false,
-      sharedUserId: userIds[0],
-    },
-    {
-      id: uuid(),
-      tag: "chores",
-      userId: userIds[1],
-      sharedUserId: userIds[0],
-    },
-    {
-      id: uuid(),
-      tag: "house",
-      userId: userIds[2],
-      isPending: false,
-      sharedUserId: userIds[0],
-    },
-    {
-      id: uuid(),
-      tag: "chores",
-      userId: userIds[0],
-      sharedUserId: userIds[2],
-    },
-  ]);
+  });
+  console.log("✅ Seeded data for users");
 }

@@ -23,7 +23,7 @@ const TodoEditor: React.FC<Props> = (props) => {
 
   return (
     <form
-      className="flex w-full gap-2"
+      className="flex w-full gap-2 items-center"
       id={formId}
       onSubmit={async (e) => {
         e.preventDefault();
@@ -35,6 +35,7 @@ const TodoEditor: React.FC<Props> = (props) => {
       }}
     >
       <Input
+        className="h-7"
         autoFocus
         placeholder="What needs to be done?"
         value={todoText}
@@ -43,7 +44,7 @@ const TodoEditor: React.FC<Props> = (props) => {
       <input type="hidden" />
       <Button
         size={isMobile ? "icon" : "default"}
-        className="shrink-0"
+        className="shrink-0 h-7"
         type="submit"
         form={formId}
       >
