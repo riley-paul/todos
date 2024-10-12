@@ -28,7 +28,6 @@ const QueryGuard = <T,>({
           error={query.error}
           retry={() => query.refetch()}
           notFullHeight
-          showGoHome
         />
       </div>
     );

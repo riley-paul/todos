@@ -5,7 +5,8 @@ import { Loader2, Plus } from "lucide-react";
 import useMutations from "../hooks/use-mutations";
 import { useMediaQuery } from "usehooks-ts";
 import { MOBILE_MEDIA_QUERY } from "@/lib/constants";
-import { useParams } from "react-router-dom";
+import { useAtomValue } from "jotai/react";
+import { selectedListAtom } from "@/lib/store";
 
 const isOnlyHashtag = (value: string) =>
   value.startsWith("#") && value.trim().split(" ").length === 1;
@@ -13,8 +14,8 @@ const isOnlyHashtag = (value: string) =>
 const isEmptyString = (value: string) => value.trim() === "";
 
 export default function Adder(): ReturnType<React.FC> {
-  const { listId } = useParams();
   const { createTodo } = useMutations();
+  const listId = useAtomValue(selectedListAtom);
 
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [value, setValue] = React.useState("");
