@@ -4,34 +4,27 @@ import {
   getUsersOfTodo,
   isAuthorized,
 } from "./_helpers";
-import { and, db, desc, eq, isNull, ListShare, or, Todo, User } from "astro:db";
+import { and, db, desc, eq, ListShare, or, Todo, User } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
 import invalidateUsers from "./helpers/invalidate-users";
 import type { TodoSelect } from "@/lib/types";
+import { filterTodos } from "./helpers/filters";
 
 const todoUpdateSchema = z.custom<Partial<typeof Todo.$inferInsert>>();
 
 export const getTodos = defineAction({
   input: z.object({
-    type: z.enum(["inbox", "all", "list"]),
-    listId: z.string().optional(),
+    listId: z.union([z.string(), z.null(), z.undefined()]),
   }),
-  handler: async ({ type, listId }, c) => {
+  handler: async ({ listId }, c) => {
     const userId = isAuthorized(c).id;
     const todos: TodoSelect[] = await db
       .select()
       .from(Todo)
       .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
-      .where(
-        and(
-          eq(Todo.isDeleted, false),
-          or(eq(Todo.userId, userId), eq(ListShare.sharedUserId, userId)),
-          type === "list" ? eq(Todo.listId, listId ?? "") : undefined,
-          type === "inbox" ? isNull(Todo.listId) : undefined,
-        ),
-      )
+      .where(filterTodos(userId, listId))
       .orderBy(desc(Todo.createdAt))
       .innerJoin(User, eq(User.id, Todo.userId))
       .then((rows) => {

@@ -1,7 +1,7 @@
 import React from "react";
 import { Badge } from "./ui/badge";
 import { useAtom } from "jotai/react";
-import { selectedListAtom } from "@/lib/store";
+import { selectedListAtom, type SelectedList } from "@/lib/store";
 import { Separator } from "./ui/separator";
 import { Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -11,7 +11,7 @@ import { Button } from "./ui/button";
 import ListsEditor from "./lists-editor";
 
 const List: React.FC<{
-  value: string | undefined;
+  value: SelectedList;
   name: string;
   count?: number;
 }> = ({ value, name, count = 0 }) => {
@@ -40,16 +40,17 @@ const List: React.FC<{
 
 const Lists: React.FC = () => {
   const listsQuery = useQuery(listsQueryOptions);
-  const allCount = useQuery(todosQueryOptions({ type: "all" }))?.data?.length;
-  const inboxCount = useQuery(todosQueryOptions({ type: "inbox" }))?.data
+  const inboxCount = useQuery(todosQueryOptions({ listId: null }))?.data
+    ?.length;
+  const allCount = useQuery(todosQueryOptions({ listId: undefined }))?.data
     ?.length;
 
   const [editorIsOpen, setEditorIsOpen] = React.useState(false);
 
   return (
     <div className="flex flex-wrap gap-2 px-3">
-      <List value={undefined} name="Inbox" count={inboxCount} />
-      <List value={"all"} name="All" count={allCount} />
+      <List value={null} name="Inbox" count={inboxCount} />
+      <List value={undefined} name="All" count={allCount} />
       <div className="flex items-center">
         <Separator orientation="vertical" className="h-5" />
       </div>

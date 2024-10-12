@@ -15,6 +15,7 @@ import {
 import { z } from "zod";
 import type { ListSelect, ListShareSelect } from "@/lib/types";
 import { v4 as uuid } from "uuid";
+import { filterLists } from "./helpers/filters";
 
 export const getList = defineAction({
   input: z.object({ id: z.string() }),
@@ -72,7 +73,7 @@ export const getLists = defineAction({
       .from(List)
       .leftJoin(ListShare, eq(ListShare.listId, List.id))
       .leftJoin(User, eq(User.id, ListShare.userId))
-      .where(or(eq(List.userId, userId), eq(ListShare.sharedUserId, userId)))
+      .where(filterLists(userId))
       .orderBy(desc(List.createdAt))
       .then((rows) => {
         const ids = new Set<string>();
