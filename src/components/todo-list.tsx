@@ -1,14 +1,8 @@
 import type React from "react";
 
-import TodoItem from "./todo";
+import Todo from "./todo";
 import { Skeleton } from "./ui/skeleton";
 import useTodosQuery from "@/hooks/use-current-todos";
-
-const ListHeader: React.FC<React.PropsWithChildren> = ({ children }) => {
-  return (
-    <h2 className="px-3 text-sm font-bold text-muted-foreground">{children}</h2>
-  );
-};
 
 const TodoList: React.FC = () => {
   const todosQuery = useTodosQuery();
@@ -40,27 +34,9 @@ const TodoList: React.FC = () => {
     );
   }
 
-  const inCompleteTodos = todos.filter((todo) => !todo.isCompleted);
-  const completedTodos = todos.filter((todo) => todo.isCompleted);
-
   return (
-    <div className="flex flex-col gap-5">
-      {inCompleteTodos.length > 0 && (
-        <div className="grid gap-2">
-          <ListHeader>Next</ListHeader>
-          {inCompleteTodos.map((todo) => (
-            <TodoItem key={todo.id} todo={todo} />
-          ))}
-        </div>
-      )}
-      {completedTodos.length > 0 && (
-        <div className="grid gap-2">
-          <ListHeader>Completed</ListHeader>
-          {completedTodos.map((todo) => (
-            <TodoItem key={todo.id} todo={todo} />
-          ))}
-        </div>
-      )}
+    <div className="grid gap-1">
+      {todosQuery.data?.map((todo) => <Todo key={todo.id} todo={todo} />)}
     </div>
   );
 };

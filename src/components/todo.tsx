@@ -4,7 +4,6 @@ import DeleteButton from "./ui/delete-button";
 import { Link2 } from "lucide-react";
 import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
-import TodoEditor from "./todo-editor";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 
 import {
@@ -13,29 +12,22 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Checkbox } from "./ui/checkbox";
+import SingleInputForm from "./single-input-form";
 
 interface Props {
   todo: TodoSelect;
 }
 
-const TodoItem: React.FC<Props> = (props) => {
+const Todo: React.FC<Props> = (props) => {
   const { todo } = props;
   const { deleteTodo, updateTodo } = useMutations();
 
   const [editorOpen, setEditorOpen] = React.useState(false);
-
   const ref = React.useRef<HTMLDivElement>(null);
 
-  useOnClickOutside(ref, () => {
-    if (editorOpen) {
-      setEditorOpen(false);
-    }
-  });
-
+  useOnClickOutside(ref, () => setEditorOpen(false));
   useEventListener("keydown", (e) => {
-    if (e.key === "Escape" && editorOpen) {
-      setEditorOpen(false);
-    }
+    if (e.key === "Escape") setEditorOpen(false);
   });
 
   React.useEffect(() => {
@@ -46,13 +38,23 @@ const TodoItem: React.FC<Props> = (props) => {
     <div
       ref={ref}
       className={cn(
-        "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ease-out hover:bg-muted/20",
-        todo.isCompleted && "opacity-50",
+        "flex min-h-10 items-center gap-2 rounded-md px-3 py-1 text-sm transition-colors ease-out hover:bg-muted/20",
         deleteTodo.isPending && "opacity-50",
       )}
     >
       {editorOpen ? (
-        <TodoEditor todo={todo} onSubmit={() => setEditorOpen(false)} />
+        <SingleInputForm
+          className="h-8"
+          initialValue={todo.text}
+          handleSubmit={(text) => {
+            updateTodo
+              .mutateAsync({
+                id: todo.id,
+                data: { text },
+              })
+              .then(() => setEditorOpen(false));
+          }}
+        />
       ) : (
         <>
           <Checkbox
@@ -94,4 +96,4 @@ const TodoItem: React.FC<Props> = (props) => {
   );
 };
 
-export default TodoItem;
+export default Todo;

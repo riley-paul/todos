@@ -28,9 +28,9 @@ const App: React.FC = () => {
       <TooltipProvider>
         <Header />
         <main className="container2 grid gap-6 py-6">
-          {/* <Adder /> */}
+          <Adder />
           <Lists />
-          {/* <TodoList /> */}
+          <TodoList />
         </main>
         <Toaster />
       </TooltipProvider>
