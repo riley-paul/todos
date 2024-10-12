@@ -9,11 +9,10 @@ export default function useMutations() {
   const client = useQueryClient();
   const [selectedList, setSelectedList] = useAtom(selectedListAtom);
 
-  const { onError, onMutateMessage, toastId } = useMutationHelpers();
+  const { onMutateMessage, toastId } = useMutationHelpers();
 
   const updateTodo = useMutation({
     mutationFn: actions.updateTodo.orThrow,
-    onError,
   });
 
   const undoDeleteTodo = useMutation({
@@ -24,7 +23,6 @@ export default function useMutations() {
     onSuccess: () => {
       toast.success("Todo restored", { id: toastId.current });
     },
-    onError,
   });
 
   const deleteTodo = useMutation({
@@ -35,12 +33,10 @@ export default function useMutations() {
         action: { label: "Undo", onClick: () => undoDeleteTodo.mutate({ id }) },
       });
     },
-    onError,
   });
 
   const createTodo = useMutation({
     mutationFn: actions.createTodo.orThrow,
-    onError,
   });
 
   const deleteUser = useMutation({
@@ -49,22 +45,18 @@ export default function useMutations() {
       client.clear();
       window.location.href = "/";
     },
-    onError,
   });
 
   const updateList = useMutation({
     mutationFn: actions.updateList.orThrow,
-    onError,
   });
 
   const createList = useMutation({
     mutationFn: actions.createList.orThrow,
-    onError,
   });
 
   const deleteList = useMutation({
     mutationFn: actions.deleteList.orThrow,
-    onError,
     onSuccess: (_, { id }) => {
       if (id === selectedList) setSelectedList(undefined);
       toast.success("List deleted", { id: toastId.current });
@@ -73,17 +65,14 @@ export default function useMutations() {
 
   const createListShare = useMutation({
     mutationFn: actions.createListShare.orThrow,
-    onError,
   });
 
   const deleteListShare = useMutation({
     mutationFn: actions.deleteListShare.orThrow,
-    onError,
   });
 
   const acceptListShare = useMutation({
     mutationFn: actions.acceptListShare.orThrow,
-    onError,
     onSuccess: () => {
       toast.success("You now have access to this list", {
         id: toastId.current,
@@ -93,7 +82,6 @@ export default function useMutations() {
 
   const leaveListShare = useMutation({
     mutationFn: actions.leaveListShare.orThrow,
-    onError,
     onSuccess: () => {
       toast.success("You no longer have access to this list", {
         id: toastId.current,
