@@ -7,6 +7,8 @@ import { Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
+import { Button } from "./ui/button";
+import ListsEditor from "./lists-editor";
 
 const List: React.FC<{
   value: string | undefined;
@@ -59,14 +61,14 @@ const Lists: React.FC = () => {
           count={list.count}
         />
       ))}
-      <Badge
+      <Button
+        variant="outline"
         className="h-6 cursor-pointer select-none px-1.5 font-normal"
         onClick={() => setEditorIsOpen(true)}
       >
         <Pencil className="size-3" />
-        {/* <span>Edit lists</span> */}
-      </Badge>
-      {/* <ListsEditor isOpen={editorIsOpen} setIsOpen={setEditorIsOpen} /> */}
+      </Button>
+      <ListsEditor isOpen={editorIsOpen} setIsOpen={setEditorIsOpen} />
     </div>
   );
 };
