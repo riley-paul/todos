@@ -1,4 +1,4 @@
-import { ActionError, defineAction } from "astro:actions";
+import { defineAction } from "astro:actions";
 import { isAuthorized } from "./_helpers";
 import {
   and,
@@ -8,61 +8,13 @@ import {
   eq,
   List,
   ListShare,
-  or,
   Todo,
   User,
 } from "astro:db";
 import { z } from "zod";
-import type { ListSelect, ListShareSelect } from "@/lib/types";
+import type { ListSelect } from "@/lib/types";
 import { v4 as uuid } from "uuid";
 import { filterLists } from "./helpers/filters";
-
-export const getList = defineAction({
-  input: z.object({ id: z.string() }),
-  handler: async ({ id }, c) => {
-    const userId = isAuthorized(c).id;
-    const list = await db
-      .select()
-      .from(List)
-      .leftJoin(ListShare, eq(ListShare.listId, List.id))
-      .where(
-        and(
-          eq(List.id, id),
-          or(eq(List.userId, userId), eq(ListShare.sharedUserId, userId)),
-        ),
-      )
-      .then((rows) => rows[0]);
-
-    if (!list) {
-      throw new ActionError({
-        message: "List not found",
-        code: "NOT_FOUND",
-      });
-    }
-
-    const shares: ListShareSelect[] = await db
-      .select()
-      .from(ListShare)
-      .innerJoin(User, eq(User.id, ListShare.sharedUserId))
-      .where(eq(ListShare.listId, id))
-      .then((rows) =>
-        rows.map((row) => ({ ...row.ListShare, user: row.User })),
-      );
-
-    const listAdmin = await db
-      .select()
-      .from(User)
-      .where(eq(User.id, list.List.userId))
-      .then((rows) => rows[0]);
-
-    return {
-      ...list.List,
-      shares,
-      isAdmin: list.List.userId === userId,
-      listAdmin,
-    };
-  },
-});
 
 export const getLists = defineAction({
   handler: async (_, c): Promise<ListSelect[]> => {
@@ -99,6 +51,10 @@ export const getLists = defineAction({
               .from(Todo)
               .where(and(eq(Todo.listId, list.id), eq(Todo.userId, userId)))
               .then((rows) => rows[0].count ?? 0),
+            shares: await db
+              .select()
+              .from(ListShare)
+              .where(eq(ListShare.listId, list.id)),
           })),
         ),
       );
