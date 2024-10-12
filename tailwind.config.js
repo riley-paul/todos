@@ -16,7 +16,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter Variable', ...defaultTheme.fontFamily.sans],
+        sans: ['Rubik Variable', ...defaultTheme.fontFamily.sans],
       },
       colors: {
         border: "hsl(var(--border))",
