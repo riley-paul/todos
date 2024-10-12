@@ -38,42 +38,33 @@
 
   @media (prefers-color-scheme: dark) {
     :root {
-      color-scheme: dark;
-      /* Name: custom color palette
-       Author: Ilias Ism
-       URL: https://gradient.page */
+      --background: 180 7% 8%;
+      --foreground: 180 9% 98%;
 
-      /* CSS: .bg-gradient { background: var(--gradient) } */
-      --gradient: #fbd3e9;
+      --card: 180 6% 10%;
+      --card-foreground: 180 9% 98%;
 
-      --background: -35 53.949999999999996% 7.28%;
-      --foreground: -35 8.299999999999999% 99.55%;
+      --popover: 180 6% 10%;
+      --popover-foreground: 180 9% 98%;
 
-      --muted: -35 41.5% 27.3%;
-      --muted-foreground: -35 8.299999999999999% 59.1%;
+      --primary: 173 80% 40%;
+      --primary-foreground: 120 9% 2%;
 
-      --popover: -35 48.400000000000006% 11.83%;
-      --popover-foreground: -35 8.299999999999999% 99.55%;
+      --secondary: 172 8% 19%;
+      --secondary-foreground: 180 9% 98%;
 
-      --card: -35 48.400000000000006% 11.83%;
-      --card-foreground: -35 8.299999999999999% 99.55%;
+      --muted: 175 7% 29%;
+      --muted-foreground: 174 8% 49%;
 
-      --border: -35 41.5% 27.3%;
-      --input: -35 41.5% 27.3%;
+      --accent: 173 71% 19%;
+      --accent-foreground: 180 9% 98%;
 
-      --primary: -35 83% 91%;
-      --primary-foreground: -35 8.299999999999999% 9.1%;
+      --destructive: 0 84% 60%;
+      --destructive-foreground: 0 0% 98%;
 
-      --secondary: -35 41.5% 27.3%;
-      --secondary-foreground: -35 8.299999999999999% 99.55%;
-
-      --accent: -35 41.5% 27.3%;
-      --accent-foreground: -35 8.299999999999999% 99.55%;
-
-      --destructive: 0 62.8% 30.6%;
-      --destructive-foreground: -35 8.299999999999999% 99.55%;
-
-      --ring: -35 83% 91%;
+      --border: 180 8% 12%;
+      --input: 173 9% 18%;
+      --ring: 173 80% 40%;
     }
   }
 }
@@ -87,7 +78,7 @@
     scroll-gutter: static right;
   }
   .container2 {
-    @apply mx-auto w-full max-w-md px-2 lg:max-w-xl;
+    @apply mx-auto w-full max-w-screen-sm px-2;
   }
 
   @media (pointer: coarse) {
