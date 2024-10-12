@@ -1,6 +1,17 @@
 import { ActionError, defineAction } from "astro:actions";
 import { isAuthorized } from "./_helpers";
-import { and, db, desc, eq, List, ListShare, or, Todo, User } from "astro:db";
+import {
+  and,
+  count,
+  db,
+  desc,
+  eq,
+  List,
+  ListShare,
+  or,
+  Todo,
+  User,
+} from "astro:db";
 import { z } from "zod";
 import type { ListSelect, ListShareSelect } from "@/lib/types";
 import { v4 as uuid } from "uuid";
@@ -77,7 +88,19 @@ export const getLists = defineAction({
             isShared: list.ListShare !== null,
             listAdmin: list.User,
           }));
-      });
+      })
+      .then((lists) =>
+        Promise.all(
+          lists.map(async (list) => ({
+            ...list,
+            count: await db
+              .select({ count: count() })
+              .from(Todo)
+              .where(and(eq(Todo.listId, list.id), eq(Todo.userId, userId)))
+              .then((rows) => rows[0].count ?? 0),
+          })),
+        ),
+      );
 
     return lists;
   },

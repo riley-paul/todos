@@ -1,22 +1,21 @@
+import { selectedListAtom } from "@/lib/store";
 import { useQuery } from "@tanstack/react-query";
 import { actions } from "astro:actions";
+import { useAtomValue } from "jotai/react";
 import React from "react";
-import { useLocation, useParams } from "react-router-dom";
 
 export default function useTodosQuery() {
-  const { pathname } = useLocation();
-  const { listId } = useParams();
+  const selectedList = useAtomValue(selectedListAtom);
 
   const type = React.useMemo(() => {
-    if (pathname === "/") return "inbox";
-    if (pathname === "/all") return "all";
-    if (pathname.startsWith("/list/")) return "list";
-    return "inbox";
-  }, [pathname]);
+    if (selectedList === undefined) return "inbox";
+    if (selectedList === "all") return "all";
+    return "list";
+  }, [selectedList]);
 
   const todosQuery = useQuery({
-    queryKey: ["todos", { type, listId }],
-    queryFn: () => actions.getTodos.orThrow({ type, listId }),
+    queryKey: ["todos", { type, selectedList }],
+    queryFn: () => actions.getTodos.orThrow({ type, listId: selectedList }),
   });
 
   return todosQuery;

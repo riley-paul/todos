@@ -19,6 +19,7 @@ export type ListSelect = typeof List.$inferSelect & {
   isAdmin: boolean;
   isShared: boolean;
   listAdmin: UserSelect | null;
+  count: number;
 };
 
 export type TableUnion = typeof User | typeof Todo;

@@ -2,11 +2,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { actions } from "astro:actions";
 import useMutationHelpers from "./use-mutation-helpers";
-import { useNavigate } from "react-router-dom";
+import { useAtom } from "jotai/react";
+import { selectedListAtom } from "@/lib/store";
 
 export default function useMutations() {
   const client = useQueryClient();
-  const navigate = useNavigate();
+  const [selectedList, setSelectedList] = useAtom(selectedListAtom);
 
   const { onError, onMutateMessage, toastId } = useMutationHelpers();
 
@@ -59,16 +60,13 @@ export default function useMutations() {
   const createList = useMutation({
     mutationFn: actions.createList.orThrow,
     onError,
-    onSuccess: ({ id }) => {
-      navigate(`/list/${id}/edit`);
-    },
   });
 
   const deleteList = useMutation({
     mutationFn: actions.deleteList.orThrow,
     onError,
-    onSuccess: () => {
-      navigate("/");
+    onSuccess: (_, { id }) => {
+      if (id === selectedList) setSelectedList(undefined);
       toast.success("List deleted", { id: toastId.current });
     },
   });
@@ -100,7 +98,6 @@ export default function useMutations() {
       toast.success("You no longer have access to this list", {
         id: toastId.current,
       });
-      navigate("/");
     },
   });
 

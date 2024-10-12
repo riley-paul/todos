@@ -5,14 +5,12 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { Toaster } from "sonner";
-import ErrorPage from "@/app/error-page";
-import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
-import Root from "./root";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Header from "@/components/header";
 import useQueryStream from "@/hooks/use-query-stream";
-import ListEdit from "./list-edit-page";
-import ListCreate from "./list-create-page";
+import Adder from "@/components/adder";
+import Lists from "@/components/lists";
+import TodoList from "@/components/todo-list";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -23,51 +21,17 @@ const queryClient = new QueryClient({
   }),
 });
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: (
-      <>
-        <Header />
-        <main className="container2">
-          <div className="pb-28 pt-6">
-            <Outlet />
-          </div>
-        </main>
-      </>
-    ),
-    errorElement: <ErrorPage showGoHome />,
-    children: [
-      {
-        index: true,
-        element: <Root />,
-      },
-      {
-        path: "all",
-        element: <Root />,
-      },
-      {
-        path: "list/:listId",
-        element: <Root />,
-      },
-      {
-        path: "list/:listId/edit",
-        element: <ListEdit />,
-      },
-      {
-        path: "list/new",
-        element: <ListCreate />,
-      },
-    ],
-  },
-]);
-
 const App: React.FC = () => {
   useQueryStream(queryClient);
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <RouterProvider router={router} />
+        <Header />
+        <main className="container2 grid gap-6 py-6">
+          {/* <Adder /> */}
+          <Lists />
+          {/* <TodoList /> */}
+        </main>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>
