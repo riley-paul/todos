@@ -80,7 +80,7 @@ const ListsEditor: React.FC<Props> = (props) => {
           </DialogDescription>
         </DialogHeader>
         <div className="max-h-[300px] min-h-[150px] overflow-scroll rounded-lg bg-secondary/20 px-3">
-          <div className="grid divide-y">
+          <div className="grid divide-y divide-secondary">
             {lists?.map((list) => <List key={list.id} list={list} />)}
           </div>
           {lists?.length === 0 && (
