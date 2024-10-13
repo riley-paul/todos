@@ -1,7 +1,7 @@
 import { ActionError, defineAction } from "astro:actions";
 import { db, ListShare, eq, User, and, List, desc, or } from "astro:db";
 import { z } from "zod";
-import { isAuthorized } from "./_helpers";
+import { isAuthorized } from "./helpers";
 import { v4 as uuid } from "uuid";
 
 export const createListShare = defineAction({

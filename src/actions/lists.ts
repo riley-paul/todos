@@ -1,10 +1,9 @@
 import { defineAction } from "astro:actions";
-import { isAuthorized } from "./_helpers";
 import { and, db, desc, eq, List, ListShare, Todo, User } from "astro:db";
 import { z } from "zod";
 import type { ListSelect } from "@/lib/types";
 import { v4 as uuid } from "uuid";
-import { filterLists, filterTodos } from "./helpers/filters";
+import { isAuthorized, filterLists, filterTodos } from "./helpers";
 
 export const getLists = defineAction({
   handler: async (_, c) => {
