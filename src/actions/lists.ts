@@ -1,9 +1,36 @@
-import { defineAction } from "astro:actions";
-import { and, db, desc, eq, List, ListShare, Todo, User } from "astro:db";
+import { ActionError, defineAction } from "astro:actions";
+import { db, desc, eq, List, ListShare, Todo, User } from "astro:db";
 import { z } from "zod";
 import type { ListSelect } from "@/lib/types";
 import { v4 as uuid } from "uuid";
-import { isAuthorized, filterLists, filterTodos } from "./helpers";
+import {
+  isAuthorized,
+  filterLists,
+  filterTodos,
+  invalidateUsers,
+} from "./helpers";
+
+const getListUsers = async (listId: string): Promise<string[]> => {
+  const list = await db
+    .select({ id: List.id, userId: List.userId })
+    .from(List)
+    .where(eq(List.id, listId))
+    .then((rows) => rows[0]);
+
+  if (!list) {
+    throw new ActionError({
+      code: "NOT_FOUND",
+      message: "List not found",
+    });
+  }
+
+  const shares = await db
+    .select({ sharedUserId: ListShare.sharedUserId })
+    .from(ListShare)
+    .where(eq(ListShare.listId, listId));
+
+  return [list.userId, ...shares.map((share) => share.sharedUserId)];
+};
 
 export const getLists = defineAction({
   handler: async (_, c) => {
@@ -76,16 +103,27 @@ export const getLists = defineAction({
 export const updateList = defineAction({
   input: z.object({
     id: z.string(),
-    data: z.custom<Partial<ListSelect>>(),
+    data: z.object({ name: z.string() }).partial(),
   }),
   handler: async ({ id, data }, c) => {
     const userId = isAuthorized(c).id;
+    const users = await getListUsers(id);
+
+    if (!users.includes(userId)) {
+      throw new ActionError({
+        code: "FORBIDDEN",
+        message: "You do not have permission to update this list",
+      });
+    }
+
     const result = await db
       .update(List)
       .set(data)
-      .where(and(eq(List.id, id), eq(List.userId, userId)))
+      .where(eq(List.id, id))
       .returning()
       .then((rows) => rows[0]);
+
+    invalidateUsers(users);
     return result;
   },
 });
@@ -99,21 +137,24 @@ export const createList = defineAction({
       .values({ id: uuid(), name, userId })
       .returning()
       .then((rows) => rows[0]);
+
+    const users = await getListUsers(result.id);
+
+    invalidateUsers(users);
     return result;
   },
 });
 
 export const deleteList = defineAction({
   input: z.object({ id: z.string() }),
-  handler: async ({ id }, c) => {
-    const userId = isAuthorized(c).id;
-    await db
-      .delete(Todo)
-      .where(and(eq(Todo.listId, id), eq(Todo.userId, userId)));
-    await db
-      .delete(ListShare)
-      .where(and(eq(ListShare.listId, id), eq(ListShare.userId, userId)));
-    await db.delete(List).where(and(eq(List.id, id), eq(List.userId, userId)));
+  handler: async ({ id }) => {
+    const users = await getListUsers(id);
+
+    await db.delete(Todo).where(eq(Todo.listId, id));
+    await db.delete(ListShare).where(eq(ListShare.listId, id));
+    await db.delete(List).where(eq(List.id, id));
+
+    invalidateUsers(users);
     return true;
   },
 });

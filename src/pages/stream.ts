@@ -35,6 +35,10 @@ export const GET: APIRoute = async ({ request, locals }) => {
     },
   });
 
+  if (import.meta.env.DEV) {
+    return new Response("");
+  }
+
   return new Response(body, {
     headers: {
       "Content-Type": "text/event-stream",
