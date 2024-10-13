@@ -101,6 +101,7 @@ const Todo: React.FC<Props> = (props) => {
 const TodoList: React.FC = () => {
   const todosQuery = useTodosQuery();
 
+  console.log(todosQuery.data);
   return (
     <QueryGuard query={todosQuery}>
       {(todos) => (

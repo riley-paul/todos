@@ -1,4 +1,4 @@
-import { defineAction } from "astro:actions";
+import { ActionError, defineAction } from "astro:actions";
 import {
   filterTodoBySharedTag,
   getUsersOfTodo,
@@ -8,7 +8,7 @@ import { and, db, desc, eq, ListShare, or, Todo, User } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
-import invalidateUsers from "./helpers/invalidate-users";
+import { invalidateUsers } from "./helpers/invalidate-users";
 import type { TodoSelect } from "@/lib/types";
 import { filterTodos } from "./helpers/filters";
 
@@ -89,46 +89,24 @@ export const deleteTodo = defineAction({
   }),
   handler: async ({ id }, c) => {
     const userId = isAuthorized(c).id;
-    const sharedTagFilter = await filterTodoBySharedTag(userId);
+
     const todo = await db
-      .update(Todo)
-      .set({ isDeleted: true })
-      .where(and(eq(Todo.id, id), or(eq(Todo.userId, userId), sharedTagFilter)))
-      .returning()
+      .select()
+      .from(Todo)
+      .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
+      .where(filterTodos(userId, undefined))
       .then((rows) => rows[0]);
 
-    invalidateUsers(await getUsersOfTodo(todo.id));
-    return todo.id;
-  },
-});
+    if (!todo) {
+      throw new ActionError({
+        code: "NOT_FOUND",
+        message: "Task not found",
+      });
+    }
 
-export const undoDeleteTodo = defineAction({
-  input: z.object({
-    id: z.string(),
-  }),
-  handler: async ({ id }, c) => {
-    const userId = isAuthorized(c).id;
-    const sharedTagFilter = await filterTodoBySharedTag(userId);
-    const todo = await db
-      .update(Todo)
-      .set({ isDeleted: false })
-      .where(and(eq(Todo.id, id), or(eq(Todo.userId, userId), sharedTagFilter)))
-      .returning()
-      .then((rows) => rows[0]);
+    await db.delete(Todo).where(eq(Todo.id, id));
 
-    invalidateUsers(await getUsersOfTodo(todo.id));
-    return todo.id;
-  },
-});
-
-export const deleteCompletedTodos = defineAction({
-  handler: async (_, c) => {
-    const userId = isAuthorized(c).id;
-    const todos = await db
-      .update(Todo)
-      .set({ isDeleted: true })
-      .where(and(eq(Todo.isCompleted, true), eq(Todo.userId, userId)))
-      .returning();
-    return todos;
+    invalidateUsers([todo.Todo.userId]);
+    return true;
   },
 });

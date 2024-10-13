@@ -23,15 +23,15 @@ const queryClient = new QueryClient({
     onError: (error) => {
       console.error(error);
 
-      let title = "Server Error";
+      let status = 500;
       let description = error.message;
 
       if (isActionError(error)) {
-        title = `${error.status} Error`;
+        status = error.status;
         description = error.message;
       }
 
-      toast.error(title, { description });
+      toast.error(`${status} Error`, { description });
     },
   }),
 });

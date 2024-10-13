@@ -7,11 +7,13 @@ import ErrorPage from "@/app/error-page";
 interface QueryResultsProps<T> {
   query: UseQueryResult<T, unknown>;
   children: (results: T) => React.ReactNode;
+  noDataString?: string;
 }
 
 const QueryGuard = <T,>({
   query,
   children,
+  noDataString = "No data found",
 }: QueryResultsProps<T>): React.ReactNode => {
   if (query.isLoading) {
     return (
@@ -21,7 +23,7 @@ const QueryGuard = <T,>({
     );
   }
 
-  if (query.isError || !query.data) {
+  if (query.isError) {
     return (
       <div className="flex h-full min-h-32 items-center justify-center text-sm text-muted-foreground">
         <ErrorPage
@@ -29,6 +31,14 @@ const QueryGuard = <T,>({
           retry={() => query.refetch()}
           notFullHeight
         />
+      </div>
+    );
+  }
+
+  if (!query.data) {
+    return (
+      <div className="flex h-full min-h-32 items-center justify-center text-sm text-muted-foreground">
+        {noDataString}
       </div>
     );
   }

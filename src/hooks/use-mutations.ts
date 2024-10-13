@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { actions } from "astro:actions";
-import useMutationHelpers from "./use-mutation-helpers";
 import { useAtom } from "jotai/react";
 import { selectedListAtom } from "@/lib/store";
 
@@ -9,29 +8,14 @@ export default function useMutations() {
   const client = useQueryClient();
   const [selectedList, setSelectedList] = useAtom(selectedListAtom);
 
-  const { onMutateMessage, toastId } = useMutationHelpers();
-
   const updateTodo = useMutation({
     mutationFn: actions.updateTodo.orThrow,
   });
 
-  const undoDeleteTodo = useMutation({
-    mutationFn: actions.undoDeleteTodo.orThrow,
-    onMutate: () => {
-      onMutateMessage("Restoring todo...");
-    },
-    onSuccess: () => {
-      toast.success("Todo restored", { id: toastId.current });
-    },
-  });
-
   const deleteTodo = useMutation({
     mutationFn: actions.deleteTodo.orThrow,
-    onSuccess: (id) => {
-      toast.success("Todo deleted", {
-        id: toastId.current,
-        action: { label: "Undo", onClick: () => undoDeleteTodo.mutate({ id }) },
-      });
+    onSuccess: () => {
+      toast.success("Todo deleted");
     },
   });
 
@@ -59,7 +43,7 @@ export default function useMutations() {
     mutationFn: actions.deleteList.orThrow,
     onSuccess: (_, { id }) => {
       if (id === selectedList) setSelectedList(undefined);
-      toast.success("List deleted", { id: toastId.current });
+      toast.success("List deleted");
     },
   });
 
@@ -74,18 +58,14 @@ export default function useMutations() {
   const acceptListShare = useMutation({
     mutationFn: actions.acceptListShare.orThrow,
     onSuccess: () => {
-      toast.success("You now have access to this list", {
-        id: toastId.current,
-      });
+      toast.success("You now have access to this list");
     },
   });
 
   const leaveListShare = useMutation({
     mutationFn: actions.leaveListShare.orThrow,
     onSuccess: () => {
-      toast.success("You no longer have access to this list", {
-        id: toastId.current,
-      });
+      toast.success("You no longer have access to this list");
     },
   });
 
