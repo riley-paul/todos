@@ -49,18 +49,15 @@ const List: React.FC<{
   return (
     <BadgeWrapper value={list.id} count={list.todoCount} name={list.name}>
       {(isSelected) =>
-        list.shares.length > 0 && (
+        list.otherUsers.length > 0 && (
           <div className="flex">
-            {list.shares.slice(0, NUM_AVATARS).map((share) => (
-              <Avatar key={share.id} className="-ml-1 size-4 first:ml-0">
-                <AvatarImage
-                  src={share.user.avatarUrl ?? ""}
-                  alt={share.user.name}
-                />
-                <AvatarFallback>{share.user.name[0]} </AvatarFallback>
+            {list.otherUsers.slice(0, NUM_AVATARS).map((user) => (
+              <Avatar key={user.id} className="-ml-1 size-4 first:ml-0">
+                <AvatarImage src={user.avatarUrl ?? ""} alt={user.name} />
+                <AvatarFallback>{user.name[0]} </AvatarFallback>
               </Avatar>
             ))}
-            {list.shares.length > NUM_AVATARS && (
+            {list.otherUsers.length > NUM_AVATARS && (
               <div
                 className={cn(
                   "z-10 -ml-1 flex h-4 items-center rounded-full bg-muted px-1 text-muted-foreground transition-colors",

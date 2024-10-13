@@ -59,6 +59,14 @@ export const getLists = defineAction({
             isAuthor: list.author.id === userId,
           })),
         ),
+      )
+      .then((rows) =>
+        rows.map((row) => ({
+          ...row,
+          otherUsers: [...row.shares, { user: row.author }]
+            .filter((share) => share.user.id !== userId)
+            .map((share) => share.user),
+        })),
       );
 
     return lists;

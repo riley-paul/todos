@@ -22,6 +22,7 @@ export type ListSelect = {
   isAuthor: boolean;
   todoCount: number;
   shares: ListShareSelect[];
+  otherUsers: UserSelect[];
 };
 
 export type ListShareSelect = {
