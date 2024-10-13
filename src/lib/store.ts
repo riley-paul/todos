@@ -1,7 +1,7 @@
 import { atomWithStorage } from "jotai/utils";
 
-export type SelectedList = string | undefined | null;
+export type SelectedList = string | "all" | null;
 export const selectedListAtom = atomWithStorage<SelectedList>(
   "selectedList",
-  undefined,
+  null,
 );

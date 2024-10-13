@@ -12,7 +12,7 @@ export const filterLists = (userId: string) => {
 };
 
 const filterByListId = (listId: string | undefined | null) => {
-  if (typeof listId === "string") {
+  if (typeof listId === "string" && listId !== "all") {
     return eq(Todo.listId, listId);
   }
   if (listId === null) {
@@ -21,17 +21,6 @@ const filterByListId = (listId: string | undefined | null) => {
   return;
 };
 
-/**
- * Filters todos for a given user and list
- * A user should be access todos they have created, or that belong to a list that
- * has been shared with them
- *
- * @param userId - The user id
- * @param listId - The list id
- * - If the listId is undefined, the filter will return all todos for the user
- * - If the listId is null, the filter will return all todos that do not belong to a list
- * - If the listId is a string, the filter will return all todos that belong to the list
- */
 export const filterTodos = (
   userId: string,
   listId: string | undefined | null,

@@ -50,7 +50,7 @@ const Lists: React.FC = () => {
   return (
     <div className="flex flex-wrap gap-2 px-3">
       <List value={null} name="Inbox" count={inboxCount} />
-      <List value={undefined} name="All" count={allCount} />
+      <List value={"all"} name="All" count={allCount} />
       <div className="flex items-center">
         <Separator orientation="vertical" className="h-5" />
       </div>
