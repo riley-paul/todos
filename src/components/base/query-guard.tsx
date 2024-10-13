@@ -25,7 +25,7 @@ const QueryGuard = <T,>({
 
   if (query.isError) {
     return (
-      <div className="flex h-full min-h-32 items-center justify-center text-sm text-muted-foreground">
+      <div className="flex h-full min-h-32 items-center justify-center">
         <ErrorPage
           error={query.error}
           retry={() => query.refetch()}
@@ -35,9 +35,9 @@ const QueryGuard = <T,>({
     );
   }
 
-  if (!query.data) {
+  if (!query.data || (Array.isArray(query.data) && query.data.length === 0)) {
     return (
-      <div className="flex h-full min-h-32 items-center justify-center text-sm text-muted-foreground">
+      <div className="flex h-full min-h-32 items-center justify-center text-xs text-muted-foreground">
         {noDataString}
       </div>
     );
