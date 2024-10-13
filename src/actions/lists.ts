@@ -1,60 +1,44 @@
 import { defineAction } from "astro:actions";
 import { isAuthorized } from "./_helpers";
-import {
-  and,
-  count,
-  db,
-  desc,
-  eq,
-  List,
-  ListShare,
-  Todo,
-  User,
-} from "astro:db";
+import { and, db, desc, eq, List, ListShare, Todo, User } from "astro:db";
 import { z } from "zod";
 import type { ListSelect } from "@/lib/types";
 import { v4 as uuid } from "uuid";
-import { filterLists } from "./helpers/filters";
+import { filterLists, filterTodos } from "./helpers/filters";
 
 export const getLists = defineAction({
-  handler: async (_, c): Promise<ListSelect[]> => {
+  handler: async (_, c) => {
     const userId = isAuthorized(c).id;
 
-    const lists = await db
-      .select()
+    const lists: ListSelect[] = await db
+      .selectDistinct({
+        id: List.id,
+        name: List.name,
+        author: {
+          id: User.id,
+          name: User.name,
+        },
+      })
       .from(List)
       .leftJoin(ListShare, eq(ListShare.listId, List.id))
       .leftJoin(User, eq(User.id, ListShare.userId))
       .where(filterLists(userId))
-      .orderBy(desc(List.createdAt))
-      .then((rows) => {
-        const ids = new Set<string>();
-        return rows
-          .filter((row) => {
-            if (ids.has(row.List.id)) return false;
-            ids.add(row.List.id);
-            return true;
-          })
-          .map((list) => ({
-            ...list.List,
-            isAdmin: list.List.userId !== userId,
-            isShared: list.ListShare !== null,
-            listAdmin: list.User,
-          }));
-      })
+      .orderBy(desc(List.name))
       .then((lists) =>
         Promise.all(
           lists.map(async (list) => ({
             ...list,
-            count: await db
-              .select({ count: count() })
+            todoCount: await db
+              .selectDistinct({ todoId: Todo.id })
               .from(Todo)
-              .where(and(eq(Todo.listId, list.id), eq(Todo.userId, userId)))
-              .then((rows) => rows[0].count ?? 0),
+              .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
+              .where(filterTodos(userId, list.id))
+              .then((rows) => rows.length),
             shares: await db
               .select()
               .from(ListShare)
               .where(eq(ListShare.listId, list.id)),
+            isAuthor: list.author?.id === userId,
           })),
         ),
       );

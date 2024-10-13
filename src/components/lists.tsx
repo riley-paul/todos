@@ -59,7 +59,7 @@ const Lists: React.FC = () => {
           key={list.id}
           value={list.id}
           name={list.name}
-          count={list.count}
+          count={list.todoCount}
         />
       ))}
       <Button

@@ -15,11 +15,16 @@ export type ListShareSelect = typeof ListShare.$inferSelect & {
 export type ListShareInsert = typeof ListShare.$inferInsert;
 
 export type ListInsert = typeof List.$inferInsert;
-export type ListSelect = typeof List.$inferSelect & {
-  isAdmin: boolean;
-  isShared: boolean;
-  listAdmin: UserSelect | null;
-  count: number;
+
+export type ListSelect = {
+  id: string;
+  name: string;
+  author: {
+    id: string;
+    name: string;
+  } | null;
+  isAuthor: boolean;
+  todoCount: number;
 };
 
 export type TableUnion = typeof User | typeof Todo;
