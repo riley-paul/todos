@@ -17,6 +17,7 @@ export const getLists = defineAction({
           id: User.id,
           name: User.name,
           email: User.email,
+          avatarUrl: User.avatarUrl,
         },
       })
       .from(List)
@@ -35,9 +36,26 @@ export const getLists = defineAction({
               .where(filterTodos(userId, list.id))
               .then((rows) => rows.length),
             shares: await db
-              .select()
+              .selectDistinct({
+                id: ListShare.id,
+                user: {
+                  id: User.id,
+                  name: User.name,
+                  email: User.email,
+                  avatarUrl: User.avatarUrl,
+                },
+                isPending: ListShare.isPending,
+              })
               .from(ListShare)
-              .where(eq(ListShare.listId, list.id)),
+              .innerJoin(User, eq(User.id, ListShare.sharedUserId))
+              .where(eq(ListShare.listId, list.id))
+              .then((shares) =>
+                shares.map((share) => ({
+                  ...share,
+                  list: { id: list.id, name: list.name, author: list.author },
+                  isAuthor: share.user.id === userId,
+                })),
+              ),
             isAuthor: list.author.id === userId,
           })),
         ),

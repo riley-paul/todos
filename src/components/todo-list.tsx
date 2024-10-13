@@ -2,22 +2,17 @@ import React from "react";
 import QueryGuard from "./base/query-guard";
 import { cn } from "@/lib/utils";
 import DeleteButton from "./ui/delete-button";
-import { Link2 } from "lucide-react";
 import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Checkbox } from "./ui/checkbox";
 import SingleInputForm from "./single-input-form";
 import { useQuery } from "@tanstack/react-query";
 import { useAtomValue } from "jotai/react";
 import { selectedListAtom } from "@/lib/store";
 import { actions } from "astro:actions";
+import UserBubble from "./base/user-bubble";
 
 interface Props {
   todo: TodoSelect;
@@ -82,16 +77,7 @@ const Todo: React.FC<Props> = (props) => {
           >
             {todo.text}
           </button>
-          {!todo.isAuthor && (
-            <Tooltip>
-              <TooltipTrigger>
-                <Link2 className="size-4" />
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                Created by {todo.author.name}
-              </TooltipContent>
-            </Tooltip>
-          )}
+          {!todo.isAuthor && <UserBubble user={todo.author} />}
           <DeleteButton
             handleDelete={() => deleteTodo.mutate({ id: todo.id })}
           />

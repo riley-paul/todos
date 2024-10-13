@@ -3,23 +3,22 @@ import { Badge } from "./ui/badge";
 import { useAtom } from "jotai/react";
 import { selectedListAtom, type SelectedList } from "@/lib/store";
 import { Separator } from "./ui/separator";
-import { Pencil } from "lucide-react";
+import { Link2, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
 import { Button } from "./ui/button";
 import ListsEditor from "./lists-editor";
+import type { ListSelect } from "@/lib/types";
 
-const List: React.FC<{
-  value: SelectedList;
-  name: string;
-  count?: number;
-}> = ({ value, name, count = 0 }) => {
+const BadgeWrapper: React.FC<
+  React.PropsWithChildren<{ value: SelectedList; count?: number; name: string }>
+> = ({ value, count = 0, name, children }) => {
   const [selectedList, setSelectedList] = useAtom(selectedListAtom);
   const isSelected = selectedList === value;
   return (
     <Badge
-      className="h-6 cursor-pointer select-none"
+      className="flex h-6 cursor-pointer select-none gap-1.5"
       variant={isSelected ? "default" : "secondary"}
       onClick={() => setSelectedList(value)}
     >
@@ -27,14 +26,25 @@ const List: React.FC<{
       {count > 0 && (
         <span
           className={cn(
-            "ml-1.5 text-muted-foreground",
+            "text-muted-foreground",
             isSelected && "text-secondary",
           )}
         >
           {count}
         </span>
       )}
+      {children}
     </Badge>
+  );
+};
+
+const List: React.FC<{
+  list: ListSelect;
+}> = ({ list }) => {
+  return (
+    <BadgeWrapper value={list.id} count={list.todoCount} name={list.name}>
+      {list.shares.length > 0 && <Link2 className="size-4" />}
+    </BadgeWrapper>
   );
 };
 
@@ -49,19 +59,12 @@ const Lists: React.FC = () => {
 
   return (
     <div className="flex flex-wrap gap-2 px-3">
-      <List value={null} name="Inbox" count={inboxCount} />
-      <List value={"all"} name="All" count={allCount} />
+      <BadgeWrapper value={null} name="Inbox" count={inboxCount} />
+      <BadgeWrapper value={"all"} name="All" count={allCount} />
       <div className="flex items-center">
         <Separator orientation="vertical" className="h-5" />
       </div>
-      {listsQuery.data?.map((list) => (
-        <List
-          key={list.id}
-          value={list.id}
-          name={list.name}
-          count={list.todoCount}
-        />
-      ))}
+      {listsQuery.data?.map((list) => <List key={list.id} list={list} />)}
       <Button
         variant="outline"
         className="h-6 cursor-pointer select-none px-1.5 font-normal"

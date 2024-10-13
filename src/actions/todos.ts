@@ -47,6 +47,7 @@ export const getTodos = defineAction({
           id: User.id,
           name: User.name,
           email: User.email,
+          avatarUrl: User.avatarUrl,
         },
       })
       .from(Todo)
