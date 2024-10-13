@@ -105,7 +105,7 @@ export const updateTodo = defineAction({
     const todo = await db
       .update(Todo)
       .set({ ...data, userId })
-      .where(and(eq(Todo.id, id), filterTodos(userId, undefined)))
+      .where(and(eq(Todo.id, id)))
       .returning()
       .then((rows) => rows[0]);
 
