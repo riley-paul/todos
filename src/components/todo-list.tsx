@@ -94,7 +94,6 @@ const TodoList: React.FC = () => {
     queryFn: () => actions.getTodos.orThrow({ listId }),
   });
 
-  console.log(todosQuery.data);
   return (
     <QueryGuard query={todosQuery} noDataString="No tasks yet">
       {(todos) => (
