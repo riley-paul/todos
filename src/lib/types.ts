@@ -1,8 +1,15 @@
 import type { User, Todo, SharedTag, List, ListShare } from "astro:db";
 
-export type TodoSelect = typeof Todo.$inferSelect & {
-  user: UserSelect;
-  isShared: boolean;
+export type TodoSelect = {
+  id: string;
+  text: string;
+  isCompleted: boolean;
+  author: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  isAuthor: boolean;
 };
 export type TodoInsert = typeof Todo.$inferInsert;
 export type UserSelect = typeof User.$inferSelect;
@@ -22,7 +29,8 @@ export type ListSelect = {
   author: {
     id: string;
     name: string;
-  } | null;
+    email: string;
+  };
   isAuthor: boolean;
   todoCount: number;
 };

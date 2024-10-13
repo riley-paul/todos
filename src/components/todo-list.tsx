@@ -82,13 +82,13 @@ const Todo: React.FC<Props> = (props) => {
           >
             {todo.text}
           </button>
-          {todo.isShared && (
+          {!todo.isAuthor && (
             <Tooltip>
               <TooltipTrigger>
                 <Link2 className="size-4" />
               </TooltipTrigger>
               <TooltipContent side="right">
-                Created by {todo.user.name}
+                Created by {todo.author.name}
               </TooltipContent>
             </Tooltip>
           )}
@@ -110,7 +110,7 @@ const TodoList: React.FC = () => {
 
   console.log(todosQuery.data);
   return (
-    <QueryGuard query={todosQuery}>
+    <QueryGuard query={todosQuery} noDataString="No tasks yet">
       {(todos) => (
         <div className="grid gap-1">
           {todos.map((todo) => (

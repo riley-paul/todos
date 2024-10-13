@@ -17,11 +17,12 @@ export const getLists = defineAction({
         author: {
           id: User.id,
           name: User.name,
+          email: User.email,
         },
       })
       .from(List)
       .leftJoin(ListShare, eq(ListShare.listId, List.id))
-      .leftJoin(User, eq(User.id, ListShare.userId))
+      .innerJoin(User, eq(User.id, List.userId))
       .where(filterLists(userId))
       .orderBy(desc(List.name))
       .then((lists) =>
@@ -38,7 +39,7 @@ export const getLists = defineAction({
               .select()
               .from(ListShare)
               .where(eq(ListShare.listId, list.id)),
-            isAuthor: list.author?.id === userId,
+            isAuthor: list.author.id === userId,
           })),
         ),
       );

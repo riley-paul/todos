@@ -57,7 +57,7 @@ const List: React.FC<{
         </span>
       )}
       <span className="flex gap-1 text-sm text-secondary-foreground/80">
-        <span className="font-semibold">{list.count}</span>
+        <span className="font-semibold">{list.todoCount}</span>
         <span className="font-normal">tasks</span>
       </span>
       <DeleteButton handleDelete={() => deleteList.mutate({ id: list.id })} />

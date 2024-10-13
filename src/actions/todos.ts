@@ -41,26 +41,25 @@ export const getTodos = defineAction({
   handler: async ({ listId }, c) => {
     const userId = isAuthorized(c).id;
     const todos: TodoSelect[] = await db
-      .select()
+      .selectDistinct({
+        id: Todo.id,
+        text: Todo.text,
+        isCompleted: Todo.isCompleted,
+        author: {
+          id: User.id,
+          name: User.name,
+          email: User.email,
+        },
+      })
       .from(Todo)
       .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
+      .innerJoin(User, eq(User.id, Todo.userId))
       .where(filterTodos(userId, listId))
       .orderBy(desc(Todo.createdAt))
-      .innerJoin(User, eq(User.id, Todo.userId))
-      .then((rows) => {
-        const ids = new Set<string>();
-        return rows
-          .filter((row) => {
-            if (ids.has(row.Todo.id)) return false;
-            ids.add(row.Todo.id);
-            return true;
-          })
-          .map((row) => ({
-            ...row.Todo,
-            user: row.User,
-            isShared: row.Todo.userId !== userId,
-          }));
-      });
+      .then((rows) =>
+        rows.map((row) => ({ ...row, isAuthor: row.author.id === userId })),
+      );
+
     return todos;
   },
 });

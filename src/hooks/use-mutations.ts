@@ -42,7 +42,7 @@ export default function useMutations() {
   const deleteList = useMutation({
     mutationFn: actions.deleteList.orThrow,
     onSuccess: (_, { id }) => {
-      if (id === selectedList) setSelectedList(undefined);
+      if (id === selectedList) setSelectedList(null);
       toast.success("List deleted");
     },
   });
