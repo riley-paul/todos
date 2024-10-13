@@ -1,5 +1,4 @@
 import React from "react";
-import useTodosQuery from "@/hooks/use-current-todos";
 import QueryGuard from "./base/query-guard";
 import { cn } from "@/lib/utils";
 import DeleteButton from "./ui/delete-button";
@@ -15,6 +14,10 @@ import {
 } from "@/components/ui/tooltip";
 import { Checkbox } from "./ui/checkbox";
 import SingleInputForm from "./single-input-form";
+import { useQuery } from "@tanstack/react-query";
+import { useAtomValue } from "jotai/react";
+import { selectedListAtom } from "@/lib/store";
+import { actions } from "astro:actions";
 
 interface Props {
   todo: TodoSelect;
@@ -99,7 +102,11 @@ const Todo: React.FC<Props> = (props) => {
 };
 
 const TodoList: React.FC = () => {
-  const todosQuery = useTodosQuery();
+  const listId = useAtomValue(selectedListAtom);
+  const todosQuery = useQuery({
+    queryKey: ["todos", listId],
+    queryFn: () => actions.getTodos.orThrow({ listId }),
+  });
 
   console.log(todosQuery.data);
   return (

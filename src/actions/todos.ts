@@ -1,10 +1,6 @@
 import { ActionError, defineAction } from "astro:actions";
-import {
-  filterTodoBySharedTag,
-  getUsersOfTodo,
-  isAuthorized,
-} from "./_helpers";
-import { and, db, desc, eq, ListShare, or, Todo, User } from "astro:db";
+import { isAuthorized } from "./_helpers";
+import { and, db, desc, eq, ListShare, Todo, User } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
@@ -12,7 +8,31 @@ import { invalidateUsers } from "./helpers/invalidate-users";
 import type { TodoSelect } from "@/lib/types";
 import { filterTodos } from "./helpers/filters";
 
-const todoUpdateSchema = z.custom<Partial<typeof Todo.$inferInsert>>();
+const getTodoUsers = async (todoId: string): Promise<string[]> => {
+  const todo = await db
+    .select()
+    .from(Todo)
+    .where(eq(Todo.id, todoId))
+    .then((rows) => rows[0]);
+
+  if (!todo) {
+    throw new ActionError({
+      code: "NOT_FOUND",
+      message: "Task not found",
+    });
+  }
+
+  if (!todo.listId) {
+    return [todo.userId];
+  }
+
+  const listShares = await db
+    .select()
+    .from(ListShare)
+    .where(eq(ListShare.listId, todo.listId));
+
+  return [todo.userId, ...listShares.map((share) => share.sharedUserId)];
+};
 
 export const getTodos = defineAction({
   input: z.object({
@@ -47,7 +67,7 @@ export const getTodos = defineAction({
 
 export const createTodo = defineAction({
   input: z.object({
-    data: todoUpdateSchema,
+    data: z.custom<Partial<typeof Todo.$inferInsert>>(),
   }),
   handler: async ({ data }, c) => {
     const userId = isAuthorized(c).id;
@@ -57,7 +77,7 @@ export const createTodo = defineAction({
       .returning()
       .then((rows) => rows[0]);
 
-    invalidateUsers(await getUsersOfTodo(todo.id));
+    invalidateUsers(await getTodoUsers(todo.id));
     return todo;
   },
 });
@@ -65,20 +85,33 @@ export const createTodo = defineAction({
 export const updateTodo = defineAction({
   input: z.object({
     id: z.string(),
-    data: z.custom<Partial<typeof Todo.$inferInsert>>(),
+    data: z
+      .object({
+        text: z.string(),
+        isCompleted: z.boolean(),
+        listId: z.string(),
+      })
+      .partial(),
   }),
   handler: async ({ id, data }, c) => {
     const userId = isAuthorized(c).id;
+    const users = await getTodoUsers(id);
 
-    const sharedTagFilter = await filterTodoBySharedTag(userId);
+    if (!users.includes(userId)) {
+      throw new ActionError({
+        code: "FORBIDDEN",
+        message: "You are not allowed to update this task",
+      });
+    }
+
     const todo = await db
       .update(Todo)
       .set({ ...data, userId })
-      .where(and(eq(Todo.id, id), or(eq(Todo.userId, userId), sharedTagFilter)))
+      .where(and(eq(Todo.id, id), filterTodos(userId, undefined)))
       .returning()
       .then((rows) => rows[0]);
 
-    invalidateUsers(await getUsersOfTodo(todo.id));
+    invalidateUsers(users);
     return todo;
   },
 });
@@ -89,24 +122,18 @@ export const deleteTodo = defineAction({
   }),
   handler: async ({ id }, c) => {
     const userId = isAuthorized(c).id;
+    const users = await getTodoUsers(id);
 
-    const todo = await db
-      .select()
-      .from(Todo)
-      .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
-      .where(filterTodos(userId, undefined))
-      .then((rows) => rows[0]);
-
-    if (!todo) {
+    if (!users.includes(userId)) {
       throw new ActionError({
-        code: "NOT_FOUND",
-        message: "Task not found",
+        code: "FORBIDDEN",
+        message: "You are not allowed to delete this task",
       });
     }
 
     await db.delete(Todo).where(eq(Todo.id, id));
 
-    invalidateUsers([todo.Todo.userId]);
+    invalidateUsers(users);
     return true;
   },
 });
