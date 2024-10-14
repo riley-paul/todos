@@ -25,7 +25,6 @@ export const filterTodos = (
   listId: string | undefined | null,
 ) => {
   return and(
-    eq(Todo.isDeleted, false),
     or(eq(Todo.userId, userId), eq(ListShare.sharedUserId, userId)),
     filterByListId(listId),
   );

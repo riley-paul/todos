@@ -56,18 +56,6 @@ const Todo = defineTable({
     sortOrder: column.number({ default: 0 }),
     text: column.text(),
     isCompleted: column.boolean({ default: false }),
-    isDeleted: column.boolean({ default: false }),
-    createdAt: column.text({ default: NOW }),
-  },
-});
-
-const SharedTag = defineTable({
-  columns: {
-    id: column.text({ primaryKey: true }),
-    tag: column.text(),
-    isPending: column.boolean({ default: true }),
-    userId: column.text({ references: () => User.columns.id }),
-    sharedUserId: column.text({ references: () => User.columns.id }),
     createdAt: column.text({ default: NOW }),
   },
 });
@@ -80,6 +68,5 @@ export default defineDb({
     ListShare,
     UserSession,
     Todo,
-    SharedTag,
   },
 });
