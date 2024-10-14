@@ -13,6 +13,10 @@ export type TodoSelect = {
   isCompleted: boolean;
   author: UserSelect;
   isAuthor: boolean;
+  list: {
+    id: string;
+    name: string;
+  } | null;
 };
 
 export type ListSelect = {

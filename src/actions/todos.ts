@@ -1,5 +1,15 @@
 import { ActionError, defineAction } from "astro:actions";
-import { and, db, desc, eq, inArray, ListShare, Todo, User } from "astro:db";
+import {
+  and,
+  db,
+  desc,
+  eq,
+  inArray,
+  List,
+  ListShare,
+  Todo,
+  User,
+} from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
@@ -49,9 +59,14 @@ export const getTodos = defineAction({
           email: User.email,
           avatarUrl: User.avatarUrl,
         },
+        list: {
+          id: List.id,
+          name: List.name,
+        },
       })
       .from(Todo)
       .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
+      .leftJoin(List, eq(List.id, Todo.listId))
       .innerJoin(User, eq(User.id, Todo.userId))
       .where(filterTodos(userId, listId))
       .orderBy(desc(Todo.createdAt))

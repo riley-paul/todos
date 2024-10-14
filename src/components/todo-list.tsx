@@ -22,6 +22,7 @@ import UserBubble from "./base/user-bubble";
 import { ChevronUp, Eraser } from "lucide-react";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
+import { Badge } from "./ui/badge";
 
 interface Props {
   todo: TodoSelect;
@@ -30,6 +31,8 @@ interface Props {
 const Todo: React.FC<Props> = (props) => {
   const { todo } = props;
   const { deleteTodo, updateTodo } = useMutations();
+
+  const selectedList = useAtomValue(selectedListAtom);
 
   const [editorOpen, setEditorOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
@@ -86,6 +89,9 @@ const Todo: React.FC<Props> = (props) => {
           >
             {todo.text}
           </button>
+          {todo.list && todo.list.id !== selectedList && (
+            <Badge variant="outline">{todo.list.name}</Badge>
+          )}
           {!todo.isAuthor && <UserBubble user={todo.author} />}
           <DeleteButton
             handleDelete={() => deleteTodo.mutate({ id: todo.id })}
