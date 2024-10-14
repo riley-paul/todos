@@ -19,6 +19,13 @@ export default function useMutations() {
     },
   });
 
+  const deleteCompletedTodos = useMutation({
+    mutationFn: actions.deleteCompletedTodos.orThrow,
+    onSuccess: () => {
+      toast.success("Completed todos deleted");
+    },
+  });
+
   const createTodo = useMutation({
     mutationFn: actions.createTodo.orThrow,
   });
@@ -72,6 +79,7 @@ export default function useMutations() {
   return {
     updateTodo,
     deleteTodo,
+    deleteCompletedTodos,
     createTodo,
     deleteUser,
     updateList,

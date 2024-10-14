@@ -78,8 +78,7 @@ const Lists: React.FC = () => {
   const listsQuery = useQuery(listsQueryOptions);
   const inboxCount = useQuery(todosQueryOptions({ listId: null }))?.data
     ?.length;
-  const allCount = useQuery(todosQueryOptions({ listId: undefined }))?.data
-    ?.length;
+  const allCount = useQuery(todosQueryOptions({ listId: "all" }))?.data?.length;
 
   const [editorIsOpen, setEditorIsOpen] = React.useState(false);
 

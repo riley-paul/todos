@@ -1,5 +1,5 @@
 import { ActionError, defineAction } from "astro:actions";
-import { and, db, desc, eq, ListShare, Todo, User } from "astro:db";
+import { and, db, desc, eq, inArray, ListShare, Todo, User } from "astro:db";
 
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
@@ -34,7 +34,7 @@ const getTodoUsers = async (todoId: string): Promise<string[]> => {
 
 export const getTodos = defineAction({
   input: z.object({
-    listId: z.union([z.string(), z.null(), z.undefined()]),
+    listId: z.union([z.string(), z.null()]),
   }),
   handler: async ({ listId }, c) => {
     const userId = isAuthorized(c).id;
@@ -132,6 +132,27 @@ export const deleteTodo = defineAction({
     await db.delete(Todo).where(eq(Todo.id, id));
 
     invalidateUsers(users);
+    return true;
+  },
+});
+
+export const deleteCompletedTodos = defineAction({
+  input: z.object({
+    listId: z.union([z.string(), z.null()]),
+  }),
+  handler: async ({ listId }, c) => {
+    const userId = isAuthorized(c).id;
+    const todoIds = await db
+      .selectDistinct({ id: Todo.id })
+      .from(Todo)
+      .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
+      .where(and(filterTodos(userId, listId), eq(Todo.isCompleted, true)))
+      .then((rows) => rows.map((row) => row.id));
+
+    await db
+      .delete(Todo)
+      .where(and(eq(Todo.isCompleted, true), inArray(Todo.id, todoIds)));
+
     return true;
   },
 });
