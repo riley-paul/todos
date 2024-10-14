@@ -1,14 +1,10 @@
-import { or, eq, List, ListShare, Todo, and, isNull } from "astro:db";
+import { or, eq, List, ListShare, Todo, and, isNull, ne } from "astro:db";
 
-/**
- * Filter lists for a given user
- * A user should be able to access lists they have created or that have been shared
- * with them
- *
- * @param userId - The user id
- */
 export const filterLists = (userId: string) => {
-  return or(eq(List.userId, userId), eq(ListShare.sharedUserId, userId));
+  return and(
+    or(isNull(ListShare.id), ne(ListShare.isPending, true)),
+    or(eq(List.userId, userId), eq(ListShare.sharedUserId, userId)),
+  );
 };
 
 const filterByListId = (listId: string | undefined | null) => {

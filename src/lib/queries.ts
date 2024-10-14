@@ -26,3 +26,8 @@ export const listsQueryOptions = queryOptions({
   queryKey: ["lists"],
   queryFn: () => actions.getLists.orThrow(),
 });
+
+export const pendingSharesQueryOptions = queryOptions({
+  queryKey: ["pendingShares"],
+  queryFn: () => actions.getPendingListShares.orThrow(),
+});

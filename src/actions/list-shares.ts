@@ -151,8 +151,23 @@ export const getPendingListShares = defineAction({
   handler: async (_, c) => {
     const userId = isAuthorized(c).id;
     const listShares = await db
-      .select()
+      .selectDistinct({
+        id: ListShare.id,
+        list: {
+          id: List.id,
+          name: List.name,
+        },
+        invitedBy: {
+          id: User.id,
+          name: User.name,
+          email: User.email,
+          avatarUrl: User.avatarUrl,
+        },
+        createdAt: ListShare.createdAt,
+      })
       .from(ListShare)
+      .innerJoin(User, eq(User.id, ListShare.userId))
+      .innerJoin(List, eq(List.id, ListShare.listId))
       .where(
         and(eq(ListShare.sharedUserId, userId), eq(ListShare.isPending, true)),
       )
