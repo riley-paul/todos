@@ -56,6 +56,7 @@ const Todo: React.FC<Props> = (props) => {
       {editorOpen ? (
         <SingleInputForm
           size="sm"
+          autoFocus
           initialValue={todo.text}
           handleSubmit={(text) => {
             updateTodo
@@ -149,7 +150,7 @@ const TodoList: React.FC = () => {
                     <span className="opacity-80">{numCompleted}</span>
                     <i
                       className={cn(
-                        "fa-solid fa-chevron-up transition-transform duration-200",
+                        "fa-solid fa-chevron-down transition-transform duration-200",
                         showCompleted && "-rotate-180",
                       )}
                     />

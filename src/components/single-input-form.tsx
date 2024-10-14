@@ -53,6 +53,7 @@ type Props = {
   }>;
 
   placeholder?: string;
+  autoFocus?: boolean;
 
   size?: Size;
 
@@ -77,6 +78,7 @@ const SingleInputForm: React.FC<Props> = ({
   size = "default",
 
   placeholder = "Enter some text",
+  autoFocus,
 
   clearAfterSubmit,
   isUserEmail,
@@ -117,7 +119,7 @@ const SingleInputForm: React.FC<Props> = ({
             isUserEmail && "pr-9",
             sizeClassnames[size],
           )}
-          autoFocus
+          autoFocus={autoFocus}
           value={value}
           placeholder={placeholder}
           onChange={(e) => {
