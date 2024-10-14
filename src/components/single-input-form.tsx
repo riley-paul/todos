@@ -41,10 +41,11 @@ const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
   return null;
 };
 
+type Size = "sm" | "default";
+
 type Props = {
   initialValue: string;
   handleSubmit: (value: string) => void;
-  className?: string;
 
   button?: Partial<{
     icon: React.ReactNode;
@@ -54,16 +55,20 @@ type Props = {
 
   placeholder?: string;
 
-  size?: ButtonProps["size"];
+  size?: Size;
 
   clearAfterSubmit?: boolean;
   isUserEmail?: boolean;
 };
 
+const sizeClassnames: Record<Size, string> = {
+  default: "h-9",
+  sm: "h-8 text-sm",
+} as const;
+
 const SingleInputForm: React.FC<Props> = ({
   initialValue,
   handleSubmit,
-  className,
 
   button = {
     icon: <Save className="size-4" />,
@@ -90,8 +95,8 @@ const SingleInputForm: React.FC<Props> = ({
   return (
     <form
       className={cn(
-        "grid h-9 w-full grid-cols-[1fr_auto] items-center gap-2",
-        className,
+        "grid w-full grid-cols-[1fr_auto] items-center gap-2",
+        sizeClassnames[size],
       )}
       onSubmit={(e) => {
         e.preventDefault();
@@ -108,7 +113,11 @@ const SingleInputForm: React.FC<Props> = ({
     >
       <div className="relative h-full">
         <Input
-          className={cn("h-full truncate", isUserEmail && "pr-9")}
+          className={cn(
+            "truncate",
+            isUserEmail && "pr-9",
+            sizeClassnames[size],
+          )}
           autoFocus
           value={value}
           placeholder={placeholder}
@@ -136,6 +145,7 @@ const SingleInputForm: React.FC<Props> = ({
           </>
         }
         size={isMobile ? "icon" : size}
+        className={cn(size === "sm" && "h-8")}
       />
       <input type="submit" className="hidden" />
     </form>

@@ -56,6 +56,7 @@ const Todo: React.FC<Props> = (props) => {
     >
       {editorOpen ? (
         <SingleInputForm
+          size="sm"
           initialValue={todo.text}
           handleSubmit={(text) => {
             updateTodo

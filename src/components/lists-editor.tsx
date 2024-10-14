@@ -86,7 +86,7 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
             </div>
           </div>
           <SingleInputForm
-            className="h-7"
+            size="sm"
             placeholder="Enter email"
             button={{
               icon: <Send className="size-4" />,
