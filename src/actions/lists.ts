@@ -1,5 +1,5 @@
 import { ActionError, defineAction } from "astro:actions";
-import { db, desc, eq, List, ListShare, Todo, User } from "astro:db";
+import { asc, db, eq, List, ListShare, Todo, User } from "astro:db";
 import { z } from "zod";
 import type { ListSelect } from "@/lib/types";
 import { v4 as uuid } from "uuid";
@@ -51,7 +51,7 @@ export const getLists = defineAction({
       .leftJoin(ListShare, eq(ListShare.listId, List.id))
       .innerJoin(User, eq(User.id, List.userId))
       .where(filterLists(userId))
-      .orderBy(desc(List.name))
+      .orderBy(asc(List.name))
       .then((lists) =>
         Promise.all(
           lists.map(async (list) => ({

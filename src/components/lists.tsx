@@ -10,7 +10,7 @@ import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
 import { Button } from "./ui/button";
 import ListsEditor from "./lists-editor";
 import type { ListSelect } from "@/lib/types";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import UserBubbleGroup from "./base/user-bubble-group";
 
 const BadgeWrapper: React.FC<{
   value: SelectedList;
@@ -42,34 +42,14 @@ const BadgeWrapper: React.FC<{
   );
 };
 
-const NUM_AVATARS = 3;
 const List: React.FC<{
   list: ListSelect;
 }> = ({ list }) => {
   return (
     <BadgeWrapper value={list.id} count={list.todoCount} name={list.name}>
-      {(isSelected) =>
-        list.otherUsers.length > 0 && (
-          <div className="flex">
-            {list.otherUsers.slice(0, NUM_AVATARS).map((user) => (
-              <Avatar key={user.id} className="-ml-1 size-4 first:ml-0">
-                <AvatarImage src={user.avatarUrl ?? ""} alt={user.name} />
-                <AvatarFallback>{user.name[0]} </AvatarFallback>
-              </Avatar>
-            ))}
-            {list.otherUsers.length > NUM_AVATARS && (
-              <div
-                className={cn(
-                  "z-10 -ml-1 flex h-4 items-center rounded-full bg-muted px-1 text-muted-foreground transition-colors",
-                  isSelected && "bg-teal-400 text-secondary",
-                )}
-              >
-                <span>+{list.shares.length - NUM_AVATARS}</span>
-              </div>
-            )}
-          </div>
-        )
-      }
+      {(isSelected) => (
+        <UserBubbleGroup users={list.otherUsers} numAvatars={3} />
+      )}
     </BadgeWrapper>
   );
 };
