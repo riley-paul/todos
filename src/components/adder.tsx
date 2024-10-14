@@ -43,7 +43,7 @@ export default function Adder(): ReturnType<React.FC> {
         ref={inputRef}
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="text-md px-4"
+        className="text-md px-4 h-10"
         placeholder="Add a todo..."
         onFocus={(e) => {
           if (!isOnlyHashtag(value)) {
