@@ -160,7 +160,7 @@ const ListsEditor: React.FC<Props> = (props) => {
                         )}
                       </div>
                     </AccordionTrigger>
-                    <AccordionContent className="px-1 data-[state=open]:bg-red-500">
+                    <AccordionContent className="px-1 pt-2 data-[state=open]:bg-red-500">
                       <ListContent list={list} />
                     </AccordionContent>
                   </AccordionItem>

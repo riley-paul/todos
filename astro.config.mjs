@@ -8,6 +8,7 @@ import db from "@astrojs/db";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import node from "@astrojs/node";
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+import { VitePWA } from "vite-plugin-pwa";
 
 // https://astro.build/config
 export default defineConfig({
@@ -17,6 +18,7 @@ export default defineConfig({
     : "http://localhost:4321",
   integrations: [tailwind({ applyBaseStyles: false }), react(), db()],
   vite: {
+    plugins: [VitePWA({ registerType: "autoUpdate" })],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
