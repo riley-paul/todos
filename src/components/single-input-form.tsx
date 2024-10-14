@@ -1,4 +1,3 @@
-import { Loader2, Save } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
 import { Button, type ButtonProps } from "./ui/button";
@@ -16,7 +15,7 @@ import { MOBILE_MEDIA_QUERY } from "@/lib/constants";
 
 const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
   if (query.isLoading) {
-    return <Loader2 className="size-4 animate-spin" />;
+    return <i className="fa-solid fa-circle-nodes animate-spin" />;
   }
   if (query.status === "success" && query.data) {
     return (
@@ -71,7 +70,7 @@ const SingleInputForm: React.FC<Props> = ({
   handleSubmit,
 
   button = {
-    icon: <Save className="size-4" />,
+    icon: <i className="fa-solid fa-save" />,
     string: "Save",
     variant: "secondary",
   },

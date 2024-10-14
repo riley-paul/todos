@@ -1,6 +1,5 @@
 import React from "react";
 import { Button } from "./button";
-import { Check, X } from "lucide-react";
 import useConfirmButton from "@/hooks/use-confirm-button";
 
 interface Props {
@@ -25,7 +24,11 @@ const DeleteButton: React.FC<Props> = (props) => {
       className="size-7 shrink-0 rounded-full"
       {...buttonProps}
     >
-      {isConfirming ? <Check className="size-4" /> : <X className="size-4" />}
+      {isConfirming ? (
+        <i className="fa-solid fa-check" />
+      ) : (
+        <i className="fa-solid fa-xmark" />
+      )}
     </Button>
   );
 };

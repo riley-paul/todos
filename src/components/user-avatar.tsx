@@ -20,7 +20,6 @@ import {
 import LoginButton from "./login-button";
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/lib/queries";
-import { LogOut, Trash, User } from "lucide-react";
 import { Button, buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
 import useMutations from "@/hooks/use-mutations";
@@ -90,18 +89,14 @@ const UserAvatar: React.FC = () => {
         <PopoverTrigger asChild title="User settings">
           <Avatar>
             <AvatarImage src={user.avatarUrl ?? ""} />
-            <AvatarFallback>
-              <User size="1rem" />
-            </AvatarFallback>
+            <AvatarFallback>{user.name[0].toUpperCase()}</AvatarFallback>
           </Avatar>
         </PopoverTrigger>
         <PopoverContent align="end" className="grid w-auto min-w-52 gap-4">
           <div className="flex max-w-min gap-4">
-            <Avatar className="size-16">
+            <Avatar className="size-16 text-[3rem]">
               <AvatarImage src={user.avatarUrl ?? ""} alt={user.name} />
-              <AvatarFallback>
-                <User size="3rem" />
-              </AvatarFallback>
+              <AvatarFallback>{user.name[0].toUpperCase()}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col justify-center">
               <h2 className="text-lg font-semibold">{user.name}</h2>
@@ -117,7 +112,7 @@ const UserAvatar: React.FC = () => {
                 "relative",
               )}
             >
-              <LogOut className="absolute left-4 mr-2 size-4" />
+              <i className="fa-solid fa-sign-out absolute left-4 mr-2" />
               <span>Logout</span>
             </a>
             <Button
@@ -125,7 +120,7 @@ const UserAvatar: React.FC = () => {
               onClick={() => setAccountDeletionOpen(true)}
               className="relative"
             >
-              <Trash className="absolute left-4 mr-2 size-4" />
+              <i className="fa-solid fa-trash absolute left-4 mr-2" />
               <span>Delete Account</span>
             </Button>
           </div>

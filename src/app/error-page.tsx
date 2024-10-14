@@ -1,4 +1,3 @@
-import { Bug } from "lucide-react";
 import React from "react";
 import { Button } from "../components/ui/button";
 import { isActionError } from "astro:actions";
@@ -32,7 +31,7 @@ const ErrorPage: React.FC<Props> = (props) => {
     >
       <div className="flex h-full w-full max-w-sm flex-col gap-4 p-4">
         <div className="flex flex-row items-center gap-4">
-          <Bug size="3rem" className="flex-shrink-0 text-primary" />
+          <i className="fa-solid fa-viruses flex-shrink-0 text-[3rem] text-primary" />
           <div className="flex flex-col">
             <h2 className="mr-2 text-lg font-bold">
               <span className="">{status} Error</span>

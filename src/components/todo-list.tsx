@@ -19,7 +19,6 @@ import { useAtomValue } from "jotai/react";
 import { selectedListAtom } from "@/lib/store";
 import { actions } from "astro:actions";
 import UserBubble from "./base/user-bubble";
-import { ChevronUp, Eraser } from "lucide-react";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { Badge } from "./ui/badge";
@@ -148,9 +147,9 @@ const TodoList: React.FC = () => {
                   >
                     <span>Completed</span>
                     <span className="opacity-80">{numCompleted}</span>
-                    <ChevronUp
+                    <i
                       className={cn(
-                        "size-4 transition-transform",
+                        "fa-solid fa-chevron-up transition-transform duration-200",
                         showCompleted && "-rotate-180",
                       )}
                     />
@@ -162,12 +161,12 @@ const TodoList: React.FC = () => {
                   variant="linkMuted"
                   onClick={() => deleteCompleted({ listId: selectedList })}
                 >
-                  <Eraser className="mr-1 size-4" />
+                  <i className="fa-solid fa-eraser mr-1" />
                   Clear completed
                 </Button>
               </div>
 
-              <CollapsibleContent className="grid gap-1 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+              <CollapsibleContent className="grid gap-1">
                 {todos
                   .filter((i) => i.isCompleted)
                   .map((todo) => (

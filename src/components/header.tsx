@@ -1,4 +1,3 @@
-import { Bell, CircleCheckBig } from "lucide-react";
 import React from "react";
 import { cn } from "../lib/utils";
 import UserAvatar from "./user-avatar";
@@ -25,9 +24,9 @@ const Header: React.FC = () => {
       )}
     >
       <div className="container2 flex h-full items-center justify-between px-5">
-        <div className="flex items-center gap-2">
-          <CircleCheckBig size="1.5rem" className="text-primary" />
-          <div className="text-2xl font-bold">Todos</div>
+        <div className="flex items-center gap-2 text-2xl">
+          <i className="fa-solid fa-check-double text-primary" />
+          <div className="font-bold">Todos</div>
         </div>
         <div className="flex items-center gap-4">
           <Popover>
@@ -37,7 +36,7 @@ const Header: React.FC = () => {
                 size="icon"
                 className="relative rounded-full"
               >
-                <Bell className="size-4" />
+                <i className="fa-solid fa-bell" />
                 {numPendingShares > 0 && (
                   <div className="absolute -right-3 -top-1 rounded-full bg-primary px-2 py-0.5 text-xs">
                     {numPendingShares}

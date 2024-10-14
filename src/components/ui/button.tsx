@@ -21,8 +21,7 @@ const buttonVariants = cva(
         ghostMuted:
           "hover:bg-accent hover:text-accent-foreground text-muted-foreground transition-colors",
         link: "text-primary underline-offset-4 hover:underline",
-        linkMuted:
-          "text-muted-foreground underline-offset-4 hover:underline hover:text-primary transition-colors",
+        linkMuted: "text-muted-foreground hover:text-primary transition-colors",
       },
       size: {
         default: "h-9 px-4 py-2",

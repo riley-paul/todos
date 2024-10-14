@@ -21,7 +21,6 @@ import { listsQueryOptions } from "@/lib/queries";
 import QueryGuard from "./base/query-guard";
 import UserBubbleGroup from "./base/user-bubble-group";
 import { Button } from "./ui/button";
-import { DoorOpen, Hourglass, Plus, Send, Star, Trash } from "lucide-react";
 import useConfirmButton from "@/hooks/use-confirm-button";
 import UserBubble from "./base/user-bubble";
 import DeleteButton from "./ui/delete-button";
@@ -69,7 +68,7 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
                     </span>
                   </div>
                   {share.isPending && (
-                    <Hourglass className="size-4 text-muted-foreground" />
+                    <i className="fa-solid fa-hourglass text-muted-foreground" />
                   )}
                   <DeleteButton
                     handleDelete={() =>
@@ -89,7 +88,7 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
             size="sm"
             placeholder="Enter email"
             button={{
-              icon: <Send className="size-4" />,
+              icon: <i className="fa-solid fa-paper-plane" />,
               string: "Invite",
               variant: "outline",
             }}
@@ -108,12 +107,12 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
           "Are you sure?"
         ) : list.isAuthor ? (
           <>
-            <Trash className="mr-2 size-4" />
+            <i className="fa-solid fa-trash mr-2" />
             <span>Delete list</span>
           </>
         ) : (
           <>
-            <DoorOpen className="mr-2 size-4" />
+            <i className="fa-solid fa-door-open mr-2" />
             <span>Leave list</span>
           </>
         )}
@@ -157,7 +156,7 @@ const ListsEditor: React.FC<Props> = (props) => {
                           numAvatars={10}
                         />
                         {list.isAuthor && (
-                          <Star className="size-4 text-primary" />
+                          <i className="fa-solid fa-star text-primary" />
                         )}
                       </div>
                     </AccordionTrigger>
@@ -177,7 +176,7 @@ const ListsEditor: React.FC<Props> = (props) => {
             initialValue=""
             placeholder="Enter list name"
             button={{
-              icon: <Plus className="size-4" />,
+              icon: <i className="fa-solid fa-plus" />,
               string: "Add list",
               variant: "default",
             }}

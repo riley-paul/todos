@@ -1,7 +1,6 @@
 import React from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Loader2, Plus } from "lucide-react";
 import useMutations from "../hooks/use-mutations";
 import { useMediaQuery } from "usehooks-ts";
 import { MOBILE_MEDIA_QUERY } from "@/lib/constants";
@@ -60,9 +59,9 @@ export default function Adder(): ReturnType<React.FC> {
         disabled={isEmptyString(value) || isOnlyHashtag(value)}
       >
         {createTodo.isPending ? (
-          <Loader2 size="1.2rem" className="animate-spin" />
+          <i className="fa-solid fa-circle-nodes animate-spin" />
         ) : (
-          <Plus size="1.2rem" />
+          <i className="fa-solid fa-plus" />
         )}
         {!isMobile && <span className="ml-2">Add</span>}
       </Button>

@@ -1,6 +1,5 @@
 import React from "react";
 import type { UseQueryResult } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
 import ErrorPage from "@/app/error-page";
 
 // Define the props type, where each query result can have a different type
@@ -18,7 +17,7 @@ const QueryGuard = <T,>({
   if (query.isLoading) {
     return (
       <div className="flex h-full min-h-32 items-center justify-center">
-        <Loader2 className="size-6 animate-spin text-primary" />
+        <i className="fa-solid fa-circle-nodes animate-spin text-lg text-primary" />
       </div>
     );
   }
