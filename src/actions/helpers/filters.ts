@@ -2,7 +2,10 @@ import { or, eq, List, ListShare, Todo, and, isNull, ne } from "astro:db";
 
 export const filterLists = (userId: string) => {
   return and(
-    or(isNull(ListShare.id), ne(ListShare.isPending, true)),
+    or(
+      eq(List.userId, userId),
+      or(isNull(ListShare.id), ne(ListShare.isPending, true)),
+    ),
     or(eq(List.userId, userId), eq(ListShare.sharedUserId, userId)),
   );
 };

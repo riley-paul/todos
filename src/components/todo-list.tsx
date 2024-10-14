@@ -56,7 +56,6 @@ const Todo: React.FC<Props> = (props) => {
     >
       {editorOpen ? (
         <SingleInputForm
-          className="h-8"
           initialValue={todo.text}
           handleSubmit={(text) => {
             updateTodo
@@ -167,7 +166,7 @@ const TodoList: React.FC = () => {
                 </Button>
               </div>
 
-              <CollapsibleContent className="grid gap-1">
+              <CollapsibleContent className="grid gap-1 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
                 {todos
                   .filter((i) => i.isCompleted)
                   .map((todo) => (

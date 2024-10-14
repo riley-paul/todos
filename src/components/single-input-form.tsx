@@ -9,9 +9,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useDebounceValue } from "usehooks-ts";
+import { useDebounceValue, useMediaQuery } from "usehooks-ts";
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { userByEmailQueryOptions } from "@/lib/queries";
+import { MOBILE_MEDIA_QUERY } from "@/lib/constants";
 
 const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
   if (query.isLoading) {
@@ -44,8 +45,17 @@ type Props = {
   initialValue: string;
   handleSubmit: (value: string) => void;
   className?: string;
-  buttonProps?: ButtonProps;
-  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+
+  button?: Partial<{
+    icon: React.ReactNode;
+    string: string;
+    variant: ButtonProps["variant"];
+  }>;
+
+  placeholder?: string;
+
+  size?: ButtonProps["size"];
+
   clearAfterSubmit?: boolean;
   isUserEmail?: boolean;
 };
@@ -54,8 +64,16 @@ const SingleInputForm: React.FC<Props> = ({
   initialValue,
   handleSubmit,
   className,
-  buttonProps,
-  inputProps,
+
+  button = {
+    icon: <Save className="size-4" />,
+    string: "Save",
+    variant: "secondary",
+  },
+  size = "default",
+
+  placeholder = "Enter some text",
+
   clearAfterSubmit,
   isUserEmail,
 }) => {
@@ -67,9 +85,14 @@ const SingleInputForm: React.FC<Props> = ({
     enabled: email.length > 0 && isUserEmail,
   });
 
+  const isMobile = useMediaQuery(MOBILE_MEDIA_QUERY);
+
   return (
     <form
-      className={cn("flex h-9 w-full items-center gap-2", className)}
+      className={cn(
+        "grid h-9 w-full grid-cols-[1fr_auto] items-center gap-2",
+        className,
+      )}
       onSubmit={(e) => {
         e.preventDefault();
         if (value.length === 0) {
@@ -83,22 +106,17 @@ const SingleInputForm: React.FC<Props> = ({
         }
       }}
     >
-      <div className="relative h-full flex-1">
+      <div className="relative h-full">
         <Input
-          className={cn(
-            "h-full truncate",
-            isUserEmail && "pr-9",
-            inputProps?.className,
-          )}
+          className={cn("h-full truncate", isUserEmail && "pr-9")}
           autoFocus
           value={value}
-          placeholder="Enter some text"
+          placeholder={placeholder}
           onChange={(e) => {
             setValue(e.target.value);
             setEmail(e.target.value);
           }}
           type={isUserEmail ? "email" : "text"}
-          {...inputProps}
         />
         {isUserEmail && (
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -109,16 +127,15 @@ const SingleInputForm: React.FC<Props> = ({
 
       <Button
         type="submit"
-        variant="secondary"
+        variant={button.variant}
         disabled={value.length === 0 || (isUserEmail && !sharedUserQuery.data)}
         children={
           <>
-            <Save className="mr-2 size-4" />
-            <span>Save</span>
+            {button.icon}
+            {!isMobile && <span className="ml-2">{button.string}</span>}
           </>
         }
-        {...buttonProps}
-        className={cn("h-full shrink-0", buttonProps?.className)}
+        size={isMobile ? "icon" : size}
       />
       <input type="submit" className="hidden" />
     </form>

@@ -21,7 +21,7 @@ import { listsQueryOptions } from "@/lib/queries";
 import QueryGuard from "./base/query-guard";
 import UserBubbleGroup from "./base/user-bubble-group";
 import { Button } from "./ui/button";
-import { DoorOpen, Hourglass, Save, Send, Star, Trash } from "lucide-react";
+import { DoorOpen, Hourglass, Plus, Send, Star, Trash } from "lucide-react";
 import useConfirmButton from "@/hooks/use-confirm-button";
 import UserBubble from "./base/user-bubble";
 import DeleteButton from "./ui/delete-button";
@@ -34,19 +34,20 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
     deleteList,
     createListShare,
   } = useMutations();
+
   const { ref, buttonProps, isConfirming } = useConfirmButton({
     handleConfirm: () =>
       list.isAuthor
         ? deleteList.mutate({ id: list.id })
         : leaveListShare.mutate({ listId: list.id }),
   });
+
   return (
     <div className="grid gap-4">
       <div className="grid gap-2">
         <Label className="text-xs">Update name</Label>
         <SingleInputForm
-          inputProps={{ placeholder: "Enter list name" }}
-          buttonProps={{ children: <Save className="size-4" />, size: "icon" }}
+          placeholder="Enter list name"
           initialValue={list.name}
           handleSubmit={(name) =>
             updateList.mutate({ id: list.id, data: { name } })
@@ -61,7 +62,12 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
               {list.shares.map((share) => (
                 <div className="flex items-center gap-2 py-2">
                   <UserBubble user={share.user} />
-                  <span className="flex-1">{share.user.name}</span>
+                  <div className="grid flex-1 gap-0.5">
+                    <span>{share.user.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {share.user.email}
+                    </span>
+                  </div>
                   {share.isPending && (
                     <Hourglass className="size-4 text-muted-foreground" />
                   )}
@@ -80,11 +86,12 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
             </div>
           </div>
           <SingleInputForm
-            className="h-8"
-            inputProps={{ placeholder: "Enter email" }}
-            buttonProps={{
-              children: <Send className="size-4" />,
-              size: "icon",
+            className="h-7"
+            placeholder="Enter email"
+            button={{
+              icon: <Send className="size-4" />,
+              string: "Invite",
+              variant: "outline",
             }}
             initialValue=""
             handleSubmit={(email) =>
@@ -102,12 +109,12 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
         ) : list.isAuthor ? (
           <>
             <Trash className="mr-2 size-4" />
-            <span>Delete </span>
+            <span>Delete list</span>
           </>
         ) : (
           <>
             <DoorOpen className="mr-2 size-4" />
-            <span>Leave </span>
+            <span>Leave list</span>
           </>
         )}
       </Button>
@@ -125,6 +132,8 @@ const ListsEditor: React.FC<Props> = (props) => {
   const listsQuery = useQuery(listsQueryOptions);
   const { createList } = useMutations();
 
+  const [value, setValue] = React.useState("");
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent>
@@ -137,9 +146,9 @@ const ListsEditor: React.FC<Props> = (props) => {
         <div className="max-h-[400px] min-h-[150px] overflow-scroll rounded-lg bg-secondary/20 px-3">
           <QueryGuard query={listsQuery}>
             {(lists) => (
-              <Accordion type="single">
+              <Accordion type="single" value={value} onValueChange={setValue}>
                 {lists.map((list) => (
-                  <AccordionItem value={list.id}>
+                  <AccordionItem value={list.id} className="">
                     <AccordionTrigger className="h-10">
                       <div className="flex items-center gap-2">
                         <span>{list.name}</span>
@@ -152,7 +161,7 @@ const ListsEditor: React.FC<Props> = (props) => {
                         )}
                       </div>
                     </AccordionTrigger>
-                    <AccordionContent className="px-1">
+                    <AccordionContent className="px-1 data-[state=open]:bg-red-500">
                       <ListContent list={list} />
                     </AccordionContent>
                   </AccordionItem>
@@ -166,8 +175,16 @@ const ListsEditor: React.FC<Props> = (props) => {
           <SingleInputForm
             clearAfterSubmit
             initialValue=""
-            inputProps={{ placeholder: "Enter list name" }}
-            handleSubmit={(name) => createList.mutate({ name })}
+            placeholder="Enter list name"
+            button={{
+              icon: <Plus className="size-4" />,
+              string: "Add list",
+              variant: "default",
+            }}
+            handleSubmit={(name) => {
+              createList.mutate({ name });
+              setValue("");
+            }}
           />
         </div>
       </DialogContent>
