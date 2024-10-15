@@ -28,7 +28,7 @@ const BadgeWrapper = React.forwardRef<
       ref={ref}
       className={cn(
         "flex h-6 cursor-pointer select-none gap-1.5",
-        isOver && "border-red-500",
+        isOver && "bg-muted",
       )}
       variant={isSelected ? "default" : "secondary"}
       onClick={() => setSelectedList(value)}

@@ -1,27 +1,30 @@
 import React from "react";
 import {
-  closestCenter,
   DndContext,
+  DragOverlay,
   KeyboardSensor,
   MouseSensor,
   pointerWithin,
   TouchSensor,
   useSensor,
   useSensors,
-  type CollisionDetection,
   type DragEndEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import { useSetAtom } from "jotai";
-import { draggingTodoAtom } from "@/lib/store";
-import { listSelectSchema, todoSelectSchema } from "@/lib/types";
+import {
+  listSelectSchema,
+  todoSelectSchema,
+  type TodoSelect,
+} from "@/lib/types";
 import useMutations from "@/hooks/use-mutations";
+import Todo from "./todo";
 
-const customCollisionDetectionAlgorithm: CollisionDetection = (args) => {
-  const pointerCollisions = pointerWithin(args);
-  if (pointerCollisions.length > 0) return pointerCollisions;
-  return closestCenter(args);
-};
+// const customCollisionDetectionAlgorithm: CollisionDetection = (args) => {
+//   if (args.collisionRect.height > 50) return [];
+//   const pointerCollisions = pointerWithin(args);
+//   if (pointerCollisions.length > 0) return pointerCollisions;
+//   return closestCenter(args);
+// };
 
 const CustomDndContext: React.FC<React.PropsWithChildren> = ({ children }) => {
   const mouseSensor = useSensor(MouseSensor);
@@ -29,7 +32,9 @@ const CustomDndContext: React.FC<React.PropsWithChildren> = ({ children }) => {
   const keyboardSensor = useSensor(KeyboardSensor);
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
 
-  const setDraggingTodo = useSetAtom(draggingTodoAtom);
+  const [draggingTodo, setDraggingTodo] = React.useState<TodoSelect | null>(
+    null,
+  );
 
   const { moveTodo } = useMutations();
 
@@ -62,11 +67,14 @@ const CustomDndContext: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={customCollisionDetectionAlgorithm}
+      collisionDetection={pointerWithin}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
       {children}
+      <DragOverlay dropAnimation={null}>
+        {draggingTodo && <Todo todo={draggingTodo} />}
+      </DragOverlay>
     </DndContext>
   );
 };
