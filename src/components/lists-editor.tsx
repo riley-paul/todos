@@ -56,7 +56,7 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
       {list.isAuthor && (
         <div className="grid gap-2">
           <Label className="text-xs">Share with</Label>
-          <div className="max-h-48 min-h-12 overflow-scroll rounded bg-secondary/20 px-2">
+          <div className="max-h-48 min-h-12 overflow-y-auto rounded bg-secondary/20 px-2">
             <div className="grid divide-y">
               {list.shares.map((share) => (
                 <div className="flex items-center gap-2 py-2">
@@ -142,7 +142,7 @@ const ListsEditor: React.FC<Props> = (props) => {
             Add, remove, edit and share your lists
           </DialogDescription>
         </DialogHeader>
-        <div className="max-h-[400px] min-h-[150px] overflow-scroll rounded-lg bg-secondary/20 px-3">
+        <div className="max-h-[400px] min-h-[150px] overflow-y-auto rounded-lg bg-secondary/20 px-3">
           <QueryGuard query={listsQuery}>
             {(lists) => (
               <Accordion type="single" value={value} onValueChange={setValue}>
