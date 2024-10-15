@@ -102,7 +102,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
                 <i className="fa-solid fa-ellipsis-v" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-[10rem]">
+            <DropdownMenuContent align="end" className="min-w-[11rem]">
               <DropdownMenuGroup>
                 <DropdownMenuItem onClick={() => setEditorOpen(true)}>
                   Edit

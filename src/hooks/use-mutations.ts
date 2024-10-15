@@ -95,11 +95,15 @@ export default function useMutations() {
   const moveTodo = useMutation({
     mutationFn: actions.updateTodo.orThrow,
     onMutate: async ({ id, data: { listId } }) => {
-      const resetters = await Promise.all([
-        modifyTodoCache(selectedList, (todos = []) =>
-          todos.filter((todo) => todo.id !== id),
-        ),
-      ]);
+      const resetters = await Promise.all(
+        selectedList === "all"
+          ? []
+          : [
+              modifyTodoCache(selectedList, (todos = []) =>
+                todos.filter((todo) => todo.id !== id),
+              ),
+            ],
+      );
       return { resetters };
     },
     onError: (__, _, context) => {
