@@ -9,7 +9,7 @@ import Header from "@/components/header";
 import useQueryStream from "@/hooks/use-query-stream";
 import Adder from "@/components/adder";
 import Lists from "@/components/lists";
-import TodoList from "@/components/todo-list";
+import Todos from "@/components/todos";
 import { Toaster } from "@/components/ui/sonner";
 import { handleMutationError } from "@/hooks/use-mutations";
 
@@ -34,7 +34,7 @@ const App: React.FC = () => {
         <main className="container2 grid gap-6 py-6">
           <Adder />
           <Lists />
-          <TodoList />
+          <Todos />
         </main>
         <Toaster />
       </TooltipProvider>

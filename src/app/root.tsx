@@ -1,6 +1,6 @@
 import React from "react";
 import Adder from "@/components/adder";
-import TodoList from "@/components/todo-list";
+import Todos from "@/components/todos";
 import Lists from "@/components/lists";
 
 const Root: React.FC = () => {
@@ -8,7 +8,7 @@ const Root: React.FC = () => {
     <div className="grid w-full gap-6">
       <Adder />
       <Lists />
-      <TodoList />
+      <Todos />
     </div>
   );
 };
