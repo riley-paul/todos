@@ -1,6 +1,5 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import DeleteButton from "./ui/delete-button";
 import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
@@ -11,13 +10,23 @@ import { selectedListAtom } from "@/lib/store";
 import UserBubble from "./base/user-bubble";
 import { Badge } from "./ui/badge";
 
-interface Props {
-  todo: TodoSelect;
-}
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "./ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { listsQueryOptions } from "@/lib/queries";
 
-const Todo: React.FC<Props> = (props) => {
-  const { todo } = props;
-  const { deleteTodo, updateTodo } = useMutations();
+const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
+  const { deleteTodo, updateTodo, moveTodo } = useMutations();
+  const listsQuery = useQuery(listsQueryOptions);
 
   const selectedList = useAtomValue(selectedListAtom);
 
@@ -81,9 +90,57 @@ const Todo: React.FC<Props> = (props) => {
             <Badge variant="outline">{todo.list.name}</Badge>
           )}
           {!todo.isAuthor && <UserBubble user={todo.author} />}
-          <DeleteButton
-            handleDelete={() => deleteTodo.mutate({ id: todo.id })}
-          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghostMuted"
+                className="size-7 rounded-full"
+              >
+                <i className="fa-solid fa-ellipsis-v" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-[10rem]">
+              <DropdownMenuGroup>
+                <DropdownMenuItem onClick={() => setEditorOpen(true)}>
+                  Edit
+                  <DropdownMenuShortcut>
+                    <i className="fa-solid fa-pen" />
+                  </DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => deleteTodo.mutate({ id: todo.id })}
+                >
+                  Delete
+                  <DropdownMenuShortcut>
+                    <i className="fa-solid fa-delete-left" />
+                  </DropdownMenuShortcut>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Move</DropdownMenuLabel>
+                {listsQuery.data
+                  ?.filter((list) => list.id !== selectedList)
+                  .map((list) => (
+                    <DropdownMenuItem
+                      key={list.id}
+                      onClick={() =>
+                        moveTodo.mutate({
+                          id: todo.id,
+                          data: { listId: list.id },
+                        })
+                      }
+                    >
+                      {list.name}
+                      <DropdownMenuShortcut>
+                        <i className="fa-solid fa-arrow-right" />
+                      </DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                  ))}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </>
       )}
     </div>

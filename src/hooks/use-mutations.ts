@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { actions, isActionError } from "astro:actions";
 import { useAtom } from "jotai/react";
 import { selectedListAtom, type SelectedList } from "@/lib/store";
-import { todosQueryOptions } from "@/lib/queries";
+import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
 import type { TodoSelect } from "@/lib/types";
 
 type TodosUpdater = (todos: TodoSelect[] | undefined) => TodoSelect[];
@@ -92,6 +92,26 @@ export default function useMutations() {
     mutationFn: actions.createTodo.orThrow,
   });
 
+  const moveTodo = useMutation({
+    mutationFn: actions.updateTodo.orThrow,
+    onMutate: async ({ id, data: { listId } }) => {
+      const resetters = await Promise.all([
+        modifyTodoCache(selectedList, (todos = []) =>
+          todos.filter((todo) => todo.id !== id),
+        ),
+      ]);
+      return { resetters };
+    },
+    onError: (__, _, context) => {
+      context?.resetters.forEach((reset) => reset());
+    },
+    onSuccess: (data, { id, data: { listId } }) => {
+      const lists = queryClient.getQueryData(listsQueryOptions.queryKey);
+      const nextList = lists?.find((list) => list.id === listId);
+      toast.success(`Todo moved to ${nextList?.name ?? "Unknown"}`);
+    },
+  });
+
   const deleteUser = useMutation({
     mutationFn: actions.deleteUser.orThrow,
     onSuccess: () => {
@@ -143,6 +163,7 @@ export default function useMutations() {
     deleteTodo,
     deleteCompletedTodos,
     createTodo,
+    moveTodo,
     deleteUser,
     updateList,
     createList,
