@@ -8,16 +8,15 @@ import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
 import { Button } from "./ui/button";
 import ListsEditor from "./lists-editor";
-import type { ListSelect } from "@/lib/types";
+import type { UserSelect } from "@/lib/types";
 import UserBubbleGroup from "./base/user-bubble-group";
 
-const BadgeWrapper: React.FC<
-  React.PropsWithChildren<{
-    value: SelectedList;
-    count?: number;
-    name: string;
-  }>
-> = ({ value, count = 0, name, children }) => {
+const List: React.FC<{
+  value: SelectedList;
+  name: string;
+  count?: number;
+  users?: UserSelect[];
+}> = ({ value, count = 0, name, users = [] }) => {
   const [selectedList, setSelectedList] = useAtom(selectedListAtom);
   const isSelected = selectedList === value;
   return (
@@ -37,18 +36,8 @@ const BadgeWrapper: React.FC<
           {count}
         </span>
       )}
-      {children}
+      <UserBubbleGroup users={users} numAvatars={3} />
     </Badge>
-  );
-};
-
-const List: React.FC<{
-  list: ListSelect;
-}> = ({ list }) => {
-  return (
-    <BadgeWrapper value={list.id} count={list.todoCount} name={list.name}>
-      <UserBubbleGroup users={list.otherUsers} numAvatars={3} />
-    </BadgeWrapper>
   );
 };
 
@@ -61,12 +50,20 @@ const Lists: React.FC = () => {
 
   return (
     <div className="flex flex-wrap gap-2 px-3">
-      <BadgeWrapper value={null} name="Inbox" count={inboxCount} />
-      <BadgeWrapper value={"all"} name="All" count={allCount} />
+      <List value={null} name="Inbox" count={inboxCount} />
+      <List value={"all"} name="All" count={allCount} />
       <div className="flex items-center">
         <Separator orientation="vertical" className="h-5" />
       </div>
-      {listsQuery.data?.map((list) => <List key={list.id} list={list} />)}
+      {listsQuery.data?.map((list) => (
+        <List
+          key={list.id}
+          value={list.id}
+          name={list.name}
+          count={list.todoCount}
+          users={list.otherUsers}
+        />
+      ))}
       <Button
         variant="ghost"
         size="sm"
