@@ -33,8 +33,9 @@ const Todo: React.FC<Props> = (props) => {
 
   const selectedList = useAtomValue(selectedListAtom);
 
-  const { setNodeRef, node, listeners, attributes } = useDraggable({
+  const { setNodeRef, node, listeners, attributes, isDragging } = useDraggable({
     id: todo.id,
+    data: todo,
   });
 
   const [editorOpen, setEditorOpen] = React.useState(false);
@@ -54,6 +55,7 @@ const Todo: React.FC<Props> = (props) => {
       className={cn(
         "flex min-h-10 items-center gap-2 rounded-md px-3 py-1 text-sm transition-colors ease-out hover:bg-muted/20",
         deleteTodo.isPending && "opacity-50",
+        isDragging && "opacity-50",
       )}
       {...listeners}
       {...attributes}
@@ -124,67 +126,67 @@ const TodoList: React.FC = () => {
   const draggingTodo = useAtomValue(draggingTodoAtom);
 
   return (
-    <QueryGuard query={todosQuery} noDataString="No tasks yet">
-      {(todos) => (
-        <>
-          <div className="grid gap-1">
-            {todos
-              .filter((i) => !i.isCompleted)
-              .map((todo) => (
-                <Todo key={todo.id} todo={todo} />
-              ))}
-          </div>
-          {numCompleted > 0 && (
-            <Collapsible
-              open={showCompleted}
-              onOpenChange={setShowCompleted}
-              className="grid gap-2"
-            >
-              <div className="flex items-center justify-between gap-2 px-1">
-                <CollapsibleTrigger asChild>
+    <>
+      <QueryGuard query={todosQuery} noDataString="No tasks yet">
+        {(todos) => (
+          <>
+            <div className="grid gap-1">
+              {todos
+                .filter((i) => !i.isCompleted)
+                .map((todo) => (
+                  <Todo key={todo.id} todo={todo} />
+                ))}
+            </div>
+            {numCompleted > 0 && (
+              <Collapsible
+                open={showCompleted}
+                onOpenChange={setShowCompleted}
+                className="grid gap-2"
+              >
+                <div className="flex items-center justify-between gap-2 px-1">
+                  <CollapsibleTrigger asChild>
+                    <Button
+                      size="sm"
+                      className="flex h-6 gap-2 px-2"
+                      variant="ghost"
+                    >
+                      <span>Completed</span>
+                      <span className="opacity-80">{numCompleted}</span>
+                      <i
+                        className={cn(
+                          "fa-solid fa-chevron-down transition-transform duration-200",
+                          showCompleted && "-rotate-180",
+                        )}
+                      />
+                    </Button>
+                  </CollapsibleTrigger>
                   <Button
                     size="sm"
-                    className="flex h-6 gap-2 px-2"
-                    variant="ghost"
+                    className="h-6 px-2"
+                    variant="linkMuted"
+                    onClick={() =>
+                      deleteCompletedTodos.mutate({ listId: selectedList })
+                    }
                   >
-                    <span>Completed</span>
-                    <span className="opacity-80">{numCompleted}</span>
-                    <i
-                      className={cn(
-                        "fa-solid fa-chevron-down transition-transform duration-200",
-                        showCompleted && "-rotate-180",
-                      )}
-                    />
+                    <i className="fa-solid fa-eraser mr-1" />
+                    Clear completed
                   </Button>
-                </CollapsibleTrigger>
-                <Button
-                  size="sm"
-                  className="h-6 px-2"
-                  variant="linkMuted"
-                  onClick={() =>
-                    deleteCompletedTodos.mutate({ listId: selectedList })
-                  }
-                >
-                  <i className="fa-solid fa-eraser mr-1" />
-                  Clear completed
-                </Button>
-              </div>
+                </div>
 
-              <CollapsibleContent className="grid gap-1">
-                {todos
-                  .filter((i) => i.isCompleted)
-                  .map((todo) => (
-                    <Todo key={todo.id} todo={todo} />
-                  ))}
-              </CollapsibleContent>
-            </Collapsible>
-          )}
-          <DragOverlay>
-            {draggingTodo && <Todo todo={draggingTodo} />}
-          </DragOverlay>
-        </>
-      )}
-    </QueryGuard>
+                <CollapsibleContent className="grid gap-1">
+                  {todos
+                    .filter((i) => i.isCompleted)
+                    .map((todo) => (
+                      <Todo key={todo.id} todo={todo} />
+                    ))}
+                </CollapsibleContent>
+              </Collapsible>
+            )}
+          </>
+        )}
+      </QueryGuard>
+      <DragOverlay>{draggingTodo && <Todo todo={draggingTodo} />}</DragOverlay>
+    </>
   );
 };
 

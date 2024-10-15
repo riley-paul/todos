@@ -81,6 +81,10 @@ export default function useMutations() {
     },
   });
 
+  const moveTodo = useMutation({
+    mutationFn: actions.updateTodo.orThrow,
+  });
+
   const deleteCompletedTodos = useMutation({
     mutationFn: actions.deleteCompletedTodos.orThrow,
     onSuccess: () => {
@@ -143,6 +147,7 @@ export default function useMutations() {
     deleteTodo,
     deleteCompletedTodos,
     createTodo,
+    moveTodo,
     deleteUser,
     updateList,
     createList,

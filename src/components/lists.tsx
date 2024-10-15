@@ -52,7 +52,7 @@ const BadgeWrapper = React.forwardRef<
 const List: React.FC<{
   list: ListSelect;
 }> = ({ list }) => {
-  const { setNodeRef, isOver } = useDroppable({ id: list.id });
+  const { setNodeRef, isOver } = useDroppable({ id: list.id, data: list });
   return (
     <BadgeWrapper
       ref={setNodeRef}
