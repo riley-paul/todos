@@ -53,8 +53,7 @@ export default function useMutations() {
 
       return { resetters };
     },
-    onError: (error, _, context) => {
-      handleMutationError(error);
+    onError: (__, _, context) => {
       context?.resetters.forEach((reset) => reset());
     },
   });
@@ -72,8 +71,7 @@ export default function useMutations() {
 
       return { resetters };
     },
-    onError: (error, _, context) => {
-      handleMutationError(error);
+    onError: (__, _, context) => {
       context?.resetters.forEach((reset) => reset());
     },
     onSuccess: () => {
@@ -83,6 +81,21 @@ export default function useMutations() {
 
   const moveTodo = useMutation({
     mutationFn: actions.updateTodo.orThrow,
+    onMutate: async ({ id, data: { listId } }) => {
+      const resetters = await Promise.all([
+        modifyTodoCache(selectedList, (todos = []) =>
+          todos.filter((todo) => todo.id !== id),
+        ),
+      ]);
+
+      return { resetters };
+    },
+    onError: (__, _, context) => {
+      context?.resetters.forEach((reset) => reset());
+    },
+    onSuccess: () => {
+      toast.success("Todo moved");
+    },
   });
 
   const deleteCompletedTodos = useMutation({
