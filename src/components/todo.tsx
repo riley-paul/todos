@@ -49,7 +49,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
       ref={ref}
       className={cn(
         "flex min-h-10 items-center gap-2 rounded-md px-3 py-1 text-sm transition-colors ease-out hover:bg-muted/20",
-        deleteTodo.isPending && "opacity-50",
+        (deleteTodo.isPending || updateTodo.isPending) && "opacity-50",
       )}
     >
       {editorOpen ? (
