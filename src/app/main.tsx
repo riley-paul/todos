@@ -12,6 +12,7 @@ import Lists from "@/components/lists";
 import TodoList from "@/components/todo-list";
 import { Toaster } from "@/components/ui/sonner";
 import { handleMutationError } from "@/hooks/use-mutations";
+import CustomDndContext from "@/components/dnd-context";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -29,15 +30,17 @@ const App: React.FC = () => {
   useQueryStream(queryClient);
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Header />
-        <main className="container2 grid gap-6 py-6">
-          <Adder />
-          <Lists />
-          <TodoList />
-        </main>
-        <Toaster />
-      </TooltipProvider>
+      <CustomDndContext>
+        <TooltipProvider>
+          <Header />
+          <main className="container2 grid gap-6 py-6">
+            <Adder />
+            <Lists />
+            <TodoList />
+          </main>
+          <Toaster />
+        </TooltipProvider>
+      </CustomDndContext>
     </QueryClientProvider>
   );
 };

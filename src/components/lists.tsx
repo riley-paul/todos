@@ -10,19 +10,26 @@ import { Button } from "./ui/button";
 import ListsEditor from "./lists-editor";
 import type { ListSelect } from "@/lib/types";
 import UserBubbleGroup from "./base/user-bubble-group";
+import { useDroppable } from "@dnd-kit/core";
 
-const BadgeWrapper: React.FC<
+const BadgeWrapper = React.forwardRef<
+  HTMLDivElement,
   React.PropsWithChildren<{
     value: SelectedList;
     count?: number;
     name: string;
+    isOver?: boolean;
   }>
-> = ({ value, count = 0, name, children }) => {
+>(({ value, count = 0, name, children, isOver }, ref) => {
   const [selectedList, setSelectedList] = useAtom(selectedListAtom);
   const isSelected = selectedList === value;
   return (
     <Badge
-      className="flex h-6 cursor-pointer select-none gap-1.5"
+      ref={ref}
+      className={cn(
+        "flex h-6 cursor-pointer select-none gap-1.5",
+        isOver && "border-red-500",
+      )}
       variant={isSelected ? "default" : "secondary"}
       onClick={() => setSelectedList(value)}
     >
@@ -40,13 +47,20 @@ const BadgeWrapper: React.FC<
       {children}
     </Badge>
   );
-};
+});
 
 const List: React.FC<{
   list: ListSelect;
 }> = ({ list }) => {
+  const { setNodeRef, isOver } = useDroppable({ id: list.id });
   return (
-    <BadgeWrapper value={list.id} count={list.todoCount} name={list.name}>
+    <BadgeWrapper
+      ref={setNodeRef}
+      value={list.id}
+      count={list.todoCount}
+      name={list.name}
+      isOver={isOver}
+    >
       <UserBubbleGroup users={list.otherUsers} numAvatars={3} />
     </BadgeWrapper>
   );

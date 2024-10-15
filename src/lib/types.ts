@@ -1,46 +1,47 @@
-import type { User, Todo, List, ListShare } from "astro:db";
+import { z } from "zod";
 
-export type UserSelect = {
-  id: string;
-  name: string;
-  email: string;
-  avatarUrl: string | null;
-};
+export const userSelectSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string(),
+  avatarUrl: z.string().nullable(),
+});
+export type UserSelect = z.infer<typeof userSelectSchema>;
 
-export type TodoSelect = {
-  id: string;
-  text: string;
-  isCompleted: boolean;
-  author: UserSelect;
-  isAuthor: boolean;
-  list: {
-    id: string;
-    name: string;
-  } | null;
-};
+export const todoSelectSchema = z.object({
+  id: z.string(),
+  text: z.string(),
+  isCompleted: z.boolean(),
+  author: userSelectSchema,
+  isAuthor: z.boolean(),
+  list: z
+    .object({
+      id: z.string(),
+      name: z.string(),
+    })
+    .nullable(),
+});
+export type TodoSelect = z.infer<typeof todoSelectSchema>;
 
-export type ListSelect = {
-  id: string;
-  name: string;
-  author: UserSelect;
-  isAuthor: boolean;
-  todoCount: number;
-  shares: ListShareSelect[];
-  otherUsers: UserSelect[];
-};
+export const listShareSelectSchema = z.object({
+  id: z.string(),
+  list: z.object({
+    id: z.string(),
+    name: z.string(),
+  }),
+  user: userSelectSchema,
+  isPending: z.boolean(),
+  isAuthor: z.boolean(),
+});
+export type ListShareSelect = z.infer<typeof listShareSelectSchema>;
 
-export type ListShareSelect = {
-  id: string;
-  list: { id: string; name: string; author: UserSelect };
-  user: UserSelect;
-  isPending: boolean;
-  isAuthor: boolean;
-};
-
-export type TodoInsert = typeof Todo.$inferInsert;
-
-export type ListShareInsert = typeof ListShare.$inferInsert;
-
-export type ListInsert = typeof List.$inferInsert;
-
-export type TableUnion = typeof User | typeof Todo;
+export const listSelectSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  author: userSelectSchema,
+  isAuthor: z.boolean(),
+  todoCount: z.number(),
+  shares: z.array(listShareSelectSchema),
+  otherUsers: z.array(userSelectSchema),
+});
+export type ListSelect = z.infer<typeof listSelectSchema>;

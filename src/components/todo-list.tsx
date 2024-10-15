@@ -16,11 +16,12 @@ import { Checkbox } from "./ui/checkbox";
 import SingleInputForm from "./single-input-form";
 import { useQuery } from "@tanstack/react-query";
 import { useAtomValue } from "jotai/react";
-import { selectedListAtom } from "@/lib/store";
+import { draggingTodoAtom, selectedListAtom } from "@/lib/store";
 import { actions } from "astro:actions";
 import UserBubble from "./base/user-bubble";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import { DragOverlay, useDraggable } from "@dnd-kit/core";
 
 interface Props {
   todo: TodoSelect;
@@ -32,10 +33,13 @@ const Todo: React.FC<Props> = (props) => {
 
   const selectedList = useAtomValue(selectedListAtom);
 
-  const [editorOpen, setEditorOpen] = React.useState(false);
-  const ref = React.useRef<HTMLDivElement>(null);
+  const { setNodeRef, node, listeners, attributes } = useDraggable({
+    id: todo.id,
+  });
 
-  useOnClickOutside(ref, () => setEditorOpen(false));
+  const [editorOpen, setEditorOpen] = React.useState(false);
+
+  useOnClickOutside(node, () => setEditorOpen(false));
   useEventListener("keydown", (e) => {
     if (e.key === "Escape") setEditorOpen(false);
   });
@@ -46,11 +50,13 @@ const Todo: React.FC<Props> = (props) => {
 
   return (
     <div
-      ref={ref}
+      ref={setNodeRef}
       className={cn(
         "flex min-h-10 items-center gap-2 rounded-md px-3 py-1 text-sm transition-colors ease-out hover:bg-muted/20",
         deleteTodo.isPending && "opacity-50",
       )}
+      {...listeners}
+      {...attributes}
     >
       {editorOpen ? (
         <SingleInputForm
@@ -115,6 +121,7 @@ const TodoList: React.FC = () => {
 
   const [showCompleted, setShowCompleted] = React.useState(false);
   const selectedList = useAtomValue(selectedListAtom);
+  const draggingTodo = useAtomValue(draggingTodoAtom);
 
   return (
     <QueryGuard query={todosQuery} noDataString="No tasks yet">
@@ -172,6 +179,9 @@ const TodoList: React.FC = () => {
               </CollapsibleContent>
             </Collapsible>
           )}
+          <DragOverlay>
+            {draggingTodo && <Todo todo={draggingTodo} />}
+          </DragOverlay>
         </>
       )}
     </QueryGuard>
