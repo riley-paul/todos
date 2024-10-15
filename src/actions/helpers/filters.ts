@@ -25,7 +25,10 @@ export const filterTodos = (
   listId: string | undefined | null,
 ) => {
   return and(
-    or(eq(Todo.userId, userId), eq(ListShare.sharedUserId, userId)),
+    or(
+      eq(Todo.userId, userId),
+      and(eq(ListShare.sharedUserId, userId), ne(ListShare.isPending, true)),
+    ),
     filterByListId(listId),
   );
 };
