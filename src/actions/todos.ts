@@ -81,7 +81,7 @@ export const updateTodo = defineAction({
       .object({
         text: z.string(),
         isCompleted: z.boolean(),
-        listId: z.string(),
+        listId: z.string().nullable(),
       })
       .partial(),
   }),

@@ -26,7 +26,9 @@ import { listsQueryOptions } from "@/lib/queries";
 
 const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   const { deleteTodo, updateTodo, moveTodo } = useMutations();
+
   const listsQuery = useQuery(listsQueryOptions);
+  const lists = listsQuery.data ?? [];
 
   const selectedList = useAtomValue(selectedListAtom);
 
@@ -117,28 +119,47 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
                   </DropdownMenuShortcut>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>Move</DropdownMenuLabel>
-                {listsQuery.data
-                  ?.filter((list) => list.id !== selectedList)
-                  .map((list) => (
-                    <DropdownMenuItem
-                      key={list.id}
-                      onClick={() =>
-                        moveTodo.mutate({
-                          id: todo.id,
-                          data: { listId: list.id },
-                        })
-                      }
-                    >
-                      {list.name}
-                      <DropdownMenuShortcut>
-                        <i className="fa-solid fa-arrow-right" />
-                      </DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                  ))}
-              </DropdownMenuGroup>
+              {lists.length > 0 && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel>Move</DropdownMenuLabel>
+                    {selectedList && (
+                      <DropdownMenuItem
+                        onClick={() =>
+                          moveTodo.mutate({
+                            id: todo.id,
+                            data: { listId: null },
+                          })
+                        }
+                      >
+                        Inbox
+                        <DropdownMenuShortcut>
+                          <i className="fa-solid fa-arrow-right" />
+                        </DropdownMenuShortcut>
+                      </DropdownMenuItem>
+                    )}
+                    {lists
+                      .filter((list) => list.id !== selectedList)
+                      .map((list) => (
+                        <DropdownMenuItem
+                          key={list.id}
+                          onClick={() =>
+                            moveTodo.mutate({
+                              id: todo.id,
+                              data: { listId: list.id },
+                            })
+                          }
+                        >
+                          {list.name}
+                          <DropdownMenuShortcut>
+                            <i className="fa-solid fa-arrow-right" />
+                          </DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                      ))}
+                  </DropdownMenuGroup>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </>
