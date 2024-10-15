@@ -34,7 +34,7 @@ const PendingInvites: React.FC = () => {
       <PopoverContent align="end" className="py-2">
         <div className="grid divide-y">
           {pendingSharesQuery.data?.map((share) => (
-            <div className="flex items-center gap-3 py-2">
+            <div key={share.id} className="flex items-center gap-3 py-2">
               <div className="h-full">
                 <UserBubble user={share.invitedBy} size="md" />
               </div>

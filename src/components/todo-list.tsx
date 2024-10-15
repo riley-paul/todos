@@ -14,13 +14,12 @@ import {
 
 import { Checkbox } from "./ui/checkbox";
 import SingleInputForm from "./single-input-form";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useAtomValue } from "jotai/react";
 import { selectedListAtom } from "@/lib/store";
 import { actions } from "astro:actions";
 import UserBubble from "./base/user-bubble";
 import { Button } from "./ui/button";
-import { toast } from "sonner";
 import { Badge } from "./ui/badge";
 
 interface Props {
@@ -112,12 +111,7 @@ const TodoList: React.FC = () => {
   const numCompleted =
     todosQuery.data?.filter((i) => i.isCompleted).length ?? 0;
 
-  const { mutate: deleteCompleted } = useMutation({
-    mutationFn: actions.deleteCompletedTodos.orThrow,
-    onSuccess: () => {
-      toast.success(`Deleted ${numCompleted} completed tasks`);
-    },
-  });
+  const { deleteCompletedTodos } = useMutations();
 
   const [showCompleted, setShowCompleted] = React.useState(false);
   const selectedList = useAtomValue(selectedListAtom);
@@ -160,7 +154,9 @@ const TodoList: React.FC = () => {
                   size="sm"
                   className="h-6 px-2"
                   variant="linkMuted"
-                  onClick={() => deleteCompleted({ listId: selectedList })}
+                  onClick={() =>
+                    deleteCompletedTodos.mutate({ listId: selectedList })
+                  }
                 >
                   <i className="fa-solid fa-eraser mr-1" />
                   Clear completed

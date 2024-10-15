@@ -1,19 +1,82 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { actions } from "astro:actions";
+import { actions, isActionError } from "astro:actions";
 import { useAtom } from "jotai/react";
-import { selectedListAtom } from "@/lib/store";
+import { selectedListAtom, type SelectedList } from "@/lib/store";
+import { todosQueryOptions } from "@/lib/queries";
+import type { TodoSelect } from "@/lib/types";
+import React from "react";
+
+type TodosUpdater = (todos: TodoSelect[] | undefined) => TodoSelect[];
+
+export const handleMutationError = (error: Error) => {
+  console.error(error);
+
+  let status = 500;
+  let description = error.message;
+
+  if (isActionError(error)) {
+    status = error.status;
+    description = error.message;
+  }
+
+  toast.error(`${status} Error`, { description });
+};
 
 export default function useMutations() {
-  const client = useQueryClient();
+  const queryClient = useQueryClient();
   const [selectedList, setSelectedList] = useAtom(selectedListAtom);
+
+  const modifyTodoCache = async (
+    listId: SelectedList,
+    updater: TodosUpdater,
+  ) => {
+    const queryKey = todosQueryOptions(listId).queryKey;
+    await queryClient.cancelQueries({ queryKey });
+
+    const previous = queryClient.getQueryData(queryKey);
+    const reset = () => queryClient.setQueryData(queryKey, previous);
+
+    queryClient.setQueryData<TodoSelect[]>(queryKey, updater);
+    return reset;
+  };
 
   const updateTodo = useMutation({
     mutationFn: actions.updateTodo.orThrow,
+    onMutate: async ({ id, data }) => {
+      const updater: TodosUpdater = (todos = []) =>
+        todos.map((todo) => (todo.id === id ? { ...todo, ...data } : todo));
+
+      const resetters = await Promise.all([
+        modifyTodoCache(selectedList, updater),
+        modifyTodoCache("all", updater),
+      ]);
+
+      return { resetters };
+    },
+    onError: (error, _, context) => {
+      handleMutationError(error);
+      context?.resetters.forEach((reset) => reset());
+    },
   });
 
   const deleteTodo = useMutation({
     mutationFn: actions.deleteTodo.orThrow,
+    onMutate: async ({ id }) => {
+      const updater: TodosUpdater = (todos = []) =>
+        todos.filter((todo) => todo.id !== id);
+
+      const resetters = await Promise.all([
+        modifyTodoCache(selectedList, updater),
+        modifyTodoCache("all", updater),
+      ]);
+
+      return { resetters };
+    },
+    onError: (error, _, context) => {
+      handleMutationError(error);
+      context?.resetters.forEach((reset) => reset());
+    },
     onSuccess: () => {
       toast.success("Todo deleted");
     },
@@ -33,7 +96,7 @@ export default function useMutations() {
   const deleteUser = useMutation({
     mutationFn: actions.deleteUser.orThrow,
     onSuccess: () => {
-      client.clear();
+      queryClient.clear();
       window.location.href = "/";
     },
   });

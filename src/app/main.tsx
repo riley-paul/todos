@@ -4,15 +4,14 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Header from "@/components/header";
 import useQueryStream from "@/hooks/use-query-stream";
 import Adder from "@/components/adder";
 import Lists from "@/components/lists";
 import TodoList from "@/components/todo-list";
-import { isActionError } from "astro:actions";
 import { Toaster } from "@/components/ui/sonner";
+import { handleMutationError } from "@/hooks/use-mutations";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -21,17 +20,7 @@ const queryClient = new QueryClient({
       queryClient.invalidateQueries();
     },
     onError: (error) => {
-      console.error(error);
-
-      let status = 500;
-      let description = error.message;
-
-      if (isActionError(error)) {
-        status = error.status;
-        description = error.message;
-      }
-
-      toast.error(`${status} Error`, { description });
+      handleMutationError(error);
     },
   }),
 });

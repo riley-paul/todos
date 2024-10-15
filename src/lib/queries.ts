@@ -1,12 +1,11 @@
 import { queryOptions } from "@tanstack/react-query";
 import { actions } from "astro:actions";
+import type { SelectedList } from "./store";
 
-export type TodoQueryArgs = Parameters<typeof actions.getTodos>[0];
-
-export const todosQueryOptions = (args: TodoQueryArgs) =>
+export const todosQueryOptions = (listId: SelectedList) =>
   queryOptions({
-    queryKey: ["todos", args],
-    queryFn: () => actions.getTodos.orThrow(args),
+    queryKey: ["todos", listId],
+    queryFn: () => actions.getTodos.orThrow({ listId }),
   });
 
 export const userQueryOptions = queryOptions({
