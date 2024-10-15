@@ -5,7 +5,6 @@ import { useAtom } from "jotai/react";
 import { selectedListAtom, type SelectedList } from "@/lib/store";
 import { todosQueryOptions } from "@/lib/queries";
 import type { TodoSelect } from "@/lib/types";
-import React from "react";
 
 type TodosUpdater = (todos: TodoSelect[] | undefined) => TodoSelect[];
 
