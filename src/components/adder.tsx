@@ -3,7 +3,6 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import useMutations from "../hooks/use-mutations";
 import { useMediaQuery } from "usehooks-ts";
-import { MOBILE_MEDIA_QUERY } from "@/lib/constants";
 import { useAtomValue } from "jotai/react";
 import { selectedListAtom } from "@/lib/store";
 
@@ -27,7 +26,7 @@ export default function Adder(): ReturnType<React.FC> {
     }
   };
 
-  const isMobile = useMediaQuery(MOBILE_MEDIA_QUERY);
+  const isMobile = useMediaQuery("(max-width: 500px)");
 
   return (
     <form
@@ -43,7 +42,7 @@ export default function Adder(): ReturnType<React.FC> {
         ref={inputRef}
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="text-md px-4 h-10"
+        className="text-md h-10 px-4"
         placeholder="Add a todo..."
         onFocus={(e) => {
           if (!isOnlyHashtag(value)) {
