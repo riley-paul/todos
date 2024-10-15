@@ -1,36 +1,26 @@
 import { ActionError, defineAction } from "astro:actions";
-import { asc, db, eq, List, ListShare, Todo, User } from "astro:db";
+import {
+  and,
+  asc,
+  db,
+  eq,
+  isNull,
+  List,
+  ListShare,
+  ne,
+  or,
+  Todo,
+  User,
+} from "astro:db";
 import { z } from "zod";
 import type { ListSelect } from "@/lib/types";
 import { v4 as uuid } from "uuid";
 import {
   isAuthorized,
-  filterLists,
   filterTodos,
   invalidateUsers,
+  getListUsers,
 } from "./helpers";
-
-const getListUsers = async (listId: string): Promise<string[]> => {
-  const list = await db
-    .select({ id: List.id, userId: List.userId })
-    .from(List)
-    .where(eq(List.id, listId))
-    .then((rows) => rows[0]);
-
-  if (!list) {
-    throw new ActionError({
-      code: "NOT_FOUND",
-      message: "List not found",
-    });
-  }
-
-  const shares = await db
-    .select({ sharedUserId: ListShare.sharedUserId })
-    .from(ListShare)
-    .where(eq(ListShare.listId, listId));
-
-  return [list.userId, ...shares.map((share) => share.sharedUserId)];
-};
 
 export const getLists = defineAction({
   handler: async (_, c) => {
@@ -50,7 +40,12 @@ export const getLists = defineAction({
       .from(List)
       .leftJoin(ListShare, eq(ListShare.listId, List.id))
       .innerJoin(User, eq(User.id, List.userId))
-      .where(filterLists(userId))
+      .where(
+        and(
+          or(ne(ListShare.isPending, true), isNull(ListShare.isPending)),
+          or(eq(List.userId, userId), eq(ListShare.sharedUserId, userId)),
+        ),
+      )
       .orderBy(asc(List.name))
       .then((lists) =>
         Promise.all(

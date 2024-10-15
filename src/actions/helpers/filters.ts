@@ -1,14 +1,4 @@
-import { or, eq, List, ListShare, Todo, and, isNull, ne } from "astro:db";
-
-export const filterLists = (userId: string) => {
-  return and(
-    or(
-      eq(List.userId, userId),
-      or(isNull(ListShare.id), ne(ListShare.isPending, true)),
-    ),
-    or(eq(List.userId, userId), eq(ListShare.sharedUserId, userId)),
-  );
-};
+import { or, eq, ListShare, Todo, and, isNull, ne } from "astro:db";
 
 const filterByListId = (listId: string | undefined | null) => {
   if (typeof listId === "string" && listId !== "all") {
@@ -27,7 +17,10 @@ export const filterTodos = (
   return and(
     or(
       eq(Todo.userId, userId),
-      and(eq(ListShare.sharedUserId, userId), ne(ListShare.isPending, true)),
+      and(
+        eq(ListShare.sharedUserId, userId),
+        or(ne(ListShare.isPending, true), isNull(ListShare.isPending)),
+      ),
     ),
     filterByListId(listId),
   );
