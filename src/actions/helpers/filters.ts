@@ -18,7 +18,7 @@ export const filterTodos = (
     or(
       eq(Todo.userId, userId),
       and(
-        eq(ListShare.sharedUserId, userId),
+        or(eq(ListShare.sharedUserId, userId), eq(ListShare.userId, userId)),
         or(ne(ListShare.isPending, true), isNull(ListShare.isPending)),
       ),
     ),
