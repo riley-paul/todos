@@ -1,7 +1,7 @@
 import type { ActionAPIContext } from "astro/actions/runtime/utils.js";
 import { ActionError } from "astro:actions";
 import InvalidationController from "@/lib/invalidation-controller";
-import { db, List, eq, ListShare, and } from "astro:db";
+import { db, List, eq, ListShare, and, Todo } from "astro:db";
 
 export const invalidateUsers = (userIds: string[]) => {
   InvalidationController.getInstance().invalidateKey(userIds);
@@ -38,4 +38,25 @@ export const getListUsers = async (listId: string): Promise<string[]> => {
     .where(and(eq(ListShare.listId, listId), eq(ListShare.isPending, false)));
 
   return [list.userId, ...shares.map((share) => share.sharedUserId)];
+};
+
+export const getTodoUsers = async (todoId: string): Promise<string[]> => {
+  const todo = await db
+    .select({ id: Todo.id, listId: Todo.listId, userId: Todo.userId })
+    .from(Todo)
+    .where(eq(Todo.id, todoId))
+    .then((rows) => rows[0]);
+
+  if (!todo) {
+    throw new ActionError({
+      code: "NOT_FOUND",
+      message: "Task not found",
+    });
+  }
+
+  if (!todo.listId) {
+    return [todo.userId];
+  }
+
+  return await getListUsers(todo.listId);
 };

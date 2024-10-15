@@ -14,33 +14,12 @@ import {
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
 import type { TodoSelect } from "@/lib/types";
-import { isAuthorized, filterTodos, invalidateUsers } from "./helpers";
-
-const getTodoUsers = async (todoId: string): Promise<string[]> => {
-  const todo = await db
-    .select()
-    .from(Todo)
-    .where(eq(Todo.id, todoId))
-    .then((rows) => rows[0]);
-
-  if (!todo) {
-    throw new ActionError({
-      code: "NOT_FOUND",
-      message: "Task not found",
-    });
-  }
-
-  if (!todo.listId) {
-    return [todo.userId];
-  }
-
-  const listShares = await db
-    .select()
-    .from(ListShare)
-    .where(eq(ListShare.listId, todo.listId));
-
-  return [todo.userId, ...listShares.map((share) => share.sharedUserId)];
-};
+import {
+  isAuthorized,
+  filterTodos,
+  invalidateUsers,
+  getTodoUsers,
+} from "./helpers";
 
 export const getTodos = defineAction({
   input: z.object({
@@ -119,7 +98,7 @@ export const updateTodo = defineAction({
 
     const todo = await db
       .update(Todo)
-      .set({ ...data, userId })
+      .set(data)
       .where(and(eq(Todo.id, id)))
       .returning()
       .then((rows) => rows[0]);
