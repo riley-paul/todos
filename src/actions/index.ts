@@ -1,5 +1,5 @@
 import * as todos from "./todos";
-import * as users from "./users";
+import * as users from "@/features/auth/actions";
 import * as lists from "./lists";
 import * as listShares from "./list-shares";
 
