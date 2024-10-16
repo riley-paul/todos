@@ -1,6 +1,6 @@
 import React from "react";
 import { cn } from "../lib/utils";
-import UserAvatar from "./user-avatar";
+import UserAvatar from "@/features/auth/components/user-menu";
 import PendingInvites from "./pending-invites";
 
 const Header: React.FC = () => {
