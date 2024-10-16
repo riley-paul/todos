@@ -1,7 +1,5 @@
 import React from "react";
 import {
-  Dialog,
-  DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
@@ -22,6 +20,7 @@ import QueryGuard from "./base/query-guard";
 import UserBubbleGroup from "./base/user-bubble-group";
 import { Button } from "./ui/button";
 import useConfirmButton from "@/hooks/use-confirm-button";
+import ResponsiveModal from "@/components/responsive-modal";
 import UserBubble from "./base/user-bubble";
 import DeleteButton from "./ui/delete-button";
 
@@ -56,7 +55,7 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
       {list.isAuthor && (
         <div className="grid gap-2">
           <Label className="text-xs">Share with</Label>
-          <div className="max-h-48 min-h-12 overflow-y-auto rounded bg-secondary/20 px-2">
+          <div className="min-h-12 overflow-y-auto rounded bg-secondary/20 px-2">
             <div className="grid divide-y">
               {list.shares.map((share) => (
                 <div className="flex items-center gap-2 py-2">
@@ -134,60 +133,58 @@ const ListsEditor: React.FC<Props> = (props) => {
   const [value, setValue] = React.useState("");
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Manage your lists</DialogTitle>
-          <DialogDescription>
-            Add, remove, edit and share your lists
-          </DialogDescription>
-        </DialogHeader>
-        <div className="max-h-[400px] min-h-[150px] overflow-y-auto rounded-lg bg-secondary/20 px-3">
-          <QueryGuard query={listsQuery}>
-            {(lists) => (
-              <Accordion type="single" value={value} onValueChange={setValue}>
-                {lists.map((list) => (
-                  <AccordionItem value={list.id} className="">
-                    <AccordionTrigger className="h-10">
-                      <div className="flex items-center gap-2">
-                        <span>{list.name}</span>
-                        <UserBubbleGroup
-                          users={list.otherUsers}
-                          numAvatars={10}
-                        />
-                        {list.isAuthor && (
-                          <i className="fa-solid fa-star text-primary" />
-                        )}
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="px-1 pt-2 data-[state=open]:bg-red-500">
-                      <ListContent list={list} />
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            )}
-          </QueryGuard>
-        </div>
-        <div className="grid gap-2">
-          <Label>Add a List</Label>
-          <SingleInputForm
-            clearAfterSubmit
-            initialValue=""
-            placeholder="Enter list name"
-            button={{
-              icon: <i className="fa-solid fa-plus" />,
-              string: "Add list",
-              variant: "default",
-            }}
-            handleSubmit={(name) => {
-              createList.mutate({ name });
-              setValue("");
-            }}
-          />
-        </div>
-      </DialogContent>
-    </Dialog>
+    <ResponsiveModal open={isOpen} onOpenChange={setIsOpen}>
+      <DialogHeader>
+        <DialogTitle>Manage your lists</DialogTitle>
+        <DialogDescription>
+          Add, remove, edit and share your lists
+        </DialogDescription>
+      </DialogHeader>
+      <div className="max-h-[50vh] min-h-[150px] overflow-y-auto rounded-lg bg-secondary/20 px-3">
+        <QueryGuard query={listsQuery}>
+          {(lists) => (
+            <Accordion type="single" value={value} onValueChange={setValue}>
+              {lists.map((list) => (
+                <AccordionItem value={list.id} className="">
+                  <AccordionTrigger className="h-10">
+                    <div className="flex items-center gap-2">
+                      <span>{list.name}</span>
+                      <UserBubbleGroup
+                        users={list.otherUsers}
+                        numAvatars={10}
+                      />
+                      {list.isAuthor && (
+                        <i className="fa-solid fa-star text-primary" />
+                      )}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-1 pt-2 data-[state=open]:bg-red-500">
+                    <ListContent list={list} />
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          )}
+        </QueryGuard>
+      </div>
+      <div className="grid gap-2">
+        <Label>Add a List</Label>
+        <SingleInputForm
+          clearAfterSubmit
+          initialValue=""
+          placeholder="Enter list name"
+          button={{
+            icon: <i className="fa-solid fa-plus" />,
+            string: "Add list",
+            variant: "default",
+          }}
+          handleSubmit={(name) => {
+            createList.mutate({ name });
+            setValue("");
+          }}
+        />
+      </div>
+    </ResponsiveModal>
   );
 };
 
