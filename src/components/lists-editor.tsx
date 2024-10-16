@@ -59,7 +59,7 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
             <div className="grid divide-y">
               {list.shares.map((share) => (
                 <div className="flex items-center gap-2 py-2">
-                  <UserBubble user={share.user} />
+                  <UserBubble user={share.user} size="md" />
                   <div className="grid flex-1 gap-0.5">
                     <span>{share.user.name}</span>
                     <span className="text-xs text-muted-foreground">
