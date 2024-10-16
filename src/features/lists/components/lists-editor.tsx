@@ -6,24 +6,24 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useQuery } from "@tanstack/react-query";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import SingleInputForm from "./single-input-form";
-import { Label } from "./ui/label";
+import SingleInputForm from "@/components/single-input-form";
+import { Label } from "@/components/ui/label";
 import useMutations from "@/hooks/use-mutations";
 import type { ListSelect } from "@/lib/types";
-import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions } from "@/lib/queries";
-import QueryGuard from "./base/query-guard";
-import UserBubbleGroup from "./base/user-bubble-group";
-import { Button } from "./ui/button";
+import QueryGuard from "@/components/base/query-guard";
+import UserBubbleGroup from "@/components/base/user-bubble-group";
+import { Button } from "@/components/ui/button";
+import UserBubble from "@/components/base/user-bubble";
+import DeleteButton from "@/components/ui/delete-button";
 import useConfirmButton from "@/hooks/use-confirm-button";
-import UserBubble from "./base/user-bubble";
-import DeleteButton from "./ui/delete-button";
 
 const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
   const {

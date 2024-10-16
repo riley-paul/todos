@@ -8,7 +8,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Header from "@/components/header";
 import useQueryStream from "@/hooks/use-query-stream";
 import Adder from "@/components/adder";
-import Lists from "@/components/lists";
+import Lists from "@/features/lists/components/lists";
 import Todos from "@/components/todos";
 import { Toaster } from "@/components/ui/sonner";
 import { handleMutationError } from "@/hooks/use-mutations";

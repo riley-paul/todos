@@ -1,7 +1,7 @@
 import React from "react";
 import Adder from "@/components/adder";
 import Todos from "@/components/todos";
-import Lists from "@/components/lists";
+import Lists from "@/features/lists/components/lists";
 
 const Root: React.FC = () => {
   return (

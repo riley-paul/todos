@@ -1,15 +1,15 @@
 import React from "react";
-import { Badge } from "./ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { useAtom } from "jotai/react";
 import { selectedListAtom, type SelectedList } from "@/lib/store";
-import { Separator } from "./ui/separator";
+import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import ListsEditor from "./lists-editor";
 import type { UserSelect } from "@/lib/types";
-import UserBubbleGroup from "./base/user-bubble-group";
+import UserBubbleGroup from "@/components/base/user-bubble-group";
 
 const List: React.FC<{
   value: SelectedList;
