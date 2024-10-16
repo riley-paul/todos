@@ -1,11 +1,11 @@
-import { google } from "@/lib/auth";
+import { google } from "@/features/auth/lucia";
 import { OAuth2RequestError } from "arctic";
 
 import type { APIContext } from "astro";
 import { db, eq, User } from "astro:db";
 import { v4 as uuid } from "uuid";
-import setUserSession from "@/lib/helpers/set-user-session";
-import getGoogleUser from "@/lib/helpers/get-google-user";
+import setUserSession from "@/features/auth/helpers/set-user-session";
+import getGoogleUser from "@/features/auth/helpers/get-google-user";
 
 export async function GET(context: APIContext): Promise<Response> {
   const code = context.url.searchParams.get("code");

@@ -1,4 +1,4 @@
-import { lucia } from "@/lib/auth";
+import { lucia } from "@/features/auth/lucia";
 import type { APIContext } from "astro";
 
 export async function GET(context: APIContext): Promise<Response> {
