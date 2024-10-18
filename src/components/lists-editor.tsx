@@ -185,7 +185,7 @@ const ListsEditor: React.FC<Props> = (props) => {
           Add, remove, edit and share your lists
         </DialogDescription>
       </DialogHeader>
-      <div className="max-h-[50vh] min-h-[150px] overflow-y-auto rounded-lg bg-secondary/20">
+      <div className="max-h-[50vh] min-h-[150px] overflow-y-auto rounded-lg bg-secondary/20 border">
         <QueryGuard query={listsQuery}>
           {(lists) => (
             <div className="grid divide-y">
