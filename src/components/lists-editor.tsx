@@ -5,11 +5,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import SingleInputForm from "./single-input-form";
 import { Label } from "./ui/label";
 import useMutations from "@/hooks/use-mutations";
@@ -23,6 +22,7 @@ import useConfirmButton from "@/hooks/use-confirm-button";
 import ResponsiveModal from "@/components/responsive-modal";
 import UserBubble from "./base/user-bubble";
 import DeleteButton from "./ui/delete-button";
+import { cn } from "@/lib/utils";
 
 const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
   const {
@@ -55,10 +55,10 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
       {list.isAuthor && (
         <div className="grid gap-2">
           <Label className="text-xs">Share with</Label>
-          <div className="min-h-12 overflow-y-auto rounded bg-secondary/20 px-2">
+          <div className="min-h-12 overflow-y-auto rounded bg-secondary/60 px-2">
             <div className="grid divide-y">
               {list.shares.map((share) => (
-                <div className="flex items-center gap-2 py-2">
+                <div className="flex items-center gap-2 py-2 text-sm">
                   <UserBubble user={share.user} size="md" />
                   <div className="grid flex-1 gap-0.5">
                     <span>{share.user.name}</span>
@@ -67,7 +67,14 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
                     </span>
                   </div>
                   {share.isPending && (
-                    <i className="fa-solid fa-hourglass text-muted-foreground" />
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <i className="fa-solid fa-hourglass text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent side="left">
+                        Pending invitation
+                      </TooltipContent>
+                    </Tooltip>
                   )}
                   <DeleteButton
                     handleDelete={() =>
@@ -120,6 +127,44 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
   );
 };
 
+const ListContainer: React.FC<{
+  list: ListSelect;
+  isOpen: boolean;
+  setOpen: (isOpen: boolean) => void;
+}> = ({ list, isOpen, setOpen }) => {
+  return (
+    <div className={cn("grid gap-2 px-3", isOpen && "bg-secondary/40")}>
+      <div className="flex items-center justify-between gap-2 py-2">
+        <div className="flex items-center gap-2">
+          <span className="font-semibold">{list.name}</span>
+          <UserBubbleGroup users={list.otherUsers} numAvatars={10} />
+          {list.isAuthor && (
+            <Tooltip>
+              <TooltipTrigger>
+                <i className="fa-solid fa-star text-primary" />
+              </TooltipTrigger>
+              <TooltipContent side="right">This is your list</TooltipContent>
+            </Tooltip>
+          )}
+        </div>
+        <Button
+          size="sm"
+          variant="secondary"
+          className="size-6 rounded-full p-0"
+          onClick={() => setOpen(!isOpen)}
+        >
+          <i className={cn("fa-solid", isOpen ? "fa-minus" : "fa-plus")} />
+        </Button>
+      </div>
+      {isOpen && (
+        <div className="grid pb-3">
+          <ListContent list={list} />
+        </div>
+      )}
+    </div>
+  );
+};
+
 type Props = {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
@@ -130,7 +175,7 @@ const ListsEditor: React.FC<Props> = (props) => {
   const listsQuery = useQuery(listsQueryOptions);
   const { createList } = useMutations();
 
-  const [value, setValue] = React.useState("");
+  const [openList, setOpenList] = React.useState("");
 
   return (
     <ResponsiveModal open={isOpen} onOpenChange={setIsOpen}>
@@ -140,30 +185,19 @@ const ListsEditor: React.FC<Props> = (props) => {
           Add, remove, edit and share your lists
         </DialogDescription>
       </DialogHeader>
-      <div className="max-h-[50vh] min-h-[150px] overflow-y-auto rounded-lg bg-secondary/20 px-3">
+      <div className="max-h-[50vh] min-h-[150px] overflow-y-auto rounded-lg bg-secondary/20">
         <QueryGuard query={listsQuery}>
           {(lists) => (
-            <Accordion type="single" value={value} onValueChange={setValue}>
+            <div className="grid divide-y">
               {lists.map((list) => (
-                <AccordionItem value={list.id} className="">
-                  <AccordionTrigger className="h-10">
-                    <div className="flex items-center gap-2">
-                      <span>{list.name}</span>
-                      <UserBubbleGroup
-                        users={list.otherUsers}
-                        numAvatars={10}
-                      />
-                      {list.isAuthor && (
-                        <i className="fa-solid fa-star text-primary" />
-                      )}
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-1 pt-2 data-[state=open]:bg-red-500">
-                    <ListContent list={list} />
-                  </AccordionContent>
-                </AccordionItem>
+                <ListContainer
+                  key={list.id}
+                  list={list}
+                  isOpen={openList === list.id}
+                  setOpen={(open) => setOpenList(open ? list.id : "")}
+                />
               ))}
-            </Accordion>
+            </div>
           )}
         </QueryGuard>
       </div>
@@ -180,7 +214,7 @@ const ListsEditor: React.FC<Props> = (props) => {
           }}
           handleSubmit={(name) => {
             createList.mutate({ name });
-            setValue("");
+            setOpenList("");
           }}
         />
       </div>

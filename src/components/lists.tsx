@@ -14,7 +14,7 @@ import UserBubbleGroup from "./base/user-bubble-group";
 const List: React.FC<{
   value: SelectedList;
   name: string;
-  count?: number;
+  count: number | undefined;
   users?: UserSelect[];
 }> = ({ value, count = 0, name, users = [] }) => {
   const [selectedList, setSelectedList] = useAtom(selectedListAtom);
@@ -26,16 +26,11 @@ const List: React.FC<{
       onClick={() => setSelectedList(value)}
     >
       <span>{name}</span>
-      {count > 0 && (
-        <span
-          className={cn(
-            "text-muted-foreground",
-            isSelected && "text-secondary",
-          )}
-        >
-          {count}
-        </span>
-      )}
+      <span
+        className={cn("text-muted-foreground", isSelected && "text-secondary")}
+      >
+        {count}
+      </span>
       <UserBubbleGroup users={users} numAvatars={3} />
     </Badge>
   );
@@ -67,7 +62,7 @@ const Lists: React.FC = () => {
       <Button
         variant="ghost"
         size="sm"
-        className="h-6 px-1.5"
+        className="h-6 px-3"
         onClick={() => setEditorIsOpen(true)}
       >
         <i className="fa-solid fa-pen mr-1.5" />
