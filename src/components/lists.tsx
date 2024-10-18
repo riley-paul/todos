@@ -60,7 +60,7 @@ const Lists: React.FC = () => {
         />
       ))}
       <Button
-        variant="ghost"
+        variant="ghostMuted"
         size="sm"
         className="h-6 px-3"
         onClick={() => setEditorIsOpen(true)}

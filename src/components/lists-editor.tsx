@@ -141,7 +141,7 @@ const ListContainer: React.FC<{
           {list.isAuthor && (
             <Tooltip>
               <TooltipTrigger>
-                <i className="fa-solid fa-star text-primary" />
+                <i className="fa-solid fa-star text-primary/50 text-sm" />
               </TooltipTrigger>
               <TooltipContent side="right">This is your list</TooltipContent>
             </Tooltip>
