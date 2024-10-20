@@ -38,6 +38,7 @@
 
   @media (prefers-color-scheme: dark) {
     :root {
+      color-scheme: dark;
       --background: 180 7% 8%;
       --foreground: 180 9% 98%;
 
@@ -81,11 +82,11 @@
     @apply mx-auto w-full max-w-screen-sm px-2;
   }
 
-  /* @media (pointer: coarse) {
+  @media (pointer: coarse) {
     :root {
-      font-size: 18px;
+      font-size: 17px;
     }
-  } */
+  }
 }
 
 @layer utilities {
