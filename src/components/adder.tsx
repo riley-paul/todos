@@ -2,7 +2,7 @@ import React from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import useMutations from "../hooks/use-mutations";
-import { useMediaQuery } from "usehooks-ts";
+import { useEventListener, useMediaQuery } from "usehooks-ts";
 import { useAtomValue } from "jotai/react";
 import { selectedListAtom } from "@/lib/store";
 
@@ -25,6 +25,18 @@ export default function Adder(): ReturnType<React.FC> {
       inputRef.current?.focus();
     }
   };
+
+  useEventListener("keydown", (e) => {
+    if (e.key === "i" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      inputRef.current?.focus();
+    }
+
+    if (e.key === "Escape") {
+      setValue("");
+      inputRef.current?.blur();
+    }
+  });
 
   const isMobile = useMediaQuery("(max-width: 500px)");
 

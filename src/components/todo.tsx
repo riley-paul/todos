@@ -69,7 +69,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
       ) : (
         <>
           <Checkbox
-            className="shrink-0 rounded-full"
+            className="shrink-0 rounded-full size-5"
             disabled={updateTodo.isPending}
             checked={todo.isCompleted}
             onCheckedChange={() =>

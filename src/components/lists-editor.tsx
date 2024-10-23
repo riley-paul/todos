@@ -23,6 +23,9 @@ import ResponsiveModal from "@/components/responsive-modal";
 import UserBubble from "./base/user-bubble";
 import DeleteButton from "./ui/delete-button";
 import { cn } from "@/lib/utils";
+import { useAtom } from "jotai";
+import { listsEditorOpenAtom } from "@/lib/store";
+import { useEventListener } from "usehooks-ts";
 
 const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
   const {
@@ -135,25 +138,25 @@ const ListContainer: React.FC<{
   return (
     <div className={cn("grid gap-2 px-3", isOpen && "bg-secondary/40")}>
       <div className="flex items-center justify-between gap-2 py-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 text-sm">
           <span className="font-semibold">{list.name}</span>
           <UserBubbleGroup users={list.otherUsers} numAvatars={10} />
           {list.isAuthor && (
-            <Tooltip>
-              <TooltipTrigger>
-                <i className="fa-solid fa-star text-primary/50 text-sm" />
-              </TooltipTrigger>
-              <TooltipContent side="right">This is your list</TooltipContent>
-            </Tooltip>
+            <i className="fa-solid fa-star text-sm text-primary/50" />
           )}
         </div>
         <Button
           size="sm"
-          variant="secondary"
-          className="size-6 rounded-full p-0"
+          variant="ghost"
+          className="size-6 p-0"
           onClick={() => setOpen(!isOpen)}
         >
-          <i className={cn("fa-solid", isOpen ? "fa-minus" : "fa-plus")} />
+          <i
+            className={cn(
+              "fa-solid fa-chevron-right transition-transform",
+              isOpen && "rotate-90",
+            )}
+          />
         </Button>
       </div>
       {isOpen && (
@@ -165,13 +168,16 @@ const ListContainer: React.FC<{
   );
 };
 
-type Props = {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-};
+const ListsEditor: React.FC = () => {
+  const [isOpen, setIsOpen] = useAtom(listsEditorOpenAtom);
 
-const ListsEditor: React.FC<Props> = (props) => {
-  const { isOpen, setIsOpen } = props;
+  useEventListener("keydown", (e) => {
+    if (e.key === "e" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      setIsOpen(true);
+    }
+  });
+
   const listsQuery = useQuery(listsQueryOptions);
   const { createList } = useMutations();
 
@@ -185,7 +191,7 @@ const ListsEditor: React.FC<Props> = (props) => {
           Add, remove, edit and share your lists
         </DialogDescription>
       </DialogHeader>
-      <div className="max-h-[50vh] min-h-[150px] overflow-y-auto rounded-lg bg-secondary/20 border">
+      <div className="max-h-[50vh] min-h-[150px] overflow-y-auto rounded-lg border bg-secondary/20">
         <QueryGuard query={listsQuery}>
           {(lists) => (
             <div className="grid divide-y">

@@ -12,6 +12,7 @@ import Lists from "@/components/lists";
 import Todos from "@/components/todos";
 import { Toaster } from "@/components/ui/sonner";
 import { handleMutationError } from "@/hooks/use-mutations";
+import ListsEditor from "@/components/lists-editor";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -27,6 +28,7 @@ const queryClient = new QueryClient({
 
 const App: React.FC = () => {
   useQueryStream(queryClient);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -36,6 +38,7 @@ const App: React.FC = () => {
           <Lists />
           <Todos />
         </main>
+        <ListsEditor />
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>
