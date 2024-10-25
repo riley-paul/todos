@@ -24,11 +24,11 @@ const List: React.FC<{
   return (
     <Button
       size="sm"
-      className="justify-between"
+      className="justify-between gap-2 max-w-48"
       variant={isSelected ? "default" : "ghost"}
       onClick={() => setSelectedList(value)}
     >
-      <span>{name}</span>
+      <span className="truncate">{name}</span>
       <div className="flex items-center gap-2">
         <UserBubbleGroup users={users} numAvatars={3} />
         <span

@@ -40,7 +40,7 @@ const App: React.FC = () => {
         <main className="container2 flex gap-4 py-6">
           {!isMobile && (
             <div
-              className="sticky h-fit w-56 pl-3"
+              className="sticky h-fit pl-3"
               style={{ top: `calc(${HEADER_HEIGHT} + 1.5rem)` }}
             >
               <ListsSidebar />
