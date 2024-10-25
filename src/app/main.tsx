@@ -13,6 +13,9 @@ import Todos from "@/components/todos";
 import { Toaster } from "@/components/ui/sonner";
 import { handleMutationError } from "@/hooks/use-mutations";
 import ListsEditor from "@/components/lists-editor";
+import ListsSidebar from "@/components/lists-sidebar";
+import { useMediaQuery } from "usehooks-ts";
+import { HEADER_HEIGHT, MOBILE_MEDIA_QUERY } from "@/lib/constants";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -28,15 +31,24 @@ const queryClient = new QueryClient({
 
 const App: React.FC = () => {
   useQueryStream(queryClient);
+  const isMobile = useMediaQuery(MOBILE_MEDIA_QUERY);
 
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Header />
-        <main className="container2 grid gap-6 py-6">
-          <Adder />
-          <Lists />
-          <Todos />
+        <main className="container2 flex gap-4 py-6">
+          <div
+            className="sticky h-fit w-56 pl-3"
+            style={{ top: `calc(${HEADER_HEIGHT} + 1.5rem)` }}
+          >
+            {!isMobile && <ListsSidebar />}
+          </div>
+          <div className="grid h-fit flex-1 gap-6">
+            <Adder />
+            {isMobile && <Lists />}
+            <Todos />
+          </div>
         </main>
         <ListsEditor />
         <Toaster />
