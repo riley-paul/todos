@@ -38,12 +38,14 @@ const App: React.FC = () => {
       <TooltipProvider>
         <Header />
         <main className="container2 flex gap-4 py-6">
-          <div
-            className="sticky h-fit w-56 pl-3"
-            style={{ top: `calc(${HEADER_HEIGHT} + 1.5rem)` }}
-          >
-            {!isMobile && <ListsSidebar />}
-          </div>
+          {!isMobile && (
+            <div
+              className="sticky h-fit w-56 pl-3"
+              style={{ top: `calc(${HEADER_HEIGHT} + 1.5rem)` }}
+            >
+              <ListsSidebar />
+            </div>
+          )}
           <div className="grid h-fit flex-1 gap-6">
             <Adder />
             {isMobile && <Lists />}
