@@ -69,7 +69,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
       ) : (
         <>
           <Checkbox
-            className="shrink-0 rounded-full size-5"
+            className="size-5 shrink-0 rounded-full"
             disabled={updateTodo.isPending}
             checked={todo.isCompleted}
             onCheckedChange={() =>
@@ -102,7 +102,10 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
                 <i className="fa-solid fa-ellipsis-v" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-[11rem]">
+            <DropdownMenuContent
+              align="end"
+              className="max-h-[50vh] min-w-[11rem] overflow-y-auto"
+            >
               <DropdownMenuGroup>
                 <DropdownMenuItem onClick={() => setEditorOpen(true)}>
                   Edit
