@@ -1,5 +1,4 @@
 import React from "react";
-import { Badge } from "./ui/badge";
 import { useAtom, useSetAtom } from "jotai/react";
 import {
   listsEditorOpenAtom,
@@ -23,19 +22,23 @@ const List: React.FC<{
   const [selectedList, setSelectedList] = useAtom(selectedListAtom);
   const isSelected = selectedList === value;
   return (
-    <Badge
-      className="flex h-6 cursor-pointer select-none gap-1.5"
+    <Button
+      size="sm"
+      className="flex h-6 select-none gap-1.5"
       variant={isSelected ? "default" : "secondary"}
       onClick={() => setSelectedList(value)}
     >
       <span>{name}</span>
       <span
-        className={cn("text-muted-foreground", isSelected && "text-secondary")}
+        className={cn(
+          "font-mono text-muted-foreground",
+          isSelected && "text-secondary",
+        )}
       >
         {count}
       </span>
       <UserBubbleGroup users={users} numAvatars={3} />
-    </Badge>
+    </Button>
   );
 };
 
