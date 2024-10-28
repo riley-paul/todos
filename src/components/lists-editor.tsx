@@ -58,7 +58,7 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
       {list.isAuthor && (
         <div className="grid gap-2">
           <Label className="text-xs">Share with</Label>
-          <div className="min-h-12 overflow-y-auto rounded bg-secondary/60 px-2">
+          <div className="min-h-12 overflow-y-auto rounded bg-secondary/20 px-2">
             <div className="grid divide-y">
               {list.shares.map((share) => (
                 <div className="flex items-center gap-2 py-2 text-sm">
@@ -136,8 +136,16 @@ const ListContainer: React.FC<{
   setOpen: (isOpen: boolean) => void;
 }> = ({ list, isOpen, setOpen }) => {
   return (
-    <div className={cn("grid gap-2 px-3", isOpen && "bg-secondary/40")}>
-      <div className="flex items-center justify-between gap-2 py-2">
+    <div
+      className={cn(
+        "grid gap-2 px-3 hover:bg-secondary/20",
+        isOpen && "bg-secondary/20",
+      )}
+    >
+      <button
+        className="flex items-center justify-between gap-2 py-2"
+        onClick={() => setOpen(!isOpen)}
+      >
         <div className="flex items-center gap-2 text-sm">
           <span className="font-semibold">{list.name}</span>
           <UserBubbleGroup users={list.otherUsers} numAvatars={10} />
@@ -145,20 +153,15 @@ const ListContainer: React.FC<{
             <i className="fa-solid fa-star text-sm text-primary/50" />
           )}
         </div>
-        <Button
-          size="sm"
-          variant="ghost"
-          className="size-6 p-0"
-          onClick={() => setOpen(!isOpen)}
-        >
+        <div className="flex size-6 items-center justify-center text-xs">
           <i
             className={cn(
               "fa-solid fa-chevron-right transition-transform",
               isOpen && "rotate-90",
             )}
           />
-        </Button>
-      </div>
+        </div>
+      </button>
       {isOpen && (
         <div className="grid pb-3">
           <ListContent list={list} />
