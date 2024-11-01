@@ -94,7 +94,7 @@ export default function useMutations() {
 
   const moveTodo = useMutation({
     mutationFn: actions.updateTodo.orThrow,
-    onMutate: async ({ id, data: { listId } }) => {
+    onMutate: async ({ id }) => {
       const resetters = await Promise.all(
         selectedList === "all"
           ? []
@@ -109,7 +109,7 @@ export default function useMutations() {
     onError: (__, _, context) => {
       context?.resetters.forEach((reset) => reset());
     },
-    onSuccess: (data, { id, data: { listId } }) => {
+    onSuccess: (_, { data: { listId } }) => {
       const lists = queryClient.getQueryData(listsQueryOptions.queryKey);
       const nextList = lists?.find((list) => list.id === listId);
       toast.success(`Todo moved to ${nextList?.name ?? "Unknown"}`);
