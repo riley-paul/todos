@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { actions, isActionError } from "astro:actions";
-import { useAtom } from "jotai/react";
-import { selectedListAtom, type SelectedList } from "@/lib/store";
+import { type SelectedList } from "@/lib/store";
 import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
 import type { TodoSelect } from "@/lib/types";
+import useSelectedList from "./use-selected-list";
 
 type TodosUpdater = (todos: TodoSelect[] | undefined) => TodoSelect[];
 
@@ -24,7 +24,7 @@ export const handleMutationError = (error: Error) => {
 
 export default function useMutations() {
   const queryClient = useQueryClient();
-  const [selectedList, setSelectedList] = useAtom(selectedListAtom);
+  const { selectedList, setSelectedList } = useSelectedList();
 
   const modifyTodoCache = async (
     listId: SelectedList,

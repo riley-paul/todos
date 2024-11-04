@@ -10,17 +10,16 @@ import {
 } from "@/components/ui/collapsible";
 
 import { useQuery } from "@tanstack/react-query";
-import { useAtomValue } from "jotai/react";
-import { selectedListAtom } from "@/lib/store";
 import { actions } from "astro:actions";
 import { Button } from "./ui/button";
 import Todo from "./todo";
+import useSelectedList from "@/hooks/use-selected-list";
 
 const Todos: React.FC = () => {
-  const listId = useAtomValue(selectedListAtom);
+  const { selectedList } = useSelectedList();
   const todosQuery = useQuery({
-    queryKey: ["todos", listId],
-    queryFn: () => actions.getTodos.orThrow({ listId }),
+    queryKey: ["todos", selectedList],
+    queryFn: () => actions.getTodos.orThrow({ listId: selectedList }),
   });
 
   const numCompleted =
@@ -29,7 +28,6 @@ const Todos: React.FC = () => {
   const { deleteCompletedTodos } = useMutations();
 
   const [showCompleted, setShowCompleted] = React.useState(false);
-  const selectedList = useAtomValue(selectedListAtom);
 
   return (
     <QueryGuard query={todosQuery} noDataString="No tasks yet">

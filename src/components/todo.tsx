@@ -5,8 +5,6 @@ import type { TodoSelect } from "@/lib/types";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 import { Checkbox } from "./ui/checkbox";
 import SingleInputForm from "./single-input-form";
-import { useAtomValue } from "jotai/react";
-import { selectedListAtom } from "@/lib/store";
 import UserBubble from "./base/user-bubble";
 import { Badge } from "./ui/badge";
 
@@ -23,6 +21,7 @@ import {
 import { Button } from "./ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions } from "@/lib/queries";
+import useSelectedList from "@/hooks/use-selected-list";
 
 const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   const { deleteTodo, updateTodo, moveTodo } = useMutations();
@@ -30,7 +29,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   const listsQuery = useQuery(listsQueryOptions);
   const lists = listsQuery.data ?? [];
 
-  const selectedList = useAtomValue(selectedListAtom);
+  const { selectedList } = useSelectedList();
 
   const [editorOpen, setEditorOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);

@@ -3,8 +3,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import useMutations from "../hooks/use-mutations";
 import { useEventListener, useMediaQuery } from "usehooks-ts";
-import { useAtomValue } from "jotai/react";
-import { selectedListAtom } from "@/lib/store";
+import useSelectedList from "@/hooks/use-selected-list";
 
 const isOnlyHashtag = (value: string) =>
   value.startsWith("#") && value.trim().split(" ").length === 1;
@@ -13,14 +12,14 @@ const isEmptyString = (value: string) => value.trim() === "";
 
 export default function Adder(): ReturnType<React.FC> {
   const { createTodo } = useMutations();
-  const listId = useAtomValue(selectedListAtom);
+  const { selectedList } = useSelectedList();
 
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [value, setValue] = React.useState("");
 
   const create = () => {
     if (value) {
-      createTodo.mutate({ data: { text: value, listId } });
+      createTodo.mutate({ data: { text: value, listId: selectedList } });
       setValue("");
       inputRef.current?.focus();
     }

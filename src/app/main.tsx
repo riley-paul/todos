@@ -13,6 +13,7 @@ import Todos from "@/components/todos";
 import { Toaster } from "@/components/ui/sonner";
 import { handleMutationError } from "@/hooks/use-mutations";
 import ListsEditor from "@/components/lists-editor";
+import { NuqsAdapter } from "nuqs/adapters/react";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -31,16 +32,18 @@ const App: React.FC = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Header />
-        <main className="container2 grid gap-6 py-6">
-          <Adder />
-          <Lists />
-          <Todos />
-        </main>
-        <ListsEditor />
-        <Toaster />
-      </TooltipProvider>
+      <NuqsAdapter>
+        <TooltipProvider>
+          <Header />
+          <main className="container2 grid gap-6 py-6">
+            <Adder />
+            <Lists />
+            <Todos />
+          </main>
+          <ListsEditor />
+          <Toaster />
+        </TooltipProvider>
+      </NuqsAdapter>
     </QueryClientProvider>
   );
 };

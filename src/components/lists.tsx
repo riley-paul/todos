@@ -1,8 +1,7 @@
 import React from "react";
-import { useAtom, useSetAtom } from "jotai/react";
+import { useSetAtom } from "jotai/react";
 import {
   listsEditorOpenAtom,
-  selectedListAtom,
   type SelectedList,
 } from "@/lib/store";
 import { Separator } from "./ui/separator";
@@ -12,6 +11,7 @@ import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
 import { Button } from "./ui/button";
 import type { UserSelect } from "@/lib/types";
 import UserBubbleGroup from "./base/user-bubble-group";
+import useSelectedList from "@/hooks/use-selected-list";
 
 const List: React.FC<{
   value: SelectedList;
@@ -19,7 +19,7 @@ const List: React.FC<{
   count: number | undefined;
   users?: UserSelect[];
 }> = ({ value, count = 0, name, users = [] }) => {
-  const [selectedList, setSelectedList] = useAtom(selectedListAtom);
+  const { selectedList, setSelectedList } = useSelectedList();
   const isSelected = selectedList === value;
   return (
     <Button
