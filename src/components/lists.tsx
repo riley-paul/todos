@@ -1,15 +1,12 @@
 import React from "react";
 import { useSetAtom } from "jotai/react";
-import {
-  listsEditorOpenAtom,
-  type SelectedList,
-} from "@/lib/store";
+import { listsEditorOpenAtom } from "@/lib/store";
 import { Separator } from "./ui/separator";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
 import { Button } from "./ui/button";
-import type { UserSelect } from "@/lib/types";
+import type { SelectedList, UserSelect } from "@/lib/types";
 import UserBubbleGroup from "./base/user-bubble-group";
 import useSelectedList from "@/hooks/use-selected-list";
 

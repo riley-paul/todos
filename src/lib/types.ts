@@ -44,3 +44,5 @@ export type ListShareInsert = typeof ListShare.$inferInsert;
 export type ListInsert = typeof List.$inferInsert;
 
 export type TableUnion = typeof User | typeof Todo;
+
+export type SelectedList = string | "all" | null;
