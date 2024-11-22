@@ -34,7 +34,7 @@ export default async function seed() {
     const listIds = await db
       .insert(List)
       .values(
-        Array.from({ length: faker.number.int({ min: 3, max: 8 }) }).map(
+        Array.from({ length: faker.number.int({ min: 5, max: 10 }) }).map(
           () => ({
             id: uuid(),
             userId,

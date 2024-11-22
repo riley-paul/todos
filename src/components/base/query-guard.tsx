@@ -1,6 +1,6 @@
 import React from "react";
 import type { UseQueryResult } from "@tanstack/react-query";
-import ErrorPage from "@/app/error-page";
+import ErrorPage from "@/components/error-page";
 
 // Define the props type, where each query result can have a different type
 interface QueryResultsProps<T> {

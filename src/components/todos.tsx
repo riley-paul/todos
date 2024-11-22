@@ -50,15 +50,15 @@ const Todos: React.FC = () => {
                 <CollapsibleTrigger asChild>
                   <Button
                     size="sm"
-                    className="flex h-6 gap-2 px-2"
+                    className="flex h-6 gap-2 px-3"
                     variant="ghost"
                   >
                     <span>Completed</span>
                     <span className="opacity-80">{numCompleted}</span>
                     <i
                       className={cn(
-                        "fa-solid fa-chevron-down transition-transform duration-200",
-                        showCompleted && "-rotate-180",
+                        "fa-solid fa-chevron-right transition-transform duration-200 ml-1",
+                        showCompleted && "rotate-90",
                       )}
                     />
                   </Button>
@@ -72,7 +72,7 @@ const Todos: React.FC = () => {
                   }
                 >
                   <i className="fa-solid fa-eraser mr-1" />
-                  Clear completed
+                  Clear
                 </Button>
               </div>
 
