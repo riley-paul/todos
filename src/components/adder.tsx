@@ -2,7 +2,7 @@ import React from "react";
 import { useEventListener, useMediaQuery } from "usehooks-ts";
 import useMutations from "@/hooks/use-mutations";
 import useSelectedList from "@/hooks/use-selected-list";
-import { Button, Spinner, TextField } from "@radix-ui/themes";
+import { Box, Button, Flex, Spinner, TextField } from "@radix-ui/themes";
 import { PlusIcon } from "@radix-ui/react-icons";
 
 const isOnlyHashtag = (value: string) =>
@@ -46,30 +46,31 @@ export default function Adder(): ReturnType<React.FC> {
         if (isEmptyString(value) || isOnlyHashtag(value)) return;
         create();
       }}
-      className="flex items-center gap-2 px-3"
     >
-      <TextField.Root
-        autoFocus
-        ref={inputRef}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder="Add a todo..."
-        onFocus={(e) => {
-          if (!isOnlyHashtag(value)) {
-            e.target.select();
-          }
-        }}
-        className="flex-1"
-      />
-      <input type="submit" hidden />
-      <Button
-        type="submit"
-        className="shrink-0"
-        disabled={isEmptyString(value) || isOnlyHashtag(value)}
-      >
-        {createTodo.isPending ? <Spinner /> : <PlusIcon />}
-        {!isMobile && <span>Add</span>}
-      </Button>
+      <Flex gap="3" align="center" px="3">
+        <Box flexGrow="1">
+          <TextField.Root
+            autoFocus
+            ref={inputRef}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder="Add a todo..."
+            onFocus={(e) => {
+              if (!isOnlyHashtag(value)) {
+                e.target.select();
+              }
+            }}
+          />
+        </Box>
+        <input type="submit" hidden />
+        <Button
+          type="submit"
+          disabled={isEmptyString(value) || isOnlyHashtag(value)}
+        >
+          {createTodo.isPending ? <Spinner /> : <PlusIcon />}
+          {!isMobile && <span>Add</span>}
+        </Button>
+      </Flex>
     </form>
   );
 }
