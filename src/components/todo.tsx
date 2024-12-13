@@ -3,7 +3,6 @@ import { css } from "@emotion/css";
 import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
-import SingleInputForm from "./single-input-form";
 import UserBubble from "./base/user-bubble";
 
 import {
@@ -11,6 +10,7 @@ import {
   Delete,
   EllipsisVertical,
   Pencil,
+  Save,
   type LucideIcon,
 } from "lucide-react";
 
@@ -19,12 +19,13 @@ import { listsQueryOptions } from "@/lib/queries";
 import useSelectedList from "@/hooks/use-selected-list";
 import {
   Badge,
-  Box,
+  Button,
   Checkbox,
   DropdownMenu,
   Flex,
   IconButton,
   Text,
+  TextField,
 } from "@radix-ui/themes";
 
 const MenuItem: React.FC<{ text: string; icon: LucideIcon }> = ({
@@ -36,6 +37,44 @@ const MenuItem: React.FC<{ text: string; icon: LucideIcon }> = ({
       <Text>{text}</Text>
       <Icon size="1rem" style={{ color: "var(--accent-7)" }} />
     </Flex>
+  );
+};
+
+const TodoForm: React.FC<{
+  initialValue: string;
+  handleSubmit: (value: string) => void;
+}> = ({ initialValue, handleSubmit }) => {
+  const [value, setValue] = React.useState(initialValue);
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit(value);
+      }}
+      style={{ width: "100%" }}
+    >
+      <TextField.Root
+        size="2"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        autoFocus
+      >
+        <TextField.Slot side="left">
+          <Pencil size="1rem" />
+        </TextField.Slot>
+        <TextField.Slot side="right">
+          <Button
+            variant="soft"
+            type="submit"
+            size="1"
+            onClick={() => handleSubmit(value)}
+          >
+            <Save size="1rem" />
+            Save
+          </Button>
+        </TextField.Slot>
+      </TextField.Root>
+    </form>
   );
 };
 
@@ -65,7 +104,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
       gap="3"
       minHeight="2.5rem"
       px="1rem"
-      py="0.5rem"
+      py="0.25rem"
       align="center"
       className={css`
         border-radius: var(--radius-4);
@@ -76,9 +115,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
       `}
     >
       {editorOpen ? (
-        <SingleInputForm
-          size="sm"
-          autoFocus
+        <TodoForm
           initialValue={todo.text}
           handleSubmit={(text) => {
             updateTodo
@@ -101,9 +138,9 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
               })
             }
           />
-          <Box flexGrow="1" onClick={() => setEditorOpen(true)}>
+          <Flex flexGrow="1" align="center" onClick={() => setEditorOpen(true)}>
             <Text size="2">{todo.text}</Text>
-          </Box>
+          </Flex>
           {todo.list && todo.list.id !== selectedList && (
             <Badge>{todo.list.name}</Badge>
           )}

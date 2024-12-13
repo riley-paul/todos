@@ -34,7 +34,7 @@ const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <NuqsAdapter>
-        <Theme appearance="dark">
+        <Theme appearance="dark" accentColor="mint">
           <TooltipProvider>
             {/* <Header /> */}
             <Container>
