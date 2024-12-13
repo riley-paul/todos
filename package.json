@@ -17,7 +17,7 @@
     "@astrojs/node": "^8.3.4",
     "@astrojs/react": "^3.6.2",
     "@astrojs/vercel": "^7.8.1",
-    "@emotion/react": "^11.14.0",
+    "@emotion/css": "^11.13.5",
     "@fontsource-variable/inter": "^5.0.19",
     "@fontsource-variable/rubik": "^5.1.0",
     "@fontsource/fira-sans": "^5.0.20",

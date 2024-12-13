@@ -1,10 +1,18 @@
 import React from "react";
-import { css } from "@emotion/react";
+import { css } from "@emotion/css";
 import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 import SingleInputForm from "./single-input-form";
 import UserBubble from "./base/user-bubble";
+
+import {
+  ArrowRight,
+  Delete,
+  EllipsisVertical,
+  Pencil,
+  type LucideIcon,
+} from "lucide-react";
 
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions } from "@/lib/queries";
@@ -18,6 +26,18 @@ import {
   IconButton,
   Text,
 } from "@radix-ui/themes";
+
+const MenuItem: React.FC<{ text: string; icon: LucideIcon }> = ({
+  text,
+  icon: Icon,
+}) => {
+  return (
+    <Flex gap="3" align="center" justify="between" width="100%">
+      <Text>{text}</Text>
+      <Icon size="1rem" style={{ color: "var(--accent-7)" }} />
+    </Flex>
+  );
+};
 
 const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   const { deleteTodo, updateTodo, moveTodo } = useMutations();
@@ -45,9 +65,14 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
       gap="3"
       minHeight="2.5rem"
       px="1rem"
+      py="0.5rem"
       align="center"
       className={css`
-        border-bottom: 1px solid var(--border-color);
+        border-radius: var(--radius-4);
+        transition: background-color 0.1s ease-out;
+        &:hover {
+          background-color: var(--accent-2);
+        }
       `}
     >
       {editorOpen ? (
@@ -76,10 +101,8 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
               })
             }
           />
-          <Box flexGrow="1">
-            <Text size="2" onClick={() => setEditorOpen(true)}>
-              {todo.text}
-            </Text>
+          <Box flexGrow="1" onClick={() => setEditorOpen(true)}>
+            <Text size="2">{todo.text}</Text>
           </Box>
           {todo.list && todo.list.id !== selectedList && (
             <Badge>{todo.list.name}</Badge>
@@ -87,19 +110,19 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
           {!todo.isAuthor && <UserBubble user={todo.author} />}
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
-              <IconButton size="1" radius="full" variant="soft">
-                <i className="fa-solid fa-ellipsis-v" />
+              <IconButton size="1" radius="full" variant="ghost">
+                <EllipsisVertical size="1rem" />
               </IconButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content align="end">
               <DropdownMenu.Group>
                 <DropdownMenu.Item onClick={() => setEditorOpen(true)}>
-                  Edit
+                  <MenuItem text="Edit" icon={Pencil} />
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   onClick={() => deleteTodo.mutate({ id: todo.id })}
                 >
-                  Delete
+                  <MenuItem text="Delete" icon={Delete} />
                 </DropdownMenu.Item>
               </DropdownMenu.Group>
               {lists.length > 0 && (
@@ -116,7 +139,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
                           })
                         }
                       >
-                        Inbox
+                        <MenuItem text="Inbox" icon={ArrowRight} />
                       </DropdownMenu.Item>
                     )}
                     {lists
@@ -131,7 +154,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
                             })
                           }
                         >
-                          {list.name}
+                          <MenuItem text={list.name} icon={ArrowRight} />
                         </DropdownMenu.Item>
                       ))}
                   </DropdownMenu.Group>

@@ -5,7 +5,7 @@ import { useDebounceValue, useMediaQuery } from "usehooks-ts";
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { userByEmailQueryOptions } from "@/lib/queries";
 import { MOBILE_MEDIA_QUERY } from "@/lib/constants";
-import { Button, TextField, Tooltip } from "@radix-ui/themes";
+import { Button, Flex, Grid, TextField, Tooltip } from "@radix-ui/themes";
 
 const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
   if (query.isLoading) {
@@ -83,10 +83,6 @@ const SingleInputForm: React.FC<Props> = ({
 
   return (
     <form
-      className={cn(
-        "grid w-full grid-cols-[1fr_auto] items-center gap-2",
-        sizeClassnames[size],
-      )}
       onSubmit={(e) => {
         e.preventDefault();
         if (value.length === 0) {
@@ -100,42 +96,41 @@ const SingleInputForm: React.FC<Props> = ({
         }
       }}
     >
-      <div className="relative h-full">
-        <TextField.Root
-          className={cn(
-            "truncate",
-            isUserEmail && "pr-9",
-            sizeClassnames[size],
+      <Flex>
+        <Flex>
+          <TextField.Root
+            autoFocus={autoFocus}
+            value={value}
+            placeholder={placeholder}
+            onChange={(e) => {
+              setValue(e.target.value);
+              setEmail(e.target.value);
+            }}
+            type={isUserEmail ? "email" : "text"}
+          />
+          {isUserEmail && (
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+              {getIcon(sharedUserQuery)}
+            </div>
           )}
-          autoFocus={autoFocus}
-          value={value}
-          placeholder={placeholder}
-          onChange={(e) => {
-            setValue(e.target.value);
-            setEmail(e.target.value);
-          }}
-          type={isUserEmail ? "email" : "text"}
-        />
-        {isUserEmail && (
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-            {getIcon(sharedUserQuery)}
-          </div>
-        )}
-      </div>
+        </Flex>
 
-      <Button
-        type="submit"
-        variant={button.variant}
-        disabled={value.length === 0 || (isUserEmail && !sharedUserQuery.data)}
-        children={
-          <>
-            {button.icon}
-            {!isMobile && <span>{button.string}</span>}
-          </>
-        }
-        className={cn(size === "sm" && "h-8")}
-      />
-      <input type="submit" className="hidden" />
+        <Button
+          type="submit"
+          variant={button.variant}
+          disabled={
+            value.length === 0 || (isUserEmail && !sharedUserQuery.data)
+          }
+          children={
+            <>
+              {button.icon}
+              {!isMobile && <span>{button.string}</span>}
+            </>
+          }
+          className={cn(size === "sm" && "h-8")}
+        />
+        <input type="submit" hidden />
+      </Flex>
     </form>
   );
 };
