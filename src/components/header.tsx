@@ -3,13 +3,20 @@ import { cn } from "../lib/utils";
 import UserAvatar from "./user-avatar";
 import PendingInvites from "./pending-invites";
 import { Container } from "@radix-ui/themes";
+import { css } from "@emotion/css";
 
 const Header: React.FC = () => {
   return (
     <header
-      className={cn(
-        "sticky top-0 z-50 h-16 shrink-0 border-b bg-background/30 backdrop-blur",
-      )}
+      // className={cn(
+      //   "sticky top-0 z-50 h-16 shrink-0 border-b bg-background/30 backdrop-blur",
+      // )}
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 50,
+        height: "4rem",
+      }}
     >
       <Container className="flex h-full items-center justify-between px-5">
         <div className="flex items-center gap-2 text-2xl">

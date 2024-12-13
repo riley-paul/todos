@@ -36,7 +36,7 @@ const App: React.FC = () => {
       <NuqsAdapter>
         <Theme appearance="dark" accentColor="mint">
           <TooltipProvider>
-            {/* <Header /> */}
+            <Header />
             <Container>
               <Grid py="6" gap="4">
                 <Adder />
