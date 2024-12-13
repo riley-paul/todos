@@ -34,13 +34,13 @@ const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <NuqsAdapter>
-        <Theme appearance="dark" accentColor="mint">
+        <Theme appearance="dark" accentColor="mint" radius="large">
           <TooltipProvider>
             <Header />
             <Container size="2">
               <Grid py="6" gap="4">
                 <Adder />
-                {/* <Lists /> */}
+                <Lists />
                 <Todos />
               </Grid>
             </Container>

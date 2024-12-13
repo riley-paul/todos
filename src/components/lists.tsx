@@ -1,14 +1,14 @@
 import React from "react";
 import { useSetAtom } from "jotai/react";
 import { listsEditorOpenAtom } from "@/lib/store";
-import { Separator } from "./ui/separator";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
-import { Button } from "./ui/button";
 import type { SelectedList, UserSelect } from "@/lib/types";
 import UserBubbleGroup from "./base/user-bubble-group";
 import useSelectedList from "@/hooks/use-selected-list";
+import { Button, Flex, Separator, Text } from "@radix-ui/themes";
+import { Pencil } from "lucide-react";
 
 const List: React.FC<{
   value: SelectedList;
@@ -20,20 +20,13 @@ const List: React.FC<{
   const isSelected = selectedList === value;
   return (
     <Button
-      size="sm"
+      size="1"
       className="flex h-6 select-none gap-1.5"
-      variant={isSelected ? "default" : "secondary"}
+      variant={isSelected ? "solid" : "soft"}
       onClick={() => setSelectedList(value)}
     >
-      <span>{name}</span>
-      <span
-        className={cn(
-          "font-mono text-muted-foreground",
-          isSelected && "text-secondary",
-        )}
-      >
-        {count}
-      </span>
+      <Text>{name}</Text>
+      <Text color="gray">{count}</Text>
       <UserBubbleGroup users={users} numAvatars={3} />
     </Button>
   );
@@ -47,12 +40,12 @@ const Lists: React.FC = () => {
   const setEditorIsOpen = useSetAtom(listsEditorOpenAtom);
 
   return (
-    <div className="flex flex-wrap gap-2 px-3">
+    <Flex px="4" gap="2" wrap="wrap">
       <List value={null} name="Inbox" count={inboxCount} />
       <List value={"all"} name="All" count={allCount} />
-      <div className="flex items-center">
-        <Separator orientation="vertical" className="h-5" />
-      </div>
+      <Flex align="center">
+        <Separator orientation="vertical" size="1" />
+      </Flex>
       {listsQuery.data?.map((list) => (
         <List
           key={list.id}
@@ -62,16 +55,11 @@ const Lists: React.FC = () => {
           users={list.otherUsers}
         />
       ))}
-      <Button
-        variant="ghostMuted"
-        size="sm"
-        className="h-6 px-3"
-        onClick={() => setEditorIsOpen(true)}
-      >
-        <i className="fa-solid fa-pen mr-1.5" />
+      <Button size="1" variant="soft" onClick={() => setEditorIsOpen(true)}>
+        <Pencil size="0.8rem" />
         <span>Edit</span>
       </Button>
-    </div>
+    </Flex>
   );
 };
 
