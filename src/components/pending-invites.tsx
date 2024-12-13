@@ -1,14 +1,9 @@
 import React from "react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { pendingSharesQueryOptions } from "@/lib/queries";
 import UserBubble from "./base/user-bubble";
 import useMutations from "@/hooks/use-mutations";
+import { Button, IconButton, Popover } from "@radix-ui/themes";
 
 const PendingInvites: React.FC = () => {
   const pendingSharesQuery = useQuery(pendingSharesQueryOptions);
@@ -16,11 +11,10 @@ const PendingInvites: React.FC = () => {
   const { acceptListShare, deleteListShare } = useMutations();
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant="secondary"
-          size="icon"
+    <Popover.Root>
+      <Popover.Trigger>
+        <IconButton
+          variant="soft"
           className="relative rounded-full"
         >
           <i className="fa-solid fa-bell" />
@@ -29,9 +23,9 @@ const PendingInvites: React.FC = () => {
               {numPendingShares}
             </div>
           )}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent align="end" className="py-2">
+        </IconButton>
+      </Popover.Trigger>
+      <Popover.Content align="end" className="py-2">
         <div className="grid divide-y">
           {pendingSharesQuery.data?.map((share) => (
             <div key={share.id} className="flex items-center gap-3 py-2">
@@ -68,8 +62,8 @@ const PendingInvites: React.FC = () => {
             </div>
           )}
         </div>
-      </PopoverContent>
-    </Popover>
+      </Popover.Content>
+    </Popover.Root>
   );
 };
 

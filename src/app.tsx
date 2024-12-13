@@ -37,7 +37,7 @@ const App: React.FC = () => {
         <Theme appearance="dark" accentColor="mint">
           <TooltipProvider>
             <Header />
-            <Container>
+            <Container size="2">
               <Grid py="6" gap="4">
                 <Adder />
                 {/* <Lists /> */}

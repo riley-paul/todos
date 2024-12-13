@@ -47,7 +47,7 @@ export default function Adder(): ReturnType<React.FC> {
         create();
       }}
     >
-      <Flex gap="3" align="center" px="1rem">
+      <Flex gap="3" align="center" px="4">
         <Box flexGrow="1">
           <TextField.Root
             autoFocus

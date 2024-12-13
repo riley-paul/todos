@@ -103,8 +103,8 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
       ref={ref}
       gap="3"
       minHeight="2.5rem"
-      px="1rem"
-      py="0.25rem"
+      px="4"
+      py="1"
       align="center"
       className={css`
         border-radius: var(--radius-4);
