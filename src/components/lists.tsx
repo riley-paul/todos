@@ -1,7 +1,6 @@
 import React from "react";
 import { useSetAtom } from "jotai/react";
 import { listsEditorOpenAtom } from "@/lib/store";
-import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
 import type { SelectedList, UserSelect } from "@/lib/types";
@@ -21,13 +20,14 @@ const List: React.FC<{
   return (
     <Button
       size="1"
-      className="flex h-6 select-none gap-1.5"
       variant={isSelected ? "solid" : "soft"}
       onClick={() => setSelectedList(value)}
     >
-      <Text>{name}</Text>
-      <Text color="gray">{count}</Text>
-      <UserBubbleGroup users={users} numAvatars={3} />
+      <Flex align="center" gap="1">
+        <Text>{name}</Text>
+        <Text color="gray">{count}</Text>
+        <UserBubbleGroup users={users} numAvatars={3} />
+      </Flex>
     </Button>
   );
 };

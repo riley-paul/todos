@@ -144,7 +144,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
           {todo.list && todo.list.id !== selectedList && (
             <Badge>{todo.list.name}</Badge>
           )}
-          {!todo.isAuthor && <UserBubble user={todo.author} />}
+          {!todo.isAuthor && <UserBubble user={todo.author} size="md" />}
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
               <IconButton size="1" radius="full" variant="ghost">

@@ -1,7 +1,7 @@
 import type { UserSelect } from "@/lib/types";
 import React from "react";
-import { cn } from "@/lib/utils";
-import { Avatar } from "@radix-ui/themes";
+import { Avatar, Flex } from "@radix-ui/themes";
+import UserBubble from "./user-bubble";
 
 type Props = {
   users: UserSelect[];
@@ -14,27 +14,22 @@ const UserBubbleGroup: React.FC<Props> = ({ users, numAvatars = 3 }) => {
   }
 
   return (
-    <div className="flex flex-row-reverse">
-      {users.length > numAvatars && (
-        <div
-          className={cn(
-            "-ml-1 flex h-4 items-center rounded-full bg-muted px-1.5 font-mono text-[0.6rem] text-muted-foreground transition-colors"
-          )}
-        >
-          <span>+{users.length - numAvatars}</span>
-        </div>
-      )}
+    <Flex wrap="wrap-reverse" pl="1">
       {users.slice(0, numAvatars).map((user) => (
-        <Avatar
-          size="1"
-          radius="full"
-          key={user.id}
-          src={user.avatarUrl ?? ""}
-          fallback={user.name[0]}
-          className="-ml-1 size-4 last:ml-0"
-        />
+        <div style={{ marginLeft: "-0.25rem" }}>
+          <UserBubble key={user.id} user={user} size="sm" />
+        </div>
       ))}
-    </div>
+      {users.length > numAvatars && (
+        <Avatar
+          src=""
+          fallback={`+${users.length - numAvatars}`}
+          radius="full"
+          style={{ height: "1rem", fontSize: "0.6rem", marginLeft: "-0.25rem" }}
+          size="1"
+        />
+      )}
+    </Flex>
   );
 };
 
