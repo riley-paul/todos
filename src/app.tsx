@@ -34,7 +34,7 @@ const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <NuqsAdapter>
-        <Theme>
+        <Theme appearance="dark">
           <TooltipProvider>
             <Header />
             <main className="container2 grid gap-6 py-6">

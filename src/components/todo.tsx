@@ -3,10 +3,8 @@ import { cn } from "@/lib/utils";
 import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
-import { Checkbox } from "./ui/checkbox";
 import SingleInputForm from "./single-input-form";
 import UserBubble from "./base/user-bubble";
-import { Badge } from "./ui/badge";
 
 import {
   DropdownMenu,
@@ -22,6 +20,7 @@ import { Button } from "./ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions } from "@/lib/queries";
 import useSelectedList from "@/hooks/use-selected-list";
+import { Badge, Checkbox } from "@radix-ui/themes";
 
 const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   const { deleteTodo, updateTodo, moveTodo } = useMutations();

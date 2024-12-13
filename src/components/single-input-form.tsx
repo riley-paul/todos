@@ -1,17 +1,11 @@
 import React from "react";
 import { toast } from "sonner";
-import { Button, type ButtonProps } from "./ui/button";
-import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useDebounceValue, useMediaQuery } from "usehooks-ts";
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { userByEmailQueryOptions } from "@/lib/queries";
 import { MOBILE_MEDIA_QUERY } from "@/lib/constants";
+import { Button, TextField, Tooltip } from "@radix-ui/themes";
 
 const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
   if (query.isLoading) {
@@ -19,21 +13,15 @@ const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
   }
   if (query.status === "success" && query.data) {
     return (
-      <Tooltip>
-        <TooltipTrigger>
-          <i className="fa-solid fa-circle-check text-green-500" />
-        </TooltipTrigger>
-        <TooltipContent side="right">User exists</TooltipContent>
+      <Tooltip side="right" content="User exists">
+        <i className="fa-solid fa-circle-check text-green-500" />
       </Tooltip>
     );
   }
   if (query.status === "error" || query.data === false) {
     return (
-      <Tooltip>
-        <TooltipTrigger>
-          <i className="fa-solid fa-circle-xmark text-red-500" />
-        </TooltipTrigger>
-        <TooltipContent side="right">User does not exist</TooltipContent>
+      <Tooltip side="right" content="User does not exist">
+        <i className="fa-solid fa-circle-xmark text-red-500" />
       </Tooltip>
     );
   }
@@ -113,7 +101,7 @@ const SingleInputForm: React.FC<Props> = ({
       }}
     >
       <div className="relative h-full">
-        <Input
+        <TextField.Root
           className={cn(
             "truncate",
             isUserEmail && "pr-9",
@@ -142,10 +130,9 @@ const SingleInputForm: React.FC<Props> = ({
         children={
           <>
             {button.icon}
-            {!isMobile && <span className="ml-2">{button.string}</span>}
+            {!isMobile && <span>{button.string}</span>}
           </>
         }
-        size={isMobile ? "icon" : size}
         className={cn(size === "sm" && "h-8")}
       />
       <input type="submit" className="hidden" />
