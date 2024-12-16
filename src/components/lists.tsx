@@ -20,6 +20,7 @@ const List: React.FC<{
   return (
     <Button
       size="1"
+      color={isSelected ? undefined : "gray"}
       variant={isSelected ? "solid" : "soft"}
       onClick={() => setSelectedList(value)}
     >

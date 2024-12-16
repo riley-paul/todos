@@ -1,6 +1,7 @@
 import React from "react";
 import type { UseQueryResult } from "@tanstack/react-query";
 import ErrorPage from "@/components/error-page";
+import { Flex, Spinner } from "@radix-ui/themes";
 
 // Define the props type, where each query result can have a different type
 interface QueryResultsProps<T> {
@@ -16,9 +17,9 @@ const QueryGuard = <T,>({
 }: QueryResultsProps<T>): React.ReactNode => {
   if (query.isLoading) {
     return (
-      <div className="flex h-full min-h-32 items-center justify-center">
-        <i className="fa-solid fa-circle-nodes animate-spin text-lg text-primary" />
-      </div>
+      <Flex align="center" justify="center" minHeight="100px">
+        <Spinner size="3" />
+      </Flex>
     );
   }
 
