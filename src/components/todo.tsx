@@ -129,6 +129,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
       ) : (
         <>
           <Checkbox
+            size="3"
             disabled={updateTodo.isPending}
             checked={todo.isCompleted}
             onCheckedChange={() =>

@@ -47,10 +47,11 @@ export default function Adder(): ReturnType<React.FC> {
         create();
       }}
     >
-      <Flex gap="3" align="center" px="4">
+      <Flex gap="3" align="center" px="3">
         <Box flexGrow="1">
           <TextField.Root
             autoFocus
+            size="3"
             ref={inputRef}
             value={value}
             onChange={(e) => setValue(e.target.value)}
@@ -65,6 +66,7 @@ export default function Adder(): ReturnType<React.FC> {
         <input type="submit" hidden />
         <Button
           type="submit"
+          size="3"
           disabled={isEmptyString(value) || isOnlyHashtag(value)}
         >
           {createTodo.isPending ? <Spinner /> : <PlusIcon />}

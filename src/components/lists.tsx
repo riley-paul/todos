@@ -40,7 +40,7 @@ const Lists: React.FC = () => {
   const setEditorIsOpen = useSetAtom(listsEditorOpenAtom);
 
   return (
-    <Flex px="4" gap="2" wrap="wrap">
+    <Flex px="3" gap="2" wrap="wrap">
       <List value={null} name="Inbox" count={inboxCount} />
       <List value={"all"} name="All" count={allCount} />
       <Flex align="center">

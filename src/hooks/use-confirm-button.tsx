@@ -1,4 +1,4 @@
-import type { ButtonProps } from "@/components/ui/button";
+import type { ButtonProps } from "@radix-ui/themes";
 import React from "react";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 
@@ -13,8 +13,8 @@ export default function useConfirmButton(props: Props) {
   const {
     handleConfirm,
     noConfirm,
-    buttonVariantIdle = "secondary",
-    buttonVariantConfirm = "destructive",
+    buttonVariantIdle = "soft",
+    buttonVariantConfirm = "solid",
   } = props;
 
   const ref = React.useRef<HTMLButtonElement>(null);

@@ -1,31 +1,19 @@
 import React from "react";
-import {
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import SingleInputForm from "./single-input-form";
-import { Label } from "./ui/label";
 import useMutations from "@/hooks/use-mutations";
 import type { ListSelect } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions } from "@/lib/queries";
 import QueryGuard from "./base/query-guard";
 import UserBubbleGroup from "./base/user-bubble-group";
-import { Button } from "./ui/button";
 import useConfirmButton from "@/hooks/use-confirm-button";
-import ResponsiveModal from "@/components/responsive-modal";
 import UserBubble from "./base/user-bubble";
 import DeleteButton from "./ui/delete-button";
 import { cn } from "@/lib/utils";
 import { useAtom } from "jotai";
 import { listsEditorOpenAtom } from "@/lib/store";
 import { useEventListener } from "usehooks-ts";
+import { Box, Button, Dialog, Grid, Text, Tooltip } from "@radix-ui/themes";
 
 const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
   const {
@@ -46,7 +34,7 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
   return (
     <div className="grid gap-4">
       <div className="grid gap-2">
-        <Label className="text-xs">Update name</Label>
+        <Text className="text-xs">Update name</Text>
         <SingleInputForm
           placeholder="Enter list name"
           initialValue={list.name}
@@ -57,7 +45,7 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
       </div>
       {list.isAuthor && (
         <div className="grid gap-2">
-          <Label className="text-xs">Share with</Label>
+          <Text className="text-xs">Share with</Text>
           <div className="min-h-12 overflow-y-auto rounded bg-secondary/20 px-2">
             <div className="grid divide-y">
               {list.shares.map((share) => (
@@ -70,13 +58,8 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
                     </span>
                   </div>
                   {share.isPending && (
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <i className="fa-solid fa-hourglass text-muted-foreground" />
-                      </TooltipTrigger>
-                      <TooltipContent side="left">
-                        Pending invitation
-                      </TooltipContent>
+                    <Tooltip side="left" content="Pending Invitation">
+                      <i className="fa-solid fa-hourglass text-muted-foreground" />
                     </Tooltip>
                   )}
                   <DeleteButton
@@ -111,7 +94,7 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
         </div>
       )}
 
-      <Button ref={ref} size="sm" {...buttonProps}>
+      <Button ref={ref} size="1" {...buttonProps}>
         {isConfirming ? (
           "Are you sure?"
         ) : list.isAuthor ? (
@@ -139,10 +122,11 @@ const ListContainer: React.FC<{
     <div
       className={cn(
         "grid gap-2 px-3 hover:bg-secondary/20",
-        isOpen && "bg-secondary/20",
+        isOpen && "bg-secondary/20"
       )}
     >
-      <button
+      <Button
+        variant="ghost"
         className="flex items-center justify-between gap-2 py-2"
         onClick={() => setOpen(!isOpen)}
       >
@@ -157,11 +141,11 @@ const ListContainer: React.FC<{
           <i
             className={cn(
               "fa-solid fa-chevron-right transition-transform",
-              isOpen && "rotate-90",
+              isOpen && "rotate-90"
             )}
           />
         </div>
-      </button>
+      </Button>
       {isOpen && (
         <div className="grid pb-3">
           <ListContent list={list} />
@@ -187,47 +171,62 @@ const ListsEditor: React.FC = () => {
   const [openList, setOpenList] = React.useState("");
 
   return (
-    <ResponsiveModal open={isOpen} onOpenChange={setIsOpen}>
-      <DialogHeader>
-        <DialogTitle>Manage your lists</DialogTitle>
-        <DialogDescription>
-          Add, remove, edit and share your lists
-        </DialogDescription>
-      </DialogHeader>
-      <div className="max-h-[50vh] min-h-[150px] overflow-y-auto rounded-lg border bg-secondary/20">
-        <QueryGuard query={listsQuery}>
-          {(lists) => (
-            <div className="grid divide-y">
-              {lists.map((list) => (
-                <ListContainer
-                  key={list.id}
-                  list={list}
-                  isOpen={openList === list.id}
-                  setOpen={(open) => setOpenList(open ? list.id : "")}
-                />
-              ))}
-            </div>
-          )}
-        </QueryGuard>
-      </div>
-      <div className="grid gap-2">
-        <Label>Add a List</Label>
-        <SingleInputForm
-          clearAfterSubmit
-          initialValue=""
-          placeholder="Enter list name"
-          button={{
-            icon: <i className="fa-solid fa-plus" />,
-            string: "Add list",
-            variant: "default",
-          }}
-          handleSubmit={(name) => {
-            createList.mutate({ name });
-            setOpenList("");
-          }}
-        />
-      </div>
-    </ResponsiveModal>
+    <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog.Content>
+        <Grid gap="4">
+          <Grid>
+            <Dialog.Title>Manage your lists</Dialog.Title>
+            <Dialog.Description>
+              Add, remove, edit and share your lists
+            </Dialog.Description>
+          </Grid>
+          <Box
+            maxHeight="50vh"
+            minHeight="150px"
+            overflowY="auto"
+            style={{
+              backgroundColor: "var(--gray-3)",
+              borderRadius: "var(--radius-3)",
+            }}
+            className="rounded-lg border bg-secondary/20"
+          >
+            <QueryGuard query={listsQuery}>
+              {(lists) => (
+                <div className="grid divide-y">
+                  {lists.map((list) => (
+                    <ListContainer
+                      key={list.id}
+                      list={list}
+                      isOpen={openList === list.id}
+                      setOpen={(open) => setOpenList(open ? list.id : "")}
+                    />
+                  ))}
+                </div>
+              )}
+            </QueryGuard>
+          </Box>
+          <Grid gap="2">
+            <Text weight="bold" size="2">
+              Add a List
+            </Text>
+            <SingleInputForm
+              clearAfterSubmit
+              initialValue=""
+              placeholder="Enter list name"
+              button={{
+                icon: <i className="fa-solid fa-plus" />,
+                string: "Add list",
+                variant: "default",
+              }}
+              handleSubmit={(name) => {
+                createList.mutate({ name });
+                setOpenList("");
+              }}
+            />
+          </Grid>
+        </Grid>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 };
 

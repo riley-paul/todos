@@ -16,7 +16,7 @@ const Header: React.FC = () => {
       }}
     >
       <Container size="2">
-        <Flex gap="4" justify="between" height="4rem" align="center" px="4">
+        <Flex gap="4" justify="between" height="4rem" align="center" px="3">
           <Flex align="center" gap="2">
             <CheckCircleIcon size="1.5rem" color="var(--accent-9)" />
             <Text size="6" weight="bold">
