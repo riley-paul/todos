@@ -18,7 +18,6 @@
     "@astrojs/react": "^3.6.2",
     "@astrojs/tailwind": "^5.1.4",
     "@astrojs/vercel": "^7.8.1",
-    "@emotion/css": "^11.13.5",
     "@fontsource-variable/inter": "^5.0.19",
     "@fontsource-variable/rubik": "^5.1.0",
     "@fontsource/fira-sans": "^5.0.20",
@@ -82,8 +81,8 @@
     "@types/bun": "^1.1.2",
     "@types/node": "^20.12.11",
     "@types/uuid": "^9.0.8",
-    "prettier": "^3.2.5",
-    "prettier-plugin-tailwindcss": "^0.6.1",
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.6.9",
     "vite-plugin-pwa": "^0.20.5"
   }
 }

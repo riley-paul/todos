@@ -1,5 +1,4 @@
 import React from "react";
-import { css } from "@emotion/css";
 import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
@@ -35,7 +34,7 @@ const MenuItem: React.FC<{ text: string; icon: LucideIcon }> = ({
   return (
     <Flex gap="3" align="center" justify="between" width="100%">
       <Text>{text}</Text>
-      <Icon size="1rem" style={{ color: "var(--accent-7)" }} />
+      <Icon className="size-4 text-accent-7" />
     </Flex>
   );
 };
@@ -99,20 +98,9 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   }, [todo]);
 
   return (
-    <Flex
+    <div
       ref={ref}
-      gap="3"
-      minHeight="2.5rem"
-      px="4"
-      py="1"
-      align="center"
-      className={css`
-        border-radius: var(--radius-4);
-        transition: background-color 0.1s ease-out;
-        &:hover {
-          background-color: var(--accent-2);
-        }
-      `}
+      className="flex min-h-11 items-center gap-rx-2 rounded-3 px-rx-3 py-rx-1 hover:bg-gray-3"
     >
       {editorOpen ? (
         <TodoForm
@@ -130,6 +118,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
         <>
           <Checkbox
             size="3"
+            variant="soft"
             disabled={updateTodo.isPending}
             checked={todo.isCompleted}
             onCheckedChange={() =>
@@ -148,11 +137,11 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
           {!todo.isAuthor && <UserBubble user={todo.author} size="md" />}
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
-              <IconButton size="1" radius="full" variant="ghost">
-                <EllipsisVertical size="1rem" />
+              <IconButton size="2" variant="ghost">
+                <EllipsisVertical className="size-4" />
               </IconButton>
             </DropdownMenu.Trigger>
-            <DropdownMenu.Content align="end">
+            <DropdownMenu.Content align="end" className="min-w-40">
               <DropdownMenu.Group>
                 <DropdownMenu.Item onClick={() => setEditorOpen(true)}>
                   <MenuItem text="Edit" icon={Pencil} />
@@ -202,7 +191,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
           </DropdownMenu.Root>
         </>
       )}
-    </Flex>
+    </div>
   );
 };
 

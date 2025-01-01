@@ -21,12 +21,12 @@ const List: React.FC<{
     <Button
       size="1"
       color={isSelected ? undefined : "gray"}
-      variant={isSelected ? "solid" : "soft"}
+      variant={isSelected ? "surface" : "soft"}
       onClick={() => setSelectedList(value)}
     >
-      <Flex align="center" gap="1">
+      <Flex align="center" gap="2">
         <Text>{name}</Text>
-        <Text color="gray">{count}</Text>
+        <Text className="font-mono text-accentA-12">{count}</Text>
         <UserBubbleGroup users={users} numAvatars={3} />
       </Flex>
     </Button>
@@ -56,8 +56,13 @@ const Lists: React.FC = () => {
           users={list.otherUsers}
         />
       ))}
-      <Button size="1" variant="soft" onClick={() => setEditorIsOpen(true)}>
-        <Pencil size="0.8rem" />
+      <Button
+        size="1"
+        variant="surface"
+        onClick={() => setEditorIsOpen(true)}
+        color="gray"
+      >
+        <Pencil className="size-3" />
         <span>Edit</span>
       </Button>
     </Flex>
