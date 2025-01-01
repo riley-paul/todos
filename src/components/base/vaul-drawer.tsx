@@ -23,7 +23,7 @@ const VaulDrawer: React.FC<Props> = ({
       <Drawer.Portal>
         <RadixProvider>
           <Drawer.Overlay className="fixed inset-0 bg-blackA-6" />
-          <Drawer.Content className="container2 fixed bottom-0 left-0 right-0 mt-24 h-fit min-h-52 rounded-t-4 border border-b-0 border-gray-7 bg-panel-translucent py-2 outline-none">
+          <Drawer.Content className="container2 fixed bottom-0 left-0 right-0 mt-24 h-fit min-h-40 rounded-t-4 border border-b-0 border-gray-7 bg-panel-translucent py-2 outline-none backdrop-blur">
             <Drawer.Handle />
             <div className="grid gap-4 p-rx-4">
               {(title || description) && (

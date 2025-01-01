@@ -15,9 +15,16 @@ const ListAdder: React.FC<Props> = ({ isOpen, setIsOpen }) => {
   const [value, setValue] = React.useState("");
 
   return (
-    <VaulDrawer isOpen={isOpen} setIsOpen={setIsOpen} title="Add a New List">
+    <VaulDrawer
+      isOpen={isOpen}
+      setIsOpen={(open) => {
+        setIsOpen(open);
+        setValue("");
+      }}
+      title="Add a New List"
+    >
       <form
-        className="grid gap-4"
+        className="flex gap-rx-3"
         onSubmit={(e) => {
           e.preventDefault();
           createList.mutate({ name: value });
@@ -28,19 +35,14 @@ const ListAdder: React.FC<Props> = ({ isOpen, setIsOpen }) => {
         <TextField.Root
           placeholder="New List"
           autoFocus
-          size="3"
           value={value}
           onChange={(e) => setValue(e.target.value)}
+          className="flex-1"
         />
-        <div className="grid grid-cols-2 justify-end gap-rx-2 sm:flex">
-          <Button variant="soft" color="gray" onClick={() => setIsOpen(false)}>
-            Cancel
-          </Button>
-          <Button variant="solid" type="submit">
-            <Save className="size-4" />
-            Save
-          </Button>
-        </div>
+        <Button variant="solid" type="submit">
+          <Save className="size-4" />
+          Save
+        </Button>
       </form>
     </VaulDrawer>
   );
