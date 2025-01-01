@@ -5,9 +5,6 @@ import useSelectedList from "@/hooks/use-selected-list";
 import { Button, Flex, Spinner, TextField } from "@radix-ui/themes";
 import { Plus } from "lucide-react";
 
-const isOnlyHashtag = (value: string) =>
-  value.startsWith("#") && value.trim().split(" ").length === 1;
-
 const isEmptyString = (value: string) => value.trim() === "";
 
 export default function Adder(): ReturnType<React.FC> {
@@ -43,7 +40,7 @@ export default function Adder(): ReturnType<React.FC> {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        if (isEmptyString(value) || isOnlyHashtag(value)) return;
+        if (isEmptyString(value)) return;
         create();
       }}
     >
@@ -56,9 +53,7 @@ export default function Adder(): ReturnType<React.FC> {
           onChange={(e) => setValue(e.target.value)}
           placeholder="Add a todo..."
           onFocus={(e) => {
-            if (!isOnlyHashtag(value)) {
-              e.target.select();
-            }
+            e.target.select();
           }}
           className="flex-1"
         />
@@ -67,9 +62,11 @@ export default function Adder(): ReturnType<React.FC> {
           size="3"
           type="submit"
           variant="soft"
-          disabled={isEmptyString(value) || isOnlyHashtag(value)}
+          disabled={isEmptyString(value)}
         >
-          {createTodo.isPending ? <Spinner /> : <Plus className="size-5" />}
+          <Spinner loading={createTodo.isPending}>
+            <Plus className="size-5" />
+          </Spinner>
           {!isMobile && <span>Add</span>}
         </Button>
       </Flex>

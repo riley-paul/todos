@@ -50,29 +50,28 @@ const TodoForm: React.FC<{
         e.preventDefault();
         handleSubmit(value);
       }}
-      className="w-full"
+      className="flex w-full items-center gap-rx-2"
     >
       <TextField.Root
         size="2"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         autoFocus
+        className="flex-1"
       >
         <TextField.Slot side="left">
           <Pencil className="size-4 text-accent-10" />
         </TextField.Slot>
-        <TextField.Slot side="right">
-          <Button
-            variant="soft"
-            type="submit"
-            size="1"
-            onClick={() => handleSubmit(value)}
-          >
-            <Save size="1rem" />
-            Save
-          </Button>
-        </TextField.Slot>
       </TextField.Root>
+      <Button
+        variant="soft"
+        type="submit"
+        size="2"
+        onClick={() => handleSubmit(value)}
+      >
+        <Save size="1rem" />
+        Save
+      </Button>
     </form>
   );
 };

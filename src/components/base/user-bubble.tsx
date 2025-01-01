@@ -1,4 +1,5 @@
 import type { UserSelect } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { Avatar } from "@radix-ui/themes";
 import React from "react";
 
@@ -10,9 +11,9 @@ type Props = {
 };
 
 const sizeMap: Record<Size, string> = {
-  sm: "1rem",
-  md: "1.5rem",
-  lg: "2rem",
+  sm: "size-4",
+  md: "size-8",
+  lg: "size-12",
 };
 
 const UserBubble: React.FC<Props> = (props) => {
@@ -20,10 +21,10 @@ const UserBubble: React.FC<Props> = (props) => {
 
   return (
     <Avatar
-      style={{ height: sizeMap[size], width: sizeMap[size] }}
       radius="full"
       src={user.avatarUrl ?? ""}
       fallback={user.name[0]}
+      className={cn(sizeMap[size])}
     />
   );
 };

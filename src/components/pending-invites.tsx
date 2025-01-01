@@ -3,7 +3,15 @@ import { useQuery } from "@tanstack/react-query";
 import { pendingSharesQueryOptions } from "@/lib/queries";
 import UserBubble from "./base/user-bubble";
 import useMutations from "@/hooks/use-mutations";
-import { Button, IconButton, Popover } from "@radix-ui/themes";
+import {
+  Badge,
+  Button,
+  IconButton,
+  Popover,
+  Strong,
+  Text,
+} from "@radix-ui/themes";
+import { CheckIcon, X } from "lucide-react";
 
 const PendingInvites: React.FC = () => {
   const pendingSharesQuery = useQuery(pendingSharesQueryOptions);
@@ -13,43 +21,50 @@ const PendingInvites: React.FC = () => {
   return (
     <Popover.Root>
       <Popover.Trigger>
-        <IconButton
-          variant="soft"
-          className="relative rounded-full"
-        >
+        <IconButton variant="soft" className="relative rounded-full">
           <i className="fa-solid fa-bell" />
           {numPendingShares > 0 && (
-            <div className="absolute -right-3 -top-1 rounded-full bg-primary px-2 py-0.5 text-xs">
-              {numPendingShares}
-            </div>
+            <Badge
+              variant="solid"
+              color="gray"
+              className="absolute -right-2 -top-2 rounded-full py-0.5"
+            >
+              <Text size="1">{numPendingShares}</Text>
+            </Badge>
           )}
         </IconButton>
       </Popover.Trigger>
-      <Popover.Content align="end" className="py-2">
-        <div className="grid divide-y">
+      <Popover.Content align="end" className="min-w-52 py-2">
+        <div className="grid divide-y px-rx-2">
           {pendingSharesQuery.data?.map((share) => (
-            <div key={share.id} className="flex items-center gap-3 py-2">
+            <div
+              key={share.id}
+              className="flex w-full items-center gap-rx-3 border-gray-5 py-rx-4"
+            >
               <div className="h-full">
                 <UserBubble user={share.invitedBy} size="md" />
               </div>
-              <div className="grid gap-2">
-                <span className="text-sm">
-                  <b>{share.invitedBy.name}</b> invited you to join{" "}
-                  <b>{share.list.name}</b>
-                </span>
-                <div className="grid grid-cols-2 gap-2">
+              <div className="grid flex-1 gap-rx-3">
+                <Text size="3">
+                  <Strong>{share.invitedBy.name}</Strong> invited you to join{" "}
+                  <Strong>{share.list.name}</Strong>
+                </Text>
+                <div className="grid grid-cols-2 gap-rx-2">
                   <Button
-                    size="sm"
-                    variant="secondary"
+                    size="2"
+                    variant="outline"
                     onClick={() => acceptListShare.mutate({ id: share.id })}
                   >
+                    <CheckIcon className="size-4" />
                     <span>Accept</span>
                   </Button>
                   <Button
-                    size="sm"
+                    size="2"
                     variant="outline"
+                    color="red"
                     onClick={() => deleteListShare.mutate({ id: share.id })}
                   >
+                    <X className="size-4" />
                     <span>Decline</span>
                   </Button>
                 </div>
@@ -57,9 +72,9 @@ const PendingInvites: React.FC = () => {
             </div>
           ))}
           {pendingSharesQuery.data?.length === 0 && (
-            <div className="flex min-h-12 items-center justify-center text-sm text-muted-foreground">
-              No pending shares
-            </div>
+            <Text className="p-4" size="2" color="gray" align="center">
+              No pending invites
+            </Text>
           )}
         </div>
       </Popover.Content>

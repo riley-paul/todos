@@ -3,17 +3,8 @@ import React from "react";
 import LoginButton from "./login-button";
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/lib/queries";
-import { cn } from "@/lib/utils";
 import useMutations from "@/hooks/use-mutations";
-import {
-  AlertDialog,
-  Avatar,
-  Button,
-  Flex,
-  Grid,
-  Popover,
-  Text,
-} from "@radix-ui/themes";
+import { AlertDialog, Avatar, Button, Popover, Text } from "@radix-ui/themes";
 import { LogOut, Trash } from "lucide-react";
 
 interface DialogProps {
@@ -32,7 +23,7 @@ const AccountDeletionConfirm: React.FC<DialogProps> = (props) => {
           This action cannot be undone. This will permanently delete your
           account and remove your data from our servers.
         </AlertDialog.Description>
-        <Flex gap="3" mt="4" justify="end">
+        <div className="mt-rx-3 flex justify-end gap-rx-3">
           <AlertDialog.Cancel>
             <Button variant="soft" color="gray">
               Cancel
@@ -47,7 +38,7 @@ const AccountDeletionConfirm: React.FC<DialogProps> = (props) => {
               Continue
             </Button>
           </AlertDialog.Action>
-        </Flex>
+        </div>
       </AlertDialog.Content>
     </AlertDialog.Root>
   );
@@ -90,31 +81,32 @@ const UserAvatar: React.FC = () => {
             radius="full"
             src={user.avatarUrl ?? ""}
             fallback={user.name[0].toUpperCase()}
+            className="cursor-pointer"
           />
         </Popover.Trigger>
         <Popover.Content align="end">
-          <Grid gap="4">
-            <Flex gap="4" align="center">
+          <div className="grid gap-rx-4">
+            <div className="align-center flex gap-rx-4">
               <Avatar
                 size="5"
                 radius="full"
                 src={user.avatarUrl ?? ""}
                 fallback={user.name[0].toUpperCase()}
               />
-              <Grid className="flex flex-col justify-center">
-                <Text weight="medium" size="4">
+              <div className="flex flex-col justify-center">
+                <Text weight="bold" size="4">
                   {user.name}
                 </Text>
                 <Text size="2" color="gray">
                   {user.email}
                 </Text>
-              </Grid>
-            </Flex>
+              </div>
+            </div>
 
-            <Grid columns="2" gap="2">
-              <Button asChild className={cn("relative")}>
+            <div className="grid gap-rx-2">
+              <Button asChild className="relative" variant="soft">
                 <a href="/logout">
-                  <LogOut size="1rem" />
+                  <LogOut className="absolute left-rx-2 size-4" />
                   <span>Logout</span>
                 </a>
               </Button>
@@ -122,12 +114,13 @@ const UserAvatar: React.FC = () => {
                 color="red"
                 size="2"
                 onClick={() => setAccountDeletionOpen(true)}
+                className="relative"
               >
-                <Trash size="1rem" />
+                <Trash className="absolute left-rx-2 size-4" />
                 <span>Delete Account</span>
               </Button>
-            </Grid>
-          </Grid>
+            </div>
+          </div>
         </Popover.Content>
       </Popover.Root>
     </>
