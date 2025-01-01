@@ -7,8 +7,7 @@ import { Button } from "./ui/button";
 import type { SelectedList, UserSelect } from "@/lib/types";
 import UserBubbleGroup from "./base/user-bubble-group";
 import useSelectedList from "@/hooks/use-selected-list";
-import ListEditor from "./list-editor";
-import ListAdder from "./list-adder";
+import ListModal from "./list-modal/list-modal";
 
 const List: React.FC<{
   value: SelectedList;
@@ -59,8 +58,7 @@ const Lists: React.FC = () => {
   const inboxCount = useQuery(todosQueryOptions(null))?.data?.length;
   const allCount = useQuery(todosQueryOptions("all"))?.data?.length;
 
-  const [editorOpen, setEditorOpen] = React.useState(false);
-  const [adderOpen, setAdderOpen] = React.useState(false);
+  const [modalOpen, setModalOpen] = React.useState(false);
 
   return (
     <>
@@ -79,17 +77,16 @@ const Lists: React.FC = () => {
             users={list.otherUsers}
           />
         ))}
-        <ListButton onClick={() => setEditorOpen(true)}>
+        <ListButton onClick={() => setModalOpen(true)}>
           <i className="fa-solid fa-pen text-muted-foreground" />
           <span>Edit</span>
         </ListButton>
-        <ListButton onClick={() => setAdderOpen(true)}>
+        <ListButton onClick={() => setModalOpen(true)}>
           <i className="fa-solid fa-plus text-muted-foreground" />
           <span>Add</span>
         </ListButton>
       </div>
-      <ListEditor open={editorOpen} setOpen={setEditorOpen} />
-      <ListAdder open={adderOpen} setOpen={setAdderOpen} />
+      <ListModal open={modalOpen} setOpen={setModalOpen} list={undefined} />
     </>
   );
 };
