@@ -1,33 +1,25 @@
 import React from "react";
 import UserAvatar from "./user-avatar";
 import PendingInvites from "./pending-invites";
-import { Container, Flex, Text } from "@radix-ui/themes";
+import { Container, Text } from "@radix-ui/themes";
 import { CheckCircleIcon } from "lucide-react";
 
 const Header: React.FC = () => {
   return (
-    <header
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 500,
-        backgroundColor: "var(--color-panel-translucent)",
-        borderBottom: "1px solid var(--gray-7)",
-      }}
-    >
+    <header className="sticky top-0 z-50 border-b border-gray-7 bg-panel-translucent">
       <Container size="2">
-        <Flex gap="4" justify="between" height="4rem" align="center" px="3">
-          <Flex align="center" gap="2">
-            <CheckCircleIcon size="1.5rem" color="var(--accent-9)" />
+        <div className="flex items-center justify-between px-rx-3 py-rx-3">
+          <div className="flex items-center gap-2">
+            <CheckCircleIcon className="size-7 text-accent-10" />
             <Text size="6" weight="bold">
               Todos
             </Text>
-          </Flex>
-          <Flex gap="3">
+          </div>
+          <div className="flex items-center gap-4">
             <PendingInvites />
             <UserAvatar />
-          </Flex>
-        </Flex>
+          </div>
+        </div>
       </Container>
     </header>
   );

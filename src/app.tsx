@@ -14,7 +14,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { handleMutationError } from "@/hooks/use-mutations";
 import ListsEditor from "@/components/lists-editor";
 import { NuqsAdapter } from "nuqs/adapters/react";
-import { Container, Grid, Theme } from "@radix-ui/themes";
+import { Container, Theme } from "@radix-ui/themes";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -38,11 +38,11 @@ const App: React.FC = () => {
           <TooltipProvider>
             <Header />
             <Container size="2">
-              <Grid py="6" gap="4">
+              <main className="grid gap-rx-4 py-rx-6">
                 <Adder />
                 <Lists />
                 <Todos />
-              </Grid>
+              </main>
             </Container>
             <ListsEditor />
             <Toaster />

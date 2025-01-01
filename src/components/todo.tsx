@@ -50,7 +50,7 @@ const TodoForm: React.FC<{
         e.preventDefault();
         handleSubmit(value);
       }}
-      style={{ width: "100%" }}
+      className="w-full"
     >
       <TextField.Root
         size="2"
@@ -59,7 +59,7 @@ const TodoForm: React.FC<{
         autoFocus
       >
         <TextField.Slot side="left">
-          <Pencil size="1rem" />
+          <Pencil className="size-4 text-accent-10" />
         </TextField.Slot>
         <TextField.Slot side="right">
           <Button
@@ -137,7 +137,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
           {!todo.isAuthor && <UserBubble user={todo.author} size="md" />}
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
-              <IconButton size="2" variant="ghost">
+              <IconButton size="1" variant="ghost">
                 <EllipsisVertical className="size-4" />
               </IconButton>
             </DropdownMenu.Trigger>

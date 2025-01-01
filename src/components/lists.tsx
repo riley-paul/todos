@@ -41,7 +41,7 @@ const Lists: React.FC = () => {
   const setEditorIsOpen = useSetAtom(listsEditorOpenAtom);
 
   return (
-    <Flex px="3" gap="2" wrap="wrap">
+    <div className="px-rx-3 flex flex-wrap gap-rx-2">
       <List value={null} name="Inbox" count={inboxCount} />
       <List value={"all"} name="All" count={allCount} />
       <Flex align="center">
@@ -58,14 +58,14 @@ const Lists: React.FC = () => {
       ))}
       <Button
         size="1"
-        variant="surface"
-        onClick={() => setEditorIsOpen(true)}
+        variant="soft"
         color="gray"
+        onClick={() => setEditorIsOpen(true)}
       >
         <Pencil className="size-3" />
         <span>Edit</span>
       </Button>
-    </Flex>
+    </div>
   );
 };
 
