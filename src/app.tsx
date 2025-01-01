@@ -12,7 +12,6 @@ import Lists from "@/components/lists";
 import Todos from "@/components/todos";
 import { Toaster } from "@/components/ui/sonner";
 import { handleMutationError } from "@/hooks/use-mutations";
-import ListsEditor from "@/components/lists-editor";
 import { NuqsAdapter } from "nuqs/adapters/react";
 import { Container, Theme } from "@radix-ui/themes";
 
@@ -44,7 +43,6 @@ const App: React.FC = () => {
                 <Todos />
               </main>
             </Container>
-            <ListsEditor />
             <Toaster />
           </TooltipProvider>
         </Theme>

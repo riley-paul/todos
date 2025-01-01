@@ -10,8 +10,6 @@ import useConfirmButton from "@/hooks/use-confirm-button";
 import UserBubble from "./base/user-bubble";
 import DeleteButton from "./ui/delete-button";
 import { cn } from "@/lib/utils";
-import { useAtom } from "jotai";
-import { listsEditorOpenAtom } from "@/lib/store";
 import { useEventListener } from "usehooks-ts";
 import { Box, Button, Dialog, Grid, Text, Tooltip } from "@radix-ui/themes";
 
@@ -46,10 +44,10 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
       {list.isAuthor && (
         <div className="grid gap-2">
           <Text className="text-xs">Share with</Text>
-          <div className="min-h-12 overflow-y-auto rounded bg-secondary/20 px-2">
+          <div className="rounded bg-secondary/20 min-h-12 overflow-y-auto px-2">
             <div className="grid divide-y">
               {list.shares.map((share) => (
-                <div className="flex items-center gap-2 py-2 text-sm">
+                <div className="text-sm flex items-center gap-2 py-2">
                   <UserBubble user={share.user} size="md" />
                   <div className="grid flex-1 gap-0.5">
                     <span>{share.user.name}</span>
@@ -70,7 +68,7 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
                 </div>
               ))}
               {list.shares.length === 0 && (
-                <div className="flex h-12 items-center justify-center text-xs text-muted-foreground">
+                <div className="text-xs text-muted-foreground flex h-12 items-center justify-center">
                   No shares
                 </div>
               )}
@@ -121,8 +119,8 @@ const ListContainer: React.FC<{
   return (
     <div
       className={cn(
-        "grid gap-2 px-3 hover:bg-secondary/20",
-        isOpen && "bg-secondary/20"
+        "hover:bg-secondary/20 grid gap-2 px-3",
+        isOpen && "bg-secondary/20",
       )}
     >
       <Button
@@ -130,18 +128,18 @@ const ListContainer: React.FC<{
         className="flex items-center justify-between gap-2 py-2"
         onClick={() => setOpen(!isOpen)}
       >
-        <div className="flex items-center gap-2 text-sm">
+        <div className="text-sm flex items-center gap-2">
           <span className="font-semibold">{list.name}</span>
           <UserBubbleGroup users={list.otherUsers} numAvatars={10} />
           {list.isAuthor && (
             <i className="fa-solid fa-star text-sm text-primary/50" />
           )}
         </div>
-        <div className="flex size-6 items-center justify-center text-xs">
+        <div className="text-xs flex size-6 items-center justify-center">
           <i
             className={cn(
               "fa-solid fa-chevron-right transition-transform",
-              isOpen && "rotate-90"
+              isOpen && "rotate-90",
             )}
           />
         </div>
@@ -155,9 +153,10 @@ const ListContainer: React.FC<{
   );
 };
 
-const ListsEditor: React.FC = () => {
-  const [isOpen, setIsOpen] = useAtom(listsEditorOpenAtom);
-
+const ListsEditor: React.FC<{
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+}> = ({ isOpen, setIsOpen }) => {
   useEventListener("keydown", (e) => {
     if (e.key === "e" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
@@ -188,7 +187,7 @@ const ListsEditor: React.FC = () => {
               backgroundColor: "var(--gray-3)",
               borderRadius: "var(--radius-3)",
             }}
-            className="rounded-lg border bg-secondary/20"
+            className="rounded-lg bg-secondary/20 border"
           >
             <QueryGuard query={listsQuery}>
               {(lists) => (

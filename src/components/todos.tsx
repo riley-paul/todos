@@ -58,6 +58,7 @@ const Todos: React.FC = () => {
                 <Button
                   size="1"
                   variant="soft"
+                  color="gray"
                   onClick={() =>
                     deleteCompletedTodos.mutate({ listId: selectedList })
                   }

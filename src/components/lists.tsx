@@ -1,13 +1,12 @@
 import React from "react";
-import { useSetAtom } from "jotai/react";
-import { listsEditorOpenAtom } from "@/lib/store";
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
 import type { SelectedList, UserSelect } from "@/lib/types";
 import UserBubbleGroup from "./base/user-bubble-group";
 import useSelectedList from "@/hooks/use-selected-list";
 import { Button, Flex, Separator, Text } from "@radix-ui/themes";
-import { Pencil } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
+import ListsEditor from "./lists-editor";
 
 const List: React.FC<{
   value: SelectedList;
@@ -38,34 +37,46 @@ const Lists: React.FC = () => {
   const inboxCount = useQuery(todosQueryOptions(null))?.data?.length;
   const allCount = useQuery(todosQueryOptions("all"))?.data?.length;
 
-  const setEditorIsOpen = useSetAtom(listsEditorOpenAtom);
+  const [editorOpen, setEditorOpen] = React.useState(false);
 
   return (
-    <div className="px-rx-3 flex flex-wrap gap-rx-2">
-      <List value={null} name="Inbox" count={inboxCount} />
-      <List value={"all"} name="All" count={allCount} />
-      <Flex align="center">
-        <Separator orientation="vertical" size="1" />
-      </Flex>
-      {listsQuery.data?.map((list) => (
-        <List
-          key={list.id}
-          value={list.id}
-          name={list.name}
-          count={list.todoCount}
-          users={list.otherUsers}
-        />
-      ))}
-      <Button
-        size="1"
-        variant="soft"
-        color="gray"
-        onClick={() => setEditorIsOpen(true)}
-      >
-        <Pencil className="size-3" />
-        <span>Edit</span>
-      </Button>
-    </div>
+    <>
+      <div className="flex flex-wrap gap-rx-2 px-rx-3">
+        <List value={null} name="Inbox" count={inboxCount} />
+        <List value={"all"} name="All" count={allCount} />
+        <Flex align="center">
+          <Separator orientation="vertical" size="1" />
+        </Flex>
+        {listsQuery.data?.map((list) => (
+          <List
+            key={list.id}
+            value={list.id}
+            name={list.name}
+            count={list.todoCount}
+            users={list.otherUsers}
+          />
+        ))}
+        <Button
+          size="1"
+          variant="soft"
+          color="gray"
+          onClick={() => setEditorOpen(true)}
+        >
+          <Pencil className="mr-0.5 size-3" />
+          Edit
+        </Button>
+        <Button
+          size="1"
+          variant="soft"
+          color="gray"
+          onClick={() => setEditorOpen(true)}
+        >
+          <Plus className="mr-0.5 size-3" />
+          Add
+        </Button>
+      </div>
+      <ListsEditor isOpen={editorOpen} setIsOpen={setEditorOpen} />
+    </>
   );
 };
 
