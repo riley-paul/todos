@@ -86,7 +86,7 @@ const UserAvatar: React.FC = () => {
       <Popover.Root>
         <Popover.Trigger title="User settings">
           <Avatar
-            size="2"
+            size="3"
             radius="full"
             src={user.avatarUrl ?? ""}
             fallback={user.name[0].toUpperCase()}

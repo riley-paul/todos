@@ -9,13 +9,15 @@ import node from "@astrojs/node";
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 import { VitePWA } from "vite-plugin-pwa";
 
+import tailwind from "@astrojs/tailwind";
+
 // https://astro.build/config
 export default defineConfig({
   prefetch: true,
   site: import.meta.env.PROD
     ? "https://todos.rileys-projects.com"
     : "http://localhost:4321",
-  integrations: [react(), db()],
+  integrations: [react(), db(), tailwind()],
   vite: {
     plugins: [VitePWA({ registerType: "autoUpdate" })],
     resolve: {

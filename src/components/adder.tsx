@@ -2,8 +2,8 @@ import React from "react";
 import { useEventListener, useMediaQuery } from "usehooks-ts";
 import useMutations from "@/hooks/use-mutations";
 import useSelectedList from "@/hooks/use-selected-list";
-import { Box, Button, Flex, Spinner, TextField } from "@radix-ui/themes";
-import { PlusIcon } from "@radix-ui/react-icons";
+import { Button, Flex, Spinner, TextField } from "@radix-ui/themes";
+import { Plus } from "lucide-react";
 
 const isOnlyHashtag = (value: string) =>
   value.startsWith("#") && value.trim().split(" ").length === 1;
@@ -48,28 +48,28 @@ export default function Adder(): ReturnType<React.FC> {
       }}
     >
       <Flex gap="3" align="center" px="3">
-        <Box flexGrow="1">
-          <TextField.Root
-            autoFocus
-            size="3"
-            ref={inputRef}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            placeholder="Add a todo..."
-            onFocus={(e) => {
-              if (!isOnlyHashtag(value)) {
-                e.target.select();
-              }
-            }}
-          />
-        </Box>
+        <TextField.Root
+          autoFocus
+          size="3"
+          ref={inputRef}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="Add a todo..."
+          onFocus={(e) => {
+            if (!isOnlyHashtag(value)) {
+              e.target.select();
+            }
+          }}
+          className="flex-1"
+        />
         <input type="submit" hidden />
         <Button
-          type="submit"
           size="3"
+          type="submit"
+          variant="soft"
           disabled={isEmptyString(value) || isOnlyHashtag(value)}
         >
-          {createTodo.isPending ? <Spinner /> : <PlusIcon />}
+          {createTodo.isPending ? <Spinner /> : <Plus className="size-5" />}
           {!isMobile && <span>Add</span>}
         </Button>
       </Flex>
