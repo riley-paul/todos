@@ -26,6 +26,7 @@ import {
   Text,
   TextField,
 } from "@radix-ui/themes";
+import { cn } from "@/lib/utils";
 
 const MenuItem: React.FC<{ text: string; icon: LucideIcon }> = ({
   text,
@@ -128,7 +129,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
             }
           />
           <Flex flexGrow="1" align="center" onClick={() => setEditorOpen(true)}>
-            <Text size="2">{todo.text}</Text>
+            <Text size="2" className={cn(todo.isCompleted && "text-gray-10 line-through")}>{todo.text}</Text>
           </Flex>
           {todo.list && todo.list.id !== selectedList && (
             <Badge>{todo.list.name}</Badge>

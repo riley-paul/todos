@@ -5,6 +5,8 @@
 @tailwind utilities;
 
 .radix-themes {
+  --default-font-family: Rubik, sans-serif;
+
   --cursor-button: pointer;
   --cursor-checkbox: pointer;
   --cursor-disabled: default;

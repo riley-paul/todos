@@ -12,7 +12,7 @@ type Props = {
 
 const sizeMap: Record<Size, string> = {
   sm: "size-4",
-  md: "size-8",
+  md: "size-6",
   lg: "size-12",
 };
 
