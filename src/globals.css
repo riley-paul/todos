@@ -17,3 +17,7 @@
   --cursor-slider-thumb-active: grabbing;
   --cursor-switch: pointer;
 }
+
+.container2 {
+  @apply mx-auto w-full max-w-screen-sm px-2;
+}

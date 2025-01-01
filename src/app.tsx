@@ -4,7 +4,6 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import Header from "@/components/header";
 import useQueryStream from "@/hooks/use-query-stream";
 import Adder from "@/components/adder";
@@ -13,7 +12,7 @@ import Todos from "@/components/todos";
 import { Toaster } from "@/components/ui/sonner";
 import { handleMutationError } from "@/hooks/use-mutations";
 import { NuqsAdapter } from "nuqs/adapters/react";
-import { Container, Theme } from "@radix-ui/themes";
+import RadixProvider from "./components/radix-provider";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -33,19 +32,15 @@ const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <NuqsAdapter>
-        <Theme appearance="dark" accentColor="mint" radius="large">
-          <TooltipProvider>
-            <Header />
-            <Container size="2">
-              <main className="grid gap-rx-4 py-rx-6">
-                <Adder />
-                <Lists />
-                <Todos />
-              </main>
-            </Container>
-            <Toaster />
-          </TooltipProvider>
-        </Theme>
+        <RadixProvider>
+          <Header />
+          <main className="container2 grid gap-rx-4 py-rx-6">
+            <Adder />
+            <Lists />
+            <Todos />
+          </main>
+          <Toaster />
+        </RadixProvider>
       </NuqsAdapter>
     </QueryClientProvider>
   );

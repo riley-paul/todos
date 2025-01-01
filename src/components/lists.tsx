@@ -7,6 +7,7 @@ import useSelectedList from "@/hooks/use-selected-list";
 import { Button, Flex, Separator, Text } from "@radix-ui/themes";
 import { Pencil, Plus } from "lucide-react";
 import ListsEditor from "./lists-editor";
+import ListAdder from "./list-adder";
 
 const List: React.FC<{
   value: SelectedList;
@@ -38,6 +39,7 @@ const Lists: React.FC = () => {
   const allCount = useQuery(todosQueryOptions("all"))?.data?.length;
 
   const [editorOpen, setEditorOpen] = React.useState(false);
+  const [adderOpen, setAdderOpen] = React.useState(false);
 
   return (
     <>
@@ -69,13 +71,14 @@ const Lists: React.FC = () => {
           size="1"
           variant="soft"
           color="gray"
-          onClick={() => setEditorOpen(true)}
+          onClick={() => setAdderOpen(true)}
         >
           <Plus className="mr-0.5 size-3" />
           Add
         </Button>
       </div>
       <ListsEditor isOpen={editorOpen} setIsOpen={setEditorOpen} />
+      <ListAdder isOpen={adderOpen} setIsOpen={setAdderOpen} />
     </>
   );
 };
