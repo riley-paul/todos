@@ -1,6 +1,4 @@
 import React from "react";
-import { useSetAtom } from "jotai/react";
-import { listsEditorOpenAtom } from "@/lib/store";
 import { Separator } from "./ui/separator";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -9,6 +7,8 @@ import { Button } from "./ui/button";
 import type { SelectedList, UserSelect } from "@/lib/types";
 import UserBubbleGroup from "./base/user-bubble-group";
 import useSelectedList from "@/hooks/use-selected-list";
+import ListEditor from "./list-editor";
+import ListAdder from "./list-adder";
 
 const List: React.FC<{
   value: SelectedList;
@@ -39,39 +39,58 @@ const List: React.FC<{
   );
 };
 
+const ListButton: React.FC<
+  React.PropsWithChildren<{ onClick: () => void }>
+> = ({ onClick, children }) => {
+  return (
+    <Button
+      size="sm"
+      className="flex h-6 select-none gap-1.5"
+      variant="outline"
+      onClick={onClick}
+    >
+      {children}
+    </Button>
+  );
+};
+
 const Lists: React.FC = () => {
   const listsQuery = useQuery(listsQueryOptions);
   const inboxCount = useQuery(todosQueryOptions(null))?.data?.length;
   const allCount = useQuery(todosQueryOptions("all"))?.data?.length;
 
-  const setEditorIsOpen = useSetAtom(listsEditorOpenAtom);
+  const [editorOpen, setEditorOpen] = React.useState(false);
+  const [adderOpen, setAdderOpen] = React.useState(false);
 
   return (
-    <div className="flex flex-wrap gap-2 px-3">
-      <List value={null} name="Inbox" count={inboxCount} />
-      <List value={"all"} name="All" count={allCount} />
-      <div className="flex items-center">
-        <Separator orientation="vertical" className="h-5" />
+    <>
+      <div className="flex flex-wrap gap-2 px-3">
+        <List value={null} name="Inbox" count={inboxCount} />
+        <List value={"all"} name="All" count={allCount} />
+        <div className="flex items-center">
+          <Separator orientation="vertical" className="h-5" />
+        </div>
+        {listsQuery.data?.map((list) => (
+          <List
+            key={list.id}
+            value={list.id}
+            name={list.name}
+            count={list.todoCount}
+            users={list.otherUsers}
+          />
+        ))}
+        <ListButton onClick={() => setEditorOpen(true)}>
+          <i className="fa-solid fa-pen text-muted-foreground" />
+          <span>Edit</span>
+        </ListButton>
+        <ListButton onClick={() => setAdderOpen(true)}>
+          <i className="fa-solid fa-plus text-muted-foreground" />
+          <span>Add</span>
+        </ListButton>
       </div>
-      {listsQuery.data?.map((list) => (
-        <List
-          key={list.id}
-          value={list.id}
-          name={list.name}
-          count={list.todoCount}
-          users={list.otherUsers}
-        />
-      ))}
-      <Button
-        variant="ghostMuted"
-        size="sm"
-        className="h-6 px-3"
-        onClick={() => setEditorIsOpen(true)}
-      >
-        <i className="fa-solid fa-pen mr-1.5" />
-        <span>Edit</span>
-      </Button>
-    </div>
+      <ListEditor open={editorOpen} setOpen={setEditorOpen} />
+      <ListAdder open={adderOpen} setOpen={setAdderOpen} />
+    </>
   );
 };
 

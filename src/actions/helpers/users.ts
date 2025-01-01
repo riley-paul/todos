@@ -45,6 +45,7 @@ export const getTodoUsers = async (todoId: string): Promise<string[]> => {
     .select({ id: Todo.id, listId: Todo.listId, userId: Todo.userId })
     .from(Todo)
     .where(eq(Todo.id, todoId))
+    .limit(1)
     .then((rows) => rows[0]);
 
   if (!todo) {

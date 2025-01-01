@@ -12,7 +12,6 @@ import Lists from "@/components/lists";
 import Todos from "@/components/todos";
 import { Toaster } from "@/components/ui/sonner";
 import { handleMutationError } from "@/hooks/use-mutations";
-import ListsEditor from "@/components/lists-editor";
 import { NuqsAdapter } from "nuqs/adapters/react";
 
 const queryClient = new QueryClient({
@@ -40,7 +39,6 @@ const App: React.FC = () => {
             <Lists />
             <Todos />
           </main>
-          <ListsEditor />
           <Toaster />
         </TooltipProvider>
       </NuqsAdapter>
