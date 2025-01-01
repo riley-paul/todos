@@ -104,7 +104,7 @@ const UserAvatar: React.FC = () => {
             </div>
 
             <div className="grid gap-rx-2">
-              <Button asChild className="relative" variant="soft">
+              <Button asChild className="relative" variant="surface">
                 <a href="/logout">
                   <LogOut className="absolute left-rx-2 size-4" />
                   <span>Logout</span>
@@ -112,6 +112,7 @@ const UserAvatar: React.FC = () => {
               </Button>
               <Button
                 color="red"
+                variant="surface"
                 size="2"
                 onClick={() => setAccountDeletionOpen(true)}
                 className="relative"
