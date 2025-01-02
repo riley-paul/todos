@@ -6,6 +6,7 @@ import UserBubble from "./base/user-bubble";
 import DeleteButton from "./base/delete-button";
 import { useDebounceValue, useEventListener } from "usehooks-ts";
 import {
+  Badge,
   Button,
   Callout,
   IconButton,
@@ -21,9 +22,11 @@ import {
   CircleCheck,
   CircleX,
   Hourglass,
+  LogOut,
   NotebookTabs,
   Save,
   Send,
+  Trash,
 } from "lucide-react";
 import useSelectedList from "@/hooks/use-selected-list";
 
@@ -60,7 +63,13 @@ const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
 const ListEditor: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const { deleteListShare, createListShare, updateList } = useMutations();
+  const {
+    deleteListShare,
+    createListShare,
+    leaveListShare,
+    updateList,
+    deleteList,
+  } = useMutations();
 
   const { selectedList } = useSelectedList();
   const listsQuery = useQuery(listsQueryOptions);
@@ -191,16 +200,18 @@ const ListEditor: React.FC = () => {
                   </div>
                   {share.isPending && (
                     <Tooltip side="left" content="Pending Invitation">
-                      <Text color="amber">
+                      <Badge color="amber" size="3">
                         <Hourglass className="size-4" />
-                      </Text>
+                      </Badge>
                     </Tooltip>
                   )}
-                  <DeleteButton
-                    handleDelete={() =>
-                      deleteListShare.mutate({ id: share.id })
-                    }
-                  />
+                  {list.isAuthor && (
+                    <DeleteButton
+                      handleDelete={() =>
+                        deleteListShare.mutate({ id: share.id })
+                      }
+                    />
+                  )}
                 </div>
               ))}
               {list.shares.length === 0 && (
@@ -211,6 +222,25 @@ const ListEditor: React.FC = () => {
             </div>
           </div>
         </div>
+        {list.isAuthor ? (
+          <Button
+            variant="soft"
+            color="red"
+            onClick={() => deleteList.mutate({ id: list.id })}
+          >
+            <Trash className="size-4" />
+            Delete List
+          </Button>
+        ) : (
+          <Button
+            variant="soft"
+            color="amber"
+            onClick={() => leaveListShare.mutate({ listId: list.id })}
+          >
+            <LogOut className="size-4" />
+            Leave List
+          </Button>
+        )}
       </VaulDrawer>
     </>
   );

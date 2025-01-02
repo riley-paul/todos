@@ -88,6 +88,18 @@ export const deleteListShare = defineAction({
   input: z.object({ id: z.string() }),
   handler: async ({ id }, c) => {
     const userId = isAuthorized(c).id;
+    const [share] = await db
+      .select()
+      .from(ListShare)
+      .where(eq(ListShare.id, id));
+
+    if (share.sharedUserId !== userId && share.userId !== userId) {
+      throw new ActionError({
+        message: "You do not have permission to delete this share",
+        code: "FORBIDDEN",
+      });
+    }
+
     await db
       .delete(ListShare)
       .where(
@@ -96,6 +108,22 @@ export const deleteListShare = defineAction({
           or(eq(ListShare.userId, userId), eq(ListShare.sharedUserId, userId)),
         ),
       );
+
+    return true;
+  },
+});
+
+export const leaveListShare = defineAction({
+  input: z.object({ listId: z.string() }),
+  handler: async ({ listId }, c) => {
+    const userId = isAuthorized(c).id;
+
+    await db
+      .delete(ListShare)
+      .where(
+        and(eq(ListShare.listId, listId), eq(ListShare.sharedUserId, userId)),
+      );
+
     return true;
   },
 });
