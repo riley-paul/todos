@@ -137,8 +137,8 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
           {!todo.isAuthor && <UserBubble user={todo.author} size="md" />}
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
-              <IconButton size="1" variant="ghost">
-                <EllipsisVertical className="size-4" />
+              <IconButton size="2" variant="ghost">
+                <EllipsisVertical className="size-5" />
               </IconButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content align="end" className="min-w-40">
