@@ -7,8 +7,10 @@ import DeleteButton from "./base/delete-button";
 import { useDebounceValue, useEventListener } from "usehooks-ts";
 import {
   Button,
+  Callout,
   IconButton,
   Spinner,
+  Strong,
   Text,
   TextField,
   Tooltip,
@@ -106,6 +108,14 @@ const ListEditor: React.FC = () => {
         isOpen={isOpen}
         setIsOpen={setIsOpen}
       >
+        <Callout.Root>
+          <Callout.Icon>
+            <UserBubble user={list.author} size="md" />
+          </Callout.Icon>
+          <Callout.Text>
+            Created by <Strong>{list.author.name}</Strong>
+          </Callout.Text>
+        </Callout.Root>
         <div className="grid gap-rx-2">
           <Text asChild size="2" weight="bold">
             <label>Update Name</label>

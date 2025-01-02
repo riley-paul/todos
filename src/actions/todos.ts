@@ -96,12 +96,11 @@ export const updateTodo = defineAction({
       });
     }
 
-    const todo = await db
+    const [todo] = await db
       .update(Todo)
       .set(data)
       .where(and(eq(Todo.id, id)))
-      .returning()
-      .then((rows) => rows[0]);
+      .returning();
 
     invalidateUsers(users);
     return todo;

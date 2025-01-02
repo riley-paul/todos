@@ -1,14 +1,10 @@
 import { ActionError, defineAction } from "astro:actions";
 import {
-  and,
   asc,
   db,
   eq,
-  isNull,
   List,
   ListShare,
-  ne,
-  or,
   Todo,
   User,
 } from "astro:db";
@@ -20,6 +16,7 @@ import {
   filterTodos,
   invalidateUsers,
   getListUsers,
+  filterByListShare,
 } from "./helpers";
 
 export const getLists = defineAction({
@@ -40,12 +37,7 @@ export const getLists = defineAction({
       .from(List)
       .leftJoin(ListShare, eq(ListShare.listId, List.id))
       .innerJoin(User, eq(User.id, List.userId))
-      .where(
-        and(
-          or(ne(ListShare.isPending, true), isNull(ListShare.isPending)),
-          or(eq(List.userId, userId), eq(ListShare.sharedUserId, userId)),
-        ),
-      )
+      .where(filterByListShare(userId))
       .orderBy(asc(List.name))
       .then((lists) =>
         Promise.all(
