@@ -29,6 +29,7 @@ import {
   Trash,
 } from "lucide-react";
 import useSelectedList from "@/hooks/use-selected-list";
+import useConfirmDialog from "@/hooks/use-confirm-dialog";
 
 const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
   if (query.isLoading) {
@@ -71,6 +72,18 @@ const ListEditor: React.FC = () => {
     deleteList,
   } = useMutations();
 
+  const [DeleteDialog, confirmDelete] = useConfirmDialog({
+    title: "Delete List",
+    description:
+      "This action is irreversible and will permanently delete this list and all of its contents for all users.",
+  });
+
+  const [LeaveDialog, confirmLeave] = useConfirmDialog({
+    title: "Leave List",
+    description:
+      "This action will remove you from this list and you will no longer be able to view or edit it.",
+  });
+
   const { selectedList } = useSelectedList();
   const listsQuery = useQuery(listsQueryOptions);
   const list = listsQuery.data?.find((list) => list.id === selectedList);
@@ -100,6 +113,8 @@ const ListEditor: React.FC = () => {
 
   return (
     <>
+      <LeaveDialog />
+      <DeleteDialog />
       <Tooltip content={`Edit ${list.name}`} side="left">
         <IconButton
           radius="full"
@@ -227,7 +242,12 @@ const ListEditor: React.FC = () => {
           <Button
             variant="soft"
             color="red"
-            onClick={() => deleteList.mutate({ id: list.id })}
+            onClick={async () => {
+              const ok = await confirmDelete();
+              if (ok) {
+                deleteList.mutate({ id: list.id });
+              }
+            }}
           >
             <Trash className="size-4" />
             Delete List
@@ -236,7 +256,12 @@ const ListEditor: React.FC = () => {
           <Button
             variant="soft"
             color="amber"
-            onClick={() => leaveListShare.mutate({ listId: list.id })}
+            onClick={async () => {
+              const ok = await confirmLeave();
+              if (ok) {
+                leaveListShare.mutate({ listId: list.id });
+              }
+            }}
           >
             <LogOut className="size-4" />
             Leave List
