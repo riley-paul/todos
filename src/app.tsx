@@ -9,11 +9,11 @@ import useQueryStream from "@/hooks/use-query-stream";
 import Adder from "@/components/adder";
 import Lists from "@/components/lists";
 import Todos from "@/components/todos";
-import { Toaster } from "@/components/ui/sonner";
 import { handleMutationError } from "@/hooks/use-mutations";
 import { NuqsAdapter } from "nuqs/adapters/react";
 import RadixProvider from "./components/radix-provider";
 import ListEditor from "./components/list-editor";
+import { Toaster } from "sonner";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
