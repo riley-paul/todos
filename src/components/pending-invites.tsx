@@ -39,7 +39,7 @@ const PendingInvites: React.FC = () => {
           {pendingSharesQuery.data?.map((share) => (
             <div
               key={share.id}
-              className="flex w-full items-center gap-rx-3 border-gray-5 py-rx-4"
+              className="flex w-full items-center gap-rx-3 py-rx-4"
             >
               <div className="h-full">
                 <UserBubble user={share.invitedBy} size="md" />

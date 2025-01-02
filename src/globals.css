@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 .radix-themes {
-  --default-font-family: 'Rubik Variable', sans-serif;
+  --default-font-family: "Rubik Variable", sans-serif;
   --cursor-button: pointer;
   --cursor-checkbox: pointer;
   --cursor-disabled: default;
@@ -17,6 +17,12 @@
   --cursor-switch: pointer;
 }
 
-.container2 {
-  @apply mx-auto w-full max-w-screen-sm px-2;
+@layer base {
+  * {
+    @apply border-gray-7;
+  }
+
+  .container2 {
+    @apply mx-auto w-full max-w-screen-sm px-2;
+  }
 }
