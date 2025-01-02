@@ -1,7 +1,7 @@
 import React from "react";
 import type { UseQueryResult } from "@tanstack/react-query";
 import ErrorPage from "@/components/error-page";
-import { Flex, Spinner } from "@radix-ui/themes";
+import { Flex, Spinner, Text } from "@radix-ui/themes";
 
 // Define the props type, where each query result can have a different type
 interface QueryResultsProps<T> {
@@ -25,21 +25,19 @@ const QueryGuard = <T,>({
 
   if (query.isError) {
     return (
-      <div className="flex h-full min-h-32 items-center justify-center">
-        <ErrorPage
-          error={query.error}
-          retry={() => query.refetch()}
-          notFullHeight
-        />
-      </div>
+      <ErrorPage
+        error={query.error}
+        retry={() => query.refetch()}
+        notFullHeight
+      />
     );
   }
 
   if (!query.data || (Array.isArray(query.data) && query.data.length === 0)) {
     return (
-      <div className="flex h-full min-h-32 items-center justify-center text-xs text-muted-foreground">
+      <Text size="2" color="gray" className="p-12" align="center">
         {noDataString}
-      </div>
+      </Text>
     );
   }
 
