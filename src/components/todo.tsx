@@ -35,7 +35,7 @@ const MenuItem: React.FC<{ text: string; icon: LucideIcon }> = ({
   return (
     <Flex gap="3" align="center" justify="between" width="100%">
       <Text>{text}</Text>
-      <Icon className="size-4 text-accent-7" />
+      <Icon className="size-4 text-accent-8" />
     </Flex>
   );
 };

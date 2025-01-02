@@ -24,7 +24,7 @@ const ListAdder: React.FC<Props> = ({ isOpen, setIsOpen }) => {
       title="Add a New List"
     >
       <form
-        className="flex gap-rx-3"
+        className="grid grid-cols-[auto_8rem] gap-rx-3"
         onSubmit={(e) => {
           e.preventDefault();
           createList.mutate({ name: value });

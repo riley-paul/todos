@@ -201,7 +201,7 @@ const ListEditor: React.FC = () => {
               Invite
             </Button>
           </form>
-          <div className="mt-2 min-h-12 overflow-y-auto rounded-3 border border-gray-7 bg-panel-translucent px-2">
+          <div className="min-h-12 overflow-y-auto rounded-3 border border-gray-7 bg-panel-translucent px-2">
             <div className="grid divide-y">
               {list.shares.map((share) => (
                 <div className="flex items-center gap-rx-3 border-gray-6 py-2">
