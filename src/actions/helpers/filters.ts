@@ -1,15 +1,5 @@
 import { or, eq, ListShare, Todo, and, isNull, ne } from "astro:db";
 
-const filterByListId = (listId: string | undefined | null, userId: string) => {
-  if (typeof listId === "string" && listId !== "all") {
-    return eq(Todo.listId, listId);
-  }
-  if (listId === null) {
-    return and(isNull(Todo.listId), eq(Todo.userId, userId));
-  }
-  return;
-};
-
 export const filterByListShare = (userId: string) =>
   or(
     // User is the author of the list
@@ -23,20 +13,24 @@ export const filterByListShare = (userId: string) =>
     ),
   );
 
-export const filterTodos = (
-  userId: string,
-  listId: string | undefined | null,
-) => {
+export const filterTodos = (userId: string, listId: string | null) => {
+  const INBOX = and(isNull(Todo.listId), eq(Todo.userId, userId));
+
   if (listId === null) {
-    return and(isNull(Todo.listId), eq(Todo.userId, userId));
+    return INBOX;
   }
 
   if (listId === "all") {
-    return or(
-      filterByListShare(userId),
-      and(isNull(Todo.listId), eq(Todo.userId, userId)),
-    );
+    return or(filterByListShare(userId), INBOX, eq(Todo.userId, userId));
   }
 
-  return and(filterByListShare(userId), filterByListId(listId, userId));
+  return and(
+    or(
+      // List is shared with the user
+      filterByListShare(userId),
+      // User owns the list
+      eq(Todo.userId, userId),
+    ),
+    eq(Todo.listId, listId),
+  );
 };

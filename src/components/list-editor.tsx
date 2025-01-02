@@ -93,6 +93,7 @@ const ListEditor: React.FC = () => {
   React.useEffect(() => {
     setName(list?.name ?? "");
     setEmail("");
+    setIsOpen(false);
   }, [list]);
 
   if (!list) return null;
