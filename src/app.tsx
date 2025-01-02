@@ -13,8 +13,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { handleMutationError } from "@/hooks/use-mutations";
 import { NuqsAdapter } from "nuqs/adapters/react";
 import RadixProvider from "./components/radix-provider";
-import { IconButton, Tooltip } from "@radix-ui/themes";
-import { NotebookTabs } from "lucide-react";
+import ListEditor from "./components/list-editor";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -42,15 +41,7 @@ const App: React.FC = () => {
             <Todos />
           </main>
           <Toaster />
-          <Tooltip content="Edit List" side="left">
-            <IconButton
-              radius="full"
-              size="3"
-              className="fixed bottom-8 right-8"
-            >
-              <NotebookTabs />
-            </IconButton>
-          </Tooltip>
+          <ListEditor />
         </RadixProvider>
       </NuqsAdapter>
     </QueryClientProvider>

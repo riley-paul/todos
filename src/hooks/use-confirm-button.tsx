@@ -6,7 +6,9 @@ interface Props {
   handleConfirm: () => void;
   noConfirm?: boolean;
   buttonVariantIdle?: ButtonProps["variant"];
+  buttonColorIdle?: ButtonProps["color"];
   buttonVariantConfirm?: ButtonProps["variant"];
+  buttonColorConfirm?: ButtonProps["color"];
 }
 
 export default function useConfirmButton(props: Props) {
@@ -14,7 +16,9 @@ export default function useConfirmButton(props: Props) {
     handleConfirm,
     noConfirm,
     buttonVariantIdle = "soft",
+    buttonColorIdle = "gray",
     buttonVariantConfirm = "solid",
+    buttonColorConfirm = "red",
   } = props;
 
   const ref = React.useRef<HTMLButtonElement>(null);
@@ -45,6 +49,7 @@ export default function useConfirmButton(props: Props) {
 
   const buttonProps: ButtonProps = {
     variant: isConfirming ? buttonVariantConfirm : buttonVariantIdle,
+    color: isConfirming ? buttonColorConfirm : buttonColorIdle,
     onClick: handleClick,
   };
 
