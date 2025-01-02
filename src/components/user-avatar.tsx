@@ -3,49 +3,19 @@ import React from "react";
 import LoginButton from "./login-button";
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/lib/queries";
-import useMutations from "@/hooks/use-mutations";
-import { AlertDialog, Avatar, Button, Popover, Text } from "@radix-ui/themes";
+import { Avatar, Button, Popover, Text } from "@radix-ui/themes";
 import { LogOut, Trash } from "lucide-react";
-
-interface DialogProps {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-}
-
-const AccountDeletionConfirm: React.FC<DialogProps> = (props) => {
-  const { isOpen, setIsOpen } = props;
-  const { deleteUser } = useMutations();
-  return (
-    <AlertDialog.Root open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialog.Content maxWidth="450px">
-        <AlertDialog.Title>Delete Account</AlertDialog.Title>
-        <AlertDialog.Description>
-          This action cannot be undone. This will permanently delete your
-          account and remove your data from our servers.
-        </AlertDialog.Description>
-        <div className="mt-rx-3 flex justify-end gap-rx-3">
-          <AlertDialog.Cancel>
-            <Button variant="soft" color="gray">
-              Cancel
-            </Button>
-          </AlertDialog.Cancel>
-          <AlertDialog.Action type="submit">
-            <Button
-              variant="solid"
-              color="red"
-              onClick={() => deleteUser.mutate({})}
-            >
-              Continue
-            </Button>
-          </AlertDialog.Action>
-        </div>
-      </AlertDialog.Content>
-    </AlertDialog.Root>
-  );
-};
+import useConfirmDialog from "@/hooks/use-confirm-dialog";
+import useMutations from "@/hooks/use-mutations";
 
 const UserAvatar: React.FC = () => {
-  const [accountDeletionOpen, setAccountDeletionOpen] = React.useState(false);
+  const { deleteUser } = useMutations();
+
+  const [DeletionDialog, confirmDeletion] = useConfirmDialog({
+    title: "Delete Account",
+    description:
+      "This action cannot be undone. This will permanently delete your account and remove your data from our servers.",
+  });
 
   const userQuery = useQuery(userQueryOptions);
 
@@ -70,10 +40,7 @@ const UserAvatar: React.FC = () => {
 
   return (
     <>
-      <AccountDeletionConfirm
-        isOpen={accountDeletionOpen}
-        setIsOpen={setAccountDeletionOpen}
-      />
+      <DeletionDialog />
       <Popover.Root>
         <Popover.Trigger title="User settings">
           <Avatar
@@ -114,7 +81,12 @@ const UserAvatar: React.FC = () => {
                 color="red"
                 variant="surface"
                 size="2"
-                onClick={() => setAccountDeletionOpen(true)}
+                onClick={async () => {
+                  const ok = await confirmDeletion();
+                  if (ok) {
+                    deleteUser.mutate({});
+                  }
+                }}
                 className="relative"
               >
                 <Trash className="absolute left-rx-2 size-4" />
