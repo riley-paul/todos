@@ -9,12 +9,10 @@ import UserBubbleGroup from "./base/user-bubble-group";
 import useConfirmButton from "@/hooks/use-confirm-button";
 import UserBubble from "./base/user-bubble";
 import DeleteButton from "./ui/delete-button";
-import { cn } from "@/lib/utils";
 import { useEventListener } from "usehooks-ts";
 import { Button, Text, Tooltip } from "@radix-ui/themes";
 import VaulDrawer from "./base/vaul-drawer";
 import { Share2 } from "lucide-react";
-import { Drawer } from "vaul";
 
 const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
   const {

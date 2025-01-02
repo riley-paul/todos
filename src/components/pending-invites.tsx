@@ -34,7 +34,7 @@ const PendingInvites: React.FC = () => {
           )}
         </IconButton>
       </Popover.Trigger>
-      <Popover.Content align="end" className="min-w-52 py-2">
+      <Popover.Content align="end" className="max-w-72 py-2">
         <div className="grid divide-y px-rx-2">
           {pendingSharesQuery.data?.map((share) => (
             <div
