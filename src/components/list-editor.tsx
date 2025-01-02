@@ -1,19 +1,64 @@
 import React from "react";
 import useMutations from "@/hooks/use-mutations";
-import { useQuery } from "@tanstack/react-query";
-import { listsQueryOptions } from "@/lib/queries";
+import { useQuery, type UseQueryResult } from "@tanstack/react-query";
+import { listsQueryOptions, userByEmailQueryOptions } from "@/lib/queries";
 import UserBubble from "./base/user-bubble";
 import DeleteButton from "./base/delete-button";
-import { useEventListener } from "usehooks-ts";
-import { Button, IconButton, Text, TextField, Tooltip } from "@radix-ui/themes";
+import { useDebounceValue, useEventListener } from "usehooks-ts";
+import {
+  Button,
+  IconButton,
+  Spinner,
+  Text,
+  TextField,
+  Tooltip,
+} from "@radix-ui/themes";
 import VaulDrawer from "./base/vaul-drawer";
-import { NotebookTabs, Save, Send } from "lucide-react";
+import {
+  AtSign,
+  CircleCheck,
+  CircleX,
+  Hourglass,
+  NotebookTabs,
+  Save,
+  Send,
+} from "lucide-react";
 import useSelectedList from "@/hooks/use-selected-list";
+
+const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
+  if (query.isLoading) {
+    return <Spinner loading />;
+  }
+
+  if (query.status === "success" && query.data) {
+    return (
+      <Tooltip content="User exists" side="right">
+        <Text color="green">
+          <CircleCheck className="size-4" />
+        </Text>
+      </Tooltip>
+    );
+  }
+  if (query.status === "error" || query.data === false) {
+    return (
+      <Tooltip content="User does not exist" side="right">
+        <Text color="red">
+          <CircleX className="size-4" />
+        </Text>
+      </Tooltip>
+    );
+  }
+  return (
+    <Spinner loading={query.isLoading}>
+      <AtSign className="size-4" />
+    </Spinner>
+  );
+};
 
 const ListEditor: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const { deleteListShare } = useMutations();
+  const { deleteListShare, createListShare } = useMutations();
 
   const { selectedList } = useSelectedList();
   const listsQuery = useQuery(listsQueryOptions);
@@ -26,11 +71,24 @@ const ListEditor: React.FC = () => {
     }
   });
 
+  const [name, setName] = React.useState(list?.name ?? "");
+  const [email, setEmail] = useDebounceValue("", 500);
+
+  const sharedUserQuery = useQuery({
+    ...userByEmailQueryOptions(email),
+    enabled: email.length > 0,
+  });
+
+  React.useEffect(() => {
+    setName(list?.name ?? "");
+    setEmail("");
+  }, [list]);
+
   if (!list) return null;
 
   return (
     <>
-      <Tooltip content="Edit List" side="left">
+      <Tooltip content={`Edit ${list.name}`} side="left">
         <IconButton
           radius="full"
           size="3"
@@ -54,7 +112,8 @@ const ListEditor: React.FC = () => {
           </Text>
           <div className="flex gap-rx-2">
             <TextField.Root
-              value={list.name}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="flex-1"
               placeholder="New List"
             />
@@ -68,18 +127,34 @@ const ListEditor: React.FC = () => {
           <Text asChild size="2" weight="bold">
             <label>Share with</label>
           </Text>
-          <div className="flex gap-rx-2">
+          <form
+            className="flex gap-rx-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!sharedUserQuery.data) return;
+              createListShare.mutate({ listId: list.id, email });
+            }}
+          >
             <TextField.Root
-              value={list.name}
               className="flex-1"
               placeholder="New List"
-            />
-            <Button variant="surface">
+              onChange={(e) => setEmail(e.target.value)}
+            >
+              <TextField.Slot side="left">
+                {getIcon(sharedUserQuery)}
+              </TextField.Slot>
+            </TextField.Root>
+            <Button
+              type="submit"
+              variant="surface"
+              disabled={!sharedUserQuery.data}
+              onClick={() => createListShare.mutate({ listId: list.id, email })}
+            >
               <Send className="size-4" />
               Invite
             </Button>
-          </div>
-          <div className="min-h-12 overflow-y-auto rounded-3 border border-gray-7 bg-panel-translucent px-2">
+          </form>
+          <div className="mt-2 min-h-12 overflow-y-auto rounded-3 border border-gray-7 bg-panel-translucent px-2">
             <div className="grid divide-y">
               {list.shares.map((share) => (
                 <div className="flex items-center gap-rx-3 border-gray-6 py-2">
@@ -94,7 +169,9 @@ const ListEditor: React.FC = () => {
                   </div>
                   {share.isPending && (
                     <Tooltip side="left" content="Pending Invitation">
-                      <i className="fa-solid fa-hourglass text-muted-foreground" />
+                      <Text color="amber">
+                        <Hourglass className="size-4" />
+                      </Text>
                     </Tooltip>
                   )}
                   <DeleteButton
@@ -105,14 +182,13 @@ const ListEditor: React.FC = () => {
                 </div>
               ))}
               {list.shares.length === 0 && (
-                <div className="text-xs text-muted-foreground flex h-12 items-center justify-center">
+                <Text size="2" color="gray" align="center" className="p-6">
                   No shares
-                </div>
+                </Text>
               )}
             </div>
           </div>
         </div>
-        {list.name}
       </VaulDrawer>
     </>
   );
