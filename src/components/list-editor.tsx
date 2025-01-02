@@ -58,7 +58,7 @@ const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
 const ListEditor: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const { deleteListShare, createListShare } = useMutations();
+  const { deleteListShare, createListShare, updateList } = useMutations();
 
   const { selectedList } = useSelectedList();
   const listsQuery = useQuery(listsQueryOptions);
@@ -110,29 +110,41 @@ const ListEditor: React.FC = () => {
           <Text asChild size="2" weight="bold">
             <label>Update Name</label>
           </Text>
-          <div className="flex gap-rx-2">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              updateList.mutate({ id: list.id, data: { name } });
+            }}
+            className="grid grid-cols-[1fr_8rem] gap-rx-2"
+          >
             <TextField.Root
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="flex-1"
               placeholder="New List"
             />
-            <Button variant="surface">
+            <Button
+              variant="surface"
+              type="submit"
+              disabled={name === list.name}
+            >
               <Save className="size-4" />
               Update
             </Button>
-          </div>
+          </form>
         </div>
         <div className="grid gap-rx-2">
           <Text asChild size="2" weight="bold">
             <label>Share with</label>
           </Text>
           <form
-            className="flex gap-rx-2"
+            className="grid grid-cols-[1fr_8rem] gap-rx-2"
             onSubmit={(e) => {
               e.preventDefault();
               if (!sharedUserQuery.data) return;
               createListShare.mutate({ listId: list.id, email });
+              e.currentTarget.reset();
+              setEmail("");
             }}
           >
             <TextField.Root
