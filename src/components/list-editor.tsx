@@ -204,7 +204,10 @@ const ListEditor: React.FC = () => {
           <div className="min-h-12 overflow-y-auto rounded-3 border border-gray-7 bg-panel-translucent px-2">
             <div className="grid divide-y">
               {list.shares.map((share) => (
-                <div className="flex items-center gap-rx-3 border-gray-6 py-2">
+                <div
+                  key={share.id}
+                  className="flex items-center gap-rx-3 border-gray-6 py-2"
+                >
                   <UserBubble user={share.user} size="md" />
                   <div className="grid flex-1 gap-0.5">
                     <Text size="2" weight="medium">

@@ -16,8 +16,8 @@ const UserBubbleGroup: React.FC<Props> = ({ users, numAvatars = 3 }) => {
   return (
     <div className="flex flex-wrap-reverse pl-rx-1">
       {users.slice(0, numAvatars).map((user) => (
-        <div className="-ml-rx-1">
-          <UserBubble key={user.id} user={user} size="sm" />
+        <div key={user.id} className="-ml-rx-1">
+          <UserBubble user={user} size="sm" />
         </div>
       ))}
       {users.length > numAvatars && (

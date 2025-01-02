@@ -1,7 +1,7 @@
 import React from "react";
 import { Drawer } from "vaul";
 import RadixProvider from "../radix-provider";
-import { Text } from "@radix-ui/themes";
+import { Portal, Text } from "@radix-ui/themes";
 
 type Props = React.PropsWithChildren<{
   isOpen: boolean;
@@ -20,7 +20,7 @@ const VaulDrawer: React.FC<Props> = ({
 }) => {
   return (
     <Drawer.Root open={isOpen} onOpenChange={setIsOpen} shouldScaleBackground>
-      <Drawer.Portal>
+      <Portal>
         <RadixProvider>
           <Drawer.Overlay className="fixed inset-0 bg-blackA-6" />
           <Drawer.Content className="container2 fixed bottom-0 left-0 right-0 mt-24 h-fit min-h-40 rounded-t-4 border border-b-0 border-gray-7 bg-panel py-2 outline-none backdrop-blur">
@@ -49,7 +49,7 @@ const VaulDrawer: React.FC<Props> = ({
             </div>
           </Drawer.Content>
         </RadixProvider>
-      </Drawer.Portal>
+      </Portal>
     </Drawer.Root>
   );
 };
