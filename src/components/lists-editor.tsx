@@ -11,7 +11,10 @@ import UserBubble from "./base/user-bubble";
 import DeleteButton from "./ui/delete-button";
 import { cn } from "@/lib/utils";
 import { useEventListener } from "usehooks-ts";
-import { Box, Button, Dialog, Grid, Text, Tooltip } from "@radix-ui/themes";
+import { Button, Text, Tooltip } from "@radix-ui/themes";
+import VaulDrawer from "./base/vaul-drawer";
+import { Share2 } from "lucide-react";
+import { Drawer } from "vaul";
 
 const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
   const {
@@ -114,42 +117,28 @@ const ListContent: React.FC<{ list: ListSelect }> = ({ list }) => {
 const ListContainer: React.FC<{
   list: ListSelect;
   isOpen: boolean;
-  setOpen: (isOpen: boolean) => void;
-}> = ({ list, isOpen, setOpen }) => {
+  setIsOpen: (isOpen: boolean) => void;
+}> = ({ list, isOpen, setIsOpen }) => {
   return (
-    <div
-      className={cn(
-        "hover:bg-secondary/20 grid gap-2 px-3",
-        isOpen && "bg-secondary/20",
-      )}
-    >
-      <Button
-        variant="ghost"
-        className="flex items-center justify-between gap-2 py-2"
-        onClick={() => setOpen(!isOpen)}
-      >
-        <div className="text-sm flex items-center gap-2">
-          <span className="font-semibold">{list.name}</span>
+    <>
+      <div className="flex items-center justify-between gap-rx-2 border-gray-6 px-rx-3 py-rx-1">
+        <div className="flex items-center gap-2">
+          <Text size="2">{list.name}</Text>
           <UserBubbleGroup users={list.otherUsers} numAvatars={10} />
+          {!list.isAuthor && <Share2 className="size-4" />}
+        </div>
+        <div className="flex items-center gap-rx-2">
           {list.isAuthor && (
-            <i className="fa-solid fa-star text-sm text-primary/50" />
+            <Button size="1" variant="surface" onClick={() => setIsOpen(true)}>
+              Edit
+            </Button>
           )}
+          <Button size="1" color="red" variant="soft">
+            {list.isAuthor ? "Delete" : "Leave"}
+          </Button>
         </div>
-        <div className="text-xs flex size-6 items-center justify-center">
-          <i
-            className={cn(
-              "fa-solid fa-chevron-right transition-transform",
-              isOpen && "rotate-90",
-            )}
-          />
-        </div>
-      </Button>
-      {isOpen && (
-        <div className="grid pb-3">
-          <ListContent list={list} />
-        </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 };
 
@@ -170,62 +159,31 @@ const ListsEditor: React.FC<{
   const [openList, setOpenList] = React.useState("");
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Dialog.Content>
-        <Grid gap="4">
-          <Grid>
-            <Dialog.Title>Manage your lists</Dialog.Title>
-            <Dialog.Description>
-              Add, remove, edit and share your lists
-            </Dialog.Description>
-          </Grid>
-          <Box
-            maxHeight="50vh"
-            minHeight="150px"
-            overflowY="auto"
-            style={{
-              backgroundColor: "var(--gray-3)",
-              borderRadius: "var(--radius-3)",
-            }}
-            className="rounded-lg bg-secondary/20 border"
-          >
-            <QueryGuard query={listsQuery}>
-              {(lists) => (
-                <div className="grid divide-y">
-                  {lists.map((list) => (
-                    <ListContainer
-                      key={list.id}
-                      list={list}
-                      isOpen={openList === list.id}
-                      setOpen={(open) => setOpenList(open ? list.id : "")}
-                    />
-                  ))}
-                </div>
-              )}
-            </QueryGuard>
-          </Box>
-          <Grid gap="2">
-            <Text weight="bold" size="2">
-              Add a List
-            </Text>
-            <SingleInputForm
-              clearAfterSubmit
-              initialValue=""
-              placeholder="Enter list name"
-              button={{
-                icon: <i className="fa-solid fa-plus" />,
-                string: "Add list",
-                variant: "default",
-              }}
-              handleSubmit={(name) => {
-                createList.mutate({ name });
-                setOpenList("");
-              }}
-            />
-          </Grid>
-        </Grid>
-      </Dialog.Content>
-    </Dialog.Root>
+    <VaulDrawer
+      title="Manage your lists"
+      description="Add, remove, edit and share your lists"
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+    >
+      <div className="min-h-150px grid max-h-[50vh] overflow-y-auto rounded-3 border border-gray-7 bg-panel-translucent">
+        <QueryGuard query={listsQuery}>
+          {(lists) => (
+            <div className="grid divide-y">
+              {lists.map((list) => (
+                <ListContainer
+                  key={list.id}
+                  list={list}
+                  isOpen={openList === list.id}
+                  setIsOpen={(open) =>
+                    open ? setOpenList(list.id) : setOpenList("")
+                  }
+                />
+              ))}
+            </div>
+          )}
+        </QueryGuard>
+      </div>
+    </VaulDrawer>
   );
 };
 

@@ -19,7 +19,7 @@ const VaulDrawer: React.FC<Props> = ({
   children,
 }) => {
   return (
-    <Drawer.Root open={isOpen} onOpenChange={setIsOpen}>
+    <Drawer.Root open={isOpen} onOpenChange={setIsOpen} shouldScaleBackground>
       <Drawer.Portal>
         <RadixProvider>
           <Drawer.Overlay className="fixed inset-0 bg-blackA-6" />
