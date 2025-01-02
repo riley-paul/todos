@@ -1,22 +1,27 @@
 ---
 import LoginButton from "@/components/login-button";
+import RadixProvider from "@/components/radix-provider";
 import RootLayout from "@/layouts/root-layout.astro";
+import { Heading, Text } from "@radix-ui/themes";
+import { CheckCircleIcon } from "lucide-react";
 ---
 
 <RootLayout>
-  <div class="h-screen flex items-center justify-center">
-    <main class="max-w-lg w-full mx-auto grid gap-6 px-4 pb-32">
-      <div class="flex items-center justify-center">
-        <i class="text-primary text-[5rem] fa-solid fa-check-double"></i>
-      </div>
-      <section class="prose w-full max-w-none text-center dark:prose-invert">
-        <h1 class="text-5xl mb-2">Todos</h1>
-        <p>A robust and feature-poor todo app</p>
-      </section>
-      <div class="grid gap-2">
-        <LoginButton provider="github" />
-        <LoginButton provider="google" />
-      </div>
-    </main>
-  </div>
+  <RadixProvider>
+    <div class="h-screen flex items-center justify-center">
+      <main class="max-w-lg w-full mx-auto grid gap-6 px-4 pb-32">
+        <div class="flex items-center justify-center">
+          <CheckCircleIcon className="text-accent-10 size-[5rem]" />
+        </div>
+        <section class="prose w-full max-w-none text-center dark:prose-invert">
+          <Heading size="8" mb="2">Todos</Heading>
+          <Text>A robust and feature-poor todo app</Text>
+        </section>
+        <div class="grid gap-2 sm:grid-cols-2">
+          <LoginButton provider="github" />
+          <LoginButton provider="google" />
+        </div>
+      </main>
+    </div>
+  </RadixProvider>
 </RootLayout>

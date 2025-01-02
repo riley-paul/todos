@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import React from "react";
-import { buttonVariants } from "./ui/button";
+import { Button } from "@radix-ui/themes";
 
 type AuthProvider = {
   name: string;
@@ -35,20 +35,23 @@ const LoginButton: React.FC<Props> = (props) => {
   const { className, provider } = props;
   const authProvider = authProviders[provider];
   return (
-    <a
+    <Button
+      asChild
       className={cn(
         "relative",
-        buttonVariants({ size: "lg", variant: "secondary" }),
         authProvider.className,
         className,
       )}
-      href={authProvider.url}
+      color="gray"
+      variant="soft"
     >
-      <span className="absolute left-6">
-        <i className={cn(authProvider.icon)} />
-      </span>
-      <span>Continue with {authProvider.name}</span>
-    </a>
+      <a href={authProvider.url}>
+        <span className="absolute left-4">
+          <i className={cn(authProvider.icon)} />
+        </span>
+        <span>Continue with {authProvider.name}</span>
+      </a>
+    </Button>
   );
 };
 
