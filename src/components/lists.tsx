@@ -1,14 +1,12 @@
 import React from "react";
-import { useSetAtom } from "jotai/react";
-import { listsEditorOpenAtom } from "@/lib/store";
-import { Separator } from "./ui/separator";
-import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
-import { Button } from "./ui/button";
 import type { SelectedList, UserSelect } from "@/lib/types";
 import UserBubbleGroup from "./base/user-bubble-group";
 import useSelectedList from "@/hooks/use-selected-list";
+import { Button, Flex, Separator, Text } from "@radix-ui/themes";
+import { Plus } from "lucide-react";
+import ListAdder from "./list-adder";
 
 const List: React.FC<{
   value: SelectedList;
@@ -20,21 +18,16 @@ const List: React.FC<{
   const isSelected = selectedList === value;
   return (
     <Button
-      size="sm"
-      className="flex h-6 select-none gap-1.5"
-      variant={isSelected ? "default" : "secondary"}
+      size="1"
+      color={isSelected ? undefined : "gray"}
+      variant={isSelected ? "surface" : "soft"}
       onClick={() => setSelectedList(value)}
     >
-      <span>{name}</span>
-      <span
-        className={cn(
-          "font-mono text-muted-foreground",
-          isSelected && "text-secondary",
-        )}
-      >
-        {count}
-      </span>
-      <UserBubbleGroup users={users} numAvatars={3} />
+      <Flex align="center" gap="2">
+        <Text>{name}</Text>
+        <Text className="font-mono text-accentA-12">{count}</Text>
+        <UserBubbleGroup users={users} numAvatars={3} />
+      </Flex>
     </Button>
   );
 };
@@ -44,34 +37,37 @@ const Lists: React.FC = () => {
   const inboxCount = useQuery(todosQueryOptions(null))?.data?.length;
   const allCount = useQuery(todosQueryOptions("all"))?.data?.length;
 
-  const setEditorIsOpen = useSetAtom(listsEditorOpenAtom);
+  const [adderOpen, setAdderOpen] = React.useState(false);
 
   return (
-    <div className="flex flex-wrap gap-2 px-3">
-      <List value={null} name="Inbox" count={inboxCount} />
-      <List value={"all"} name="All" count={allCount} />
-      <div className="flex items-center">
-        <Separator orientation="vertical" className="h-5" />
+    <>
+      <div className="flex flex-wrap gap-rx-2 px-rx-3">
+        <List value={null} name="Inbox" count={inboxCount} />
+        <List value={"all"} name="All" count={allCount} />
+        <Flex align="center">
+          <Separator orientation="vertical" size="1" />
+        </Flex>
+        {listsQuery.data?.map((list) => (
+          <List
+            key={list.id}
+            value={list.id}
+            name={list.name}
+            count={list.todoCount}
+            users={list.otherUsers}
+          />
+        ))}
+        <Button
+          size="1"
+          variant="soft"
+          color="gray"
+          onClick={() => setAdderOpen(true)}
+        >
+          <Plus className="mr-0.5 size-3" />
+          Add
+        </Button>
       </div>
-      {listsQuery.data?.map((list) => (
-        <List
-          key={list.id}
-          value={list.id}
-          name={list.name}
-          count={list.todoCount}
-          users={list.otherUsers}
-        />
-      ))}
-      <Button
-        variant="ghostMuted"
-        size="sm"
-        className="h-6 px-3"
-        onClick={() => setEditorIsOpen(true)}
-      >
-        <i className="fa-solid fa-pen mr-1.5" />
-        <span>Edit</span>
-      </Button>
-    </div>
+      <ListAdder isOpen={adderOpen} setIsOpen={setAdderOpen} />
+    </>
   );
 };
 

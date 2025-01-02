@@ -1,4 +1,4 @@
-import type { ButtonProps } from "@/components/ui/button";
+import type { ButtonProps } from "@radix-ui/themes";
 import React from "react";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 
@@ -6,15 +6,19 @@ interface Props {
   handleConfirm: () => void;
   noConfirm?: boolean;
   buttonVariantIdle?: ButtonProps["variant"];
+  buttonColorIdle?: ButtonProps["color"];
   buttonVariantConfirm?: ButtonProps["variant"];
+  buttonColorConfirm?: ButtonProps["color"];
 }
 
 export default function useConfirmButton(props: Props) {
   const {
     handleConfirm,
     noConfirm,
-    buttonVariantIdle = "secondary",
-    buttonVariantConfirm = "destructive",
+    buttonVariantIdle = "soft",
+    buttonColorIdle = "gray",
+    buttonVariantConfirm = "solid",
+    buttonColorConfirm = "red",
   } = props;
 
   const ref = React.useRef<HTMLButtonElement>(null);
@@ -45,6 +49,7 @@ export default function useConfirmButton(props: Props) {
 
   const buttonProps: ButtonProps = {
     variant: isConfirming ? buttonVariantConfirm : buttonVariantIdle,
+    color: isConfirming ? buttonColorConfirm : buttonColorIdle,
     onClick: handleClick,
   };
 

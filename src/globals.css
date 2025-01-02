@@ -1,101 +1,22 @@
-@tailwind base;
+@import "tailwindcss/base";
+@import "@radix-ui/themes/styles.css";
+
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    color-scheme: light;
-    --background: 180 8% 97%;
-    --foreground: 180 8% 5%;
-
-    --card: 180 10% 95%;
-    --card-foreground: 180 8% 5%;
-
-    --popover: 180 10% 94%;
-    --popover-foreground: 180 8% 5%;
-
-    --primary: 173 80% 40%;
-    --primary-foreground: 120 9% 2%;
-
-    --secondary: 170 12% 91%;
-    --secondary-foreground: 180 8% 5%;
-
-    --muted: 180 8% 91%;
-    --muted-foreground: 174 9% 45%;
-
-    --accent: 180 8% 91%;
-    --accent-foreground: 180 8% 5%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 180 9% 87%;
-    --input: 173 9% 80%;
-    --ring: 173 36% 72%;
-
-    --radius: 0.5rem;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      color-scheme: dark;
-      --background: 180 7% 8%;
-      --foreground: 180 9% 98%;
-
-      --card: 180 6% 10%;
-      --card-foreground: 180 9% 98%;
-
-      --popover: 180 6% 10%;
-      --popover-foreground: 180 9% 98%;
-
-      --primary: 173 80% 40%;
-      --primary-foreground: 120 9% 2%;
-
-      --secondary: 172 8% 19%;
-      --secondary-foreground: 180 9% 98%;
-
-      --muted: 175 7% 29%;
-      --muted-foreground: 174 8% 49%;
-
-      --accent: 173 71% 19%;
-      --accent-foreground: 180 9% 98%;
-
-      --destructive: 0 84% 60%;
-      --destructive-foreground: 0 0% 98%;
-
-      --border: 180 12% 20%;
-      --input: 173 9% 18%;
-      --ring: 173 80% 40%;
-    }
-  }
+.radix-themes {
+  --default-font-family: 'Rubik Variable', sans-serif;
+  --cursor-button: pointer;
+  --cursor-checkbox: pointer;
+  --cursor-disabled: default;
+  --cursor-link: pointer;
+  --cursor-menu-item: pointer;
+  --cursor-radio: pointer;
+  --cursor-slider-thumb: grab;
+  --cursor-slider-thumb-active: grabbing;
+  --cursor-switch: pointer;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-    scroll-gutter: static right;
-  }
-  .container2 {
-    @apply mx-auto w-full max-w-screen-sm px-2;
-  }
-
-  @media (pointer: coarse) {
-    :root {
-      font-size: 17px;
-    }
-  }
-}
-
-@layer utilities {
-  .hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
+.container2 {
+  @apply mx-auto w-full max-w-screen-sm px-2;
 }

@@ -3,12 +3,13 @@ import url from "node:url";
 import react from "@astrojs/react";
 import vercel from "@astrojs/vercel/serverless";
 import { defineConfig, envField } from "astro/config";
-import tailwind from "@astrojs/tailwind";
 import db from "@astrojs/db";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import node from "@astrojs/node";
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 import { VitePWA } from "vite-plugin-pwa";
+
+import tailwind from "@astrojs/tailwind";
 
 // https://astro.build/config
 export default defineConfig({
@@ -16,7 +17,7 @@ export default defineConfig({
   site: import.meta.env.PROD
     ? "https://todos.rileys-projects.com"
     : "http://localhost:4321",
-  integrations: [tailwind({ applyBaseStyles: false }), react(), db()],
+  integrations: [react(), db(), tailwind()],
   vite: {
     plugins: [VitePWA({ registerType: "autoUpdate" })],
     resolve: {

@@ -4,16 +4,16 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import Header from "@/components/header";
 import useQueryStream from "@/hooks/use-query-stream";
 import Adder from "@/components/adder";
 import Lists from "@/components/lists";
 import Todos from "@/components/todos";
-import { Toaster } from "@/components/ui/sonner";
 import { handleMutationError } from "@/hooks/use-mutations";
-import ListsEditor from "@/components/lists-editor";
 import { NuqsAdapter } from "nuqs/adapters/react";
+import RadixProvider from "./components/radix-provider";
+import ListEditor from "./components/list-editor";
+import { Toaster } from "sonner";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -33,16 +33,16 @@ const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <NuqsAdapter>
-        <TooltipProvider>
+        <RadixProvider>
           <Header />
-          <main className="container2 grid gap-6 py-6">
+          <main className="container2 grid gap-rx-4 py-rx-6 pb-24">
             <Adder />
             <Lists />
             <Todos />
           </main>
-          <ListsEditor />
           <Toaster />
-        </TooltipProvider>
+          <ListEditor />
+        </RadixProvider>
       </NuqsAdapter>
     </QueryClientProvider>
   );

@@ -1,27 +1,81 @@
 import React from "react";
-import { cn } from "@/lib/utils";
 import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
-import { Checkbox } from "./ui/checkbox";
-import SingleInputForm from "./single-input-form";
 import UserBubble from "./base/user-bubble";
-import { Badge } from "./ui/badge";
 
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "./ui/button";
+  ArrowRight,
+  Delete,
+  EllipsisVertical,
+  Pencil,
+  Save,
+  type LucideIcon,
+} from "lucide-react";
+
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions } from "@/lib/queries";
 import useSelectedList from "@/hooks/use-selected-list";
+import {
+  Badge,
+  Button,
+  Checkbox,
+  DropdownMenu,
+  Flex,
+  IconButton,
+  Text,
+  TextField,
+} from "@radix-ui/themes";
+import { cn } from "@/lib/utils";
+
+const MenuItem: React.FC<{ text: string; icon: LucideIcon }> = ({
+  text,
+  icon: Icon,
+}) => {
+  return (
+    <Flex gap="3" align="center" justify="between" width="100%">
+      <Text>{text}</Text>
+      <Icon className="size-4 text-accent-7" />
+    </Flex>
+  );
+};
+
+const TodoForm: React.FC<{
+  initialValue: string;
+  handleSubmit: (value: string) => void;
+}> = ({ initialValue, handleSubmit }) => {
+  const [value, setValue] = React.useState(initialValue);
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit(value);
+      }}
+      className="flex w-full items-center gap-rx-2"
+    >
+      <TextField.Root
+        size="2"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        autoFocus
+        className="flex-1"
+      >
+        <TextField.Slot side="left">
+          <Pencil className="size-4 text-accent-10" />
+        </TextField.Slot>
+      </TextField.Root>
+      <Button
+        variant="soft"
+        type="submit"
+        size="2"
+        onClick={() => handleSubmit(value)}
+      >
+        <Save size="1rem" />
+        Save
+      </Button>
+    </form>
+  );
+};
 
 const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   const { deleteTodo, updateTodo, moveTodo } = useMutations();
@@ -46,15 +100,10 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   return (
     <div
       ref={ref}
-      className={cn(
-        "flex min-h-10 items-center gap-2 rounded-md px-3 py-1 text-sm transition-colors ease-out hover:bg-muted/20",
-        (deleteTodo.isPending || updateTodo.isPending) && "opacity-50",
-      )}
+      className="flex min-h-11 items-center gap-rx-2 rounded-3 px-rx-3 py-rx-1 hover:bg-gray-3"
     >
       {editorOpen ? (
-        <SingleInputForm
-          size="sm"
-          autoFocus
+        <TodoForm
           initialValue={todo.text}
           handleSubmit={(text) => {
             updateTodo
@@ -68,7 +117,8 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
       ) : (
         <>
           <Checkbox
-            className="size-5 shrink-0 rounded-full"
+            size="3"
+            variant="soft"
             disabled={updateTodo.isPending}
             checked={todo.isCompleted}
             onCheckedChange={() =>
@@ -78,56 +128,37 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
               })
             }
           />
-          <button
-            onClick={() => setEditorOpen(true)}
-            className={cn(
-              "flex-1 text-left",
-              todo.isCompleted && "text-muted-foreground line-through",
-            )}
-          >
-            {todo.text}
-          </button>
+          <Flex flexGrow="1" align="center" onClick={() => setEditorOpen(true)}>
+            <Text size="2" className={cn(todo.isCompleted && "text-gray-10 line-through")}>{todo.text}</Text>
+          </Flex>
           {todo.list && todo.list.id !== selectedList && (
-            <Badge variant="outline">{todo.list.name}</Badge>
+            <Badge>{todo.list.name}</Badge>
           )}
-          {!todo.isAuthor && <UserBubble user={todo.author} />}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                size="icon"
-                variant="ghostMuted"
-                className="size-7 rounded-full"
-              >
-                <i className="fa-solid fa-ellipsis-v" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="max-h-[50vh] min-w-[11rem] overflow-y-auto"
-            >
-              <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => setEditorOpen(true)}>
-                  Edit
-                  <DropdownMenuShortcut>
-                    <i className="fa-solid fa-pen" />
-                  </DropdownMenuShortcut>
-                </DropdownMenuItem>
-                <DropdownMenuItem
+          {!todo.isAuthor && <UserBubble user={todo.author} size="md" />}
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              <IconButton size="1" variant="ghost">
+                <EllipsisVertical className="size-4" />
+              </IconButton>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align="end" className="min-w-40">
+              <DropdownMenu.Group>
+                <DropdownMenu.Item onClick={() => setEditorOpen(true)}>
+                  <MenuItem text="Edit" icon={Pencil} />
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
                   onClick={() => deleteTodo.mutate({ id: todo.id })}
                 >
-                  Delete
-                  <DropdownMenuShortcut>
-                    <i className="fa-solid fa-delete-left" />
-                  </DropdownMenuShortcut>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
+                  <MenuItem text="Delete" icon={Delete} />
+                </DropdownMenu.Item>
+              </DropdownMenu.Group>
               {lists.length > 0 && (
                 <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuGroup>
-                    <DropdownMenuLabel>Move</DropdownMenuLabel>
+                  <DropdownMenu.Separator />
+                  <DropdownMenu.Group>
+                    <DropdownMenu.Label>Move</DropdownMenu.Label>
                     {selectedList && (
-                      <DropdownMenuItem
+                      <DropdownMenu.Item
                         onClick={() =>
                           moveTodo.mutate({
                             id: todo.id,
@@ -135,16 +166,13 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
                           })
                         }
                       >
-                        Inbox
-                        <DropdownMenuShortcut>
-                          <i className="fa-solid fa-arrow-right" />
-                        </DropdownMenuShortcut>
-                      </DropdownMenuItem>
+                        <MenuItem text="Inbox" icon={ArrowRight} />
+                      </DropdownMenu.Item>
                     )}
                     {lists
                       .filter((list) => list.id !== selectedList)
                       .map((list) => (
-                        <DropdownMenuItem
+                        <DropdownMenu.Item
                           key={list.id}
                           onClick={() =>
                             moveTodo.mutate({
@@ -153,17 +181,14 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
                             })
                           }
                         >
-                          {list.name}
-                          <DropdownMenuShortcut>
-                            <i className="fa-solid fa-arrow-right" />
-                          </DropdownMenuShortcut>
-                        </DropdownMenuItem>
+                          <MenuItem text={list.name} icon={ArrowRight} />
+                        </DropdownMenu.Item>
                       ))}
-                  </DropdownMenuGroup>
+                  </DropdownMenu.Group>
                 </>
               )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
         </>
       )}
     </div>

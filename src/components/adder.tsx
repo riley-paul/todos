@@ -1,12 +1,9 @@
 import React from "react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import useMutations from "../hooks/use-mutations";
 import { useEventListener, useMediaQuery } from "usehooks-ts";
+import useMutations from "@/hooks/use-mutations";
 import useSelectedList from "@/hooks/use-selected-list";
-
-const isOnlyHashtag = (value: string) =>
-  value.startsWith("#") && value.trim().split(" ").length === 1;
+import { Button, Flex, IconButton, Spinner, TextField } from "@radix-ui/themes";
+import { Plus } from "lucide-react";
 
 const isEmptyString = (value: string) => value.trim() === "";
 
@@ -43,38 +40,49 @@ export default function Adder(): ReturnType<React.FC> {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        if (isEmptyString(value) || isOnlyHashtag(value)) return;
+        if (isEmptyString(value)) return;
         create();
       }}
-      className="flex items-center gap-2 px-3"
     >
-      <Input
-        autoFocus
-        ref={inputRef}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        className="text-md h-10 px-4"
-        placeholder="Add a todo..."
-        onFocus={(e) => {
-          if (!isOnlyHashtag(value)) {
+      <Flex gap="3" align="center" px="3">
+        <TextField.Root
+          autoFocus
+          size="3"
+          ref={inputRef}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="Add a todo..."
+          onFocus={(e) => {
             e.target.select();
-          }
-        }}
-      />
-      <input type="submit" hidden />
-      <Button
-        type="submit"
-        size={isMobile ? "icon" : "default"}
-        className="shrink-0"
-        disabled={isEmptyString(value) || isOnlyHashtag(value)}
-      >
-        {createTodo.isPending ? (
-          <i className="fa-solid fa-circle-nodes animate-spin" />
+          }}
+          className="flex-1"
+        />
+        <input type="submit" hidden />
+        {isMobile ? (
+          <IconButton
+            size="3"
+            type="submit"
+            variant="soft"
+            disabled={isEmptyString(value)}
+          >
+            <Spinner loading={createTodo.isPending}>
+              <Plus className="size-5" />
+            </Spinner>
+          </IconButton>
         ) : (
-          <i className="fa-solid fa-plus" />
+          <Button
+            size="3"
+            type="submit"
+            variant="soft"
+            disabled={isEmptyString(value)}
+          >
+            <Spinner loading={createTodo.isPending}>
+              <Plus className="size-5" />
+            </Spinner>
+            Add
+          </Button>
         )}
-        {!isMobile && <span className="ml-2">Add</span>}
-      </Button>
+      </Flex>
     </form>
   );
 }

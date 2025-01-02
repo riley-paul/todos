@@ -1,28 +1,11 @@
 import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 import LoginButton from "./login-button";
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/lib/queries";
-import { Button, buttonVariants } from "./ui/button";
-import { cn } from "@/lib/utils";
 import useMutations from "@/hooks/use-mutations";
+import { AlertDialog, Avatar, Button, Popover, Text } from "@radix-ui/themes";
+import { LogOut, Trash } from "lucide-react";
 
 interface DialogProps {
   isOpen: boolean;
@@ -33,25 +16,31 @@ const AccountDeletionConfirm: React.FC<DialogProps> = (props) => {
   const { isOpen, setIsOpen } = props;
   const { deleteUser } = useMutations();
   return (
-    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction type="submit" asChild>
-            <Button variant="destructive" onClick={() => deleteUser.mutate({})}>
+    <AlertDialog.Root open={isOpen} onOpenChange={setIsOpen}>
+      <AlertDialog.Content maxWidth="450px">
+        <AlertDialog.Title>Delete Account</AlertDialog.Title>
+        <AlertDialog.Description>
+          This action cannot be undone. This will permanently delete your
+          account and remove your data from our servers.
+        </AlertDialog.Description>
+        <div className="mt-rx-3 flex justify-end gap-rx-3">
+          <AlertDialog.Cancel>
+            <Button variant="soft" color="gray">
+              Cancel
+            </Button>
+          </AlertDialog.Cancel>
+          <AlertDialog.Action type="submit">
+            <Button
+              variant="solid"
+              color="red"
+              onClick={() => deleteUser.mutate({})}
+            >
               Continue
             </Button>
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </AlertDialog.Action>
+        </div>
+      </AlertDialog.Content>
+    </AlertDialog.Root>
   );
 };
 
@@ -85,47 +74,56 @@ const UserAvatar: React.FC = () => {
         isOpen={accountDeletionOpen}
         setIsOpen={setAccountDeletionOpen}
       />
-      <Popover>
-        <PopoverTrigger asChild title="User settings">
-          <Avatar>
-            <AvatarImage src={user.avatarUrl ?? ""} />
-            <AvatarFallback>{user.name[0].toUpperCase()}</AvatarFallback>
-          </Avatar>
-        </PopoverTrigger>
-        <PopoverContent align="end" className="grid w-auto min-w-52 gap-4">
-          <div className="flex max-w-min gap-4">
-            <Avatar className="size-16 text-[3rem]">
-              <AvatarImage src={user.avatarUrl ?? ""} alt={user.name} />
-              <AvatarFallback>{user.name[0].toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col justify-center">
-              <h2 className="text-lg font-semibold">{user.name}</h2>
-              <p className="text-sm text-muted-foreground">{user.email}</p>
+      <Popover.Root>
+        <Popover.Trigger title="User settings">
+          <Avatar
+            size="3"
+            radius="full"
+            src={user.avatarUrl ?? ""}
+            fallback={user.name[0].toUpperCase()}
+            className="cursor-pointer"
+          />
+        </Popover.Trigger>
+        <Popover.Content align="end">
+          <div className="grid gap-rx-4">
+            <div className="align-center flex gap-rx-4">
+              <Avatar
+                size="5"
+                radius="full"
+                src={user.avatarUrl ?? ""}
+                fallback={user.name[0].toUpperCase()}
+              />
+              <div className="flex flex-col justify-center">
+                <Text weight="bold" size="4">
+                  {user.name}
+                </Text>
+                <Text size="2" color="gray">
+                  {user.email}
+                </Text>
+              </div>
+            </div>
+
+            <div className="grid gap-rx-2">
+              <Button asChild className="relative" variant="surface">
+                <a href="/logout">
+                  <LogOut className="absolute left-rx-2 size-4" />
+                  <span>Logout</span>
+                </a>
+              </Button>
+              <Button
+                color="red"
+                variant="surface"
+                size="2"
+                onClick={() => setAccountDeletionOpen(true)}
+                className="relative"
+              >
+                <Trash className="absolute left-rx-2 size-4" />
+                <span>Delete Account</span>
+              </Button>
             </div>
           </div>
-
-          <div className="grid w-full gap-2">
-            <a
-              href="/logout"
-              className={cn(
-                buttonVariants({ variant: "secondary" }),
-                "relative",
-              )}
-            >
-              <i className="fa-solid fa-sign-out absolute left-4 mr-2" />
-              <span>Logout</span>
-            </a>
-            <Button
-              variant="destructive"
-              onClick={() => setAccountDeletionOpen(true)}
-              className="relative"
-            >
-              <i className="fa-solid fa-trash absolute left-4 mr-2" />
-              <span>Delete Account</span>
-            </Button>
-          </div>
-        </PopoverContent>
-      </Popover>
+        </Popover.Content>
+      </Popover.Root>
     </>
   );
 };
