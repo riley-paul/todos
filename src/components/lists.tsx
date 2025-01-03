@@ -36,8 +36,6 @@ const Lists: React.FC = () => {
   const inboxCount = useQuery(todosQueryOptions(null))?.data?.length;
   const allCount = useQuery(todosQueryOptions("all"))?.data?.length;
 
-  const [adderOpen, setAdderOpen] = React.useState(false);
-
   return (
     <>
       <div className="flex flex-wrap gap-rx-2 px-rx-3">
@@ -55,17 +53,8 @@ const Lists: React.FC = () => {
             users={list.otherUsers}
           />
         ))}
-        <Button
-          size="1"
-          variant="soft"
-          color="gray"
-          onClick={() => setAdderOpen(true)}
-        >
-          <i className="fa-solid fa-plus" />
-          Add
-        </Button>
+        <ListAdder />
       </div>
-      <ListAdder isOpen={adderOpen} setIsOpen={setAdderOpen} />
     </>
   );
 };

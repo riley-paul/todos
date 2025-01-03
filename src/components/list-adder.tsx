@@ -1,54 +1,57 @@
 import React from "react";
-import { Button, Heading, TextField } from "@radix-ui/themes";
+import { Button, Heading, Popover, TextField } from "@radix-ui/themes";
 import useMutations from "@/hooks/use-mutations";
-import ResponsiveModal from "./base/responsive-modal";
 
-type Props = {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-};
-
-const ListAdder: React.FC<Props> = ({ isOpen, setIsOpen }) => {
-  const { createList } = useMutations();
-
+const ListAdderForm: React.FC<{ onSubmit: (value: string) => void }> = ({
+  onSubmit,
+}) => {
   const [value, setValue] = React.useState("");
-
   return (
-    <ResponsiveModal
-      open={isOpen}
-      onOpenChange={(open) => {
-        setIsOpen(open);
-        setValue("");
+    <form
+      className="grid gap-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit(value);
       }}
     >
-      <Heading size="3" as="h2">
-        New List
-      </Heading>
-      <form
-        className="grid gap-rx-3 sm:grid-cols-[auto_6rem]"
-        onSubmit={(e) => {
-          e.preventDefault();
-          createList.mutate({ name: value });
-          setValue("");
-          setIsOpen(false);
-        }}
-      >
-        <TextField.Root
-          placeholder="New List"
-          autoFocus
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          className="flex-1"
-        >
-          <TextField.Slot side="right">
-            <Button size="1" variant="soft" type="submit">
-              <i className="fa-solid fa-save" />
-              Save
-            </Button>
-          </TextField.Slot>
-        </TextField.Root>
-      </form>
-    </ResponsiveModal>
+      <TextField.Root
+        placeholder="Unnamed List"
+        minLength={1}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+      <input type="submit" hidden />
+      <Button size="2" variant="surface" type="submit">
+        <i className="fa-solid fa-save" />
+        Save
+      </Button>
+    </form>
+  );
+};
+
+const ListAdder: React.FC = () => {
+  const { createList } = useMutations();
+  const [open, setOpen] = React.useState(false);
+  return (
+    <Popover.Root open={open} onOpenChange={setOpen}>
+      <Popover.Trigger>
+        <Button size="1" variant="soft">
+          <i className="fa-solid fa-plus" />
+          New list
+        </Button>
+      </Popover.Trigger>
+      <Popover.Content className="grid w-60 gap-4">
+        <Heading size="2" as="h2">
+          New List
+        </Heading>
+        <ListAdderForm
+          onSubmit={(value) => {
+            createList.mutate({ name: value });
+            setOpen(false);
+          }}
+        />
+      </Popover.Content>
+    </Popover.Root>
   );
 };
 
