@@ -1,6 +1,25 @@
 import React from "react";
-import { Button, Heading, Popover, TextField } from "@radix-ui/themes";
+import {
+  Button,
+  Heading,
+  Popover,
+  TextField,
+  type ButtonProps,
+} from "@radix-ui/themes";
 import useMutations from "@/hooks/use-mutations";
+import { useIsMobile } from "@/hooks/use-is-mobile";
+import ResponsiveModal from "./base/responsive-modal";
+
+const ListAdderTrigger = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  (props, ref) => {
+    return (
+      <Button ref={ref} size="1" variant="soft" color="gray" {...props}>
+        <i className="fa-solid fa-plus text-accent-10" />
+        New list
+      </Button>
+    );
+  },
+);
 
 const ListAdderForm: React.FC<{ onSubmit: (value: string) => void }> = ({
   onSubmit,
@@ -14,7 +33,11 @@ const ListAdderForm: React.FC<{ onSubmit: (value: string) => void }> = ({
         onSubmit(value);
       }}
     >
+      <Heading size="2" as="h2">
+        New List
+      </Heading>
       <TextField.Root
+        autoFocus
         placeholder="Unnamed List"
         minLength={1}
         value={value}
@@ -31,19 +54,31 @@ const ListAdderForm: React.FC<{ onSubmit: (value: string) => void }> = ({
 
 const ListAdder: React.FC = () => {
   const { createList } = useMutations();
+  const isMobile = useIsMobile(512);
   const [open, setOpen] = React.useState(false);
+
+  if (isMobile) {
+    return (
+      <>
+        <ListAdderTrigger onClick={() => setOpen(true)} />
+        <ResponsiveModal open={open} onOpenChange={setOpen}>
+          <ListAdderForm
+            onSubmit={(value) => {
+              createList.mutate({ name: value });
+              setOpen(false);
+            }}
+          />
+        </ResponsiveModal>
+      </>
+    );
+  }
+
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger>
-        <Button size="1" variant="soft">
-          <i className="fa-solid fa-plus" />
-          New list
-        </Button>
+        <ListAdderTrigger />
       </Popover.Trigger>
       <Popover.Content className="grid w-60 gap-4">
-        <Heading size="2" as="h2">
-          New List
-        </Heading>
         <ListAdderForm
           onSubmit={(value) => {
             createList.mutate({ name: value });

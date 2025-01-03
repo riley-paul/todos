@@ -8,7 +8,6 @@ import { actions } from "astro:actions";
 import Todo from "./todo";
 import useSelectedList from "@/hooks/use-selected-list";
 import { Button, Text } from "@radix-ui/themes";
-import { ChevronRight, Eraser } from "lucide-react";
 
 const Todos: React.FC = () => {
   const { selectedList } = useSelectedList();
@@ -48,9 +47,9 @@ const Todos: React.FC = () => {
                   <Text className="font-mono text-accentA-12">
                     {numCompleted}
                   </Text>
-                  <ChevronRight
+                  <i
                     className={cn(
-                      "size-4 transition-transform duration-200",
+                      "fa-solid fa-chevron-right transition-transform duration-200",
                       showCompleted && "rotate-90",
                     )}
                   />
@@ -63,7 +62,7 @@ const Todos: React.FC = () => {
                     deleteCompletedTodos.mutate({ listId: selectedList })
                   }
                 >
-                  <Eraser className="mr-1 size-3" />
+                  <i className="fa-solid fa-eraser" />
                   Clear
                 </Button>
               </div>
