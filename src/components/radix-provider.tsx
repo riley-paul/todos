@@ -12,6 +12,7 @@ const RadixProvider = React.forwardRef<HTMLDivElement, React.PropsWithChildren>(
         appearance={isDarkMode ? "dark" : "light"}
         accentColor="mint"
         radius="large"
+        scaling="105%"
       >
         {children}
       </Theme>

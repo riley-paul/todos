@@ -5,7 +5,6 @@ import type { SelectedList, UserSelect } from "@/lib/types";
 import UserBubbleGroup from "./base/user-bubble-group";
 import useSelectedList from "@/hooks/use-selected-list";
 import { Button, Flex, Separator, Text } from "@radix-ui/themes";
-import { Plus } from "lucide-react";
 import ListAdder from "./list-adder";
 
 const List: React.FC<{
@@ -62,7 +61,7 @@ const Lists: React.FC = () => {
           color="gray"
           onClick={() => setAdderOpen(true)}
         >
-          <Plus className="mr-0.5 size-3" />
+          <i className="fa-solid fa-plus" />
           Add
         </Button>
       </div>

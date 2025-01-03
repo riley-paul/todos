@@ -9,6 +9,7 @@ import {
   Badge,
   Button,
   Callout,
+  Heading,
   IconButton,
   Spinner,
   Strong,
@@ -16,20 +17,19 @@ import {
   TextField,
   Tooltip,
 } from "@radix-ui/themes";
-import VaulDrawer from "./base/vaul-drawer";
 import {
   AtSign,
   CircleCheck,
   CircleX,
   Hourglass,
   LogOut,
-  NotebookTabs,
   Save,
   Send,
   Trash,
 } from "lucide-react";
 import useSelectedList from "@/hooks/use-selected-list";
 import useConfirmDialog from "@/hooks/use-confirm-dialog";
+import ResponsiveModal from "./base/responsive-modal";
 
 const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
   if (query.isLoading) {
@@ -120,19 +120,21 @@ const ListEditor: React.FC = () => {
           radius="full"
           size="3"
           variant="soft"
-          color="gray"
           className="fixed bottom-8 right-8"
           onClick={() => setIsOpen(true)}
         >
-          <NotebookTabs className="size-5" />
+          <i className="fa-solid fa-pen" />
         </IconButton>
       </Tooltip>
-      <VaulDrawer
-        title={`Edit ${list.name}`}
-        description="Edit, share, or delete this list"
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-      >
+      <ResponsiveModal open={isOpen} onOpenChange={setIsOpen}>
+        <header>
+          <Heading as="h2" size="3">
+            Edit {list.name}
+          </Heading>
+          <Text size="2" color="gray">
+            Edit, share, or delete this list
+          </Text>
+        </header>
         <Callout.Root>
           <Callout.Icon>
             <UserBubble user={list.author} size="md" />
@@ -204,10 +206,7 @@ const ListEditor: React.FC = () => {
           <div className="min-h-12 overflow-y-auto rounded-3 border bg-panel-translucent px-2">
             <div className="grid divide-y">
               {list.shares.map((share) => (
-                <div
-                  key={share.id}
-                  className="flex items-center gap-rx-3 py-2"
-                >
+                <div key={share.id} className="flex items-center gap-rx-3 py-2">
                   <UserBubble user={share.user} size="md" />
                   <div className="grid flex-1 gap-0.5">
                     <Text size="2" weight="medium">
@@ -270,7 +269,7 @@ const ListEditor: React.FC = () => {
             Leave List
           </Button>
         )}
-      </VaulDrawer>
+      </ResponsiveModal>
     </>
   );
 };

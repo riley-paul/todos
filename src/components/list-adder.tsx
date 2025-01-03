@@ -1,8 +1,7 @@
 import React from "react";
-import VaulDrawer from "./base/vaul-drawer";
-import { Button, TextField } from "@radix-ui/themes";
-import { Save } from "lucide-react";
+import { Button, Heading, TextField } from "@radix-ui/themes";
 import useMutations from "@/hooks/use-mutations";
+import ResponsiveModal from "./base/responsive-modal";
 
 type Props = {
   isOpen: boolean;
@@ -15,16 +14,18 @@ const ListAdder: React.FC<Props> = ({ isOpen, setIsOpen }) => {
   const [value, setValue] = React.useState("");
 
   return (
-    <VaulDrawer
-      isOpen={isOpen}
-      setIsOpen={(open) => {
+    <ResponsiveModal
+      open={isOpen}
+      onOpenChange={(open) => {
         setIsOpen(open);
         setValue("");
       }}
-      title="Add a New List"
     >
+      <Heading size="3" as="h2">
+        New List
+      </Heading>
       <form
-        className="grid sm:grid-cols-[auto_8rem] gap-rx-3"
+        className="grid gap-rx-3 sm:grid-cols-[auto_6rem]"
         onSubmit={(e) => {
           e.preventDefault();
           createList.mutate({ name: value });
@@ -38,13 +39,16 @@ const ListAdder: React.FC<Props> = ({ isOpen, setIsOpen }) => {
           value={value}
           onChange={(e) => setValue(e.target.value)}
           className="flex-1"
-        />
-        <Button variant="solid" type="submit">
-          <Save className="size-4" />
-          Save
-        </Button>
+        >
+          <TextField.Slot side="right">
+            <Button size="1" variant="soft" type="submit">
+              <i className="fa-solid fa-save" />
+              Save
+            </Button>
+          </TextField.Slot>
+        </TextField.Root>
       </form>
-    </VaulDrawer>
+    </ResponsiveModal>
   );
 };
 

@@ -3,7 +3,6 @@ import { useEventListener, useMediaQuery } from "usehooks-ts";
 import useMutations from "@/hooks/use-mutations";
 import useSelectedList from "@/hooks/use-selected-list";
 import { Button, Flex, IconButton, Spinner, TextField } from "@radix-ui/themes";
-import { Plus } from "lucide-react";
 
 const isEmptyString = (value: string) => value.trim() === "";
 
@@ -66,7 +65,7 @@ export default function Adder(): ReturnType<React.FC> {
             disabled={isEmptyString(value)}
           >
             <Spinner loading={createTodo.isPending}>
-              <Plus className="size-5" />
+              <i className="fa-solid fa-plus" />
             </Spinner>
           </IconButton>
         ) : (
@@ -77,7 +76,7 @@ export default function Adder(): ReturnType<React.FC> {
             disabled={isEmptyString(value)}
           >
             <Spinner loading={createTodo.isPending}>
-              <Plus className="size-5" />
+              <i className="fa-solid fa-plus" />
             </Spinner>
             Add
           </Button>
