@@ -133,17 +133,17 @@ const ListEditor: React.FC = () => {
             Created by <Strong>{list.author.name}</Strong>
           </Callout.Text>
         </Callout.Root>
-        <div className="grid gap-rx-2">
-          <Text asChild size="2" weight="bold">
-            <label>Update Name</label>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            updateList.mutate({ id: list.id, data: { name } });
+          }}
+          className="grid gap-rx-2"
+        >
+          <Text as="label" size="2" weight="bold">
+            Update Name
           </Text>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              updateList.mutate({ id: list.id, data: { name } });
-            }}
-            className="grid grid-cols-[1fr_8rem] gap-rx-2"
-          >
+          <div className="grid grid-cols-[1fr_6rem] gap-rx-2">
             <TextField.Root
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -158,22 +158,22 @@ const ListEditor: React.FC = () => {
               <i className="fa-solid fa-save" />
               Update
             </Button>
-          </form>
-        </div>
-        <div className="grid gap-rx-2">
-          <Text asChild size="2" weight="bold">
-            <label>Share with</label>
+          </div>
+        </form>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!sharedUserQuery.data) return;
+            createListShare.mutate({ listId: list.id, email });
+            e.currentTarget.reset();
+            setEmail("");
+          }}
+          className="grid gap-rx-2"
+        >
+          <Text as="label" size="2" weight="bold">
+            Share with
           </Text>
-          <form
-            className="grid grid-cols-[1fr_8rem] gap-rx-2"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!sharedUserQuery.data) return;
-              createListShare.mutate({ listId: list.id, email });
-              e.currentTarget.reset();
-              setEmail("");
-            }}
-          >
+          <div className="grid grid-cols-[1fr_6rem] gap-rx-2">
             <TextField.Root
               className="flex-1"
               placeholder="cool_collaborator@hotmail.com"
@@ -192,7 +192,7 @@ const ListEditor: React.FC = () => {
               <i className="fa-solid fa-paper-plane" />
               Invite
             </Button>
-          </form>
+          </div>
           <div className="min-h-12 overflow-y-auto rounded-3 border bg-panel-translucent px-2">
             <div className="grid divide-y">
               {list.shares.map((share) => (
@@ -229,7 +229,7 @@ const ListEditor: React.FC = () => {
               )}
             </div>
           </div>
-        </div>
+        </form>
         {list.isAuthor ? (
           <Button
             variant="soft"
