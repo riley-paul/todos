@@ -25,4 +25,8 @@
   .container2 {
     @apply mx-auto w-full max-w-screen-sm px-2;
   }
+
+  body {
+    overscroll-behavior: none;
+  }
 }
