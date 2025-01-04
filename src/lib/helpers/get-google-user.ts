@@ -6,7 +6,7 @@ interface GoogleUser {
 }
 
 export default async function getGoogleUser(accessToken: string) {
-  const fetchInit: FetchRequestInit = {
+  const fetchInit: RequestInit = {
     headers: { Authorization: `Bearer ${accessToken}` },
   };
 

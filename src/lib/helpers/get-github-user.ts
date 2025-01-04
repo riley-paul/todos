@@ -13,7 +13,7 @@ interface GithubEmail {
 }
 
 export default async function getGithubUser(accessToken: string) {
-  const fetchInit: FetchRequestInit = {
+  const fetchInit: RequestInit = {
     headers: { Authorization: `Bearer ${accessToken}` },
   };
 

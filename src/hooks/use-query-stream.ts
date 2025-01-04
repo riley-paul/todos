@@ -1,5 +1,6 @@
 import { type QueryClient } from "@tanstack/react-query";
 import React from "react";
+import { toast } from "sonner";
 
 export default function useQueryStream(queryClient: QueryClient) {
   React.useEffect(() => {
@@ -11,6 +12,10 @@ export default function useQueryStream(queryClient: QueryClient) {
     const connect = () => {
       eventSource = new EventSource("/stream");
 
+      eventSource.onopen = () => {
+        toast.success("Connected to server");
+      };
+
       eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if (data === "invalidate") {
@@ -19,8 +24,8 @@ export default function useQueryStream(queryClient: QueryClient) {
         }
       };
 
-      eventSource.onerror = (event) => {
-        console.error("EventSource error, attempting to reconnect...");
+      eventSource.onerror = () => {
+        toast.error("EventSource error, attempting to reconnect...");
         eventSource?.close();
 
         if (!isUnmounted) {
