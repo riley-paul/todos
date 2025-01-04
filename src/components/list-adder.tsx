@@ -33,7 +33,7 @@ const ListAdderForm: React.FC<{ onSubmit: (value: string) => void }> = ({
         onSubmit(value);
       }}
     >
-      <Heading size="2" as="h2">
+      <Heading size="2" as="h2" mb="2">
         New List
       </Heading>
       <TextField.Root

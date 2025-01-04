@@ -14,6 +14,7 @@ import { NuqsAdapter } from "nuqs/adapters/react";
 import RadixProvider from "./components/radix-provider";
 import ListEditor from "./components/list-editor";
 import { Toaster } from "sonner";
+import { useIsMobile } from "./hooks/use-is-mobile";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -29,6 +30,7 @@ const queryClient = new QueryClient({
 
 const App: React.FC = () => {
   useQueryStream(queryClient);
+  const isMobile = useIsMobile();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -40,7 +42,11 @@ const App: React.FC = () => {
             <Lists />
             <Todos />
           </main>
-          <Toaster theme="system" position="bottom-center" richColors />
+          <Toaster
+            theme="system"
+            position={isMobile ? "top-center" : "bottom-center"}
+            richColors
+          />
           <ListEditor />
         </RadixProvider>
       </NuqsAdapter>
