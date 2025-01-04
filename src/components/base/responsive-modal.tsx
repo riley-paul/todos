@@ -20,7 +20,7 @@ const ResponsiveModal: React.FC<Props> = ({ open, onOpenChange, children }) => {
             <Drawer.Overlay className=" fixed inset-0 bg-blackA-6" />
             <Drawer.Content className="fixed bottom-0 left-0 right-0 mt-24 flex h-fit flex-col rounded-t-3 border border-b-0 bg-panel-solid outline-none">
                 <Drawer.Handle className="mt-3" />
-              <div className="hide-scrollbar grid max-h-[85vh] gap-4 overflow-y-auto px-4 py-4">
+              <div className="hide-scrollbar grid max-h-[85vh] gap-4 overflow-y-auto px-4 pt-4 pb-8">
                 {children}
               </div>
             </Drawer.Content>
