@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { actions, isActionError } from "astro:actions";
+import { ActionInputError, actions, isActionError } from "astro:actions";
 import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
 import type { SelectedList, TodoSelect } from "@/lib/types";
 import useSelectedList from "./use-selected-list";
@@ -16,6 +16,11 @@ export const handleMutationError = (error: Error) => {
   if (isActionError(error)) {
     status = error.status;
     description = error.message;
+  }
+
+  if (error instanceof ActionInputError) {
+    status = 400;
+    description = error.issues.map((issue) => issue.message).join(", ");
   }
 
   toast.error(`${status} Error`, { description });
@@ -129,6 +134,10 @@ export default function useMutations() {
 
   const createList = useMutation({
     mutationFn: actions.createList.orThrow,
+    onSuccess: ({ id }, { name }) => {
+      toast.success(`List "${name}" created`);
+      setSelectedList(id);
+    },
   });
 
   const deleteList = useMutation({

@@ -108,7 +108,7 @@ export const updateList = defineAction({
 });
 
 export const createList = defineAction({
-  input: z.object({ name: z.string() }),
+  input: z.object({ name: z.string().min(1, "List name cannot be empty") }),
   handler: async ({ name }, c) => {
     const userId = isAuthorized(c).id;
     const result = await db
