@@ -4,7 +4,7 @@ import { useDarkMode } from "usehooks-ts";
 
 const RadixProvider = React.forwardRef<HTMLDivElement, React.PropsWithChildren>(
   ({ children }, ref) => {
-    const { isDarkMode } = useDarkMode();
+    const { isDarkMode } = useDarkMode({ defaultValue: true });
 
     return (
       <Theme

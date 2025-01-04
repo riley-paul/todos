@@ -40,7 +40,7 @@ const App: React.FC = () => {
             <Lists />
             <Todos />
           </main>
-          <Toaster position="bottom-center" />
+          <Toaster theme="system" position="bottom-center" richColors />
           <ListEditor />
         </RadixProvider>
       </NuqsAdapter>
