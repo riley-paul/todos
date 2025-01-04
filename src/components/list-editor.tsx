@@ -105,12 +105,11 @@ const ListEditor: React.FC = () => {
     <>
       <LeaveDialog />
       <DeleteDialog />
-      <Tooltip content={`Edit ${list.name}`} side="left">
+      <Tooltip content={`Edit "${list.name}"`} side="left">
         <IconButton
           radius="full"
           size="3"
           variant="soft"
-          className="fixed bottom-8 right-8"
           onClick={() => setIsOpen(true)}
         >
           <i className="fa-solid fa-pen" />
