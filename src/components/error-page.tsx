@@ -2,7 +2,6 @@ import React from "react";
 import { isActionError } from "astro:actions";
 import { cn } from "@/lib/utils";
 import { Button, Heading, Text } from "@radix-ui/themes";
-import { Bug } from "lucide-react";
 
 interface Props {
   retry?: () => void;
@@ -32,7 +31,7 @@ const ErrorPage: React.FC<Props> = (props) => {
     >
       <div className="flex h-full w-full max-w-sm flex-col gap-4 px-4 py-16">
         <div className="flex flex-row items-center gap-4">
-          <Bug className="size-12 text-red-9" />
+          <i className="text=[3rem] fa-solid fa-bug text-red-9" />
           <div className="flex flex-col">
             <Heading as="h3" size="4">
               {status} Error

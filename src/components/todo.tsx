@@ -4,15 +4,6 @@ import type { TodoSelect } from "@/lib/types";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 import UserBubble from "./base/user-bubble";
 
-import {
-  ArrowRight,
-  Delete,
-  EllipsisVertical,
-  Pencil,
-  Save,
-  type LucideIcon,
-} from "lucide-react";
-
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions } from "@/lib/queries";
 import useSelectedList from "@/hooks/use-selected-list";
@@ -28,14 +19,11 @@ import {
 } from "@radix-ui/themes";
 import { cn } from "@/lib/utils";
 
-const MenuItem: React.FC<{ text: string; icon: LucideIcon }> = ({
-  text,
-  icon: Icon,
-}) => {
+const MenuItem: React.FC<{ text: string; icon: string }> = ({ text, icon }) => {
   return (
     <Flex gap="3" align="center" justify="between" width="100%">
       <Text>{text}</Text>
-      <Icon className="size-4 text-accent-8" />
+      <i className={cn(icon, "text-accent-8")} />
     </Flex>
   );
 };
@@ -61,7 +49,7 @@ const TodoForm: React.FC<{
         className="flex-1"
       >
         <TextField.Slot side="left">
-          <Pencil className="size-4 text-accent-10" />
+          <i className="fa-solid fa-pen text-accent-10" />
         </TextField.Slot>
       </TextField.Root>
       <Button
@@ -70,7 +58,7 @@ const TodoForm: React.FC<{
         size="2"
         onClick={() => handleSubmit(value)}
       >
-        <Save size="1rem" />
+        <i className="fa-solid fa-save" />
         Save
       </Button>
     </form>
@@ -129,7 +117,12 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
             }
           />
           <Flex flexGrow="1" align="center" onClick={() => setEditorOpen(true)}>
-            <Text size="2" className={cn(todo.isCompleted && "text-gray-10 line-through")}>{todo.text}</Text>
+            <Text
+              size="2"
+              className={cn(todo.isCompleted && "text-gray-10 line-through")}
+            >
+              {todo.text}
+            </Text>
           </Flex>
           {todo.list && todo.list.id !== selectedList && (
             <Badge>{todo.list.name}</Badge>
@@ -138,18 +131,18 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
               <IconButton size="2" variant="ghost">
-                <EllipsisVertical className="size-5" />
+                <i className="fa-solid fa-ellipsis" />
               </IconButton>
             </DropdownMenu.Trigger>
-            <DropdownMenu.Content align="end" className="min-w-40">
+            <DropdownMenu.Content align="end" className="min-w-48">
               <DropdownMenu.Group>
                 <DropdownMenu.Item onClick={() => setEditorOpen(true)}>
-                  <MenuItem text="Edit" icon={Pencil} />
+                  <MenuItem text="Edit" icon={"fa-solid fa-pen"} />
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   onClick={() => deleteTodo.mutate({ id: todo.id })}
                 >
-                  <MenuItem text="Delete" icon={Delete} />
+                  <MenuItem text="Delete" icon={"fa-solid fa-backspace"} />
                 </DropdownMenu.Item>
               </DropdownMenu.Group>
               {lists.length > 0 && (
@@ -166,7 +159,10 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
                           })
                         }
                       >
-                        <MenuItem text="Inbox" icon={ArrowRight} />
+                        <MenuItem
+                          text="Inbox"
+                          icon={"fa-solid fa-arrow-right"}
+                        />
                       </DropdownMenu.Item>
                     )}
                     {lists
@@ -181,7 +177,10 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
                             })
                           }
                         >
-                          <MenuItem text={list.name} icon={ArrowRight} />
+                          <MenuItem
+                            text={list.name}
+                            icon={"fa-solid fa-arrow-right"}
+                          />
                         </DropdownMenu.Item>
                       ))}
                   </DropdownMenu.Group>

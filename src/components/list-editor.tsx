@@ -17,16 +17,6 @@ import {
   TextField,
   Tooltip,
 } from "@radix-ui/themes";
-import {
-  AtSign,
-  CircleCheck,
-  CircleX,
-  Hourglass,
-  LogOut,
-  Save,
-  Send,
-  Trash,
-} from "lucide-react";
 import useSelectedList from "@/hooks/use-selected-list";
 import useConfirmDialog from "@/hooks/use-confirm-dialog";
 import ResponsiveModal from "./base/responsive-modal";
@@ -40,7 +30,7 @@ const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
     return (
       <Tooltip content="User exists" side="right">
         <Text color="green">
-          <CircleCheck className="size-4" />
+          <i className="fa-solid fa-circle-check" />
         </Text>
       </Tooltip>
     );
@@ -49,14 +39,14 @@ const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
     return (
       <Tooltip content="User does not exist" side="right">
         <Text color="red">
-          <CircleX className="size-4" />
+          <i className="fa-solid fa-circle-xmark" />
         </Text>
       </Tooltip>
     );
   }
   return (
     <Spinner loading={query.isLoading}>
-      <AtSign className="size-4" />
+      <i className="fa-solid fa-at" />
     </Spinner>
   );
 };
@@ -165,7 +155,7 @@ const ListEditor: React.FC = () => {
               type="submit"
               disabled={name === list.name}
             >
-              <Save className="size-4" />
+              <i className="fa-solid fa-save" />
               Update
             </Button>
           </form>
@@ -186,7 +176,7 @@ const ListEditor: React.FC = () => {
           >
             <TextField.Root
               className="flex-1"
-              placeholder="New List"
+              placeholder="cool_collaborator@hotmail.com"
               onChange={(e) => setEmail(e.target.value)}
             >
               <TextField.Slot side="left">
@@ -199,7 +189,7 @@ const ListEditor: React.FC = () => {
               disabled={!sharedUserQuery.data}
               onClick={() => createListShare.mutate({ listId: list.id, email })}
             >
-              <Send className="size-4" />
+              <i className="fa-solid fa-paper-plane" />
               Invite
             </Button>
           </form>
@@ -219,7 +209,7 @@ const ListEditor: React.FC = () => {
                   {share.isPending && (
                     <Tooltip side="left" content="Pending Invitation">
                       <Badge color="amber" size="3">
-                        <Hourglass className="size-4" />
+                        <i className="fa-solid fa-hourglass" />
                       </Badge>
                     </Tooltip>
                   )}
@@ -251,7 +241,7 @@ const ListEditor: React.FC = () => {
               }
             }}
           >
-            <Trash className="size-4" />
+            <i className="fa-solid fa-trash" />
             Delete List
           </Button>
         ) : (
@@ -265,7 +255,7 @@ const ListEditor: React.FC = () => {
               }
             }}
           >
-            <LogOut className="size-4" />
+            <i className="fa-solid fa-arrow-right-from-bracket" />
             Leave List
           </Button>
         )}

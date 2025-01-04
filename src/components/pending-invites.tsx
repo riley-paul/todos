@@ -11,7 +11,6 @@ import {
   Strong,
   Text,
 } from "@radix-ui/themes";
-import { CheckIcon, X } from "lucide-react";
 
 const PendingInvites: React.FC = () => {
   const pendingSharesQuery = useQuery(pendingSharesQueryOptions);
@@ -55,7 +54,7 @@ const PendingInvites: React.FC = () => {
                     variant="outline"
                     onClick={() => acceptListShare.mutate({ id: share.id })}
                   >
-                    <CheckIcon className="size-4" />
+                    <i className="fa-solid fa-check" />
                     <span>Accept</span>
                   </Button>
                   <Button
@@ -64,7 +63,7 @@ const PendingInvites: React.FC = () => {
                     color="red"
                     onClick={() => deleteListShare.mutate({ id: share.id })}
                   >
-                    <X className="size-4" />
+                    <i className="fa-solid fa-xmark" />
                     <span>Decline</span>
                   </Button>
                 </div>

@@ -4,7 +4,6 @@ import LoginButton from "./login-button";
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/lib/queries";
 import { Avatar, Button, Popover, Text } from "@radix-ui/themes";
-import { LogOut, Trash } from "lucide-react";
 import useConfirmDialog from "@/hooks/use-confirm-dialog";
 import useMutations from "@/hooks/use-mutations";
 
@@ -43,13 +42,15 @@ const UserAvatar: React.FC = () => {
       <DeletionDialog />
       <Popover.Root>
         <Popover.Trigger title="User settings">
-          <Avatar
-            size="3"
-            radius="full"
-            src={user.avatarUrl ?? ""}
-            fallback={user.name[0].toUpperCase()}
-            className="cursor-pointer"
-          />
+          <button>
+            <Avatar
+              size="3"
+              radius="full"
+              src={user.avatarUrl ?? ""}
+              fallback={user.name[0].toUpperCase()}
+              className="cursor-pointer"
+            />
+          </button>
         </Popover.Trigger>
         <Popover.Content align="end">
           <div className="grid gap-rx-4">
@@ -73,7 +74,7 @@ const UserAvatar: React.FC = () => {
             <div className="grid gap-rx-2">
               <Button asChild className="relative" variant="surface">
                 <a href="/logout">
-                  <LogOut className="absolute left-rx-2 size-4" />
+                  <i className="absolute left-rx-2 fa-solid fa-arrow-right-from-bracket" />
                   <span>Logout</span>
                 </a>
               </Button>
@@ -89,7 +90,7 @@ const UserAvatar: React.FC = () => {
                 }}
                 className="relative"
               >
-                <Trash className="absolute left-rx-2 size-4" />
+                <i className="absolute left-rx-2 fa-solid fa-trash" />
                 <span>Delete Account</span>
               </Button>
             </div>
