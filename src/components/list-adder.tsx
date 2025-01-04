@@ -9,6 +9,7 @@ import {
 import useMutations from "@/hooks/use-mutations";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import ResponsiveModal from "./base/responsive-modal";
+import { toast } from "sonner";
 
 const ListAdderTrigger = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (props, ref) => {
@@ -57,17 +58,21 @@ const ListAdder: React.FC = () => {
   const isMobile = useIsMobile(512);
   const [open, setOpen] = React.useState(false);
 
+  const onSubmit = (value: string) => {
+    if (value.length === 0) {
+      toast.info("List name cannot be empty");
+      return;
+    }
+    createList.mutate({ name: value });
+    setOpen(false);
+  };
+
   if (isMobile) {
     return (
       <>
         <ListAdderTrigger onClick={() => setOpen(true)} />
         <ResponsiveModal open={open} onOpenChange={setOpen}>
-          <ListAdderForm
-            onSubmit={(value) => {
-              createList.mutate({ name: value });
-              setOpen(false);
-            }}
-          />
+          <ListAdderForm onSubmit={onSubmit} />
         </ResponsiveModal>
       </>
     );
@@ -79,12 +84,7 @@ const ListAdder: React.FC = () => {
         <ListAdderTrigger />
       </Popover.Trigger>
       <Popover.Content className="grid w-60 gap-4">
-        <ListAdderForm
-          onSubmit={(value) => {
-            createList.mutate({ name: value });
-            setOpen(false);
-          }}
-        />
+        <ListAdderForm onSubmit={onSubmit} />
       </Popover.Content>
     </Popover.Root>
   );

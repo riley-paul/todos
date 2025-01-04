@@ -6,7 +6,7 @@ import { Button, Flex, IconButton, Spinner, TextField } from "@radix-ui/themes";
 
 const isEmptyString = (value: string) => value.trim() === "";
 
-export default function Adder(): ReturnType<React.FC> {
+export default function TodoAdder(): ReturnType<React.FC> {
   const { createTodo } = useMutations();
   const { selectedList } = useSelectedList();
 

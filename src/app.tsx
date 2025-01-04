@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-query";
 import Header from "@/components/header";
 import useQueryStream from "@/hooks/use-query-stream";
-import Adder from "@/components/adder";
+import TodoAdder from "@/components/todo-adder";
 import Lists from "@/components/lists";
 import Todos from "@/components/todos";
 import { handleMutationError } from "@/hooks/use-mutations";
@@ -36,7 +36,7 @@ const App: React.FC = () => {
         <RadixProvider>
           <Header />
           <main className="container2 grid gap-rx-4 py-rx-6 pb-24">
-            <Adder />
+            <TodoAdder />
             <Lists />
             <Todos />
           </main>
