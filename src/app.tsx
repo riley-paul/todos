@@ -15,7 +15,7 @@ import RadixProvider from "./components/radix-provider";
 import ListEditor from "./components/list-editor";
 import { Toaster } from "sonner";
 import { useIsMobile } from "./hooks/use-is-mobile";
-import { IconButton, Tooltip } from "@radix-ui/themes";
+import RefreshButton from "./components/refresh-button";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -49,15 +49,7 @@ const App: React.FC = () => {
             richColors
           />
           <div className="fixed bottom-8 right-8 flex items-center gap-3">
-            <Tooltip content="Refresh data" side="left">
-              <IconButton
-                radius="full"
-                variant="soft"
-                onClick={() => queryClient.invalidateQueries()}
-              >
-                <i className="fa-solid fa-rotate" />
-              </IconButton>
-            </Tooltip>
+            <RefreshButton />
             <ListEditor />
           </div>
         </RadixProvider>

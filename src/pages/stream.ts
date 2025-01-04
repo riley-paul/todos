@@ -11,36 +11,62 @@ export const GET: APIRoute = async ({ request, locals }) => {
     start: (controller) => {
       // Text encoder to convert strings to Uint8Array
       const encoder = new TextEncoder();
+      let isClosed = false;
+      let intervalId: NodeJS.Timeout | null = null;
 
-      // Send a retry directive to the client
-      controller.enqueue(encoder.encode(`retry: 5000\n\n`)); // Retry after 5 seconds if disconnected
+      // Function to safely enqueue data
+      const safeEnqueue = (message: string) => {
+        if (isClosed) return;
+        try {
+          controller.enqueue(encoder.encode(message));
+        } catch (err) {
+          console.error("Error during enqueue:", err);
+          if (intervalId) clearInterval(intervalId);
+        }
+      };
 
-      const intervalId = setInterval(() => {
-        const message = `data: "ping"\n\n`;
-        controller.enqueue(encoder.encode(message));
+      intervalId = setInterval(() => {
+        safeEnqueue('data: "ping"\n\n');
       }, 3_000);
 
       // Send event to client
       const invalidateUsers = (userIds: string[]) => {
+        if (isClosed) return;
         if (!userIds.includes(userId)) return;
-        const message = `data: "invalidate"\n\n`;
-        controller.enqueue(encoder.encode(message));
+        safeEnqueue('data: "invalidate"\n\n');
       };
 
-      InvalidationController.getInstance().subscribe(invalidateUsers);
+      const invalidationController = InvalidationController.getInstance();
+      invalidationController.subscribe(invalidateUsers);
+
+      // Centralized cleanup logic
+      const cleanup = () => {
+        if (isClosed) return; // Prevent double cleanup
+        isClosed = true; // Mark stream as closed
+
+        console.log("[Stream Cleanup] Closing stream and clearing resources.");
+        if (intervalId !== null) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
+
+        invalidationController.unsubscribe(invalidateUsers);
+        try {
+          controller.close();
+        } catch (err) {
+          console.warn("[Stream Cleanup] Error closing stream:", err);
+        }
+      };
 
       // Handle the connection closing
-      request.signal.addEventListener("abort", () => {
-        InvalidationController.getInstance().unsubscribe(invalidateUsers);
-        controller.close();
-        clearInterval(intervalId);
-      });
+      request.signal.addEventListener("abort", cleanup);
+
+      // Additional cleanup for HMR (only runs in development)
+      if (import.meta.env.DEV) {
+        import.meta.hot?.on("dispose", cleanup);
+      }
     },
   });
-
-  // if (import.meta.env.DEV) {
-  //   return new Response("");
-  // }
 
   return new Response(body, {
     headers: {
