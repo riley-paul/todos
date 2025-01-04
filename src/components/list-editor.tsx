@@ -118,7 +118,7 @@ const ListEditor: React.FC = () => {
       <ResponsiveModal open={isOpen} onOpenChange={setIsOpen}>
         <header>
           <Heading as="h2" size="3">
-            Edit {list.name}
+            Edit "{list.name}"
           </Heading>
           <Text size="2" color="gray">
             Edit, share, or delete this list

@@ -48,7 +48,7 @@ const App: React.FC = () => {
             position={isMobile ? "top-center" : "bottom-center"}
             richColors
           />
-          <div className="fixed bottom-8 right-8 flex flex-col items-center gap-3">
+          <div className="fixed bottom-8 right-8 flex items-center gap-3">
             <Tooltip content="Refresh data" side="left">
               <IconButton
                 radius="full"

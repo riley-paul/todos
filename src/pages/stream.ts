@@ -12,10 +12,13 @@ export const GET: APIRoute = async ({ request, locals }) => {
       // Text encoder to convert strings to Uint8Array
       const encoder = new TextEncoder();
 
+      // Send a retry directive to the client
+      controller.enqueue(encoder.encode(`retry: 5000\n\n`)); // Retry after 5 seconds if disconnected
+
       const intervalId = setInterval(() => {
         const message = `data: "ping"\n\n`;
         controller.enqueue(encoder.encode(message));
-      }, 1000 * 3);
+      }, 3_000);
 
       // Send event to client
       const invalidateUsers = (userIds: string[]) => {
@@ -35,9 +38,9 @@ export const GET: APIRoute = async ({ request, locals }) => {
     },
   });
 
-  if (import.meta.env.DEV) {
-    return new Response("");
-  }
+  // if (import.meta.env.DEV) {
+  //   return new Response("");
+  // }
 
   return new Response(body, {
     headers: {
