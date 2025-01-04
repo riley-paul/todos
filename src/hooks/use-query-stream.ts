@@ -12,10 +12,6 @@ export default function useQueryStream(queryClient: QueryClient) {
     const connect = () => {
       eventSource = new EventSource("/stream");
 
-      eventSource.onopen = () => {
-        toast.success("Connected to server");
-      };
-
       eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if (data === "invalidate") {
@@ -24,25 +20,31 @@ export default function useQueryStream(queryClient: QueryClient) {
         }
       };
 
+      eventSource.onopen = () => {
+        toast.success("EventSource connected");
+        retryDelay = 1000;
+      }
+
       eventSource.onerror = () => {
         toast.error("EventSource error, attempting to reconnect...");
         eventSource?.close();
 
+        // Attempt to reconnect with exponential backoff
         if (!isUnmounted) {
           reconnectTimeout = setTimeout(() => {
-            retryDelay = Math.min(retryDelay * 2, 30_000); // Max delay of 30 seconds
+            retryDelay = Math.min(retryDelay * 2, 30000); // Max delay of 30 seconds
             connect();
           }, retryDelay);
         }
       };
     };
 
+    connect();
+
     return () => {
       isUnmounted = true;
       eventSource?.close();
-      if (reconnectTimeout) {
-        clearTimeout(reconnectTimeout);
-      }
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
     };
   }, [queryClient]);
 }
