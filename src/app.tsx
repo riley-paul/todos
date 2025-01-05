@@ -16,6 +16,9 @@ import ListEditor from "./components/list-editor";
 import { Toaster } from "sonner";
 import { useIsMobile } from "./hooks/use-is-mobile";
 import RefreshButton from "./components/refresh-button";
+import { Heading } from "@radix-ui/themes";
+import PendingInvites from "./components/pending-invites";
+import UserAvatar from "./components/user-avatar";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -30,14 +33,32 @@ const queryClient = new QueryClient({
 });
 
 const App: React.FC = () => {
-  useQueryStream(queryClient);
+  const { StreamStateIcon } = useQueryStream(queryClient);
   const isMobile = useIsMobile();
 
   return (
     <QueryClientProvider client={queryClient}>
       <NuqsAdapter>
         <RadixProvider>
-          <Header />
+          <header className="sticky top-0 z-50 border-b bg-panel-translucent backdrop-blur">
+            <div className="container2">
+              <div className="flex items-center justify-between px-rx-3 py-rx-3">
+                <div className="flex items-center gap-2">
+                  <i className="fa-solid fa-check-double text-7 text-accent-9" />
+                  <Heading size="6" weight="bold">
+                    Todos
+                  </Heading>
+                  <div className="ml-2">
+                    <StreamStateIcon />
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <PendingInvites />
+                  <UserAvatar />
+                </div>
+              </div>
+            </div>
+          </header>
           <main className="container2 grid gap-rx-4 py-rx-6 pb-24">
             <TodoAdder />
             <Lists />
