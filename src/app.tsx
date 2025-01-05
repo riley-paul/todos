@@ -4,7 +4,6 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import Header from "@/components/header";
 import useQueryStream from "@/hooks/use-query-stream";
 import TodoAdder from "@/components/todo-adder";
 import Lists from "@/components/lists";

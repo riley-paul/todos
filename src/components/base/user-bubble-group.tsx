@@ -23,6 +23,7 @@ const UserBubbleGroup: React.FC<Props> = ({ users, numAvatars = 3 }) => {
       {users.length > numAvatars && (
         <Avatar
           src=""
+          alt={`+${users.length - numAvatars}`}
           variant="solid"
           fallback={`+${users.length - numAvatars}`}
           radius="full"

@@ -23,6 +23,7 @@ const UserBubble: React.FC<Props> = (props) => {
     <Avatar
       radius="full"
       src={user.avatarUrl ?? ""}
+      alt={user.name}
       fallback={user.name[0]}
       className={cn(sizeMap[size])}
     />
