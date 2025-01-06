@@ -14,6 +14,7 @@ import {
   DropdownMenu,
   Flex,
   IconButton,
+  Spinner,
   Text,
   TextArea,
 } from "@radix-ui/themes";
@@ -117,28 +118,28 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
         <TodoForm
           initialValue={todo.text}
           handleSubmit={(text) => {
-            updateTodo
-              .mutateAsync({
-                id: todo.id,
-                data: { text },
-              })
-              .then(() => setEditorOpen(false));
+            updateTodo.mutate({
+              id: todo.id,
+              data: { text },
+            });
+            setEditorOpen(false);
           }}
         />
       ) : (
         <>
-          <Checkbox
-            size="3"
-            variant="soft"
-            disabled={updateTodo.isPending}
-            checked={todo.isCompleted}
-            onCheckedChange={() =>
-              updateTodo.mutate({
-                id: todo.id,
-                data: { isCompleted: !todo.isCompleted },
-              })
-            }
-          />
+          <Spinner loading={updateTodo.isPending}>
+            <Checkbox
+              size="3"
+              variant="soft"
+              checked={todo.isCompleted}
+              onCheckedChange={() =>
+                updateTodo.mutate({
+                  id: todo.id,
+                  data: { isCompleted: !todo.isCompleted },
+                })
+              }
+            />
+          </Spinner>
           <Flex flexGrow="1" align="center" onClick={() => setEditorOpen(true)}>
             <Text
               size="2"
