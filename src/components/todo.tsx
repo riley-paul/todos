@@ -67,6 +67,12 @@ const TodoForm: React.FC<{
           focusInputAtEnd(e.target);
           resizeTextArea(e.target);
         }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            handleSubmit(value);
+          }
+        }}
       />
       <Button
         variant="soft"

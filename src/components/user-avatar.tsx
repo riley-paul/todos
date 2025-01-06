@@ -23,7 +23,11 @@ const UserAvatar: React.FC = () => {
   }
 
   if (userQuery.isError) {
-    return <div>Error loading user</div>;
+    return (
+      <Text size="2" color="red">
+        Error loading user
+      </Text>
+    );
   }
 
   const user = userQuery.data;
@@ -74,7 +78,7 @@ const UserAvatar: React.FC = () => {
             <div className="grid gap-rx-2">
               <Button asChild className="relative" variant="surface">
                 <a href="/logout">
-                  <i className="absolute left-rx-2 fa-solid fa-arrow-right-from-bracket" />
+                  <i className="fa-solid fa-arrow-right-from-bracket absolute left-rx-2" />
                   <span>Logout</span>
                 </a>
               </Button>
@@ -90,7 +94,7 @@ const UserAvatar: React.FC = () => {
                 }}
                 className="relative"
               >
-                <i className="absolute left-rx-2 fa-solid fa-trash" />
+                <i className="fa-solid fa-trash absolute left-rx-2" />
                 <span>Delete Account</span>
               </Button>
             </div>
