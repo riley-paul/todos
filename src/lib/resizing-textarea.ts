@@ -1,4 +1,4 @@
-export const focusInputAtEnd = (inputElement: HTMLTextAreaElement) => {
+export const focusInputAtEnd = (inputElement: HTMLTextAreaElement | null) => {
   if (inputElement) {
     inputElement.focus();
     const length = inputElement.value.length;
@@ -6,7 +6,7 @@ export const focusInputAtEnd = (inputElement: HTMLTextAreaElement) => {
   }
 };
 
-export const resizeTextArea = (inputElement: HTMLTextAreaElement) => {
+export const resizeTextArea = (inputElement: HTMLTextAreaElement | null) => {
   if (inputElement) {
     inputElement.style.height = "auto";
     inputElement.style.height = `${inputElement.scrollHeight}px`;

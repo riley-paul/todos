@@ -15,9 +15,10 @@ import {
   Flex,
   IconButton,
   Text,
-  TextField,
+  TextArea,
 } from "@radix-ui/themes";
 import { cn } from "@/lib/utils";
+import { focusInputAtEnd, resizeTextArea } from "@/lib/resizing-textarea";
 
 const MenuItem: React.FC<{ text: string; icon: string }> = ({ text, icon }) => {
   return (
@@ -33,25 +34,40 @@ const TodoForm: React.FC<{
   handleSubmit: (value: string) => void;
 }> = ({ initialValue, handleSubmit }) => {
   const [value, setValue] = React.useState(initialValue);
+  const ref = React.useRef<HTMLTextAreaElement>(null);
+
+  useEventListener("resize", () => {
+    resizeTextArea(ref.current);
+  });
+
+  React.useEffect(() => {
+    resizeTextArea(ref.current);
+  }, []);
+
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
         handleSubmit(value);
       }}
-      className="flex w-full items-center gap-rx-2"
+      className="flex w-full items-start gap-2"
     >
-      <TextField.Root
+      <TextArea
+        ref={ref}
         size="2"
         value={value}
-        onChange={(e) => setValue(e.target.value)}
         autoFocus
-        className="flex-1"
-      >
-        <TextField.Slot side="left">
-          <i className="fa-solid fa-pen text-accent-10" />
-        </TextField.Slot>
-      </TextField.Root>
+        rows={1}
+        className="min-h-min flex-1"
+        onChange={(e) => {
+          setValue(e.target.value);
+          resizeTextArea(e.target);
+        }}
+        onFocus={(e) => {
+          focusInputAtEnd(e.target);
+          resizeTextArea(e.target);
+        }}
+      />
       <Button
         variant="soft"
         type="submit"

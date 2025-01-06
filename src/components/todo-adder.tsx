@@ -1,10 +1,11 @@
 import React from "react";
-import { useEventListener, useMediaQuery } from "usehooks-ts";
+import { useEventListener } from "usehooks-ts";
 import useMutations from "@/hooks/use-mutations";
 import useSelectedList from "@/hooks/use-selected-list";
 import { Button, Flex, IconButton, Spinner, TextArea } from "@radix-ui/themes";
 import { resizeTextArea } from "@/lib/resizing-textarea";
 import { flushSync } from "react-dom";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 const isEmptyString = (value: string) => value.trim() === "";
 
@@ -15,14 +16,22 @@ export default function TodoAdder(): ReturnType<React.FC> {
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const [value, setValue] = React.useState("");
 
+  const resetInput = () => {
+    flushSync(() => setValue(""));
+    resizeTextArea(inputRef.current);
+  };
+
   const create = () => {
     if (value) {
       createTodo.mutate({ text: value, listId: selectedList });
-      flushSync(() => setValue(""));
-      resizeTextArea(inputRef.current!);
+      resetInput();
       inputRef.current?.focus();
     }
   };
+
+  useEventListener("resize", () => {
+    resizeTextArea(inputRef.current);
+  });
 
   useEventListener("keydown", (e) => {
     if (e.key === "i" && (e.ctrlKey || e.metaKey)) {
@@ -31,12 +40,12 @@ export default function TodoAdder(): ReturnType<React.FC> {
     }
 
     if (e.key === "Escape") {
-      setValue("");
+      resetInput();
       inputRef.current?.blur();
     }
   });
 
-  const isMobile = useMediaQuery("(max-width: 500px)");
+  const isMobile = useIsMobile(512);
 
   return (
     <form
