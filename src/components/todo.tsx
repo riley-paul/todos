@@ -19,6 +19,7 @@ import {
 } from "@radix-ui/themes";
 import { cn } from "@/lib/utils";
 import { focusInputAtEnd, resizeTextArea } from "@/lib/resizing-textarea";
+import TextWithLinks from "./base/text-with-links";
 
 const MenuItem: React.FC<{ text: string; icon: string }> = ({ text, icon }) => {
   return (
@@ -143,7 +144,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
               size="2"
               className={cn(todo.isCompleted && "text-gray-10 line-through")}
             >
-              {todo.text}
+              <TextWithLinks text={todo.text} />
             </Text>
           </Flex>
           {todo.list && todo.list.id !== selectedList && (
