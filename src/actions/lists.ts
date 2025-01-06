@@ -11,6 +11,8 @@ import {
   filterByListShare,
 } from "./helpers";
 
+const zListName = z.string().trim().min(1, "List name cannot be empty");
+
 export const getLists = defineAction({
   handler: async (_, c) => {
     const userId = isAuthorized(c).id;
@@ -82,7 +84,7 @@ export const getLists = defineAction({
 export const updateList = defineAction({
   input: z.object({
     id: z.string(),
-    data: z.object({ name: z.string() }).partial(),
+    data: z.object({ name: zListName }).partial(),
   }),
   handler: async ({ id, data }, c) => {
     const userId = isAuthorized(c).id;
@@ -108,7 +110,7 @@ export const updateList = defineAction({
 });
 
 export const createList = defineAction({
-  input: z.object({ name: z.string().min(1, "List name cannot be empty") }),
+  input: z.object({ name: zListName }),
   handler: async ({ name }, c) => {
     const userId = isAuthorized(c).id;
     const result = await db

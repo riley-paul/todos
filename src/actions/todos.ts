@@ -21,6 +21,8 @@ import {
   getTodoUsers,
 } from "./helpers";
 
+const zTodoText = z.string().trim().min(1, "Todo must not be empty");
+
 export const getTodos = defineAction({
   input: z.object({
     listId: z.union([z.string(), z.null()]),
@@ -61,7 +63,7 @@ export const createTodo = defineAction({
   input: z.object({
     id: z.string().optional(),
     listId: z.string().nullable(),
-    text: z.string().min(1, "Todo must not be empty"),
+    text: zTodoText,
   }),
   handler: async (data, c) => {
     const userId = isAuthorized(c).id;
@@ -81,7 +83,7 @@ export const updateTodo = defineAction({
     id: z.string(),
     data: z
       .object({
-        text: z.string(),
+        text: zTodoText,
         isCompleted: z.boolean(),
         listId: z.string().nullable(),
       })
