@@ -2,7 +2,9 @@ import React from "react";
 import { useEventListener, useMediaQuery } from "usehooks-ts";
 import useMutations from "@/hooks/use-mutations";
 import useSelectedList from "@/hooks/use-selected-list";
-import { Button, Flex, IconButton, Spinner, TextField } from "@radix-ui/themes";
+import { Button, Flex, IconButton, Spinner, TextArea } from "@radix-ui/themes";
+import { resizeTextArea } from "@/lib/resizing-textarea";
+import { flushSync } from "react-dom";
 
 const isEmptyString = (value: string) => value.trim() === "";
 
@@ -10,13 +12,14 @@ export default function TodoAdder(): ReturnType<React.FC> {
   const { createTodo } = useMutations();
   const { selectedList } = useSelectedList();
 
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const [value, setValue] = React.useState("");
 
   const create = () => {
     if (value) {
-      createTodo.mutate({ data: { text: value, listId: selectedList } });
-      setValue("");
+      createTodo.mutate({ text: value, listId: selectedList });
+      flushSync(() => setValue(""));
+      resizeTextArea(inputRef.current!);
       inputRef.current?.focus();
     }
   };
@@ -39,22 +42,31 @@ export default function TodoAdder(): ReturnType<React.FC> {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        if (isEmptyString(value)) return;
         create();
       }}
     >
-      <Flex gap="3" align="center" px="3">
-        <TextField.Root
+      <Flex gap="3" align="start" px="3">
+        <TextArea
           autoFocus
           size="3"
           ref={inputRef}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
           placeholder="Add a todo..."
+          rows={1}
+          className="min-h-min flex-1"
+          onChange={(e) => {
+            setValue(e.target.value);
+            resizeTextArea(e.target);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              create();
+            }
+          }}
           onFocus={(e) => {
             e.target.select();
           }}
-          className="flex-1"
         />
         <input type="submit" hidden />
         {isMobile ? (

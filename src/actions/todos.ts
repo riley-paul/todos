@@ -59,13 +59,15 @@ export const getTodos = defineAction({
 
 export const createTodo = defineAction({
   input: z.object({
-    data: z.custom<Partial<typeof Todo.$inferInsert>>(),
+    id: z.string().optional(),
+    listId: z.string().nullable(),
+    text: z.string().min(1, "Todo must not be empty"),
   }),
-  handler: async ({ data }, c) => {
+  handler: async (data, c) => {
     const userId = isAuthorized(c).id;
     const todo = await db
       .insert(Todo)
-      .values({ id: uuid(), text: "", ...data, userId })
+      .values({ id: uuid(), ...data, userId })
       .returning()
       .then((rows) => rows[0]);
 
