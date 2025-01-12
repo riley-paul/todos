@@ -112,7 +112,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   return (
     <div
       ref={ref}
-      className="flex min-h-11 items-center gap-rx-2 rounded-3 px-rx-3 py-rx-1 hover:bg-gray-3"
+      className="flex min-h-11 items-center gap-rx-2 rounded-3 px-rx-3 py-rx-1 hover:bg-gray-3 transition-colors ease-out"
     >
       {editorOpen ? (
         <TodoForm
