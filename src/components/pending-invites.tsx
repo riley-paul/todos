@@ -43,14 +43,14 @@ const PendingInvites: React.FC = () => {
               <div className="h-full">
                 <UserBubble user={share.invitedBy} size="md" />
               </div>
-              <div className="grid flex-1 gap-rx-3">
-                <Text size="3">
+              <div className="grid flex-1 gap-3">
+                <Text size="2">
                   <Strong>{share.invitedBy.name}</Strong> invited you to join{" "}
                   <Strong>{share.list.name}</Strong>
                 </Text>
                 <div className="grid grid-cols-2 gap-rx-2">
                   <Button
-                    size="2"
+                    size="1"
                     variant="outline"
                     onClick={() => acceptListShare.mutate({ id: share.id })}
                   >
@@ -58,7 +58,7 @@ const PendingInvites: React.FC = () => {
                     <span>Accept</span>
                   </Button>
                   <Button
-                    size="2"
+                    size="1"
                     variant="outline"
                     color="red"
                     onClick={() => deleteListShare.mutate({ id: share.id })}

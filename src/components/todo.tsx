@@ -4,16 +4,12 @@ import type { TodoSelect } from "@/lib/types";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 import UserBubble from "./base/user-bubble";
 
-import { useQuery } from "@tanstack/react-query";
-import { listsQueryOptions } from "@/lib/queries";
 import useSelectedList from "@/hooks/use-selected-list";
 import {
   Badge,
   Button,
   Checkbox,
-  DropdownMenu,
   Flex,
-  IconButton,
   Spinner,
   Text,
   TextArea,
@@ -21,15 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { focusInputAtEnd, resizeTextArea } from "@/lib/resizing-textarea";
 import TextWithLinks from "./base/text-with-links";
-
-const MenuItem: React.FC<{ text: string; icon: string }> = ({ text, icon }) => {
-  return (
-    <Flex gap="3" align="center" justify="between" width="100%">
-      <Text>{text}</Text>
-      <i className={cn(icon, "text-accent-8")} />
-    </Flex>
-  );
-};
+import TodoDropdown from "./todo-dropdown";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -92,9 +80,6 @@ const TodoForm: React.FC<{
 const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   const { deleteTodo, updateTodo, moveTodo } = useMutations();
 
-  const listsQuery = useQuery(listsQueryOptions);
-  const lists = listsQuery.data ?? [];
-
   const { selectedList } = useSelectedList();
 
   const [editorOpen, setEditorOpen] = React.useState(false);
@@ -112,7 +97,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   return (
     <div
       ref={ref}
-      className="flex min-h-11 items-center gap-rx-2 rounded-3 px-rx-3 py-rx-1 hover:bg-gray-3 transition-colors ease-out"
+      className="flex min-h-11 items-center gap-rx-2 rounded-3 px-rx-3 py-rx-1 transition-colors ease-out hover:bg-gray-3"
     >
       {editorOpen ? (
         <TodoForm
@@ -152,66 +137,13 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
             <Badge>{todo.list.name}</Badge>
           )}
           {!todo.isAuthor && <UserBubble user={todo.author} size="md" />}
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger>
-              <IconButton size="2" variant="ghost">
-                <i className="fa-solid fa-ellipsis" />
-              </IconButton>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content align="end" className="min-w-48">
-              <DropdownMenu.Group>
-                <DropdownMenu.Item onClick={() => setEditorOpen(true)}>
-                  <MenuItem text="Edit" icon={"fa-solid fa-pen"} />
-                </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  onClick={() => deleteTodo.mutate({ id: todo.id })}
-                >
-                  <MenuItem text="Delete" icon={"fa-solid fa-backspace"} />
-                </DropdownMenu.Item>
-              </DropdownMenu.Group>
-              {lists.length > 0 && (
-                <>
-                  <DropdownMenu.Separator />
-                  <DropdownMenu.Group>
-                    <DropdownMenu.Label>Move</DropdownMenu.Label>
-                    {selectedList && (
-                      <DropdownMenu.Item
-                        onClick={() =>
-                          moveTodo.mutate({
-                            id: todo.id,
-                            data: { listId: null },
-                          })
-                        }
-                      >
-                        <MenuItem
-                          text="Inbox"
-                          icon={"fa-solid fa-arrow-right"}
-                        />
-                      </DropdownMenu.Item>
-                    )}
-                    {lists
-                      .filter((list) => list.id !== selectedList)
-                      .map((list) => (
-                        <DropdownMenu.Item
-                          key={list.id}
-                          onClick={() =>
-                            moveTodo.mutate({
-                              id: todo.id,
-                              data: { listId: list.id },
-                            })
-                          }
-                        >
-                          <MenuItem
-                            text={list.name}
-                            icon={"fa-solid fa-arrow-right"}
-                          />
-                        </DropdownMenu.Item>
-                      ))}
-                  </DropdownMenu.Group>
-                </>
-              )}
-            </DropdownMenu.Content>
-          </DropdownMenu.Root>
+          <TodoDropdown
+            handleDelete={() => deleteTodo.mutate({ id: todo.id })}
+            handleEdit={() => setEditorOpen(true)}
+            handleMove={(listId) =>
+              moveTodo.mutate({ id: todo.id, data: { listId } })
+            }
+          />
         </>
       )}
     </div>
