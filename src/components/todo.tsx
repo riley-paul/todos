@@ -18,6 +18,8 @@ import { cn } from "@/lib/utils";
 import { focusInputAtEnd, resizeTextArea } from "@/lib/resizing-textarea";
 import TextWithLinks from "./base/text-with-links";
 import TodoDropdown from "./todo-dropdown";
+import { useIsMobile } from "@/hooks/use-is-mobile";
+import TodoDrawer from "./todo-drawer";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -85,6 +87,8 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   const [editorOpen, setEditorOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
 
+  const isMobile = useIsMobile();
+
   useOnClickOutside(ref, () => setEditorOpen(false));
   useEventListener("keydown", (e) => {
     if (e.key === "Escape") setEditorOpen(false);
@@ -137,13 +141,23 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
             <Badge>{todo.list.name}</Badge>
           )}
           {!todo.isAuthor && <UserBubble user={todo.author} size="md" />}
-          <TodoDropdown
-            handleDelete={() => deleteTodo.mutate({ id: todo.id })}
-            handleEdit={() => setEditorOpen(true)}
-            handleMove={(listId) =>
-              moveTodo.mutate({ id: todo.id, data: { listId } })
-            }
-          />
+          {isMobile ? (
+            <TodoDrawer
+              handleDelete={() => deleteTodo.mutate({ id: todo.id })}
+              handleEdit={() => setEditorOpen(true)}
+              handleMove={(listId) =>
+                moveTodo.mutate({ id: todo.id, data: { listId } })
+              }
+            />
+          ) : (
+            <TodoDropdown
+              handleDelete={() => deleteTodo.mutate({ id: todo.id })}
+              handleEdit={() => setEditorOpen(true)}
+              handleMove={(listId) =>
+                moveTodo.mutate({ id: todo.id, data: { listId } })
+              }
+            />
+          )}
         </>
       )}
     </div>
