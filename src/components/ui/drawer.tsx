@@ -48,7 +48,7 @@ const DrawerContent = React.forwardRef<
         {...props}
       >
         <DrawerPrimitive.Handle className="mt-4" />
-        {children}
+        <div className="p-4 pb-8">{children}</div>
       </DrawerPrimitive.Content>
     </RadixProvider>
   </Portal>

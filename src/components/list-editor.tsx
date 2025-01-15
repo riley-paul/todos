@@ -116,148 +116,155 @@ const ListEditor: React.FC = () => {
         </IconButton>
       </Tooltip>
       <ResponsiveModal open={isOpen} onOpenChange={setIsOpen}>
-        <header>
-          <Heading as="h2" size="3">
-            Edit "{list.name}"
-          </Heading>
-          <Text size="2" color="gray">
-            Edit, share, or delete this list
-          </Text>
-        </header>
-        <Callout.Root>
-          <Callout.Icon>
-            <UserBubble user={list.author} size="md" />
-          </Callout.Icon>
-          <Callout.Text>
-            Created by <Strong>{list.author.name}</Strong>
-          </Callout.Text>
-        </Callout.Root>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            updateList.mutate({ id: list.id, data: { name } });
-          }}
-          className="grid gap-rx-2"
-        >
-          <Text as="label" size="2" weight="bold">
-            Update Name
-          </Text>
-          <div className="grid grid-cols-[1fr_6rem] gap-rx-2">
-            <TextField.Root
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="flex-1"
-              placeholder="New List"
-            />
-            <Button
-              variant="surface"
-              type="submit"
-              disabled={name === list.name}
-            >
-              <i className="fa-solid fa-save" />
-              Update
-            </Button>
-          </div>
-        </form>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!sharedUserQuery.data) return;
-            createListShare.mutate({ listId: list.id, email });
-            e.currentTarget.reset();
-            setEmail("");
-          }}
-          className="grid gap-rx-2"
-        >
-          <Text as="label" size="2" weight="bold">
-            Share with
-          </Text>
-          <div className="grid grid-cols-[1fr_6rem] gap-rx-2">
-            <TextField.Root
-              className="flex-1"
-              placeholder="cool_collaborator@hotmail.com"
-              onChange={(e) => setEmail(e.target.value)}
-            >
-              <TextField.Slot side="left">
-                {getIcon(sharedUserQuery)}
-              </TextField.Slot>
-            </TextField.Root>
-            <Button
-              type="submit"
-              variant="surface"
-              disabled={!sharedUserQuery.data}
-              onClick={() => createListShare.mutate({ listId: list.id, email })}
-            >
-              <i className="fa-solid fa-paper-plane" />
-              Invite
-            </Button>
-          </div>
-          <div className="min-h-12 overflow-y-auto rounded-3 border bg-panel-translucent px-2">
-            <div className="grid divide-y">
-              {list.shares.map((share) => (
-                <div key={share.id} className="flex items-center gap-rx-3 py-2">
-                  <UserBubble user={share.user} size="md" />
-                  <div className="grid flex-1 gap-0.5">
-                    <Text size="2" weight="medium">
-                      {share.user.name}
-                    </Text>
-                    <Text size="2" color="gray">
-                      {share.user.email}
-                    </Text>
-                  </div>
-                  {share.isPending && (
-                    <Tooltip side="left" content="Pending Invitation">
-                      <Badge color="amber" size="3">
-                        <i className="fa-solid fa-hourglass" />
-                      </Badge>
-                    </Tooltip>
-                  )}
-                  {list.isAuthor && (
-                    <DeleteButton
-                      handleDelete={() =>
-                        deleteListShare.mutate({ id: share.id })
-                      }
-                    />
-                  )}
-                </div>
-              ))}
-              {list.shares.length === 0 && (
-                <Text size="2" color="gray" align="center" className="p-6">
-                  No shares
-                </Text>
-              )}
+        <div className="grid gap-4">
+          <header>
+            <Heading as="h2" size="3">
+              Edit "{list.name}"
+            </Heading>
+            <Text size="2" color="gray">
+              Edit, share, or delete this list
+            </Text>
+          </header>
+          <Callout.Root>
+            <Callout.Icon>
+              <UserBubble user={list.author} size="md" />
+            </Callout.Icon>
+            <Callout.Text>
+              Created by <Strong>{list.author.name}</Strong>
+            </Callout.Text>
+          </Callout.Root>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              updateList.mutate({ id: list.id, data: { name } });
+            }}
+            className="grid gap-rx-2"
+          >
+            <Text as="label" size="2" weight="bold">
+              Update Name
+            </Text>
+            <div className="grid grid-cols-[1fr_6rem] gap-rx-2">
+              <TextField.Root
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="flex-1"
+                placeholder="New List"
+              />
+              <Button
+                variant="surface"
+                type="submit"
+                disabled={name === list.name}
+              >
+                <i className="fa-solid fa-save" />
+                Update
+              </Button>
             </div>
-          </div>
-        </form>
-        {list.isAuthor ? (
-          <Button
-            variant="soft"
-            color="red"
-            onClick={async () => {
-              const ok = await confirmDelete();
-              if (ok) {
-                deleteList.mutate({ id: list.id });
-              }
+          </form>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!sharedUserQuery.data) return;
+              createListShare.mutate({ listId: list.id, email });
+              e.currentTarget.reset();
+              setEmail("");
             }}
+            className="grid gap-rx-2"
           >
-            <i className="fa-solid fa-trash" />
-            Delete List
-          </Button>
-        ) : (
-          <Button
-            variant="soft"
-            color="amber"
-            onClick={async () => {
-              const ok = await confirmLeave();
-              if (ok) {
-                leaveListShare.mutate({ listId: list.id });
-              }
-            }}
-          >
-            <i className="fa-solid fa-arrow-right-from-bracket" />
-            Leave List
-          </Button>
-        )}
+            <Text as="label" size="2" weight="bold">
+              Share with
+            </Text>
+            <div className="grid grid-cols-[1fr_6rem] gap-rx-2">
+              <TextField.Root
+                className="flex-1"
+                placeholder="cool_collaborator@hotmail.com"
+                onChange={(e) => setEmail(e.target.value)}
+              >
+                <TextField.Slot side="left">
+                  {getIcon(sharedUserQuery)}
+                </TextField.Slot>
+              </TextField.Root>
+              <Button
+                type="submit"
+                variant="surface"
+                disabled={!sharedUserQuery.data}
+                onClick={() =>
+                  createListShare.mutate({ listId: list.id, email })
+                }
+              >
+                <i className="fa-solid fa-paper-plane" />
+                Invite
+              </Button>
+            </div>
+            <div className="min-h-12 overflow-y-auto rounded-3 border bg-panel-translucent px-2">
+              <div className="grid divide-y">
+                {list.shares.map((share) => (
+                  <div
+                    key={share.id}
+                    className="flex items-center gap-rx-3 py-2"
+                  >
+                    <UserBubble user={share.user} size="md" />
+                    <div className="grid flex-1 gap-0.5">
+                      <Text size="2" weight="medium">
+                        {share.user.name}
+                      </Text>
+                      <Text size="2" color="gray">
+                        {share.user.email}
+                      </Text>
+                    </div>
+                    {share.isPending && (
+                      <Tooltip side="left" content="Pending Invitation">
+                        <Badge color="amber" size="3">
+                          <i className="fa-solid fa-hourglass" />
+                        </Badge>
+                      </Tooltip>
+                    )}
+                    {list.isAuthor && (
+                      <DeleteButton
+                        handleDelete={() =>
+                          deleteListShare.mutate({ id: share.id })
+                        }
+                      />
+                    )}
+                  </div>
+                ))}
+                {list.shares.length === 0 && (
+                  <Text size="2" color="gray" align="center" className="p-6">
+                    No shares
+                  </Text>
+                )}
+              </div>
+            </div>
+          </form>
+          {list.isAuthor ? (
+            <Button
+              variant="soft"
+              color="red"
+              onClick={async () => {
+                const ok = await confirmDelete();
+                if (ok) {
+                  deleteList.mutate({ id: list.id });
+                }
+              }}
+            >
+              <i className="fa-solid fa-trash" />
+              Delete List
+            </Button>
+          ) : (
+            <Button
+              variant="soft"
+              color="amber"
+              onClick={async () => {
+                const ok = await confirmLeave();
+                if (ok) {
+                  leaveListShare.mutate({ listId: list.id });
+                }
+              }}
+            >
+              <i className="fa-solid fa-arrow-right-from-bracket" />
+              Leave List
+            </Button>
+          )}
+        </div>
       </ResponsiveModal>
     </>
   );

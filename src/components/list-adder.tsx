@@ -8,7 +8,7 @@ import {
 } from "@radix-ui/themes";
 import useMutations from "@/hooks/use-mutations";
 import { useIsMobile } from "@/hooks/use-is-mobile";
-import ResponsiveModal from "./base/responsive-modal";
+import { Drawer, DrawerContent, DrawerTrigger } from "./ui/drawer";
 
 const ListAdderTrigger = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (props, ref) => {
@@ -64,10 +64,14 @@ const ListAdder: React.FC = () => {
   if (isMobile) {
     return (
       <>
-        <ListAdderTrigger onClick={() => setOpen(true)} />
-        <ResponsiveModal open={open} onOpenChange={setOpen}>
-          <ListAdderForm onSubmit={onSubmit} />
-        </ResponsiveModal>
+        <Drawer open={open} onOpenChange={setOpen}>
+          <DrawerTrigger asChild>
+            <ListAdderTrigger onClick={() => setOpen(true)} />
+          </DrawerTrigger>
+          <DrawerContent>
+            <ListAdderForm onSubmit={onSubmit} />
+          </DrawerContent>
+        </Drawer>
       </>
     );
   }

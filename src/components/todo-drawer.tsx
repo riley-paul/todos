@@ -12,7 +12,7 @@ const MenuItem: React.FC<{
 }> = ({ text, icon, onClick }) => {
   return (
     <Button variant="soft" className="justify-between" onClick={onClick}>
-      <span>{text}</span>
+      <Text color="gray">{text}</Text>
       <i className={`fa-solid ${icon} text-accent-8`} />
     </Button>
   );
@@ -42,7 +42,7 @@ const TodoDrawer: React.FC<Props> = ({
         </IconButton>
       </DrawerTrigger>
       <DrawerContent>
-        <div className="grid gap-2 p-4">
+        <div className="grid gap-2">
           <MenuItem text="Edit" icon="fa-solid fa-pen" onClick={handleEdit} />
           <MenuItem
             text="Delete"
