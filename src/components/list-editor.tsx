@@ -2,8 +2,8 @@ import React from "react";
 import useMutations from "@/hooks/use-mutations";
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { listsQueryOptions, userByEmailQueryOptions } from "@/lib/queries";
-import UserBubble from "./base/user-bubble";
-import DeleteButton from "./base/delete-button";
+import UserBubble from "./ui/user-bubble";
+import DeleteButton from "./ui/delete-button";
 import { useDebounceValue, useEventListener } from "usehooks-ts";
 import {
   Badge,
@@ -19,7 +19,7 @@ import {
 } from "@radix-ui/themes";
 import useSelectedList from "@/hooks/use-selected-list";
 import useConfirmDialog from "@/hooks/use-confirm-dialog";
-import ResponsiveModal from "./base/responsive-modal";
+import ResponsiveModal from "./ui/responsive-modal";
 
 const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
   if (query.isLoading) {

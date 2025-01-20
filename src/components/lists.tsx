@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
 import type { SelectedList, UserSelect } from "@/lib/types";
-import UserBubbleGroup from "./base/user-bubble-group";
+import UserBubbleGroup from "./ui/user-bubble-group";
 import useSelectedList from "@/hooks/use-selected-list";
 import { Button, Flex, Separator, Text } from "@radix-ui/themes";
 import ListAdder from "./list-adder";
@@ -23,7 +23,9 @@ const List: React.FC<{
       onClick={() => setSelectedList(value)}
     >
       <Flex align="center" gap="2">
-        <Text truncate className="max-w-[70vw]">{name}</Text>
+        <Text truncate className="max-w-[70vw]">
+          {name}
+        </Text>
         <Text className="font-mono text-accentA-12">{count}</Text>
         <UserBubbleGroup users={users} numAvatars={3} />
       </Flex>

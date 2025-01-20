@@ -2,7 +2,7 @@ import React from "react";
 import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
-import UserBubble from "./base/user-bubble";
+import UserBubble from "./ui/user-bubble";
 
 import useSelectedList from "@/hooks/use-selected-list";
 import {
@@ -16,7 +16,7 @@ import {
 } from "@radix-ui/themes";
 import { cn } from "@/lib/utils";
 import { focusInputAtEnd, resizeTextArea } from "@/lib/resizing-textarea";
-import TextWithLinks from "./base/text-with-links";
+import TextWithLinks from "./ui/text-with-links";
 import TodoDropdown from "./todo-dropdown";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import TodoDrawer from "./todo-drawer";

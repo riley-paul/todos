@@ -1,5 +1,5 @@
 import React from "react";
-import QueryGuard from "./base/query-guard";
+import QueryGuard from "./ui/query-guard";
 import { cn } from "@/lib/utils";
 import useMutations from "@/hooks/use-mutations";
 

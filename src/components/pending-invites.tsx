@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { pendingSharesQueryOptions } from "@/lib/queries";
-import UserBubble from "./base/user-bubble";
+import UserBubble from "./ui/user-bubble";
 import useMutations from "@/hooks/use-mutations";
 import {
   Badge,
