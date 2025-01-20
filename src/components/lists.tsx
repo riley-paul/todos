@@ -23,7 +23,7 @@ const List: React.FC<{
       onClick={() => setSelectedList(value)}
     >
       <Flex align="center" gap="2">
-        <Text>{name}</Text>
+        <Text truncate className="max-w-[70vw]">{name}</Text>
         <Text className="font-mono text-accentA-12">{count}</Text>
         <UserBubbleGroup users={users} numAvatars={3} />
       </Flex>
