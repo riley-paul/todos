@@ -16,6 +16,7 @@ import RefreshButton from "./components/refresh-button";
 import { Heading } from "@radix-ui/themes";
 import PendingInvites from "./components/pending-invites";
 import UserAvatar from "./components/user-avatar";
+import CustomToaster from "./components/ui/custom-toaster";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -64,6 +65,7 @@ const App: React.FC = () => {
             <RefreshButton />
             <ListEditor />
           </div>
+          <CustomToaster />
         </RadixProvider>
       </NuqsAdapter>
     </QueryClientProvider>
