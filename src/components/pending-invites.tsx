@@ -33,7 +33,7 @@ const PendingInvites: React.FC = () => {
           )}
         </IconButton>
       </Popover.Trigger>
-      <Popover.Content align="end" className="max-w-72 py-2">
+      <Popover.Content align="end" className="max-w-72 py-2 max-h-[80vh] overflow-auto">
         <div className="grid divide-y px-rx-2">
           {pendingSharesQuery.data?.map((share) => (
             <div
@@ -51,7 +51,7 @@ const PendingInvites: React.FC = () => {
                 <div className="grid grid-cols-2 gap-rx-2">
                   <Button
                     size="1"
-                    variant="outline"
+                    variant="soft"
                     onClick={() => acceptListShare.mutate({ id: share.id })}
                   >
                     <i className="fa-solid fa-check" />
@@ -59,7 +59,7 @@ const PendingInvites: React.FC = () => {
                   </Button>
                   <Button
                     size="1"
-                    variant="outline"
+                    variant="soft"
                     color="red"
                     onClick={() => deleteListShare.mutate({ id: share.id })}
                   >

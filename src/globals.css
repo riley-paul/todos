@@ -17,6 +17,8 @@
   --cursor-switch: pointer;
 }
 
+
+
 @layer base {
   * {
     @apply border-gray-7;

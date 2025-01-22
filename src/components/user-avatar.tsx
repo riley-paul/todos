@@ -76,7 +76,7 @@ const UserAvatar: React.FC = () => {
             </div>
 
             <div className="grid gap-rx-2">
-              <Button asChild className="relative" variant="surface">
+              <Button asChild className="relative" variant="soft">
                 <a href="/logout">
                   <i className="fa-solid fa-arrow-right-from-bracket absolute left-rx-2" />
                   <span>Logout</span>
@@ -84,7 +84,7 @@ const UserAvatar: React.FC = () => {
               </Button>
               <Button
                 color="red"
-                variant="surface"
+                variant="soft"
                 size="2"
                 onClick={async () => {
                   const ok = await confirmDeletion();

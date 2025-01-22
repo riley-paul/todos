@@ -14,15 +14,11 @@ const authProviders: Record<string, AuthProvider> = {
     name: "GitHub",
     url: "/login/github",
     icon: "fa-brands fa-github",
-    className:
-      "bg-gray-900 text-white hover:bg-gray-800 border border-gray-700 shadow",
   },
   google: {
     name: "Google",
     url: "/login/google",
     icon: "fa-brands fa-google",
-    className:
-      "bg-white text-black hover:bg-gray-100 shadow border border-gray-300",
   },
 };
 
@@ -37,12 +33,7 @@ const LoginButton: React.FC<Props> = (props) => {
   return (
     <Button
       asChild
-      className={cn(
-        "relative",
-        authProvider.className,
-        className,
-      )}
-      color="gray"
+      className={cn("relative", authProvider.className, className)}
       variant="soft"
     >
       <a href={authProvider.url}>
