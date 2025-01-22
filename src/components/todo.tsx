@@ -101,7 +101,9 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   return (
     <div
       ref={ref}
-      className="flex min-h-11 items-center gap-rx-2 rounded-3 px-rx-3 py-rx-1 transition-colors ease-out hover:bg-accent-3"
+      className={cn(
+        "flex min-h-11 items-center gap-rx-2 rounded-3 px-rx-3 py-rx-1 transition-colors ease-out hover:bg-accent-3",
+      )}
     >
       {editorOpen ? (
         <TodoForm
@@ -129,7 +131,12 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
               }
             />
           </Spinner>
-          <Flex flexGrow="1" align="center" onClick={() => setEditorOpen(true)}>
+          <Flex
+            flexGrow="1"
+            align="center"
+            onClick={() => setEditorOpen(true)}
+            className="min-w-0 whitespace-normal break-words"
+          >
             <Text
               size="2"
               className={cn(todo.isCompleted && "text-gray-10 line-through")}

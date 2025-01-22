@@ -17,11 +17,9 @@
   --cursor-switch: pointer;
 }
 
-
-
 @layer base {
   * {
-    @apply border-gray-7;
+    @apply border-gray-6;
   }
 
   .container2 {
@@ -30,5 +28,6 @@
 
   body {
     overscroll-behavior: none;
+    overflow-x: hidden;
   }
 }

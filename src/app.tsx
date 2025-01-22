@@ -12,8 +12,6 @@ import { handleMutationError } from "@/hooks/use-mutations";
 import { NuqsAdapter } from "nuqs/adapters/react";
 import RadixProvider from "./components/radix-provider";
 import ListEditor from "./components/list-editor";
-import { Toaster } from "sonner";
-import { useIsMobile } from "./hooks/use-is-mobile";
 import RefreshButton from "./components/refresh-button";
 import { Heading } from "@radix-ui/themes";
 import PendingInvites from "./components/pending-invites";
@@ -33,7 +31,6 @@ const queryClient = new QueryClient({
 
 const App: React.FC = () => {
   const { StreamStateIcon } = useQueryStream(queryClient);
-  const isMobile = useIsMobile();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -63,11 +60,6 @@ const App: React.FC = () => {
             <Lists />
             <Todos />
           </main>
-          <Toaster
-            theme="system"
-            position={isMobile ? "top-center" : "bottom-center"}
-            richColors
-          />
           <div className="fixed bottom-8 right-8 flex items-center gap-3">
             <RefreshButton />
             <ListEditor />
