@@ -62,7 +62,10 @@ export const getTodos = defineAction({
 export const createTodo = defineAction({
   input: z.object({
     id: z.string().optional(),
-    listId: z.string().nullable(),
+    listId: z
+      .string()
+      .nullable()
+      .transform((v) => (v === "all" ? null : v)),
     text: zTodoText,
   }),
   handler: async (data, c) => {
