@@ -7,9 +7,7 @@
     "start": "astro dev",
     "build": "astro check && astro build --remote",
     "preview": "astro preview",
-    "astro": "astro",
-    "check:types": "tsc --noEmit",
-    "check:lint": "eslint ."
+    "astro": "astro"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
