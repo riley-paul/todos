@@ -103,8 +103,6 @@ const ListEditor: React.FC = () => {
 
   return (
     <>
-      <LeaveDialog />
-      <DeleteDialog />
       <Tooltip content={`Edit "${list.name}"`} side="left">
         <IconButton
           radius="full"
@@ -118,7 +116,7 @@ const ListEditor: React.FC = () => {
       <ResponsiveModal open={isOpen} onOpenChange={setIsOpen}>
         <div className="grid gap-4">
           <header>
-            <Heading as="h2" size="3">
+            <Heading as="h2" size="4">
               Edit "{list.name}"
             </Heading>
             <Text size="2" color="gray">
@@ -240,6 +238,7 @@ const ListEditor: React.FC = () => {
               variant="soft"
               color="red"
               onClick={async () => {
+                setIsOpen(false);
                 const ok = await confirmDelete();
                 if (ok) {
                   deleteList.mutate({ id: list.id });
@@ -254,6 +253,7 @@ const ListEditor: React.FC = () => {
               variant="soft"
               color="amber"
               onClick={async () => {
+                setIsOpen(false);
                 const ok = await confirmLeave();
                 if (ok) {
                   leaveListShare.mutate({ listId: list.id });
@@ -266,6 +266,8 @@ const ListEditor: React.FC = () => {
           )}
         </div>
       </ResponsiveModal>
+      <DeleteDialog />
+      <LeaveDialog />
     </>
   );
 };
