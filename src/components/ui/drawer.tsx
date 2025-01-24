@@ -42,13 +42,13 @@ const DrawerContent = React.forwardRef<
       <DrawerPrimitive.Content
         ref={ref}
         className={cn(
-          "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-3 border bg-panel-solid",
+          "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-fit flex-col rounded-t-3 border bg-panel-solid",
           className,
         )}
         {...props}
       >
-        <DrawerPrimitive.Handle className="mt-4 mb-2" />
-        <div className="max-h-[80vh] p-4 pb-8 overflow-y-auto">{children}</div>
+        <DrawerPrimitive.Handle className="mb-2 mt-4" />
+        <div className="max-h-[80vh] overflow-y-auto p-4 pb-8">{children}</div>
       </DrawerPrimitive.Content>
     </RadixProvider>
   </Portal>

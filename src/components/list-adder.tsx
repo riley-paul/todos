@@ -33,7 +33,7 @@ const ListAdderForm: React.FC<{ onSubmit: (value: string) => void }> = ({
         onSubmit(value);
       }}
     >
-      <Heading size="2" as="h2" mb="2">
+      <Heading size="3" as="h2" mb="2">
         New List
       </Heading>
       <TextField.Root
@@ -44,7 +44,7 @@ const ListAdderForm: React.FC<{ onSubmit: (value: string) => void }> = ({
         onChange={(e) => setValue(e.target.value)}
       />
       <input type="submit" hidden />
-      <Button size="2" variant="surface" type="submit">
+      <Button size="2" variant="soft" type="submit">
         <i className="fa-solid fa-save" />
         Save
       </Button>
