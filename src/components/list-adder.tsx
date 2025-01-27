@@ -37,7 +37,7 @@ const ListAdderForm: React.FC<{ onSubmit: (value: string) => void }> = ({
         New List
       </Heading>
       <TextField.Root
-        autoFocus
+        ref={(ref) => setTimeout(() => ref?.focus(), 200)}
         placeholder="Unnamed List"
         minLength={1}
         value={value}
