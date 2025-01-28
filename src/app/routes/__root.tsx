@@ -1,6 +1,4 @@
-import ListEditor from "@/components/list-editor";
 import PendingInvites from "@/components/pending-invites";
-import RefreshButton from "@/components/refresh-button";
 import UserAvatar from "@/components/user-avatar";
 import useQueryStream from "@/hooks/use-query-stream";
 import { Heading } from "@radix-ui/themes";
@@ -37,13 +35,7 @@ function Component() {
           </div>
         </div>
       </header>
-      <main className="container2 grid gap-4 py-6 pb-24">
-        <Outlet />
-      </main>
-      <div className="fixed bottom-8 right-8 flex items-center gap-3">
-        <RefreshButton />
-        <ListEditor />
-      </div>
+      <Outlet />
       <TanStackRouterDevtools />
     </>
   );
