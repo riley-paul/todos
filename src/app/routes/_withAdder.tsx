@@ -17,7 +17,7 @@ function RouteComponent() {
   const { listId } = useParams({ strict: false });
   return (
     <>
-      <main className="container2 grid gap-4">
+      <main className="grid gap-4">
         <TodoAdder listId={listId ?? null} />
         <Lists />
         <Outlet />

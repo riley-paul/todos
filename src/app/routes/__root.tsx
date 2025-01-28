@@ -35,7 +35,7 @@ function Component() {
           </div>
         </div>
       </header>
-      <div className="pb-24 pt-6">
+      <div className="container2 pb-24 pt-6">
         <Outlet />
       </div>
       <TanStackRouterDevtools />
