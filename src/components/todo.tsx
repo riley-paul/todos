@@ -3,8 +3,6 @@ import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 import UserBubble from "./ui/user-bubble";
-
-import useSelectedList from "@/hooks/use-selected-list";
 import {
   Badge,
   Button,
@@ -20,6 +18,7 @@ import TextWithLinks from "./ui/text-with-links";
 import TodoDropdown from "./todo-dropdown";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import TodoDrawer from "./todo-drawer";
+import { useParams } from "@tanstack/react-router";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -82,7 +81,7 @@ const TodoForm: React.FC<{
 const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   const { deleteTodo, updateTodo, moveTodo } = useMutations();
 
-  const { selectedList } = useSelectedList();
+  const { listId } = useParams({ strict: false });
 
   const [editorOpen, setEditorOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
@@ -144,7 +143,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
               <TextWithLinks text={todo.text} />
             </Text>
           </Flex>
-          {todo.list && todo.list.id !== selectedList && (
+          {todo.list && todo.list.id !== listId && (
             <Badge>{todo.list.name}</Badge>
           )}
           {!todo.isAuthor && <UserBubble user={todo.author} size="md" />}

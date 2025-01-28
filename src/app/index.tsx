@@ -8,7 +8,6 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { NuqsAdapter } from "nuqs/adapters/react";
 import { handleMutationError } from "@/hooks/use-mutations";
 import CustomToaster from "@/components/ui/custom-toaster";
 
@@ -42,11 +41,9 @@ declare module "@tanstack/react-router" {
 // Render the app
 export default () => (
   <QueryClientProvider client={queryClient}>
-    <NuqsAdapter>
-      <RadixProvider>
-        <RouterProvider router={router} />
-        <CustomToaster />
-      </RadixProvider>
-    </NuqsAdapter>
+    <RadixProvider>
+      <RouterProvider router={router} />
+      <CustomToaster />
+    </RadixProvider>
   </QueryClientProvider>
 );

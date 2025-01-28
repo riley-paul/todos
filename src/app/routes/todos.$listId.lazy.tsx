@@ -9,9 +9,11 @@ export const Route = createLazyFileRoute("/todos/$listId")({
 
 function RouteComponent() {
   const { listId } = Route.useParams();
-  return  <>
-  <TodoAdder listId={listId} />
-  <Lists />
-  <Todos listId={listId} />
-</>;
+  return (
+    <>
+      <TodoAdder listId={listId} />
+      <Lists />
+      <Todos listId={listId} />
+    </>
+  );
 }

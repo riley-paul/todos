@@ -17,9 +17,9 @@ import {
   TextField,
   Tooltip,
 } from "@radix-ui/themes";
-import useSelectedList from "@/hooks/use-selected-list";
 import useConfirmDialog from "@/hooks/use-confirm-dialog";
 import ResponsiveModal from "./ui/responsive-modal";
+import { useParams } from "@tanstack/react-router";
 
 const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
   if (query.isLoading) {
@@ -74,9 +74,9 @@ const ListEditor: React.FC = () => {
       "This action will remove you from this list and you will no longer be able to view or edit it.",
   });
 
-  const { selectedList } = useSelectedList();
+  const { listId } = useParams({ strict: false });
   const listsQuery = useQuery(listsQueryOptions);
-  const list = listsQuery.data?.find((list) => list.id === selectedList);
+  const list = listsQuery.data?.find((list) => list.id === listId);
 
   useEventListener("keydown", (e) => {
     if (e.key === "e" && (e.ctrlKey || e.metaKey)) {

@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { ActionInputError, actions, isActionError } from "astro:actions";
 import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
 import type { SelectedList, TodoSelect } from "@/lib/types";
-import useSelectedList from "./use-selected-list";
+import { useNavigate, useParams } from "@tanstack/react-router";
 
 type TodosUpdater = (todos: TodoSelect[] | undefined) => TodoSelect[];
 
@@ -28,7 +28,11 @@ export const handleMutationError = (error: Error) => {
 
 export default function useMutations() {
   const queryClient = useQueryClient();
-  const { selectedList, setSelectedList } = useSelectedList();
+
+  const { listId } = useParams({ strict: false });
+  const selectedList = listId ?? null;
+
+  const navigate = useNavigate();
 
   const modifyTodoCache = async (
     listId: SelectedList,
@@ -136,14 +140,14 @@ export default function useMutations() {
     mutationFn: actions.createList.orThrow,
     onSuccess: ({ id }, { name }) => {
       toast.success(`List "${name}" created`);
-      setSelectedList(id);
+      navigate({ to: "/todos/$listId", params: { listId: id } });
     },
   });
 
   const deleteList = useMutation({
     mutationFn: actions.deleteList.orThrow,
     onSuccess: (_, { id }) => {
-      if (id === selectedList) setSelectedList(null);
+      if (id === selectedList) navigate({ to: "/" });
       toast.success("List deleted");
     },
   });

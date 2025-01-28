@@ -1,9 +1,9 @@
 import { DropdownMenu, Flex, IconButton, Text } from "@radix-ui/themes";
 import React from "react";
 import { cn } from "@/lib/utils";
-import useSelectedList from "@/hooks/use-selected-list";
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions } from "@/lib/queries";
+import { useParams } from "@tanstack/react-router";
 
 const MenuItem: React.FC<{ text: string; icon: string }> = ({ text, icon }) => {
   return (
@@ -25,7 +25,7 @@ const TodoDropdown: React.FC<Props> = ({
   handleEdit,
   handleMove,
 }) => {
-  const { selectedList } = useSelectedList();
+  const { listId } = useParams({ strict: false });
 
   const listsQuery = useQuery(listsQueryOptions);
   const lists = listsQuery.data ?? [];
@@ -51,13 +51,13 @@ const TodoDropdown: React.FC<Props> = ({
             <DropdownMenu.Separator />
             <DropdownMenu.Group>
               <DropdownMenu.Label>Move</DropdownMenu.Label>
-              {selectedList && (
+              {listId && (
                 <DropdownMenu.Item onClick={() => handleMove(null)}>
                   <MenuItem text="Inbox" icon="fa-solid fa-arrow-right" />
                 </DropdownMenu.Item>
               )}
               {lists
-                .filter((list) => list.id !== selectedList)
+                .filter((list) => list.id !== listId)
                 .map((list) => (
                   <DropdownMenu.Item
                     key={list.id}

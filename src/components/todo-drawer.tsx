@@ -1,9 +1,9 @@
 import { Button, IconButton, Text } from "@radix-ui/themes";
 import React from "react";
-import useSelectedList from "@/hooks/use-selected-list";
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions } from "@/lib/queries";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { useParams } from "@tanstack/react-router";
 
 const MenuItem: React.FC<{
   text: string;
@@ -29,7 +29,7 @@ const TodoDrawer: React.FC<Props> = ({
   handleEdit,
   handleMove,
 }) => {
-  const { selectedList } = useSelectedList();
+  const { listId } = useParams({ strict: false });
 
   const listsQuery = useQuery(listsQueryOptions);
   const lists = listsQuery.data ?? [];
@@ -54,7 +54,7 @@ const TodoDrawer: React.FC<Props> = ({
               <Text size="2" weight="medium" color="gray" mt="2">
                 Move
               </Text>
-              {selectedList && (
+              {listId && (
                 <MenuItem
                   text="Inbox"
                   icon="fa-solid fa-arrow-right"
@@ -62,7 +62,7 @@ const TodoDrawer: React.FC<Props> = ({
                 />
               )}
               {lists
-                .filter((list) => list.id !== selectedList)
+                .filter((list) => list.id !== listId)
                 .map((list) => (
                   <MenuItem
                     key={list.id}
