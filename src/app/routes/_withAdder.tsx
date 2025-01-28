@@ -24,7 +24,7 @@ function RouteComponent() {
       </main>
       <div className="fixed bottom-8 right-8 flex items-center gap-3">
         <RefreshButton />
-        {listId && (
+        {listId && listId !== "all" && (
           <IconButton asChild radius="full" size="3" variant="soft">
             <Link to="/todos/$listId/edit" params={{ listId }}>
               <i className="fas fa-pen" />
