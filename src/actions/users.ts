@@ -30,7 +30,7 @@ export const deleteUser = defineAction({
 
 export const checkIfUserEmailExists = defineAction({
   input: z.object({
-    email: z.string().email(),
+    email: z.string(),
   }),
   handler: async ({ email }) => {
     const data = await db.select().from(User).where(eq(User.email, email));

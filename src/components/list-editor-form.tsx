@@ -1,20 +1,14 @@
 import React from "react";
 import useMutations from "@/hooks/use-mutations";
-import {
-  useMutation,
-  useQuery,
-  type UseQueryResult,
-} from "@tanstack/react-query";
-import { listsQueryOptions, userByEmailQueryOptions } from "@/lib/queries";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { listsQueryOptions } from "@/lib/queries";
 import UserBubble from "./ui/user-bubble";
 import DeleteButton from "./ui/delete-button";
-import { useDebounceValue } from "usehooks-ts";
 import {
   Badge,
   Button,
   Callout,
   Heading,
-  Spinner,
   Strong,
   Text,
   TextField,
@@ -28,36 +22,6 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { actions } from "astro:actions";
 import { toast } from "sonner";
-
-const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
-  if (query.isLoading) {
-    return <Spinner loading />;
-  }
-
-  if (query.status === "success" && query.data) {
-    return (
-      <Tooltip content="User exists" side="right">
-        <Text color="green">
-          <i className="fa-solid fa-circle-check" />
-        </Text>
-      </Tooltip>
-    );
-  }
-  if (query.status === "error" || query.data === false) {
-    return (
-      <Tooltip content="User does not exist" side="right">
-        <Text color="red">
-          <i className="fa-solid fa-circle-xmark" />
-        </Text>
-      </Tooltip>
-    );
-  }
-  return (
-    <Spinner loading={query.isLoading}>
-      <i className="fa-solid fa-at" />
-    </Spinner>
-  );
-};
 
 const renameFormSchema = z.object({ name: z.string().nonempty() });
 type RenameFormSchema = z.infer<typeof renameFormSchema>;
@@ -77,35 +41,100 @@ const RenameForm: React.FC<{ list: ListSelect }> = ({ list }) => {
   const onSubmit = handleSubmit((data) => rename.mutate({ id: list.id, data }));
 
   return (
-    <form onSubmit={onSubmit}>
-      <Text as="label" size="2" weight="bold" className="grid gap-2">
+    <form onSubmit={onSubmit} className="grid gap-2">
+      <Text as="label" size="2" weight="bold">
         Update Name
-        <div className="flex w-full gap-2">
-          <Controller
-            control={control}
-            name="name"
-            render={({ field }) => (
-              <TextField.Root
-                placeholder="New List"
-                className="flex-1"
-                {...field}
-              />
-            )}
-          />
-          <input type="submit" hidden />
-          <Button type="submit" variant="soft">
-            <i className="fa-solid fa-save" />
-            Update
-          </Button>
-        </div>
       </Text>
+      <div className="grid w-full gap-2 sm:grid-cols-[1fr_8rem]">
+        <Controller
+          control={control}
+          name="name"
+          render={({ field, fieldState: { error } }) => (
+            <div className="grid gap-1">
+              <TextField.Root placeholder="New List" {...field} />
+              {error && (
+                <Text size="1" color="red" ml="1">
+                  {error.message}
+                </Text>
+              )}
+            </div>
+          )}
+        />
+        <input type="submit" hidden />
+        <Button type="submit" variant="soft">
+          <i className="fa-solid fa-save" />
+          Update
+        </Button>
+      </div>
+    </form>
+  );
+};
+
+const inviteFormSchema = z.object({
+  email: z
+    .string()
+    .email()
+    .refine((email) => actions.checkIfUserEmailExists.orThrow({ email }), {
+      message: "User not found",
+    }),
+});
+type inviteFormSchema = z.infer<typeof inviteFormSchema>;
+const InviteForm: React.FC<{ list: ListSelect }> = ({ list }) => {
+  const { control, handleSubmit } = useForm<inviteFormSchema>({
+    resolver: zodResolver(inviteFormSchema),
+    defaultValues: { email: "" },
+  });
+
+  const invite = useMutation({
+    mutationFn: actions.createListShare.orThrow,
+    onSuccess: () => {
+      toast.success("Invitation sent");
+    },
+  });
+
+  const onSubmit = handleSubmit(
+    (data) => {
+      invite.mutate({ listId: list.id, email: data.email });
+    },
+    (errors) => {
+      console.error(errors);
+      toast.error("Failed to send invitation");
+    },
+  );
+
+  return (
+    <form onSubmit={onSubmit} className="grid gap-2">
+      <Text as="label" size="2" weight="bold">
+        Share with
+      </Text>
+
+      <div className="grid w-full gap-2 sm:grid-cols-[1fr_8rem]">
+        <Controller
+          control={control}
+          name="email"
+          render={({ field, fieldState: { error } }) => (
+            <div className="grid gap-1">
+              <TextField.Root placeholder="user@gmail.com" {...field} />
+              {error && (
+                <Text size="1" color="red" ml="1">
+                  {error.message}
+                </Text>
+              )}
+            </div>
+          )}
+        />
+        <input type="submit" hidden />
+        <Button type="submit" variant="soft">
+          <i className="fa-solid fa-paper-plane" />
+          Invite
+        </Button>
+      </div>
     </form>
   );
 };
 
 const ListEditorForm: React.FC = () => {
-  const { deleteListShare, createListShare, leaveListShare, deleteList } =
-    useMutations();
+  const { deleteListShare, leaveListShare, deleteList } = useMutations();
 
   const [DeleteDialog, confirmDelete] = useConfirmDialog({
     title: "Delete List",
@@ -122,13 +151,6 @@ const ListEditorForm: React.FC = () => {
   const { listId } = useParams({ strict: false });
   const listsQuery = useQuery(listsQueryOptions);
   const list = listsQuery.data?.find((list) => list.id === listId);
-
-  const [email, setEmail] = useDebounceValue("", 500);
-
-  const sharedUserQuery = useQuery({
-    ...userByEmailQueryOptions(email),
-    enabled: email.length > 0,
-  });
 
   if (!list) return null;
 
@@ -152,76 +174,43 @@ const ListEditorForm: React.FC = () => {
           </Callout.Text>
         </Callout.Root>
         <RenameForm list={list} />
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!sharedUserQuery.data) return;
-            createListShare.mutate({ listId: list.id, email });
-            e.currentTarget.reset();
-            setEmail("");
-          }}
-          className="grid gap-rx-2"
-        >
-          <Text as="label" size="2" weight="bold">
-            Share with
-          </Text>
-          <div className="grid grid-cols-[1fr_6rem] gap-rx-2">
-            <TextField.Root
-              className="flex-1"
-              placeholder="cool_collaborator@hotmail.com"
-              onChange={(e) => setEmail(e.target.value)}
-            >
-              <TextField.Slot side="left">
-                {getIcon(sharedUserQuery)}
-              </TextField.Slot>
-            </TextField.Root>
-            <Button
-              type="submit"
-              variant="surface"
-              disabled={!sharedUserQuery.data}
-              onClick={() => createListShare.mutate({ listId: list.id, email })}
-            >
-              <i className="fa-solid fa-paper-plane" />
-              Invite
-            </Button>
-          </div>
-          <div className="min-h-12 overflow-y-auto rounded-3 border bg-panel-translucent px-2">
-            <div className="grid divide-y">
-              {list.shares.map((share) => (
-                <div key={share.id} className="flex items-center gap-rx-3 py-2">
-                  <UserBubble user={share.user} size="md" />
-                  <div className="grid flex-1 gap-0.5">
-                    <Text size="2" weight="medium">
-                      {share.user.name}
-                    </Text>
-                    <Text size="2" color="gray">
-                      {share.user.email}
-                    </Text>
-                  </div>
-                  {share.isPending && (
-                    <Tooltip side="left" content="Pending Invitation">
-                      <Badge color="amber" size="3">
-                        <i className="fa-solid fa-hourglass" />
-                      </Badge>
-                    </Tooltip>
-                  )}
-                  {list.isAuthor && (
-                    <DeleteButton
-                      handleDelete={() =>
-                        deleteListShare.mutate({ id: share.id })
-                      }
-                    />
-                  )}
+        <InviteForm list={list} />
+        <div className="min-h-12 overflow-y-auto rounded-3 border bg-panel-translucent px-2">
+          <div className="grid divide-y">
+            {list.shares.map((share) => (
+              <div key={share.id} className="flex items-center gap-rx-3 py-2">
+                <UserBubble user={share.user} size="md" />
+                <div className="grid flex-1 gap-0.5">
+                  <Text size="2" weight="medium">
+                    {share.user.name}
+                  </Text>
+                  <Text size="2" color="gray">
+                    {share.user.email}
+                  </Text>
                 </div>
-              ))}
-              {list.shares.length === 0 && (
-                <Text size="2" color="gray" align="center" className="p-6">
-                  No shares
-                </Text>
-              )}
-            </div>
+                {share.isPending && (
+                  <Tooltip side="left" content="Pending Invitation">
+                    <Badge color="amber" size="3">
+                      <i className="fa-solid fa-hourglass" />
+                    </Badge>
+                  </Tooltip>
+                )}
+                {list.isAuthor && (
+                  <DeleteButton
+                    handleDelete={() =>
+                      deleteListShare.mutate({ id: share.id })
+                    }
+                  />
+                )}
+              </div>
+            ))}
+            {list.shares.length === 0 && (
+              <Text size="2" color="gray" align="center" className="p-6">
+                No shares
+              </Text>
+            )}
           </div>
-        </form>
+        </div>
         {list.isAuthor ? (
           <Button
             variant="soft"
