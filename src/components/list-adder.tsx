@@ -8,7 +8,7 @@ import {
 } from "@radix-ui/themes";
 import useMutations from "@/hooks/use-mutations";
 import { useIsMobile } from "@/hooks/use-is-mobile";
-import { Drawer, DrawerContent, DrawerTrigger } from "./ui/drawer";
+import { Link } from "@tanstack/react-router";
 
 const ListAdderTrigger = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (props, ref) => {
@@ -63,16 +63,12 @@ const ListAdder: React.FC = () => {
 
   if (isMobile) {
     return (
-      <>
-        <Drawer open={open} onOpenChange={setOpen}>
-          <DrawerTrigger asChild>
-            <ListAdderTrigger onClick={() => setOpen(true)} />
-          </DrawerTrigger>
-          <DrawerContent>
-            <ListAdderForm onSubmit={onSubmit} />
-          </DrawerContent>
-        </Drawer>
-      </>
+      <Button asChild size="1" variant="soft" color="gray">
+        <Link to="/todos/new">
+          <i className="fa-solid fa-plus text-accent-10" />
+          New list
+        </Link>
+      </Button>
     );
   }
 

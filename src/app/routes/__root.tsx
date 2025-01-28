@@ -18,7 +18,7 @@ function Component() {
     <>
       <header className="sticky top-0 z-50 border-b bg-panel-translucent backdrop-blur">
         <div className="container2">
-          <div className="flex items-center justify-between px-rx-3 py-rx-3">
+          <div className="flex items-center justify-between px-3 py-3">
             <div className="flex items-center gap-2">
               <i className="fa-solid fa-check-double text-7 text-accent-9" />
               <Heading asChild size="6" weight="bold">

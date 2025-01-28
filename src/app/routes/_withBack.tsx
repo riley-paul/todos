@@ -7,7 +7,7 @@ export const Route = createFileRoute("/_withBack")({
 
 function RouteComponent() {
   return (
-    <main className="grid gap-4">
+    <main className="grid gap-4 px-3">
       <div>
         <Button asChild size="2" variant="ghost" className="gap-2">
           <Link to="..">
