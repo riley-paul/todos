@@ -44,7 +44,7 @@ export default () => (
   <QueryClientProvider client={queryClient}>
     <NuqsAdapter>
       <RadixProvider>
-        <RouterProvider router={router} />;
+        <RouterProvider router={router} />
         <CustomToaster />
       </RadixProvider>
     </NuqsAdapter>

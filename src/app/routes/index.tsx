@@ -1,6 +1,14 @@
-import TodosPage from "@/components/todos-page";
+import Lists from "@/components/lists";
+import TodoAdder from "@/components/todo-adder";
+import Todos from "@/components/todos";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
-  component: () => <TodosPage listId={null} />,
+  component: () => (
+    <>
+      <TodoAdder listId={null} />
+      <Lists />
+      <Todos listId={null} />
+    </>
+  ),
 });
