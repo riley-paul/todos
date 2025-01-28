@@ -4,7 +4,6 @@ import useQueryStream from "@/hooks/use-query-stream";
 import { Heading } from "@radix-ui/themes";
 import { useQueryClient } from "@tanstack/react-query";
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
 export const Route = createRootRoute({
   component: Component,
@@ -38,7 +37,6 @@ function Component() {
       <div className="container2 pb-24 pt-6">
         <Outlet />
       </div>
-      <TanStackRouterDevtools />
     </>
   );
 }

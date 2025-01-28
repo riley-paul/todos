@@ -1,32 +1,40 @@
 import React from "react";
 import { useEventListener } from "usehooks-ts";
 import useMutations from "@/hooks/use-mutations";
-import { Button, Flex, IconButton, Spinner, TextArea } from "@radix-ui/themes";
+import { Button, Spinner, Text, TextArea } from "@radix-ui/themes";
 import { resizeTextArea } from "@/lib/resizing-textarea";
 import { flushSync } from "react-dom";
-import { useIsMobile } from "@/hooks/use-is-mobile";
 import type { SelectedList } from "@/lib/types";
+import { z } from "zod";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { mergeRefs } from "@/lib/utils";
 
-const isEmptyString = (value: string) => value.trim() === "";
+const schema = z.object({
+  text: z.string().nonempty("Todo text cannot be empty"),
+});
+type Schema = z.infer<typeof schema>;
 
 const TodoAdder: React.FC<{ listId: SelectedList }> = ({ listId }) => {
   const { createTodo } = useMutations();
 
+  const { control, handleSubmit, reset } = useForm<Schema>({
+    resolver: zodResolver(schema),
+    values: { text: "" },
+  });
+
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
-  const [value, setValue] = React.useState("");
 
   const resetInput = () => {
-    flushSync(() => setValue(""));
+    console.log("resetInput");
+    flushSync(() => reset());
     resizeTextArea(inputRef.current);
   };
 
-  const create = () => {
-    if (value) {
-      createTodo.mutate({ text: value, listId });
-      resetInput();
-      inputRef.current?.focus();
-    }
-  };
+  const onSubmit = handleSubmit(({ text }) => {
+    createTodo.mutate({ text, listId });
+    resetInput();
+  });
 
   useEventListener("resize", () => {
     resizeTextArea(inputRef.current);
@@ -44,64 +52,51 @@ const TodoAdder: React.FC<{ listId: SelectedList }> = ({ listId }) => {
     }
   });
 
-  const isMobile = useIsMobile(512);
-
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        create();
-      }}
-    >
-      <Flex gap="3" align="start" px="3">
-        <TextArea
-          autoFocus
-          size="3"
-          ref={inputRef}
-          value={value}
-          placeholder="Add a todo..."
-          rows={1}
-          className="min-h-min flex-1"
-          onChange={(e) => {
-            setValue(e.target.value);
-            resizeTextArea(e.target);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              create();
-            }
-          }}
-          onFocus={(e) => {
-            e.target.select();
-          }}
-        />
-        <input type="submit" hidden />
-        {isMobile ? (
-          <IconButton
-            size="3"
-            type="submit"
-            variant="soft"
-            disabled={isEmptyString(value)}
-          >
-            <Spinner loading={createTodo.isPending}>
-              <i className="fa-solid fa-plus" />
-            </Spinner>
-          </IconButton>
-        ) : (
-          <Button
-            size="3"
-            type="submit"
-            variant="soft"
-            disabled={isEmptyString(value)}
-          >
-            <Spinner loading={createTodo.isPending}>
-              <i className="fa-solid fa-plus" />
-            </Spinner>
-            Add
-          </Button>
+    <form onSubmit={onSubmit} className="flex gap-2 px-3">
+      <Controller
+        control={control}
+        name="text"
+        render={({ field, fieldState: { error } }) => (
+          <div className="grid flex-1 gap-1">
+            <TextArea
+              size="3"
+              placeholder="Add a todo..."
+              rows={1}
+              className="min-h-min overflow-hidden"
+              {...field}
+              ref={mergeRefs([field.ref, inputRef])}
+              onChange={(e) => {
+                field.onChange(e);
+                resizeTextArea(e.target);
+              }}
+              onFocus={(e) => {
+                e.target.select();
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  onSubmit();
+                }
+              }}
+            />
+            {error && (
+              <Text size="1" color="red" ml="1">
+                {error?.message}
+              </Text>
+            )}
+          </div>
         )}
-      </Flex>
+      />
+
+      <input type="submit" hidden />
+
+      <Button size="3" type="submit" variant="soft" className="px-3">
+        <Spinner loading={createTodo.isPending}>
+          <i className="fa-solid fa-plus" />
+        </Spinner>
+        <span className="hidden sm:block">Add</span>
+      </Button>
     </form>
   );
 };

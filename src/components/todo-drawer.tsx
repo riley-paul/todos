@@ -11,7 +11,7 @@ const MenuItem: React.FC<{
   onClick: () => void;
 }> = ({ text, icon, onClick }) => {
   return (
-    <Button variant="surface" className="justify-between" onClick={onClick}>
+    <Button variant="soft" className="justify-between" onClick={onClick}>
       <Text color="gray">{text}</Text>
       <i className={`fa-solid ${icon} text-accent-8`} />
     </Button>
