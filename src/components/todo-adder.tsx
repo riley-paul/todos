@@ -91,7 +91,7 @@ const TodoAdder: React.FC<{ listId: SelectedList }> = ({ listId }) => {
 
       <input type="submit" hidden />
 
-      <Button size="3" type="submit" variant="soft" className="px-3">
+      <Button size="3" type="submit" variant="soft" className="px-3 sm:px-5">
         <Spinner loading={createTodo.isPending}>
           <i className="fa-solid fa-plus" />
         </Spinner>
