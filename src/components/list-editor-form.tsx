@@ -1,6 +1,10 @@
 import React from "react";
 import useMutations from "@/hooks/use-mutations";
-import { useQuery, type UseQueryResult } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  type UseQueryResult,
+} from "@tanstack/react-query";
 import { listsQueryOptions, userByEmailQueryOptions } from "@/lib/queries";
 import UserBubble from "./ui/user-bubble";
 import DeleteButton from "./ui/delete-button";
@@ -18,6 +22,12 @@ import {
 } from "@radix-ui/themes";
 import useConfirmDialog from "@/hooks/use-confirm-dialog";
 import { useParams } from "@tanstack/react-router";
+import type { ListSelect } from "@/lib/types";
+import { z } from "zod";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { actions } from "astro:actions";
+import { toast } from "sonner";
 
 const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
   if (query.isLoading) {
@@ -49,14 +59,53 @@ const getIcon = (query: UseQueryResult<boolean, Error>): React.ReactNode => {
   );
 };
 
+const renameFormSchema = z.object({ name: z.string().nonempty() });
+type RenameFormSchema = z.infer<typeof renameFormSchema>;
+const RenameForm: React.FC<{ list: ListSelect }> = ({ list }) => {
+  const { control, handleSubmit } = useForm<RenameFormSchema>({
+    resolver: zodResolver(renameFormSchema),
+    defaultValues: { name: list.name },
+  });
+
+  const rename = useMutation({
+    mutationFn: actions.updateList.orThrow,
+    onSuccess: () => {
+      toast.success("List renamed");
+    },
+  });
+
+  const onSubmit = handleSubmit((data) => rename.mutate({ id: list.id, data }));
+
+  return (
+    <form onSubmit={onSubmit}>
+      <Text as="label" size="2" weight="bold" className="grid gap-2">
+        Update Name
+        <div className="flex w-full gap-2">
+          <Controller
+            control={control}
+            name="name"
+            render={({ field }) => (
+              <TextField.Root
+                placeholder="New List"
+                className="flex-1"
+                {...field}
+              />
+            )}
+          />
+          <input type="submit" hidden />
+          <Button type="submit" variant="soft">
+            <i className="fa-solid fa-save" />
+            Update
+          </Button>
+        </div>
+      </Text>
+    </form>
+  );
+};
+
 const ListEditorForm: React.FC = () => {
-  const {
-    deleteListShare,
-    createListShare,
-    leaveListShare,
-    updateList,
-    deleteList,
-  } = useMutations();
+  const { deleteListShare, createListShare, leaveListShare, deleteList } =
+    useMutations();
 
   const [DeleteDialog, confirmDelete] = useConfirmDialog({
     title: "Delete List",
@@ -74,7 +123,6 @@ const ListEditorForm: React.FC = () => {
   const listsQuery = useQuery(listsQueryOptions);
   const list = listsQuery.data?.find((list) => list.id === listId);
 
-  const [name, setName] = React.useState(list?.name ?? "");
   const [email, setEmail] = useDebounceValue("", 500);
 
   const sharedUserQuery = useQuery({
@@ -103,33 +151,7 @@ const ListEditorForm: React.FC = () => {
             Created by <Strong>{list.author.name}</Strong>
           </Callout.Text>
         </Callout.Root>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            updateList.mutate({ id: list.id, data: { name } });
-          }}
-          className="grid gap-rx-2"
-        >
-          <Text as="label" size="2" weight="bold">
-            Update Name
-          </Text>
-          <div className="grid grid-cols-[1fr_6rem] gap-rx-2">
-            <TextField.Root
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="flex-1"
-              placeholder="New List"
-            />
-            <Button
-              variant="surface"
-              type="submit"
-              disabled={name === list.name}
-            >
-              <i className="fa-solid fa-save" />
-              Update
-            </Button>
-          </div>
-        </form>
+        <RenameForm list={list} />
         <form
           onSubmit={(e) => {
             e.preventDefault();
