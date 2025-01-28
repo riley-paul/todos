@@ -1,17 +1,16 @@
 import React from "react";
 import { useEventListener } from "usehooks-ts";
 import useMutations from "@/hooks/use-mutations";
-import useSelectedList from "@/hooks/use-selected-list";
 import { Button, Flex, IconButton, Spinner, TextArea } from "@radix-ui/themes";
 import { resizeTextArea } from "@/lib/resizing-textarea";
 import { flushSync } from "react-dom";
 import { useIsMobile } from "@/hooks/use-is-mobile";
+import type { SelectedList } from "@/lib/types";
 
 const isEmptyString = (value: string) => value.trim() === "";
 
-export default function TodoAdder(): ReturnType<React.FC> {
+const TodoAdder: React.FC<{ listId: SelectedList }> = ({ listId }) => {
   const { createTodo } = useMutations();
-  const { selectedList } = useSelectedList();
 
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const [value, setValue] = React.useState("");
@@ -23,7 +22,7 @@ export default function TodoAdder(): ReturnType<React.FC> {
 
   const create = () => {
     if (value) {
-      createTodo.mutate({ text: value, listId: selectedList });
+      createTodo.mutate({ text: value, listId });
       resetInput();
       inputRef.current?.focus();
     }
@@ -105,4 +104,6 @@ export default function TodoAdder(): ReturnType<React.FC> {
       </Flex>
     </form>
   );
-}
+};
+
+export default TodoAdder;

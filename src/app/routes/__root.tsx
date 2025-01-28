@@ -1,9 +1,6 @@
 import ListEditor from "@/components/list-editor";
-import Lists from "@/components/lists";
 import PendingInvites from "@/components/pending-invites";
 import RefreshButton from "@/components/refresh-button";
-import TodoAdder from "@/components/todo-adder";
-import Todos from "@/components/todos";
 import UserAvatar from "@/components/user-avatar";
 import useQueryStream from "@/hooks/use-query-stream";
 import { Heading } from "@radix-ui/themes";
@@ -40,16 +37,13 @@ function Component() {
           </div>
         </div>
       </header>
-      <main className="container2 grid gap-rx-4 py-rx-6 pb-24">
-        <TodoAdder />
-        <Lists />
-        <Todos />
+      <main className="container2 grid gap-4 py-6 pb-24">
+        <Outlet />
       </main>
       <div className="fixed bottom-8 right-8 flex items-center gap-3">
         <RefreshButton />
         <ListEditor />
       </div>
-      <Outlet />
       <TanStackRouterDevtools />
     </>
   );

@@ -6,14 +6,13 @@ import useMutations from "@/hooks/use-mutations";
 import { useQuery } from "@tanstack/react-query";
 import { actions } from "astro:actions";
 import Todo from "./todo";
-import useSelectedList from "@/hooks/use-selected-list";
 import { Button, Text } from "@radix-ui/themes";
+import type { SelectedList } from "@/lib/types";
 
-const Todos: React.FC = () => {
-  const { selectedList } = useSelectedList();
+const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
   const todosQuery = useQuery({
-    queryKey: ["todos", selectedList],
-    queryFn: () => actions.getTodos.orThrow({ listId: selectedList }),
+    queryKey: ["todos", listId],
+    queryFn: () => actions.getTodos.orThrow({ listId }),
   });
 
   const numCompleted =
@@ -58,9 +57,7 @@ const Todos: React.FC = () => {
                   size="1"
                   variant="soft"
                   color="gray"
-                  onClick={() =>
-                    deleteCompletedTodos.mutate({ listId: selectedList })
-                  }
+                  onClick={() => deleteCompletedTodos.mutate({ listId })}
                 >
                   <i className="fa-solid fa-eraser" />
                   Clear

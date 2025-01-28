@@ -13,11 +13,13 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as IndexImport } from './routes/index'
 
 // Create Virtual Routes
 
 const AboutLazyImport = createFileRoute('/about')()
-const IndexLazyImport = createFileRoute('/')()
+const TodosAllLazyImport = createFileRoute('/todos/all')()
+const TodosListIdLazyImport = createFileRoute('/todos/$listId')()
 
 // Create/Update Routes
 
@@ -27,11 +29,23 @@ const AboutLazyRoute = AboutLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
 
-const IndexLazyRoute = IndexLazyImport.update({
+const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+} as any)
+
+const TodosAllLazyRoute = TodosAllLazyImport.update({
+  id: '/todos/all',
+  path: '/todos/all',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/todos.all.lazy').then((d) => d.Route))
+
+const TodosListIdLazyRoute = TodosListIdLazyImport.update({
+  id: '/todos/$listId',
+  path: '/todos/$listId',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/todos.$listId.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
@@ -41,7 +55,7 @@ declare module '@tanstack/react-router' {
       id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexLazyImport
+      preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
     '/about': {
@@ -51,44 +65,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
     }
+    '/todos/$listId': {
+      id: '/todos/$listId'
+      path: '/todos/$listId'
+      fullPath: '/todos/$listId'
+      preLoaderRoute: typeof TodosListIdLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/todos/all': {
+      id: '/todos/all'
+      path: '/todos/all'
+      fullPath: '/todos/all'
+      preLoaderRoute: typeof TodosAllLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexLazyRoute
+  '/': typeof IndexRoute
   '/about': typeof AboutLazyRoute
+  '/todos/$listId': typeof TodosListIdLazyRoute
+  '/todos/all': typeof TodosAllLazyRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexLazyRoute
+  '/': typeof IndexRoute
   '/about': typeof AboutLazyRoute
+  '/todos/$listId': typeof TodosListIdLazyRoute
+  '/todos/all': typeof TodosAllLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexLazyRoute
+  '/': typeof IndexRoute
   '/about': typeof AboutLazyRoute
+  '/todos/$listId': typeof TodosListIdLazyRoute
+  '/todos/all': typeof TodosAllLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about'
+  fullPaths: '/' | '/about' | '/todos/$listId' | '/todos/all'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about'
-  id: '__root__' | '/' | '/about'
+  to: '/' | '/about' | '/todos/$listId' | '/todos/all'
+  id: '__root__' | '/' | '/about' | '/todos/$listId' | '/todos/all'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexLazyRoute: typeof IndexLazyRoute
+  IndexRoute: typeof IndexRoute
   AboutLazyRoute: typeof AboutLazyRoute
+  TodosListIdLazyRoute: typeof TodosListIdLazyRoute
+  TodosAllLazyRoute: typeof TodosAllLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexLazyRoute: IndexLazyRoute,
+  IndexRoute: IndexRoute,
   AboutLazyRoute: AboutLazyRoute,
+  TodosListIdLazyRoute: TodosListIdLazyRoute,
+  TodosAllLazyRoute: TodosAllLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -102,14 +140,22 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/about"
+        "/about",
+        "/todos/$listId",
+        "/todos/all"
       ]
     },
     "/": {
-      "filePath": "index.lazy.tsx"
+      "filePath": "index.tsx"
     },
     "/about": {
       "filePath": "about.lazy.tsx"
+    },
+    "/todos/$listId": {
+      "filePath": "todos.$listId.lazy.tsx"
+    },
+    "/todos/all": {
+      "filePath": "todos.all.lazy.tsx"
     }
   }
 }
