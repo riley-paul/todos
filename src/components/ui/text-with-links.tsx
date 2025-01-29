@@ -1,4 +1,4 @@
-import { Link } from "@radix-ui/themes";
+import { Badge } from "@radix-ui/themes";
 import React from "react";
 
 function getDomain(url: string) {
@@ -13,16 +13,18 @@ const TextWithLinks: React.FC<{ text: string }> = ({ text }) => {
     return text.split(linkRegex).map((part, index) => {
       if (linkRegex.test(part)) {
         return (
-          <Link
-            key={index}
-            href={part}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {getDomain(part)}
-            <i className="fas fa-link ml-1"></i>
-          </Link>
+          <Badge asChild key={index} title={part} color="gray">
+            <a
+              key={index}
+              href={part}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {getDomain(part)}
+              <i className="fas fa-link"></i>
+            </a>
+          </Badge>
         );
       }
       return part;
