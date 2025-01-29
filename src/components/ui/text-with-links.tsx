@@ -13,7 +13,7 @@ const TextWithLinks: React.FC<{ text: string }> = ({ text }) => {
     return text.split(linkRegex).map((part, index) => {
       if (linkRegex.test(part)) {
         return (
-          <Badge asChild key={index}>
+          <Badge asChild key={index} title={part}>
             <a
               key={index}
               href={part}
