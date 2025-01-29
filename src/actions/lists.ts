@@ -13,7 +13,7 @@ import {
 
 const zListName = z.string().trim().min(1, "List name cannot be empty");
 
-export const getLists = defineAction({
+export const get = defineAction({
   handler: async (_, c) => {
     const userId = isAuthorized(c).id;
 
@@ -81,7 +81,7 @@ export const getLists = defineAction({
   },
 });
 
-export const updateList = defineAction({
+export const update = defineAction({
   input: z.object({
     id: z.string(),
     data: z.object({ name: zListName }).partial(),
@@ -109,7 +109,7 @@ export const updateList = defineAction({
   },
 });
 
-export const createList = defineAction({
+export const create = defineAction({
   input: z.object({ name: zListName }),
   handler: async ({ name }, c) => {
     const userId = isAuthorized(c).id;
@@ -126,7 +126,7 @@ export const createList = defineAction({
   },
 });
 
-export const deleteList = defineAction({
+export const remove = defineAction({
   input: z.object({ id: z.string() }),
   handler: async ({ id }) => {
     const users = await getListUsers(id);

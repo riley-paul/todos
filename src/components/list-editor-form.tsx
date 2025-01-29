@@ -32,7 +32,7 @@ const RenameForm: React.FC<{ list: ListSelect }> = ({ list }) => {
   });
 
   const rename = useMutation({
-    mutationFn: actions.updateList.orThrow,
+    mutationFn: actions.lists.update.orThrow,
     onSuccess: () => {
       toast.success("List renamed");
     },
@@ -74,7 +74,7 @@ const inviteFormSchema = z.object({
   email: z
     .string()
     .email()
-    .refine((email) => actions.checkIfUserEmailExists.orThrow({ email }), {
+    .refine((email) => actions.users.checkIfEmailExists.orThrow({ email }), {
       message: "User not found",
     }),
 });
@@ -86,7 +86,7 @@ const InviteForm: React.FC<{ list: ListSelect }> = ({ list }) => {
   });
 
   const invite = useMutation({
-    mutationFn: actions.createListShare.orThrow,
+    mutationFn: actions.listShares.create.orThrow,
     onSuccess: () => {
       toast.success("Invitation sent");
     },

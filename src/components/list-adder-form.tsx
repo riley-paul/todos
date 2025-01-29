@@ -21,7 +21,7 @@ const ListAdderForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }) => {
   });
 
   const create = useMutation({
-    mutationFn: actions.createList.orThrow,
+    mutationFn: actions.lists.create.orThrow,
     onSuccess: ({ id }) => {
       navigate({ to: "/todos/$listId", params: { listId: id } });
       onSuccess?.();

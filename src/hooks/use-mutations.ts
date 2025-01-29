@@ -125,7 +125,7 @@ export default function useMutations() {
   });
 
   const deleteUser = useMutation({
-    mutationFn: actions.deleteUser.orThrow,
+    mutationFn: actions.users.remove.orThrow,
     onSuccess: () => {
       queryClient.clear();
       window.location.href = "/";
@@ -133,11 +133,11 @@ export default function useMutations() {
   });
 
   const updateList = useMutation({
-    mutationFn: actions.updateList.orThrow,
+    mutationFn: actions.lists.update.orThrow,
   });
 
   const createList = useMutation({
-    mutationFn: actions.createList.orThrow,
+    mutationFn: actions.lists.create.orThrow,
     onSuccess: ({ id }, { name }) => {
       toast.success(`List "${name}" created`);
       navigate({ to: "/todos/$listId", params: { listId: id } });
@@ -145,7 +145,7 @@ export default function useMutations() {
   });
 
   const deleteList = useMutation({
-    mutationFn: actions.deleteList.orThrow,
+    mutationFn: actions.lists.remove.orThrow,
     onSuccess: (_, { id }) => {
       if (id === selectedList) navigate({ to: "/" });
       toast.success("List deleted");
@@ -153,22 +153,22 @@ export default function useMutations() {
   });
 
   const createListShare = useMutation({
-    mutationFn: actions.createListShare.orThrow,
+    mutationFn: actions.listShares.create.orThrow,
   });
 
   const deleteListShare = useMutation({
-    mutationFn: actions.deleteListShare.orThrow,
+    mutationFn: actions.listShares.remove.orThrow,
   });
 
   const acceptListShare = useMutation({
-    mutationFn: actions.acceptListShare.orThrow,
+    mutationFn: actions.listShares.accept.orThrow,
     onSuccess: () => {
       toast.success("You now have access to this list");
     },
   });
 
   const leaveListShare = useMutation({
-    mutationFn: actions.leaveListShare.orThrow,
+    mutationFn: actions.listShares.leave.orThrow,
     onSuccess: () => {
       toast.success("You no longer have access to this list");
     },

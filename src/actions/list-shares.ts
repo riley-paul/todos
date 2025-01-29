@@ -4,7 +4,7 @@ import { z } from "zod";
 import { isAuthorized } from "./helpers";
 import { v4 as uuid } from "uuid";
 
-export const createListShare = defineAction({
+export const create = defineAction({
   input: z.object({
     email: z.string().email(),
     listId: z.string(),
@@ -84,7 +84,7 @@ export const createListShare = defineAction({
   },
 });
 
-export const deleteListShare = defineAction({
+export const remove = defineAction({
   input: z.object({ id: z.string() }),
   handler: async ({ id }, c) => {
     const userId = isAuthorized(c).id;
@@ -113,7 +113,7 @@ export const deleteListShare = defineAction({
   },
 });
 
-export const leaveListShare = defineAction({
+export const leave = defineAction({
   input: z.object({ listId: z.string() }),
   handler: async ({ listId }, c) => {
     const userId = isAuthorized(c).id;
@@ -128,7 +128,7 @@ export const leaveListShare = defineAction({
   },
 });
 
-export const acceptListShare = defineAction({
+export const accept = defineAction({
   input: z.object({ id: z.string() }),
   handler: async ({ id }, c) => {
     const userId = isAuthorized(c).id;
@@ -162,7 +162,7 @@ export const acceptListShare = defineAction({
   },
 });
 
-export const getPendingListShares = defineAction({
+export const getPending = defineAction({
   handler: async (_, c) => {
     const userId = isAuthorized(c).id;
     const listShares = await db

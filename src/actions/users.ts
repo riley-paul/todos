@@ -18,7 +18,7 @@ export const getMe = defineAction({
   },
 });
 
-export const deleteUser = defineAction({
+export const remove = defineAction({
   handler: async (_, c) => {
     const userId = isAuthorized(c).id;
     await db.delete(UserSession).where(eq(UserSession.userId, userId));
@@ -28,7 +28,7 @@ export const deleteUser = defineAction({
   },
 });
 
-export const checkIfUserEmailExists = defineAction({
+export const checkIfEmailExists = defineAction({
   input: z.object({
     email: z.string(),
   }),

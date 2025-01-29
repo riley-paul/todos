@@ -5,7 +5,7 @@ import * as listShares from "./list-shares";
 
 export const server = {
   todos,
-  ...users,
-  ...lists,
-  ...listShares,
+  users,
+  lists,
+  listShares,
 };

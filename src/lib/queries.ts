@@ -11,22 +11,15 @@ export const todosQueryOptions = (listId: SelectedList) =>
 export const userQueryOptions = queryOptions({
   queryKey: ["profile"],
   retry: false,
-  queryFn: () => actions.getMe.orThrow(),
+  queryFn: actions.users.getMe.orThrow,
 });
-
-export const userByEmailQueryOptions = (email: string) =>
-  queryOptions({
-    queryKey: ["userByEmail", email],
-    queryFn: () => actions.checkIfUserEmailExists.orThrow({ email }),
-    retry: false,
-  });
 
 export const listsQueryOptions = queryOptions({
   queryKey: ["lists"],
-  queryFn: () => actions.getLists.orThrow(),
+  queryFn: actions.lists.get.orThrow,
 });
 
 export const pendingSharesQueryOptions = queryOptions({
   queryKey: ["pendingShares"],
-  queryFn: () => actions.getPendingListShares.orThrow(),
+  queryFn: actions.listShares.getPending.orThrow,
 });
