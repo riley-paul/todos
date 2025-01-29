@@ -4,7 +4,7 @@ import * as lists from "./lists";
 import * as listShares from "./list-shares";
 
 export const server = {
-  ...todos,
+  todos,
   ...users,
   ...lists,
   ...listShares,

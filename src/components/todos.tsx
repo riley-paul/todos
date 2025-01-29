@@ -4,16 +4,13 @@ import { cn } from "@/lib/utils";
 import useMutations from "@/hooks/use-mutations";
 
 import { useQuery } from "@tanstack/react-query";
-import { actions } from "astro:actions";
 import Todo from "./todo";
 import { Button, Text } from "@radix-ui/themes";
 import type { SelectedList } from "@/lib/types";
+import { todosQueryOptions } from "@/lib/queries";
 
 const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
-  const todosQuery = useQuery({
-    queryKey: ["todos", listId],
-    queryFn: () => actions.getTodos.orThrow({ listId }),
-  });
+  const todosQuery = useQuery(todosQueryOptions(listId));
 
   const numCompleted =
     todosQuery.data?.filter((i) => i.isCompleted).length ?? 0;

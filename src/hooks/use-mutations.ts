@@ -49,7 +49,7 @@ export default function useMutations() {
   };
 
   const updateTodo = useMutation({
-    mutationFn: actions.updateTodo.orThrow,
+    mutationFn: actions.todos.update.orThrow,
     onMutate: async ({ id, data }) => {
       const updater: TodosUpdater = (todos = []) =>
         todos.map((todo) => (todo.id === id ? { ...todo, ...data } : todo));
@@ -68,7 +68,7 @@ export default function useMutations() {
   });
 
   const deleteTodo = useMutation({
-    mutationFn: actions.deleteTodo.orThrow,
+    mutationFn: actions.todos.remove.orThrow,
     onMutate: async ({ id }) => {
       const updater: TodosUpdater = (todos = []) =>
         todos.filter((todo) => todo.id !== id);
@@ -90,18 +90,18 @@ export default function useMutations() {
   });
 
   const deleteCompletedTodos = useMutation({
-    mutationFn: actions.deleteCompletedTodos.orThrow,
+    mutationFn: actions.todos.removeCompleted.orThrow,
     onSuccess: () => {
       toast.success("Completed todos deleted");
     },
   });
 
   const createTodo = useMutation({
-    mutationFn: actions.createTodo.orThrow,
+    mutationFn: actions.todos.create.orThrow,
   });
 
   const moveTodo = useMutation({
-    mutationFn: actions.updateTodo.orThrow,
+    mutationFn: actions.todos.update.orThrow,
     onMutate: async ({ id }) => {
       const resetters = await Promise.all(
         selectedList === "all"

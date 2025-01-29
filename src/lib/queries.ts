@@ -5,7 +5,7 @@ import type { SelectedList } from "./types";
 export const todosQueryOptions = (listId: SelectedList) =>
   queryOptions({
     queryKey: ["todos", listId],
-    queryFn: () => actions.getTodos.orThrow({ listId }),
+    queryFn: () => actions.todos.get.orThrow({ listId }),
   });
 
 export const userQueryOptions = queryOptions({

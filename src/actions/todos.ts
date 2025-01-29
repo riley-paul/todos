@@ -23,7 +23,7 @@ import {
 
 const zTodoText = z.string().trim().min(1, "Todo must not be empty");
 
-export const getTodos = defineAction({
+export const get = defineAction({
   input: z.object({
     listId: z.union([z.string(), z.null()]),
   }),
@@ -59,7 +59,7 @@ export const getTodos = defineAction({
   },
 });
 
-export const createTodo = defineAction({
+export const create= defineAction({
   input: z.object({
     id: z.string().optional(),
     listId: z
@@ -81,7 +81,7 @@ export const createTodo = defineAction({
   },
 });
 
-export const updateTodo = defineAction({
+export const update = defineAction({
   input: z.object({
     id: z.string(),
     data: z
@@ -114,7 +114,7 @@ export const updateTodo = defineAction({
   },
 });
 
-export const deleteTodo = defineAction({
+export const remove = defineAction({
   input: z.object({
     id: z.string(),
   }),
@@ -136,7 +136,7 @@ export const deleteTodo = defineAction({
   },
 });
 
-export const deleteCompletedTodos = defineAction({
+export const removeCompleted = defineAction({
   input: z.object({
     listId: z.union([z.string(), z.null()]),
   }),
