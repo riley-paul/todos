@@ -3,11 +3,11 @@ import React from "react";
 import LoginButton from "./login-button";
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/lib/queries";
-import { Avatar, Button, Popover, Text } from "@radix-ui/themes";
+import { Avatar, Button, Popover, Text, Tooltip } from "@radix-ui/themes";
 import useConfirmDialog from "@/hooks/use-confirm-dialog";
 import useMutations from "@/hooks/use-mutations";
 
-const UserAvatar: React.FC = () => {
+const UserMenu: React.FC = () => {
   const { deleteUser } = useMutations();
 
   const [DeletionDialog, confirmDeletion] = useConfirmDialog({
@@ -24,9 +24,17 @@ const UserAvatar: React.FC = () => {
 
   if (userQuery.isError) {
     return (
-      <Text size="2" color="red">
-        Error loading user
-      </Text>
+      <Tooltip content="Error loading user data" side="left">
+        <div>
+          <Avatar
+            size="3"
+            radius="full"
+            src=""
+            color="red"
+            fallback={<i className="fas fa-warning" />}
+          />
+        </div>
+      </Tooltip>
     );
   }
 
@@ -105,4 +113,4 @@ const UserAvatar: React.FC = () => {
   );
 };
 
-export default UserAvatar;
+export default UserMenu;

@@ -1,5 +1,5 @@
 import PendingInvites from "@/components/pending-invites";
-import UserAvatar from "@/components/user-avatar";
+import UserMenu from "@/components/user-menu";
 import useQueryStream from "@/hooks/use-query-stream";
 import { Heading } from "@radix-ui/themes";
 import { useQueryClient } from "@tanstack/react-query";
@@ -29,7 +29,7 @@ function Component() {
             </div>
             <div className="flex items-center gap-4">
               <PendingInvites />
-              <UserAvatar />
+              <UserMenu />
             </div>
           </div>
         </div>

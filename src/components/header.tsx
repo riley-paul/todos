@@ -1,5 +1,5 @@
 import React from "react";
-import UserAvatar from "./user-avatar";
+import UserMenu from "./user-menu";
 import PendingInvites from "./pending-invites";
 import { Heading } from "@radix-ui/themes";
 
@@ -16,7 +16,7 @@ const Header: React.FC = () => {
           </div>
           <div className="flex items-center gap-4">
             <PendingInvites />
-            <UserAvatar />
+            <UserMenu />
           </div>
         </div>
       </div>
