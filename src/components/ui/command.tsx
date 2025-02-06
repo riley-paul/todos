@@ -25,10 +25,9 @@ const CommandDialog = ({ children, ...props }: Dialog.RootProps) => {
         <Command
           loop
           className={cn(
-            "[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:text-[13px] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-gray-11",
             "[&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2",
             "[&_[cmdk-input-wrapper]_i]:size-5 [&_[cmdk-input]]:h-12",
-            "[&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_i]:size-5 [&_[cmdk-item]_i]:text-gray-11",
+            "[&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-2 [&_[cmdk-item]_i]:size-5",
           )}
         >
           {children}
@@ -90,7 +89,7 @@ const CommandGroup = React.forwardRef<
   <CommandPrimitive.Group
     ref={ref}
     className={cn(
-      "overflow-hidden p-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-1 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-gray-11",
+      "overflow-hidden p-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[13px] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-gray-11",
       className,
     )}
     {...props}
@@ -118,7 +117,7 @@ const CommandItem = React.forwardRef<
   <CommandPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center gap-2 rounded-2 px-2 py-1.5 text-2 outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent-3 data-[selected=true]:text-accent-12 data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+      "relative flex cursor-default select-none items-center gap-2 rounded-2 px-2 py-1.5 text-2 outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent-3 data-[selected=true]:text-accent-12 data-[disabled=true]:opacity-50 [&_i]:pointer-events-none data-[selected=true]:[&_i]:text-accent-10",
       className,
     )}
     {...props}

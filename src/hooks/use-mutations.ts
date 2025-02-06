@@ -98,6 +98,9 @@ export default function useMutations() {
 
   const createTodo = useMutation({
     mutationFn: actions.todos.create.orThrow,
+    onSuccess: ({ listId }) => {
+      navigate({ to: listId ? "/todos/$listId" : "/", params: { listId } });
+    },
   });
 
   const moveTodo = useMutation({

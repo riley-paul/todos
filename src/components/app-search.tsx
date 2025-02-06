@@ -17,14 +17,18 @@ import UserBubbleGroup from "./ui/user-bubble-group";
 import TextWithLinks from "./ui/text-with-links";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
+import useMutations from "@/hooks/use-mutations";
 
 const AppSearch: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [value, setValue] = React.useState("");
 
   const navigate = useNavigate();
 
   const { data: lists = [] } = useQuery(listsQueryOptions);
   const { data: todos = [] } = useQuery(todosQueryOptions("all"));
+
+  const { createList, createTodo } = useMutations();
 
   useEventListener("keydown", (event) => {
     if (event.key === "k" && event.metaKey) {
@@ -53,10 +57,27 @@ const AppSearch: React.FC = () => {
         </IconButton>
       </Tooltip>
       <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
-        <CommandInput placeholder="Type a command or search..." />
+        <CommandInput
+          value={value}
+          onValueChange={setValue}
+          placeholder="Type a command or search..."
+        />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup heading="Lists">
+            {value && (
+              <CommandItem
+                onSelect={() =>
+                  createList.mutate(
+                    { name: value },
+                    { onSuccess: () => setIsOpen(false) },
+                  )
+                }
+              >
+                <i className="fas fa-plus text-accent-10" />
+                <span>Create new list "{value}"</span>
+              </CommandItem>
+            )}
             {lists.map((list) => (
               <CommandItem
                 key={list.id}
@@ -80,7 +101,20 @@ const AppSearch: React.FC = () => {
             ))}
           </CommandGroup>
           <CommandSeparator />
-          <CommandGroup heading="Settings">
+          <CommandGroup heading="Todos">
+            {value && (
+              <CommandItem
+                onSelect={() =>
+                  createTodo.mutate(
+                    { text: value, listId: null },
+                    { onSuccess: () => setIsOpen(false) },
+                  )
+                }
+              >
+                <i className="fas fa-plus text-accent-10" />
+                <span>Create new todo "{value}"</span>
+              </CommandItem>
+            )}
             {todos.map((todo) => (
               <CommandItem
                 key={todo.id}
