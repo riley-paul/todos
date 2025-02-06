@@ -23,8 +23,9 @@ const CommandDialog = ({ children, ...props }: Dialog.RootProps) => {
     <Dialog.Root {...props}>
       <Dialog.Content size="2" className="overflow-hidden p-0 pb-1">
         <Command
+          loop
           className={cn(
-            "[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:text-[12px] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-gray-11",
+            "[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:text-[13px] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-gray-11",
             "[&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2",
             "[&_[cmdk-input-wrapper]_i]:size-5 [&_[cmdk-input]]:h-12",
             "[&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_i]:size-5 [&_[cmdk-item]_i]:text-gray-11",

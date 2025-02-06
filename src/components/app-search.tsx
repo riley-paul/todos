@@ -1,7 +1,6 @@
 import React from "react";
 
 import {
-  Command,
   CommandDialog,
   CommandEmpty,
   CommandGroup,
@@ -9,13 +8,23 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-  CommandShortcut,
 } from "@/components/ui/command";
-import { IconButton, Kbd, Tooltip } from "@radix-ui/themes";
+import { Badge, IconButton, Kbd, Text, Tooltip } from "@radix-ui/themes";
 import { useEventListener } from "usehooks-ts";
+import { useQuery } from "@tanstack/react-query";
+import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
+import UserBubbleGroup from "./ui/user-bubble-group";
+import TextWithLinks from "./ui/text-with-links";
+import { cn } from "@/lib/utils";
+import { useNavigate } from "@tanstack/react-router";
 
 const AppSearch: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
+
+  const navigate = useNavigate();
+
+  const { data: lists = [] } = useQuery(listsQueryOptions);
+  const { data: todos = [] } = useQuery(todosQueryOptions("all"));
 
   useEventListener("keydown", (event) => {
     if (event.key === "k" && event.metaKey) {
@@ -44,44 +53,61 @@ const AppSearch: React.FC = () => {
         </IconButton>
       </Tooltip>
       <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
-        <Command>
-          <CommandInput placeholder="Type a command or search..." />
-          <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup heading="Suggestions">
-              <CommandItem>
-                <i className="fas fa-calendar" />
-                <span>Calendar</span>
+        <CommandInput placeholder="Type a command or search..." />
+        <CommandList>
+          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandGroup heading="Lists">
+            {lists.map((list) => (
+              <CommandItem
+                key={list.id}
+                value={list.name}
+                onSelect={() => {
+                  setIsOpen(false);
+                  navigate({
+                    to: "/todos/$listId",
+                    params: { listId: list.id },
+                  });
+                }}
+              >
+                <span>{list.name}</span>
+                <Text className="font-mono text-accentA-12">
+                  {list.todoCount}
+                </Text>
+                <div className="ml-auto">
+                  <UserBubbleGroup users={list.otherUsers} />
+                </div>
               </CommandItem>
-              <CommandItem>
-                <i className="fas fa-smile" />
-                <span>Search Emoji</span>
+            ))}
+          </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup heading="Settings">
+            {todos.map((todo) => (
+              <CommandItem
+                key={todo.id}
+                value={todo.text}
+                onSelect={() => {
+                  setIsOpen(false);
+                  navigate({
+                    to: todo.list ? "/todos/$listId" : "/",
+                    params: { listId: todo.list?.id },
+                  });
+                }}
+              >
+                <Text
+                  size="2"
+                  className={cn(
+                    todo.isCompleted && "text-gray-10 line-through",
+                  )}
+                >
+                  <TextWithLinks text={todo.text} />
+                </Text>
+                {todo.list && (
+                  <Badge className="ml-auto">{todo.list.name}</Badge>
+                )}
               </CommandItem>
-              <CommandItem disabled>
-                <i className="fas fa-calculator" />
-                <span>Calculator</span>
-              </CommandItem>
-            </CommandGroup>
-            <CommandSeparator />
-            <CommandGroup heading="Settings">
-              <CommandItem>
-                <i className="fas fa-user" />
-                <span>Profile</span>
-                <CommandShortcut>⌘P</CommandShortcut>
-              </CommandItem>
-              <CommandItem>
-                <i className="fas fa-money-bill" />
-                <span>Billing</span>
-                <CommandShortcut>⌘B</CommandShortcut>
-              </CommandItem>
-              <CommandItem>
-                <i className="fas fa-gear" />
-                <span>Settings</span>
-                <CommandShortcut>⌘S</CommandShortcut>
-              </CommandItem>
-            </CommandGroup>
-          </CommandList>
-        </Command>
+            ))}
+          </CommandGroup>
+        </CommandList>
       </CommandDialog>
     </>
   );
