@@ -19,6 +19,7 @@ import TodoDropdown from "./todo-dropdown";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import TodoDrawer from "./todo-drawer";
 import { Link, useParams } from "@tanstack/react-router";
+import goToList from "@/lib/go-to-list";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -145,9 +146,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
           </Flex>
           {todo.list && todo.list.id !== listId && (
             <Badge asChild>
-              <Link to="/todos/$listId" params={{ listId: todo.list.id }}>
-                {todo.list.name}
-              </Link>
+              <Link {...goToList(todo.list.id)}>{todo.list.name}</Link>
             </Badge>
           )}
           {!todo.isAuthor && <UserBubble user={todo.author} size="md" />}

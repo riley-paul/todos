@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
   CommandDialog,
@@ -18,6 +18,7 @@ import TextWithLinks from "./ui/text-with-links";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
 import useMutations from "@/hooks/use-mutations";
+import goToList from "@/lib/go-to-list";
 
 const AppSearch: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -36,6 +37,10 @@ const AppSearch: React.FC = () => {
       setIsOpen(true);
     }
   });
+
+  useEffect(() => {
+    setValue("");
+  }, [isOpen]);
 
   return (
     <>
@@ -81,13 +86,10 @@ const AppSearch: React.FC = () => {
             {lists.map((list) => (
               <CommandItem
                 key={list.id}
-                value={list.name}
+                value={list.name + list.id}
                 onSelect={() => {
                   setIsOpen(false);
-                  navigate({
-                    to: "/todos/$listId",
-                    params: { listId: list.id },
-                  });
+                  navigate(goToList(list.id));
                 }}
               >
                 <span>{list.name}</span>
@@ -118,13 +120,10 @@ const AppSearch: React.FC = () => {
             {todos.map((todo) => (
               <CommandItem
                 key={todo.id}
-                value={todo.text}
+                value={todo.text + todo.id}
                 onSelect={() => {
                   setIsOpen(false);
-                  navigate({
-                    to: todo.list ? "/todos/$listId" : "/",
-                    params: { listId: todo.list?.id },
-                  });
+                  navigate(goToList(todo.list?.id));
                 }}
               >
                 <Text

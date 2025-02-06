@@ -6,6 +6,7 @@ import { Button, Heading, TextField } from "@radix-ui/themes";
 import { useMutation } from "@tanstack/react-query";
 import { actions } from "astro:actions";
 import { toast } from "sonner";
+import goToList from "@/lib/go-to-list";
 
 const schema = z.object({
   name: z.string().nonempty(),
@@ -23,7 +24,7 @@ const ListAdderForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }) => {
   const create = useMutation({
     mutationFn: actions.lists.create.orThrow,
     onSuccess: ({ id }) => {
-      navigate({ to: "/todos/$listId", params: { listId: id } });
+      navigate(goToList(id));
       onSuccess?.();
       toast.success("List created");
     },

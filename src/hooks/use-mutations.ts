@@ -4,6 +4,7 @@ import { ActionInputError, actions, isActionError } from "astro:actions";
 import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
 import type { SelectedList, TodoSelect } from "@/lib/types";
 import { useNavigate, useParams } from "@tanstack/react-router";
+import goToList from "@/lib/go-to-list";
 
 type TodosUpdater = (todos: TodoSelect[] | undefined) => TodoSelect[];
 
@@ -99,7 +100,7 @@ export default function useMutations() {
   const createTodo = useMutation({
     mutationFn: actions.todos.create.orThrow,
     onSuccess: ({ listId }) => {
-      navigate({ to: listId ? "/todos/$listId" : "/", params: { listId } });
+      navigate(goToList(listId));
     },
   });
 
@@ -143,7 +144,7 @@ export default function useMutations() {
     mutationFn: actions.lists.create.orThrow,
     onSuccess: ({ id }, { name }) => {
       toast.success(`List "${name}" created`);
-      navigate({ to: "/todos/$listId", params: { listId: id } });
+      navigate(goToList(id));
     },
   });
 

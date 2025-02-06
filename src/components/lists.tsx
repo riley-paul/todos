@@ -6,6 +6,7 @@ import UserBubbleGroup from "./ui/user-bubble-group";
 import { Button, Flex, Separator, Text } from "@radix-ui/themes";
 import ListAdder from "./list-adder";
 import { Link } from "@tanstack/react-router";
+import goToList from "@/lib/go-to-list";
 
 const List: React.FC<{
   value: SelectedList;
@@ -14,7 +15,7 @@ const List: React.FC<{
   users?: UserSelect[];
 }> = ({ value, count = 0, name, users = [] }) => {
   return (
-    <Link to={value ? "/todos/$listId" : "/"} params={{ listId: value }}>
+    <Link {...goToList(value)}>
       {({ isActive }) => (
         <Button
           size="1"
