@@ -43,7 +43,7 @@ const AppSearch: React.FC = () => {
           <i className="fas fa-search" />
         </IconButton>
       </Tooltip>
-      <CommandDialog open={true} onOpenChange={setIsOpen}>
+      <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
         <Command>
           <CommandInput placeholder="Type a command or search..." />
           <CommandList>
