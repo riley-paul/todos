@@ -1,3 +1,4 @@
+import AppSearch from "@/components/app-search";
 import PendingInvites from "@/components/pending-invites";
 import UserMenu from "@/components/user-menu";
 import useQueryStream from "@/hooks/use-query-stream";
@@ -28,6 +29,7 @@ function Component() {
               </div>
             </div>
             <div className="flex items-center gap-4">
+              <AppSearch />
               <PendingInvites />
               <UserMenu />
             </div>

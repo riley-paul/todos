@@ -1,7 +1,6 @@
 import path from "node:path";
 import url from "node:url";
 import react from "@astrojs/react";
-import vercel from "@astrojs/vercel/serverless";
 import { defineConfig, envField } from "astro/config";
 import db from "@astrojs/db";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
