@@ -3,11 +3,12 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev --host",
-    "start": "astro dev",
-    "build": "astro check && astro build --remote",
-    "preview": "astro preview",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro build && wrangler pages dev",
     "astro": "astro",
+    "deploy": "astro build && wrangler pages deploy",
+    "cf-typegen": "wrangler types",
     "test": "vitest"
   },
   "dependencies": {
