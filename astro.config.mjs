@@ -9,6 +9,7 @@ const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 import { VitePWA } from "vite-plugin-pwa";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import tailwind from "@astrojs/tailwind";
+import cloudflare from "@astrojs/cloudflare";
 
 // https://astro.build/config
 export default defineConfig({
@@ -32,7 +33,11 @@ export default defineConfig({
     },
   },
   output: "server",
-  adapter: node({ mode: "standalone" }),
+  adapter: cloudflare({
+    platformProxy: {
+      enabled: true,
+    },
+  }),
   security: { checkOrigin: true },
   env: {
     schema: {
