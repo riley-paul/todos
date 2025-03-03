@@ -17,6 +17,7 @@ export const userQueryOptions = queryOptions({
 export const listsQueryOptions = queryOptions({
   queryKey: ["lists"],
   queryFn: actions.lists.get.orThrow,
+  select: (data) => data.sort((a, b) => a.name.localeCompare(b.name)),
 });
 
 export const pendingSharesQueryOptions = queryOptions({
