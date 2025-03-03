@@ -18,7 +18,7 @@ import TextWithLinks from "./ui/text-with-links";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
 import useMutations from "@/hooks/use-mutations";
-import goToList from "@/lib/go-to-list";
+import { goToList } from "@/lib/links";
 
 const AppSearch: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);

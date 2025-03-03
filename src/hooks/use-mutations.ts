@@ -4,7 +4,7 @@ import { ActionInputError, actions, isActionError } from "astro:actions";
 import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
 import type { SelectedList, TodoSelect } from "@/lib/types";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import goToList from "@/lib/go-to-list";
+import { goToList } from "@/lib/links";
 
 type TodosUpdater = (todos: TodoSelect[] | undefined) => TodoSelect[];
 

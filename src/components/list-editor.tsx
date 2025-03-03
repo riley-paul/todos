@@ -9,7 +9,7 @@ import {
 import { Link, useParams } from "@tanstack/react-router";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import ListEditorForm from "./list-editor-form";
-import goToList from "@/lib/go-to-list";
+import { goToListEditor } from "@/lib/links";
 
 const BUTTON_PROPS: ButtonProps = {
   variant: "soft",
@@ -34,7 +34,7 @@ const ListEditor: React.FC = () => {
     return (
       <Tooltip {...TOOLTIP_PROPS}>
         <IconButton asChild {...BUTTON_PROPS}>
-          <Link {...goToList(listId)}>
+          <Link {...goToListEditor(listId)}>
             <ButtonChild />
           </Link>
         </IconButton>

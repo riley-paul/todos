@@ -1,4 +1,4 @@
-import goToList from "@/lib/go-to-list";
+import { goToList } from "@/lib/links";
 import { Button } from "@radix-ui/themes";
 import {
   createFileRoute,

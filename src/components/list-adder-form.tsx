@@ -6,7 +6,7 @@ import { Button, Heading, TextField } from "@radix-ui/themes";
 import { useMutation } from "@tanstack/react-query";
 import { actions } from "astro:actions";
 import { toast } from "sonner";
-import goToList from "@/lib/go-to-list";
+import { goToList } from "@/lib/links";
 
 const schema = z.object({
   name: z.string().nonempty(),

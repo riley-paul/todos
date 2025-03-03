@@ -6,7 +6,7 @@ import UserBubbleGroup from "./ui/user-bubble-group";
 import { Button, Flex, Separator, Text } from "@radix-ui/themes";
 import ListAdder from "./list-adder";
 import { Link } from "@tanstack/react-router";
-import goToList from "@/lib/go-to-list";
+import { goToList } from "@/lib/links";
 
 const List: React.FC<{
   value: SelectedList;

@@ -19,7 +19,7 @@ import TodoDropdown from "./todo-dropdown";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import TodoDrawer from "./todo-drawer";
 import { Link, useParams } from "@tanstack/react-router";
-import goToList from "@/lib/go-to-list";
+import { goToList } from "@/lib/links";
 
 const TodoForm: React.FC<{
   initialValue: string;
