@@ -21,7 +21,7 @@ const ListAdder: React.FC = () => {
   const isMobile = useIsMobile(512);
   const [open, setOpen] = React.useState(false);
 
-  if (isMobile) {
+  if (isMobile || true) {
     return (
       <Button asChild {...BUTTON_PROPS}>
         <Link to="/todos/new">
