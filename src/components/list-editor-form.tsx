@@ -1,6 +1,6 @@
 import React from "react";
 import useMutations from "@/hooks/use-mutations";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { listsQueryOptions } from "@/lib/queries";
 import UserBubble from "./ui/user-bubble";
 import DeleteButton from "./ui/delete-button";
@@ -149,8 +149,8 @@ const ListEditorForm: React.FC = () => {
   });
 
   const { listId } = useParams({ strict: false });
-  const listsQuery = useQuery(listsQueryOptions);
-  const list = listsQuery.data?.find((list) => list.id === listId);
+  const { data: lists } = useSuspenseQuery(listsQueryOptions);
+  const list = lists.find((list) => list.id === listId);
 
   if (!list) return null;
 
@@ -165,7 +165,7 @@ const ListEditorForm: React.FC = () => {
             Edit, share, or delete this list
           </Text>
         </header>
-        <Callout.Root>
+        <Callout.Root variant="surface" color="gray">
           <Callout.Icon>
             <UserBubble user={list.author} size="md" />
           </Callout.Icon>

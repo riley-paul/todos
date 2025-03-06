@@ -2,10 +2,14 @@ import ListEditor from "@/components/list-editor";
 import Lists from "@/components/lists";
 import RefreshButton from "@/components/refresh-button";
 import TodoAdder from "@/components/todo-adder";
+import { listsQueryOptions } from "@/lib/queries";
 import { createFileRoute, Outlet, useParams } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_withAdder")({
   component: RouteComponent,
+  loader: ({ context: { queryClient } }) => {
+    queryClient.ensureQueryData(listsQueryOptions);
+  },
 });
 
 function RouteComponent() {

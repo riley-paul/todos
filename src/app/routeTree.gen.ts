@@ -17,13 +17,11 @@ import { Route as WithBackImport } from './routes/_withBack'
 import { Route as WithAdderImport } from './routes/_withAdder'
 import { Route as WithAdderIndexImport } from './routes/_withAdder.index'
 import { Route as WithAdderTodosListIdImport } from './routes/_withAdder.todos.$listId'
+import { Route as WithBackTodosListIdEditImport } from './routes/_withBack.todos.$listId.edit'
 
 // Create Virtual Routes
 
 const WithBackTodosNewLazyImport = createFileRoute('/_withBack/todos/new')()
-const WithBackTodosListIdEditLazyImport = createFileRoute(
-  '/_withBack/todos/$listId/edit',
-)()
 
 // Create/Update Routes
 
@@ -57,14 +55,11 @@ const WithAdderTodosListIdRoute = WithAdderTodosListIdImport.update({
   getParentRoute: () => WithAdderRoute,
 } as any)
 
-const WithBackTodosListIdEditLazyRoute =
-  WithBackTodosListIdEditLazyImport.update({
-    id: '/todos/$listId/edit',
-    path: '/todos/$listId/edit',
-    getParentRoute: () => WithBackRoute,
-  } as any).lazy(() =>
-    import('./routes/_withBack.todos.$listId.edit.lazy').then((d) => d.Route),
-  )
+const WithBackTodosListIdEditRoute = WithBackTodosListIdEditImport.update({
+  id: '/todos/$listId/edit',
+  path: '/todos/$listId/edit',
+  getParentRoute: () => WithBackRoute,
+} as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -109,7 +104,7 @@ declare module '@tanstack/react-router' {
       id: '/_withBack/todos/$listId/edit'
       path: '/todos/$listId/edit'
       fullPath: '/todos/$listId/edit'
-      preLoaderRoute: typeof WithBackTodosListIdEditLazyImport
+      preLoaderRoute: typeof WithBackTodosListIdEditImport
       parentRoute: typeof WithBackImport
     }
   }
@@ -133,12 +128,12 @@ const WithAdderRouteWithChildren = WithAdderRoute._addFileChildren(
 
 interface WithBackRouteChildren {
   WithBackTodosNewLazyRoute: typeof WithBackTodosNewLazyRoute
-  WithBackTodosListIdEditLazyRoute: typeof WithBackTodosListIdEditLazyRoute
+  WithBackTodosListIdEditRoute: typeof WithBackTodosListIdEditRoute
 }
 
 const WithBackRouteChildren: WithBackRouteChildren = {
   WithBackTodosNewLazyRoute: WithBackTodosNewLazyRoute,
-  WithBackTodosListIdEditLazyRoute: WithBackTodosListIdEditLazyRoute,
+  WithBackTodosListIdEditRoute: WithBackTodosListIdEditRoute,
 }
 
 const WithBackRouteWithChildren = WithBackRoute._addFileChildren(
@@ -150,7 +145,7 @@ export interface FileRoutesByFullPath {
   '/': typeof WithAdderIndexRoute
   '/todos/$listId': typeof WithAdderTodosListIdRoute
   '/todos/new': typeof WithBackTodosNewLazyRoute
-  '/todos/$listId/edit': typeof WithBackTodosListIdEditLazyRoute
+  '/todos/$listId/edit': typeof WithBackTodosListIdEditRoute
 }
 
 export interface FileRoutesByTo {
@@ -158,7 +153,7 @@ export interface FileRoutesByTo {
   '/': typeof WithAdderIndexRoute
   '/todos/$listId': typeof WithAdderTodosListIdRoute
   '/todos/new': typeof WithBackTodosNewLazyRoute
-  '/todos/$listId/edit': typeof WithBackTodosListIdEditLazyRoute
+  '/todos/$listId/edit': typeof WithBackTodosListIdEditRoute
 }
 
 export interface FileRoutesById {
@@ -168,7 +163,7 @@ export interface FileRoutesById {
   '/_withAdder/': typeof WithAdderIndexRoute
   '/_withAdder/todos/$listId': typeof WithAdderTodosListIdRoute
   '/_withBack/todos/new': typeof WithBackTodosNewLazyRoute
-  '/_withBack/todos/$listId/edit': typeof WithBackTodosListIdEditLazyRoute
+  '/_withBack/todos/$listId/edit': typeof WithBackTodosListIdEditRoute
 }
 
 export interface FileRouteTypes {
@@ -238,7 +233,7 @@ export const routeTree = rootRoute
       "parent": "/_withBack"
     },
     "/_withBack/todos/$listId/edit": {
-      "filePath": "_withBack.todos.$listId.edit.lazy.tsx",
+      "filePath": "_withBack.todos.$listId.edit.tsx",
       "parent": "/_withBack"
     }
   }

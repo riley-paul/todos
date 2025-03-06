@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
 import type { SelectedList, UserSelect } from "@/lib/types";
 import UserBubbleGroup from "./ui/user-bubble-group";
@@ -35,7 +35,7 @@ const List: React.FC<{
 };
 
 const Lists: React.FC = () => {
-  const listsQuery = useQuery(listsQueryOptions);
+  const { data: lists } = useSuspenseQuery(listsQueryOptions);
   const inboxCount = useQuery(todosQueryOptions(null))?.data?.length;
   const allCount = useQuery(todosQueryOptions("all"))?.data?.length;
 
@@ -47,7 +47,7 @@ const Lists: React.FC = () => {
         <Flex align="center">
           <Separator orientation="vertical" size="1" />
         </Flex>
-        {listsQuery.data?.map((list) => (
+        {lists.map((list) => (
           <List
             key={list.id}
             value={list.id}
