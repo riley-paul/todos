@@ -3,7 +3,14 @@ import React from "react";
 import LoginButton from "./login-button";
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/lib/queries";
-import { Avatar, Button, Popover, Text, Tooltip } from "@radix-ui/themes";
+import {
+  Avatar,
+  Button,
+  Popover,
+  Spinner,
+  Text,
+  Tooltip,
+} from "@radix-ui/themes";
 import useConfirmDialog from "@/hooks/use-confirm-dialog";
 import useMutations from "@/hooks/use-mutations";
 
@@ -19,7 +26,7 @@ const UserMenu: React.FC = () => {
   const userQuery = useQuery(userQueryOptions);
 
   if (userQuery.isLoading) {
-    return null;
+    return <Avatar size="3" radius="full" src="" fallback={<Spinner />} />;
   }
 
   if (userQuery.isError) {
