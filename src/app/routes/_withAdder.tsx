@@ -29,13 +29,15 @@ function RouteComponent() {
       </main>
       <div className="fixed bottom-8 right-8 flex items-center gap-3">
         <RefreshButton />
-        <Tooltip side="top" content="Edit List">
-          <IconButton asChild variant="soft" size="3" radius="full">
-            <Link {...goToListEditor(listId)}>
-              <i className="fas fa-pen" />
-            </Link>
-          </IconButton>
-        </Tooltip>
+        {listId && listId !== "all" && (
+          <Tooltip side="top" content="Edit List">
+            <IconButton asChild variant="soft" size="3" radius="full">
+              <Link {...goToListEditor(listId)}>
+                <i className="fas fa-pen" />
+              </Link>
+            </IconButton>
+          </Tooltip>
+        )}
       </div>
     </>
   );
