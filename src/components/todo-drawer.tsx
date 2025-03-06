@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions } from "@/lib/queries";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { useParams } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
 
 const MenuItem: React.FC<{
   text: string;
@@ -11,9 +12,14 @@ const MenuItem: React.FC<{
   onClick: () => void;
 }> = ({ text, icon, onClick }) => {
   return (
-    <Button variant="soft" className="justify-between" onClick={onClick}>
-      <Text color="gray">{text}</Text>
-      <i className={`fa-solid ${icon} text-accent-8`} />
+    <Button
+      variant="soft"
+      color="gray"
+      className="justify-between"
+      onClick={onClick}
+    >
+      <Text>{text}</Text>
+      <i className={cn("fa-solid opacity-80", icon)} />
     </Button>
   );
 };
