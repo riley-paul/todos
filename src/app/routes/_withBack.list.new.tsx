@@ -1,5 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Button, Card, Heading, TextField } from "@radix-ui/themes";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Button, Card, Heading, Text, TextField } from "@radix-ui/themes";
 import FormFieldError from "@/components/ui/form-field-error";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -38,10 +38,15 @@ function RouteComponent() {
 
   return (
     <Card size="2" className="grid gap-4">
-      <Heading as="h2" size="4" mb="2">
-        Create list
-      </Heading>
-      <form onSubmit={onSubmit} className="grid gap-3 sm:grid-cols-[auto_8rem]">
+      <header>
+        <Heading as="h2" size="4">
+          Create list
+        </Heading>
+        <Text size="2" color="gray">
+          Enter a name for your new list
+        </Text>
+      </header>
+      <form onSubmit={onSubmit} className="grid gap-3">
         <Controller
           name="name"
           control={control}
@@ -53,10 +58,18 @@ function RouteComponent() {
           )}
         />
         <input type="submit" hidden />
-        <Button type="submit" variant="soft">
-          <i className="fa-solid fa-save" />
-          Save
-        </Button>
+        <div className="grid w-full grid-cols-2 gap-2 sm:ml-auto sm:max-w-56">
+          <Button variant="soft" asChild>
+            <Link to="/">
+              <i className="fa-solid fa-xmark" />
+              Cancel
+            </Link>
+          </Button>
+          <Button type="submit">
+            <i className="fa-solid fa-save" />
+            Save
+          </Button>
+        </div>
       </form>
     </Card>
   );
