@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Button, Card, Heading, Text, TextField } from "@radix-ui/themes";
+import { Button, Heading, Text, TextField } from "@radix-ui/themes";
 import FormFieldError from "@/components/ui/form-field-error";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -37,7 +37,7 @@ function RouteComponent() {
   const onSubmit = handleSubmit((data) => create.mutate(data));
 
   return (
-    <Card size="2" className="grid gap-4">
+    <div className="grid gap-4">
       <header>
         <Heading as="h2" size="4">
           Create list
@@ -52,7 +52,7 @@ function RouteComponent() {
           control={control}
           render={({ field, fieldState: { error } }) => (
             <div className="grid gap-1">
-              <TextField.Root autoFocus placeholder="Unnamed list" {...field} />
+              <TextField.Root autoFocus size="3" placeholder="Unnamed list" {...field} />
               <FormFieldError error={error} />
             </div>
           )}
@@ -71,6 +71,6 @@ function RouteComponent() {
           </Button>
         </div>
       </form>
-    </Card>
+    </div>
   );
 }
