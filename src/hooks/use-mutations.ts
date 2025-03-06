@@ -152,13 +152,6 @@ export default function useMutations() {
     mutationFn: actions.listShares.create.orThrow,
   });
 
-  const acceptListShare = useMutation({
-    mutationFn: actions.listShares.accept.orThrow,
-    onSuccess: () => {
-      toast.success("You now have access to this list");
-    },
-  });
-
   return {
     updateTodo,
     deleteTodo,
@@ -169,6 +162,5 @@ export default function useMutations() {
     updateList,
     createList,
     createListShare,
-    acceptListShare,
   };
 }

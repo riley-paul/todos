@@ -1,8 +1,7 @@
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { pendingSharesQueryOptions } from "@/lib/queries";
 import UserBubble from "./ui/user-bubble";
-import useMutations from "@/hooks/use-mutations";
 import {
   Badge,
   Button,
@@ -11,11 +10,23 @@ import {
   Strong,
   Text,
 } from "@radix-ui/themes";
+import { actions } from "astro:actions";
+import { toast } from "sonner";
 
 const PendingInvites: React.FC = () => {
   const pendingSharesQuery = useQuery(pendingSharesQueryOptions);
   const numPendingShares = pendingSharesQuery.data?.length ?? 0;
-  const { acceptListShare, deleteListShare } = useMutations();
+
+  const deleteListShare = useMutation({
+    mutationFn: actions.listShares.remove.orThrow,
+  });
+
+  const acceptListShare = useMutation({
+    mutationFn: actions.listShares.accept.orThrow,
+    onSuccess: () => {
+      toast.success("You now have access to this list");
+    },
+  });
 
   return (
     <Popover.Root>
@@ -33,7 +44,10 @@ const PendingInvites: React.FC = () => {
           )}
         </IconButton>
       </Popover.Trigger>
-      <Popover.Content align="end" className="max-w-72 py-2 max-h-[80vh] overflow-auto">
+      <Popover.Content
+        align="end"
+        className="max-h-[80vh] max-w-72 overflow-auto py-2"
+      >
         <div className="grid divide-y px-rx-2">
           {pendingSharesQuery.data?.map((share) => (
             <div
