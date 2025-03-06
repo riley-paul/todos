@@ -4,7 +4,6 @@ import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
 import type { SelectedList, UserSelect } from "@/lib/types";
 import UserBubbleGroup from "./ui/user-bubble-group";
 import { Button, Flex, Separator, Text } from "@radix-ui/themes";
-import ListAdder from "./list-adder";
 import { Link } from "@tanstack/react-router";
 import { goToList } from "@/lib/links";
 
@@ -56,7 +55,12 @@ const Lists: React.FC = () => {
             users={list.otherUsers}
           />
         ))}
-        <ListAdder />
+        <Button asChild variant="soft" size="1" color="gray">
+          <Link to="/list/new">
+            <i className="fa-solid fa-plus text-accent-10" />
+            New list
+          </Link>
+        </Button>
       </div>
     </>
   );
