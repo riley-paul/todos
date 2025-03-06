@@ -2,7 +2,6 @@ import AppSearch from "@/components/app-search";
 import PendingInvites from "@/components/pending-invites";
 import UserMenu from "@/components/user-menu";
 import useQueryStream from "@/hooks/use-query-stream";
-import { listsQueryOptions } from "@/lib/queries";
 import { Heading } from "@radix-ui/themes";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import {

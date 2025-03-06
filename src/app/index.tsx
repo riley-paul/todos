@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-query";
 import { handleMutationError } from "@/hooks/use-mutations";
 import CustomToaster from "@/components/ui/custom-toaster";
+import { Spinner } from "@radix-ui/themes";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -29,6 +30,11 @@ const router = createRouter({
   context: { queryClient },
   defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
+  defaultPendingComponent: () => (
+    <section className="flex h-full items-center justify-center gap-2 py-32">
+      <Spinner size="3" />
+    </section>
+  ),
 });
 
 // Register the router instance for type safety
