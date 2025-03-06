@@ -1,7 +1,6 @@
 import { listsQueryOptions } from "@/lib/queries";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import React from "react";
-import useMutations from "@/hooks/use-mutations";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import UserBubble from "@/components/ui/user-bubble";
 import DeleteButton from "@/components/ui/delete-button";
@@ -62,7 +61,7 @@ const RenameForm: React.FC<{ list: ListSelect }> = ({ list }) => {
           )}
         />
         <input type="submit" hidden />
-        <Button type="submit" variant="soft">
+        <Button type="submit">
           <i className="fa-solid fa-save" />
           Update
         </Button>
@@ -125,7 +124,7 @@ const InviteForm: React.FC<{ list: ListSelect }> = ({ list }) => {
           )}
         />
         <input type="submit" hidden />
-        <Button type="submit" variant="soft">
+        <Button type="submit">
           <i className="fa-solid fa-paper-plane" />
           Invite
         </Button>
@@ -142,7 +141,7 @@ export const Route = createFileRoute("/_withBack/list/$listId/edit")({
 });
 
 function RouteComponent() {
-  const { deleteListShare, leaveListShare, deleteList } = useMutations();
+  const navigate = useNavigate();
 
   const [DeleteDialog, confirmDelete] = useConfirmDialog({
     title: "Delete List",
@@ -154,6 +153,26 @@ function RouteComponent() {
     title: "Leave List",
     description:
       "This action will remove you from this list and you will no longer be able to view or edit it.",
+  });
+
+  const deleteList = useMutation({
+    mutationFn: actions.lists.remove.orThrow,
+    onSuccess: () => {
+      navigate({ to: "/" });
+      toast.success("List deleted");
+    },
+  });
+
+  const leaveListShare = useMutation({
+    mutationFn: actions.listShares.leave.orThrow,
+    onSuccess: () => {
+      navigate({ to: "/" });
+      toast.success("You no longer have access to this list");
+    },
+  });
+
+  const deleteListShare = useMutation({
+    mutationFn: actions.listShares.remove.orThrow,
   });
 
   const { listId } = useParams({ strict: false });
@@ -173,7 +192,7 @@ function RouteComponent() {
             Edit, share, or delete this list
           </Text>
         </header>
-        <Callout.Root variant="surface" color="gray">
+        <Callout.Root variant="soft">
           <Callout.Icon>
             <UserBubble user={list.author} size="md" />
           </Callout.Icon>
@@ -219,35 +238,37 @@ function RouteComponent() {
             )}
           </div>
         </div>
-        {list.isAuthor ? (
-          <Button
-            variant="soft"
-            color="red"
-            onClick={async () => {
-              const ok = await confirmDelete();
-              if (ok) {
-                deleteList.mutate({ id: list.id });
-              }
-            }}
-          >
-            <i className="fa-solid fa-trash" />
-            Delete List
+        <div className="grid w-full grid-cols-2 gap-2 sm:ml-auto sm:max-w-72">
+          <Button variant="soft" asChild>
+            <Link to="/">
+              <i className="fa-solid fa-xmark" />
+              Cancel
+            </Link>
           </Button>
-        ) : (
-          <Button
-            variant="soft"
-            color="amber"
-            onClick={async () => {
-              const ok = await confirmLeave();
-              if (ok) {
-                leaveListShare.mutate({ listId: list.id });
-              }
-            }}
-          >
-            <i className="fa-solid fa-arrow-right-from-bracket" />
-            Leave List
-          </Button>
-        )}
+          {list.isAuthor ? (
+            <Button
+              color="red"
+              onClick={async () => {
+                const ok = await confirmDelete();
+                if (ok) deleteList.mutate({ id: list.id });
+              }}
+            >
+              <i className="fa-solid fa-trash" />
+              Delete List
+            </Button>
+          ) : (
+            <Button
+              color="amber"
+              onClick={async () => {
+                const ok = await confirmLeave();
+                if (ok) leaveListShare.mutate({ listId: list.id });
+              }}
+            >
+              <i className="fa-solid fa-arrow-right-from-bracket" />
+              Leave List
+            </Button>
+          )}
+        </div>
       </div>
       <DeleteDialog />
       <LeaveDialog />
