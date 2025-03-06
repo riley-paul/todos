@@ -31,7 +31,7 @@ function RouteComponent() {
         <RefreshButton />
         {listId && listId !== "all" && (
           <Tooltip side="top" content="Edit List">
-            <IconButton asChild variant="soft" size="3" radius="full">
+            <IconButton asChild size="3" radius="full">
               <Link {...goToListEditor(listId)}>
                 <i className="fas fa-pen" />
               </Link>

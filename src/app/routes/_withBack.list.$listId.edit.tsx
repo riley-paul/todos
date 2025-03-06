@@ -3,16 +3,13 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import React from "react";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import UserBubble from "@/components/ui/user-bubble";
-import DeleteButton from "@/components/ui/delete-button";
 import {
-  Badge,
   Button,
   Callout,
   Heading,
   Strong,
   Text,
   TextField,
-  Tooltip,
 } from "@radix-ui/themes";
 import useConfirmDialog from "@/hooks/use-confirm-dialog";
 import { useParams } from "@tanstack/react-router";
@@ -22,6 +19,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { actions } from "astro:actions";
 import { toast } from "sonner";
+import ListShares from "@/components/list-shares";
 
 const renameFormSchema = z.object({ name: z.string().nonempty() });
 type RenameFormSchema = z.infer<typeof renameFormSchema>;
@@ -171,10 +169,6 @@ function RouteComponent() {
     },
   });
 
-  const deleteListShare = useMutation({
-    mutationFn: actions.listShares.remove.orThrow,
-  });
-
   const { listId } = useParams({ strict: false });
   const { data: lists } = useSuspenseQuery(listsQueryOptions);
   const list = lists.find((list) => list.id === listId);
@@ -202,42 +196,7 @@ function RouteComponent() {
         </Callout.Root>
         <RenameForm list={list} />
         <InviteForm list={list} />
-        <div className="min-h-12 overflow-y-auto rounded-3 border bg-panel-translucent px-2">
-          <div className="grid divide-y">
-            {list.shares.map((share) => (
-              <div key={share.id} className="flex items-center gap-rx-3 py-2">
-                <UserBubble user={share.user} size="md" />
-                <div className="grid flex-1 gap-0.5">
-                  <Text size="2" weight="medium">
-                    {share.user.name}
-                  </Text>
-                  <Text size="2" color="gray">
-                    {share.user.email}
-                  </Text>
-                </div>
-                {share.isPending && (
-                  <Tooltip side="left" content="Pending Invitation">
-                    <Badge color="amber" size="3">
-                      <i className="fa-solid fa-hourglass" />
-                    </Badge>
-                  </Tooltip>
-                )}
-                {list.isAuthor && (
-                  <DeleteButton
-                    handleDelete={() =>
-                      deleteListShare.mutate({ id: share.id })
-                    }
-                  />
-                )}
-              </div>
-            ))}
-            {list.shares.length === 0 && (
-              <Text size="2" color="gray" align="center" className="p-6">
-                No shares
-              </Text>
-            )}
-          </div>
-        </div>
+        <ListShares list={list} />
         <div className="grid w-full grid-cols-2 gap-2 sm:ml-auto sm:max-w-72">
           <Button variant="soft" asChild>
             <Link to="/">
