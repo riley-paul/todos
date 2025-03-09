@@ -1,0 +1,42 @@
+@import "tailwindcss";
+@import "@radix-ui/themes/styles.css";
+
+@config "../../tailwind.config.ts";
+
+@tailwind components;
+@tailwind utilities;
+
+.radix-themes {
+  --default-font-family: "Rubik Variable", sans-serif;
+  --cursor-button: pointer;
+  --cursor-checkbox: pointer;
+  --cursor-disabled: default;
+  --cursor-link: pointer;
+  --cursor-menu-item: pointer;
+  --cursor-radio: pointer;
+  --cursor-slider-thumb: grab;
+  --cursor-slider-thumb-active: grabbing;
+  --cursor-switch: pointer;
+}
+
+@layer base {
+  * {
+    @apply border-gray-6;
+  }
+
+  i.fas,
+  i.fa-solid {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .container2 {
+    @apply mx-auto w-full max-w-screen-sm px-2;
+  }
+
+  body {
+    overscroll-behavior: none;
+    overflow-x: hidden;
+  }
+}
