@@ -1,6 +1,6 @@
-import { List, ListShare, Todo, User, db } from "astro:db";
 import { faker } from "@faker-js/faker";
-import { v4 as uuid } from "uuid";
+import db from ".";
+import { List, ListShare, Todo, User } from "./schema";
 
 function capitalize(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -12,7 +12,6 @@ export default async function seed() {
     .insert(User)
     .values([
       {
-        id: uuid(),
         email: "rileypaul96@gmail.com",
         githubId: 71047303,
         githubUsername: "rjp301",
@@ -20,7 +19,6 @@ export default async function seed() {
         avatarUrl: "https://avatars.githubusercontent.com/u/71047303?v=4",
       },
       ...Array.from({ length: 20 }).map(() => ({
-        id: uuid(),
         email: faker.internet.email(),
         name: faker.person.fullName(),
         avatarUrl: faker.image.avatarGitHub(),
@@ -36,7 +34,6 @@ export default async function seed() {
       .values(
         Array.from({ length: faker.number.int({ min: 5, max: 10 }) }).map(
           () => ({
-            id: uuid(),
             userId,
             name: capitalize(faker.lorem.word()),
           }),
@@ -56,7 +53,6 @@ export default async function seed() {
 
       sharedUserIds.forEach(async (sharedUserId) => {
         await db.insert(ListShare).values({
-          id: uuid(),
           userId,
           listId,
           sharedUserId,
@@ -68,7 +64,6 @@ export default async function seed() {
     await db.insert(Todo).values(
       Array.from({ length: 50 }).map(() => {
         return {
-          id: uuid(),
           userId,
           listId: faker.helpers.maybe(
             () => faker.helpers.arrayElement(listIds),
@@ -81,3 +76,5 @@ export default async function seed() {
   });
   console.log("✅ Seeded data for users");
 }
+
+seed();
