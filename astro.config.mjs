@@ -2,7 +2,6 @@ import path from "node:path";
 import url from "node:url";
 import react from "@astrojs/react";
 import { defineConfig, envField } from "astro/config";
-import db from "@astrojs/db";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import node from "@astrojs/node";
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
@@ -16,7 +15,7 @@ export default defineConfig({
   site: import.meta.env.PROD
     ? "https://todos.rileys-projects.com"
     : "http://localhost:4321",
-  integrations: [react(), db(), tailwind()],
+  integrations: [react(), tailwind({ applyBaseStyles: false })],
   vite: {
     plugins: [
       TanStackRouterVite({

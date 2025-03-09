@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
-    "@astrojs/db": "^0.14.6",
     "@astrojs/node": "^9.0.2",
     "@astrojs/react": "^4.1.6",
     "@astrojs/tailwind": "^5.1.5",
@@ -21,6 +20,7 @@
     "@fontsource-variable/rubik": "^5.1.0",
     "@fontsource/fira-sans": "^5.0.20",
     "@hookform/resolvers": "^3.10.0",
+    "@libsql/client": "^0.14.0",
     "@lucia-auth/adapter-drizzle": "^1.0.7",
     "@node-rs/argon2": "^1.8.3",
     "@radix-ui/themes": "^3.1.6",
@@ -36,7 +36,8 @@
     "cmdk": "^1.0.4",
     "dotenv": "^16.4.7",
     "dotenv-expand": "^12.0.1",
-    "drizzle-orm": "^0.31.2",
+    "drizzle-orm": "^0.40.0",
+    "drizzle-zod": "^0.7.0",
     "lucia": "^3.2.0",
     "next-themes": "^0.3.0",
     "postcss-import": "^16.1.0",
@@ -67,6 +68,7 @@
     "@tanstack/router-vite-plugin": "^1.32.2",
     "@types/node": "^20.12.11",
     "@types/uuid": "^9.0.8",
+    "drizzle-kit": "^0.30.5",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "vite-plugin-pwa": "^0.20.5"
