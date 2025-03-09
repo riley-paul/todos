@@ -60,7 +60,9 @@ export const ListShare = sqliteTable("listShare", {
     .notNull()
     .references(() => List.id, { onDelete: "cascade" }),
   userId,
-  sharedUserId: userId,
+  sharedUserId: text()
+    .notNull()
+    .references(() => User.id),
   isPending: integer({ mode: "boolean" }).notNull().default(true),
   ...timeStamps,
 });
