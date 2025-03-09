@@ -1,17 +1,7 @@
 import { ActionError, defineAction } from "astro:actions";
-import {
-  and,
-  db,
-  desc,
-  eq,
-  inArray,
-  List,
-  ListShare,
-  Todo,
-  User,
-} from "astro:db";
-
-import { v4 as uuid } from "uuid";
+import db from "@/db";
+import { User, Todo, ListShare, List } from "@/db/schema";
+import { eq, and, desc, inArray } from "drizzle-orm";
 import { z } from "zod";
 import type { TodoSelect } from "@/lib/types";
 import {
@@ -59,7 +49,7 @@ export const get = defineAction({
   },
 });
 
-export const create= defineAction({
+export const create = defineAction({
   input: z.object({
     id: z.string().optional(),
     listId: z
@@ -72,7 +62,7 @@ export const create= defineAction({
     const userId = isAuthorized(c).id;
     const todo = await db
       .insert(Todo)
-      .values({ id: uuid(), ...data, userId })
+      .values({ ...data, userId })
       .returning()
       .then((rows) => rows[0]);
 

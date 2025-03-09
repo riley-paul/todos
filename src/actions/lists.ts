@@ -1,5 +1,4 @@
 import { ActionError, defineAction } from "astro:actions";
-import { asc, db, eq, List, ListShare, or, Todo, User } from "astro:db";
 import { z } from "zod";
 import type { ListSelect } from "@/lib/types";
 import { v4 as uuid } from "uuid";
@@ -10,6 +9,9 @@ import {
   getListUsers,
   filterByListShare,
 } from "./helpers";
+import db from "@/db";
+import { User, List, ListShare, Todo } from "@/db/schema";
+import { eq, or, asc } from "drizzle-orm";
 
 const zListName = z.string().trim().min(1, "List name cannot be empty");
 

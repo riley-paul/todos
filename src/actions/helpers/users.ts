@@ -1,7 +1,9 @@
 import type { ActionAPIContext } from "astro/actions/runtime/utils.js";
 import { ActionError } from "astro:actions";
 import InvalidationController from "@/lib/invalidation-controller";
-import { db, List, eq, ListShare, and, Todo } from "astro:db";
+import db from "@/db";
+import { List, ListShare, Todo } from "@/db/schema";
+import { eq, and } from "drizzle-orm";
 
 export const invalidateUsers = (userIds: string[]) => {
   InvalidationController.getInstance().invalidateKey(userIds);

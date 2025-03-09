@@ -1,4 +1,5 @@
-import { or, eq, ListShare, Todo, and, isNull, ne } from "astro:db";
+import { ListShare, Todo } from "@/db/schema";
+import { eq, or, and, ne, isNull } from "drizzle-orm";
 
 export const filterByListShare = (userId: string) =>
   or(

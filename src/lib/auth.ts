@@ -1,13 +1,14 @@
 import { Lucia } from "lucia";
 import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
 import { GitHub, Google } from "arctic";
-import { User, db, UserSession } from "astro:db";
 import {
   GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET,
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
 } from "astro:env/server";
+import { User, UserSession, type UserSelect } from "@/db/schema";
+import db from "@/db";
 
 // @ts-ignore
 const adapter = new DrizzleSQLiteAdapter(db, UserSession, User);
@@ -32,7 +33,7 @@ declare module "lucia" {
   }
 }
 
-type DatabaseUserAttributes = Omit<typeof User.$inferSelect, "id">;
+type DatabaseUserAttributes = Omit<UserSelect, "id">;
 
 export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET);
 

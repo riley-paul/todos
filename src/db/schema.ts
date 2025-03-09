@@ -10,10 +10,6 @@ const userId = text()
   .notNull()
   .references(() => User.id, { onDelete: "cascade" });
 
-const listId = text()
-  .notNull()
-  .references(() => List.id, { onDelete: "cascade" });
-
 const timeStamps = {
   createdAt: text()
     .notNull()
@@ -60,10 +56,12 @@ export type ListInsert = z.infer<typeof zListInsert>;
 
 export const ListShare = sqliteTable("listShare", {
   id,
-  listId,
+  listId: text()
+    .notNull()
+    .references(() => List.id, { onDelete: "cascade" }),
   userId,
   sharedUserId: userId,
-  isPending: integer({ mode: "boolean" }).default(true),
+  isPending: integer({ mode: "boolean" }).notNull().default(true),
   ...timeStamps,
 });
 export const zListShareSelect = createSelectSchema(ListShare);
@@ -74,10 +72,10 @@ export type ListShareInsert = z.infer<typeof zListShareInsert>;
 export const Todo = sqliteTable("todo", {
   id,
   userId,
-  listId,
+  listId: text().references(() => List.id, { onDelete: "cascade" }),
   sortOrder: integer().notNull().default(0),
   text: text().notNull(),
-  isCompleted: integer({ mode: "boolean" }).default(false),
+  isCompleted: integer({ mode: "boolean" }).notNull().default(false),
   ...timeStamps,
 });
 export const zTodoSelect = createSelectSchema(Todo);

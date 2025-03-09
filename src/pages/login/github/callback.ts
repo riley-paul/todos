@@ -3,9 +3,10 @@ import { OAuth2RequestError } from "arctic";
 
 import type { APIContext } from "astro";
 import getGithubUser from "@/lib/helpers/get-github-user";
-import { db, eq, User } from "astro:db";
-import { v4 as uuid } from "uuid";
 import setUserSession from "@/lib/helpers/set-user-session";
+import db from "@/db";
+import { User } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function GET(context: APIContext): Promise<Response> {
   const code = context.url.searchParams.get("code");
@@ -21,11 +22,10 @@ export async function GET(context: APIContext): Promise<Response> {
     const tokens = await github.validateAuthorizationCode(code);
     const githubUser = await getGithubUser(tokens.accessToken);
 
-    const existingUser = await db
+    const [existingUser] = await db
       .select()
       .from(User)
-      .where(eq(User.email, githubUser.email))
-      .then((rows) => rows[0]);
+      .where(eq(User.email, githubUser.email));
 
     if (existingUser) {
       await db
@@ -37,18 +37,16 @@ export async function GET(context: APIContext): Promise<Response> {
     }
 
     // add user to database
-    const user = await db
+    const [user] = await db
       .insert(User)
       .values({
-        id: uuid(),
         email: githubUser.email,
         githubId: githubUser.id,
         githubUsername: githubUser.login,
         name: githubUser.name,
         avatarUrl: githubUser.avatar_url,
       })
-      .returning()
-      .then((rows) => rows[0]);
+      .returning();
 
     await setUserSession(context, user.id);
     return context.redirect("/");

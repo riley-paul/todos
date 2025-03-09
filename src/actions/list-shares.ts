@@ -1,8 +1,9 @@
 import { ActionError, defineAction } from "astro:actions";
-import { db, ListShare, eq, User, and, List, desc, or } from "astro:db";
 import { z } from "zod";
 import { isAuthorized } from "./helpers";
-import { v4 as uuid } from "uuid";
+import db from "@/db";
+import { User, ListShare, List } from "@/db/schema";
+import { eq, and, or, desc } from "drizzle-orm";
 
 export const create = defineAction({
   input: z.object({
@@ -72,7 +73,6 @@ export const create = defineAction({
     const listShare = await db
       .insert(ListShare)
       .values({
-        id: uuid(),
         listId,
         userId,
         sharedUserId: sharedUser.id,

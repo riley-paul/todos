@@ -1,4 +1,4 @@
-import type { User, Todo, List, ListShare } from "astro:db";
+import type { User, Todo } from "@/db/schema";
 
 export type UserSelect = {
   id: string;
@@ -37,12 +37,5 @@ export type ListShareSelect = {
   isAuthor: boolean;
 };
 
-export type TodoInsert = typeof Todo.$inferInsert;
-
-export type ListShareInsert = typeof ListShare.$inferInsert;
-
-export type ListInsert = typeof List.$inferInsert;
-
 export type TableUnion = typeof User | typeof Todo;
-
 export type SelectedList = string | "all" | null;

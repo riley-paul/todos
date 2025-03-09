@@ -1,7 +1,9 @@
 import { defineAction } from "astro:actions";
-import { db, eq, Todo, User, UserSession } from "astro:db";
 import { z } from "zod";
 import { isAuthorized } from "./helpers";
+import db from "@/db";
+import { Todo, User, UserSession } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export const getMe = defineAction({
   handler: async (_, c) => {

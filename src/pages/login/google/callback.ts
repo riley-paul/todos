@@ -2,10 +2,11 @@ import { google } from "@/lib/auth";
 import { OAuth2RequestError } from "arctic";
 
 import type { APIContext } from "astro";
-import { db, eq, User } from "astro:db";
-import { v4 as uuid } from "uuid";
 import setUserSession from "@/lib/helpers/set-user-session";
 import getGoogleUser from "@/lib/helpers/get-google-user";
+import db from "@/db";
+import { User } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function GET(context: APIContext): Promise<Response> {
   const code = context.url.searchParams.get("code");
@@ -31,11 +32,10 @@ export async function GET(context: APIContext): Promise<Response> {
 
     const googleUser = await getGoogleUser(tokens.accessToken);
 
-    const existingUser = await db
+    const [existingUser] = await db
       .select()
       .from(User)
-      .where(eq(User.email, googleUser.email))
-      .then((rows) => rows[0]);
+      .where(eq(User.email, googleUser.email));
 
     if (existingUser) {
       await db
@@ -47,17 +47,15 @@ export async function GET(context: APIContext): Promise<Response> {
     }
 
     // add user to database
-    const user = await db
+    const [user] = await db
       .insert(User)
       .values({
-        id: uuid(),
         email: googleUser.email,
         googleId: googleUser.id,
         name: googleUser.name,
         avatarUrl: googleUser.picture,
       })
-      .returning()
-      .then((rows) => rows[0]);
+      .returning();
 
     await setUserSession(context, user.id);
     return context.redirect("/");
