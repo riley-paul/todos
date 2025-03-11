@@ -1,4 +1,5 @@
 import type { AppOpenApi } from "./types";
+import { apiReference } from "@scalar/hono-api-reference";
 import packageJson from "../../../package.json";
 
 export default function configureOpenApi(app: AppOpenApi) {
@@ -9,4 +10,17 @@ export default function configureOpenApi(app: AppOpenApi) {
       title: "Todos API",
     },
   });
+
+  app.get(
+    "/reference",
+    apiReference({
+      theme: "kepler",
+      layout: "classic",
+      defaultHttpClient: {
+        targetKey: "js",
+        clientKey: "fetch",
+      },
+      spec: { url: "/api/doc" },
+    }),
+  );
 }

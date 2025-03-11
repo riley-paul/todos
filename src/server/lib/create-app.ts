@@ -4,8 +4,7 @@ import { logger } from "hono/logger";
 import type { AppBindings } from "./types";
 
 export function createRouter() {
-  const app = new OpenAPIHono<AppBindings>({ strict: false });
-  return app;
+  return new OpenAPIHono<AppBindings>({ strict: false });
 }
 
 export function createApp() {

@@ -28,6 +28,7 @@
     "@lucia-auth/adapter-drizzle": "^1.0.7",
     "@node-rs/argon2": "^1.8.3",
     "@radix-ui/themes": "^3.1.6",
+    "@scalar/hono-api-reference": "^0.5.184",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tanstack/react-query": "^5.35.5",
     "@tanstack/react-router": "^1.97.25",
