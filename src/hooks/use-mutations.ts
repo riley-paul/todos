@@ -5,7 +5,8 @@ import { listsQueryOptions, todosQueryOptions } from "@/lib/client/queries";
 import type { SelectedList } from "@/lib/types";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { goToList } from "@/lib/client/links";
-import type { TodoSelect } from "@/db/schema";
+import type { TodoInsert, TodoSelect } from "@/db/schema";
+import client from "@/server/client";
 
 type TodosUpdater = (todos: TodoSelect[] | undefined) => TodoSelect[];
 
@@ -99,7 +100,8 @@ export default function useMutations() {
   });
 
   const createTodo = useMutation({
-    mutationFn: actions.todos.create.orThrow,
+    mutationFn: (json: TodoInsert) =>
+      client.todos.$post({ json }).then((res) => res.json()),
     onSuccess: ({ listId }) => {
       navigate(goToList(listId));
     },

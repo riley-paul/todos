@@ -1,9 +1,17 @@
-import type { ListRoute } from "./todos.routes";
+import type { CreateRoute, ListRoute } from "./todos.routes";
 import db from "@/db";
 import { List, ListShare, Todo, User, type TodoSelect } from "@/db/schema";
 import type { AppRouteHandler } from "@/server/lib/types";
 import { eq, desc } from "drizzle-orm";
-import { filterTodos, isAuthorized } from "@/lib/server/utils";
+import {
+  filterTodos,
+  getListUsers,
+  getTodoUsers,
+  invalidateUsers,
+  isAuthorized,
+} from "@/lib/server/utils";
+import { HTTPException } from "hono/http-exception";
+import * as HttpStatusCodes from "stoker/http-status-codes";
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
   const userId = isAuthorized(c).id;
@@ -35,4 +43,23 @@ export const list: AppRouteHandler<ListRoute> = async (c) => {
     );
 
   return c.json(todos);
+};
+
+export const create: AppRouteHandler<CreateRoute> = async (c) => {
+  const userId = isAuthorized(c).id;
+  const data = c.req.valid("json");
+
+  const listUsers = data.listId ? await getListUsers(data.listId) : [userId];
+
+  if (!listUsers.includes(userId)) {
+    throw new HTTPException(HttpStatusCodes.FORBIDDEN);
+  }
+
+  const [todo] = await db
+    .insert(Todo)
+    .values({ ...data, userId })
+    .returning({ id: Todo.id, listId: Todo.listId });
+
+  invalidateUsers(await getTodoUsers(todo.id));
+  return c.json(todo);
 };
