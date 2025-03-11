@@ -1,9 +1,8 @@
-import { Hono } from "hono";
+import configureOpenApi from "./configure-openapi";
+import createApp from "./create-app";
 
-const app = new Hono();
+const app = createApp();
 
-app.get("/api/hello", (c) => {
-  return c.json({ message: "Hello, World!" });
-});
+configureOpenApi(app);
 
 export default app;
