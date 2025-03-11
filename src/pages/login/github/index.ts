@@ -1,8 +1,8 @@
 import { generateState } from "arctic";
-import { github } from "@/lib/auth";
 
 import type { APIContext } from "astro";
 import env from "@/envs";
+import { github } from "@/lib/server/oauth";
 
 export async function GET(context: APIContext): Promise<Response> {
   const state = generateState();

@@ -7,7 +7,7 @@ export async function GET(context: APIContext): Promise<Response> {
   const state = generateState();
   const codeVerifier = generateCodeVerifier();
 
-  const url: URL = await google.createAuthorizationURL(state, codeVerifier, [
+  const url: URL = google.createAuthorizationURL(state, codeVerifier, [
     "email",
     "profile",
   ]);

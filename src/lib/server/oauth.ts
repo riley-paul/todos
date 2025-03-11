@@ -5,13 +5,13 @@ import { z } from "zod";
 export const github = new GitHub(
   env.GITHUB_CLIENT_ID,
   env.GITHUB_CLIENT_SECRET,
-  env.SITE + "/login/github/callback"
+  env.SITE + "/login/github/callback",
 );
 
 export const google = new Google(
   env.GOOGLE_CLIENT_ID,
   env.GOOGLE_CLIENT_SECRET,
-  env.SITE + "/login/google/callback"
+  env.SITE + "/login/google/callback",
 );
 
 // Get the user's email from the GitHub API
@@ -28,7 +28,7 @@ const zGithubEmail = z.object({
   email: z.string(),
   primary: z.boolean(),
   verified: z.boolean(),
-  visibility: z.string(),
+  visibility: z.string().nullable(),
 });
 
 export const getGithubUser = async (accessToken: string) => {
@@ -73,7 +73,7 @@ export const getGoogleUser = async (accessToken: string) => {
 
   const res = await fetch(
     "https://www.googleapis.com/oauth2/v1/userinfo",
-    fetchInit
+    fetchInit,
   );
   if (!res.ok) throw new Error("Failed to fetch user");
   return zGoogleUser.parse(await res.json());

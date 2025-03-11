@@ -1,11 +1,10 @@
-import { google } from "@/lib/auth";
 import { OAuth2RequestError } from "arctic";
 
 import type { APIContext } from "astro";
 import db from "@/db";
 import { User } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { getGoogleUser } from "@/lib/server/oauth";
+import { getGoogleUser, google } from "@/lib/server/oauth";
 import {
   createSession,
   generateSessionToken,

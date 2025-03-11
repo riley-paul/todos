@@ -1,11 +1,10 @@
-import { github } from "@/lib/auth";
 import { OAuth2RequestError } from "arctic";
 
 import type { APIContext } from "astro";
 import db from "@/db";
 import { User } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { getGithubUser } from "@/lib/server/oauth";
+import { getGithubUser, github } from "@/lib/server/oauth";
 import {
   createSession,
   generateSessionToken,
@@ -59,6 +58,7 @@ export async function GET(context: APIContext): Promise<Response> {
     setSessionTokenCookie(context, sessionToken, session.expiresAt);
     return context.redirect("/");
   } catch (e) {
+    console.error(e);
     // the specific error message depends on the provider
     if (e instanceof OAuth2RequestError) {
       // invalid code
