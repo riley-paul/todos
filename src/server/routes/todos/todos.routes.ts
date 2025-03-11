@@ -10,7 +10,7 @@ export const list = createRoute({
   path: "/todos",
   method: "get",
   tags,
-  request: { query: z.object({ listId: z.string().nullable().optional() }) },
+  request: { query: z.object({ listId: z.string().nullable() }) },
   responses: {
     [HttpStatusCodes.OK]: jsonContent(z.array(zTodoSelect), "List of todos"),
   },
