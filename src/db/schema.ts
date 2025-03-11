@@ -15,7 +15,7 @@ const timeStamps = {
     .notNull()
     .$defaultFn(() => new Date().toISOString()),
   updatedAt: text()
-    // .notNull()
+    .notNull()
     .$defaultFn(() => new Date().toISOString())
     .$onUpdateFn(() => new Date().toISOString()),
 };
@@ -97,12 +97,15 @@ export const zTodoSelect = createSelectSchema(Todo)
     list: z.object({ id: z.string(), name: z.string() }).nullable(),
   });
 export const zTodoInsert = createInsertSchema(Todo)
+  .pick({
+    text: true,
+    listId: true,
+  })
   .extend({
     text: createInsertSchema(Todo).shape.text.trim().min(1),
     listId: createInsertSchema(Todo).shape.listId.transform((v) =>
       v === "all" ? null : v,
     ),
-  })
-  .omit({ userId: true });
+  });
 export type TodoInsert = z.infer<typeof zTodoInsert>;
 export type TodoSelect = z.infer<typeof zTodoSelect>;
