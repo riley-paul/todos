@@ -6,7 +6,7 @@ import { github } from "@/lib/server/oauth";
 
 export async function GET(context: APIContext): Promise<Response> {
   const state = generateState();
-  const url = github.createAuthorizationURL(state, ["user:email"]);
+  const url = github.createAuthorizationURL(state, []);
 
   context.cookies.set("github_oauth_state", state, {
     path: "/",
