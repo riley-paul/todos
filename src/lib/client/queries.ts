@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { actions } from "astro:actions";
-import type { SelectedList } from "./types";
+import type { SelectedList } from "../types";
 
 export const todosQueryOptions = (listId: SelectedList) =>
   queryOptions({

@@ -1,5 +1,5 @@
 import type { UserSelect } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/client/utils";
 import { Avatar } from "@radix-ui/themes";
 import React from "react";
 

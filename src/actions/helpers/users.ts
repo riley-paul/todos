@@ -1,6 +1,6 @@
 import type { ActionAPIContext } from "astro/actions/runtime/utils.js";
 import { ActionError } from "astro:actions";
-import InvalidationController from "@/lib/invalidation-controller";
+import InvalidationController from "@/lib/server/invalidation-controller";
 import db from "@/db";
 import { List, ListShare, Todo } from "@/db/schema";
 import { eq, and } from "drizzle-orm";

@@ -1,8 +1,8 @@
 import { DropdownMenu, Flex, IconButton, Text } from "@radix-ui/themes";
 import React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/client/utils";
 import { useQuery } from "@tanstack/react-query";
-import { listsQueryOptions } from "@/lib/queries";
+import { listsQueryOptions } from "@/lib/client/queries";
 import { useParams } from "@tanstack/react-router";
 
 const MenuItem: React.FC<{ text: string; icon: string }> = ({ text, icon }) => {

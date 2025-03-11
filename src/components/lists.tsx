@@ -1,11 +1,11 @@
 import React from "react";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
+import { listsQueryOptions, todosQueryOptions } from "@/lib/client/queries";
 import type { SelectedList, UserSelect } from "@/lib/types";
 import UserBubbleGroup from "./ui/user-bubble-group";
 import { Button, Flex, Separator, Text } from "@radix-ui/themes";
 import { Link } from "@tanstack/react-router";
-import { goToList } from "@/lib/links";
+import { goToList } from "@/lib/client/links";
 
 const List: React.FC<{
   value: SelectedList;

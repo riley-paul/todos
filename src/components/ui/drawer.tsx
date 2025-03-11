@@ -1,7 +1,7 @@
 import React from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/client/utils";
 import { Portal } from "@radix-ui/themes";
 import RadixProvider from "../radix-provider";
 

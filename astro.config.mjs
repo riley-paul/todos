@@ -12,9 +12,6 @@ import tailwind from "@astrojs/tailwind";
 // https://astro.build/config
 export default defineConfig({
   prefetch: true,
-  site: import.meta.env.PROD
-    ? "https://todos.rileys-projects.com"
-    : "http://localhost:4321",
   integrations: [react(), tailwind({ applyBaseStyles: false })],
   vite: {
     plugins: [

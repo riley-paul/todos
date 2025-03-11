@@ -12,13 +12,13 @@ import {
 import { Badge, IconButton, Kbd, Text, Tooltip } from "@radix-ui/themes";
 import { useEventListener } from "usehooks-ts";
 import { useQuery } from "@tanstack/react-query";
-import { listsQueryOptions, todosQueryOptions } from "@/lib/queries";
+import { listsQueryOptions, todosQueryOptions } from "@/lib/client/queries";
 import UserBubbleGroup from "./ui/user-bubble-group";
 import TextWithLinks from "./ui/text-with-links";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/client/utils";
 import { useNavigate } from "@tanstack/react-router";
 import useMutations from "@/hooks/use-mutations";
-import { goToList } from "@/lib/links";
+import { goToList } from "@/lib/client/links";
 
 const AppSearch: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);

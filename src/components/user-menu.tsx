@@ -2,7 +2,7 @@ import React from "react";
 
 import LoginButton from "./login-button";
 import { useQuery } from "@tanstack/react-query";
-import { userQueryOptions } from "@/lib/queries";
+import { userQueryOptions } from "@/lib/client/queries";
 import {
   Avatar,
   Button,

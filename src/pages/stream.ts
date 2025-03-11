@@ -1,4 +1,4 @@
-import InvalidationController from "@/lib/invalidation-controller";
+import InvalidationController from "@/lib/server/invalidation-controller";
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async ({ request, locals }) => {

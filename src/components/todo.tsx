@@ -12,14 +12,17 @@ import {
   Text,
   TextArea,
 } from "@radix-ui/themes";
-import { cn } from "@/lib/utils";
-import { focusInputAtEnd, resizeTextArea } from "@/lib/resizing-textarea";
+import { cn } from "@/lib/client/utils";
+import {
+  focusInputAtEnd,
+  resizeTextArea,
+} from "@/lib/client/utils";
 import TextWithLinks from "./ui/text-with-links";
 import TodoDropdown from "./todo-dropdown";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import TodoDrawer from "./todo-drawer";
 import { Link, useParams } from "@tanstack/react-router";
-import { goToList } from "@/lib/links";
+import { goToList } from "@/lib/client/links";
 
 const TodoForm: React.FC<{
   initialValue: string;

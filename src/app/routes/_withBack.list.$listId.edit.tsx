@@ -1,4 +1,4 @@
-import { listsQueryOptions } from "@/lib/queries";
+import { listsQueryOptions } from "@/lib/client/queries";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import React from "react";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";

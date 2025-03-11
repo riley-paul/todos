@@ -1,6 +1,6 @@
 import React from "react";
 import { isActionError } from "astro:actions";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/client/utils";
 import { Button, Heading, Text } from "@radix-ui/themes";
 
 interface Props {

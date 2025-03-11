@@ -2,13 +2,13 @@ import React from "react";
 import { useEventListener } from "usehooks-ts";
 import useMutations from "@/hooks/use-mutations";
 import { Button, Spinner, Text, TextArea } from "@radix-ui/themes";
-import { resizeTextArea } from "@/lib/resizing-textarea";
+import { resizeTextArea } from "@/lib/client/utils";
 import { flushSync } from "react-dom";
 import type { SelectedList } from "@/lib/types";
 import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { mergeRefs } from "@/lib/utils";
+import { mergeRefs } from "@/lib/client/utils";
 
 const schema = z.object({
   text: z.string().nonempty("Todo text cannot be empty"),

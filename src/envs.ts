@@ -12,7 +12,6 @@ const zEnv = z
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
 
-    COOLIFY_FQDN: z.string().default("http://localhost:4321"),
     SITE: z.string().url().default("http://localhost:4321"),
 
     DATABASE_URL: z.string().url(),

@@ -1,12 +1,12 @@
 import React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/client/utils";
 import useMutations from "@/hooks/use-mutations";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Todo from "./todo";
 import { Button, Text } from "@radix-ui/themes";
 import type { SelectedList } from "@/lib/types";
-import { todosQueryOptions } from "@/lib/queries";
+import { todosQueryOptions } from "@/lib/client/queries";
 
 const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
   const { data: todos } = useSuspenseQuery(todosQueryOptions(listId));
