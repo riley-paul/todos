@@ -7,6 +7,12 @@ export type UserSelect = {
   avatarUrl: string | null;
 };
 
+export type UserSessionInfo = {
+  id: string;
+  userId: string;
+  expiresAt: Date;
+};
+
 export type TodoSelect = {
   id: string;
   text: string;

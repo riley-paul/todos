@@ -39,7 +39,7 @@ export type UserInsert = z.infer<typeof zUserInsert>;
 export const UserSession = sqliteTable("userSession", {
   id,
   userId,
-  expiresAt: text(),
+  expiresAt: integer({ mode: "timestamp_ms" }).notNull(),
   ...timeStamps,
 });
 

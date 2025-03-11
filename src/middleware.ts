@@ -1,31 +1,27 @@
-import { lucia } from "@/lib/auth";
 import { defineMiddleware, sequence } from "astro:middleware";
+import {
+  deleteSessionTokenCookie,
+  SESSION_COOKIE_NAME,
+  setSessionTokenCookie,
+  validateSessionToken,
+} from "./lib/server/lucia";
 
 const userValidation = defineMiddleware(async (context, next) => {
-  const sessionId = context.cookies.get(lucia.sessionCookieName)?.value ?? null;
-  if (!sessionId) {
+  const token = context.cookies.get(SESSION_COOKIE_NAME)?.value ?? null;
+  if (!token) {
     context.locals.user = null;
     context.locals.session = null;
     return next();
   }
 
-  const { session, user } = await lucia.validateSession(sessionId);
-  if (session && session.fresh) {
-    const sessionCookie = lucia.createSessionCookie(session.id);
-    context.cookies.set(
-      sessionCookie.name,
-      sessionCookie.value,
-      sessionCookie.attributes,
-    );
+  const { user, session } = await validateSessionToken(token);
+
+  if (session) {
+    setSessionTokenCookie(context, token, session.expiresAt);
+  } else {
+    deleteSessionTokenCookie(context);
   }
-  if (!session) {
-    const sessionCookie = lucia.createBlankSessionCookie();
-    context.cookies.set(
-      sessionCookie.name,
-      sessionCookie.value,
-      sessionCookie.attributes,
-    );
-  }
+
   context.locals.session = session;
   context.locals.user = user;
   return next();

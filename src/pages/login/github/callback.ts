@@ -2,11 +2,15 @@ import { github } from "@/lib/auth";
 import { OAuth2RequestError } from "arctic";
 
 import type { APIContext } from "astro";
-import getGithubUser from "@/lib/helpers/get-github-user";
-import setUserSession from "@/lib/helpers/set-user-session";
 import db from "@/db";
 import { User } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { getGithubUser } from "@/lib/server/oauth";
+import {
+  createSession,
+  generateSessionToken,
+  setSessionTokenCookie,
+} from "@/lib/server/lucia";
 
 export async function GET(context: APIContext): Promise<Response> {
   const code = context.url.searchParams.get("code");
@@ -20,7 +24,7 @@ export async function GET(context: APIContext): Promise<Response> {
 
   try {
     const tokens = await github.validateAuthorizationCode(code);
-    const githubUser = await getGithubUser(tokens.accessToken);
+    const githubUser = await getGithubUser(tokens.accessToken());
 
     const [existingUser] = await db
       .select()
@@ -32,7 +36,9 @@ export async function GET(context: APIContext): Promise<Response> {
         .update(User)
         .set({ githubId: githubUser.id })
         .where(eq(User.id, existingUser.id));
-      await setUserSession(context, existingUser.id);
+      const sessionToken = generateSessionToken();
+      const session = await createSession(sessionToken, existingUser.id);
+      setSessionTokenCookie(context, sessionToken, session.expiresAt);
       return context.redirect("/");
     }
 
@@ -48,7 +54,9 @@ export async function GET(context: APIContext): Promise<Response> {
       })
       .returning();
 
-    await setUserSession(context, user.id);
+    const sessionToken = generateSessionToken();
+    const session = await createSession(sessionToken, user.id);
+    setSessionTokenCookie(context, sessionToken, session.expiresAt);
     return context.redirect("/");
   } catch (e) {
     // the specific error message depends on the provider

@@ -7,9 +7,10 @@ export async function GET(context: APIContext): Promise<Response> {
   const state = generateState();
   const codeVerifier = generateCodeVerifier();
 
-  const url: URL = await google.createAuthorizationURL(state, codeVerifier, {
-    scopes: ["email", "profile"],
-  });
+  const url: URL = await google.createAuthorizationURL(state, codeVerifier, [
+    "email",
+    "profile",
+  ]);
 
   context.cookies.set("google_oauth_state", state, {
     path: "/",
