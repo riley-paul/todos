@@ -33,7 +33,6 @@ export const User = sqliteTable("user", {
 });
 export const zUserSelect = createSelectSchema(User);
 export const zUserInsert = createInsertSchema(User);
-export type UserSelect = z.infer<typeof zUserSelect>;
 export type UserInsert = z.infer<typeof zUserInsert>;
 
 export const UserSession = sqliteTable("userSession", {

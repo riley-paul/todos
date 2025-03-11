@@ -1,10 +1,9 @@
 import { defineMiddleware, sequence } from "astro:middleware";
+import { SESSION_COOKIE_NAME, validateSessionToken } from "./lib/server/lucia";
 import {
-  deleteSessionTokenCookie,
-  SESSION_COOKIE_NAME,
   setSessionTokenCookie,
-  validateSessionToken,
-} from "./lib/server/lucia";
+  deleteSessionTokenCookie,
+} from "./lib/server/session-cookies";
 
 const userValidation = defineMiddleware(async (context, next) => {
   const token = context.cookies.get(SESSION_COOKIE_NAME)?.value ?? null;

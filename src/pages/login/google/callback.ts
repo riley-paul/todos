@@ -5,11 +5,8 @@ import db from "@/db";
 import { User } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getGoogleUser, google } from "@/lib/server/oauth";
-import {
-  createSession,
-  generateSessionToken,
-  setSessionTokenCookie,
-} from "@/lib/server/lucia";
+import { createSession, generateSessionToken } from "@/lib/server/lucia";
+import { setSessionTokenCookie } from "@/lib/server/session-cookies";
 
 export async function GET(context: APIContext): Promise<Response> {
   const code = context.url.searchParams.get("code");

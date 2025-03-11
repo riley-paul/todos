@@ -1,7 +1,5 @@
-import {
-  deleteSessionTokenCookie,
-  invalidateSession,
-} from "@/lib/server/lucia";
+import { invalidateSession } from "@/lib/server/lucia";
+import { deleteSessionTokenCookie } from "@/lib/server/session-cookies";
 import type { APIContext } from "astro";
 
 export async function GET(context: APIContext): Promise<Response> {

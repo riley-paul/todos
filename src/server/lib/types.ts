@@ -1,8 +1,12 @@
+import type { UserSelect, UserSessionInfo } from "@/lib/types";
 import type { OpenAPIHono, RouteConfig, RouteHandler } from "@hono/zod-openapi";
 
 export type AppBindings = {
   Bindings: {};
-  Variables: {};
+  Variables: {
+    user: UserSelect | null;
+    session: UserSessionInfo | null;
+  };
 };
 
 export type AppOpenApi = OpenAPIHono<AppBindings>;

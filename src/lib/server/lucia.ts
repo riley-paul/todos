@@ -7,8 +7,6 @@ import { sha256 } from "@oslojs/crypto/sha2";
 import { User, UserSession } from "@/db/schema";
 import db from "@/db";
 import type { UserSelect, UserSessionInfo } from "../types";
-import env from "@/envs";
-import type { APIContext } from "astro";
 
 export const SESSION_COOKIE_NAME = "session";
 
@@ -72,30 +70,6 @@ export async function invalidateSession(sessionId: string): Promise<void> {
 
 export async function invalidateAllSessions(userId: string): Promise<void> {
   await db.delete(UserSession).where(eq(UserSession.userId, userId));
-}
-
-export function setSessionTokenCookie(
-  context: APIContext,
-  token: string,
-  expiresAt: Date,
-): void {
-  context.cookies.set(SESSION_COOKIE_NAME, token, {
-    httpOnly: true,
-    path: "/",
-    secure: env.NODE_ENV === "production",
-    sameSite: "lax",
-    expires: expiresAt,
-  });
-}
-
-export function deleteSessionTokenCookie(context: APIContext): void {
-  context.cookies.set(SESSION_COOKIE_NAME, "", {
-    httpOnly: true,
-    path: "/",
-    secure: env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 0,
-  });
 }
 
 export type SessionValidationResult =
