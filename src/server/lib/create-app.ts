@@ -3,8 +3,13 @@ import { notFound, onError } from "stoker/middlewares";
 import { logger } from "hono/logger";
 import type { AppBindings } from "./types";
 
-export default function createApp() {
-  const app = new OpenAPIHono<AppBindings>({ strict: false }).basePath("/api");
+export function createRouter() {
+  const app = new OpenAPIHono<AppBindings>({ strict: false });
+  return app;
+}
+
+export function createApp() {
+  const app = createRouter().basePath("/api");
   app.use(logger());
 
   app.notFound(notFound);

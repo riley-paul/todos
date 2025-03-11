@@ -1,5 +1,5 @@
 import type { AppOpenApi } from "./types";
-import packageJson from "../../package.json";
+import packageJson from "../../../package.json";
 
 export default function configureOpenApi(app: AppOpenApi) {
   app.doc("/doc", {
