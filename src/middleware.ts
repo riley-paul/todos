@@ -31,7 +31,7 @@ const userValidation = defineMiddleware(async (context, next) => {
   return next();
 });
 
-const WHITE_LIST = ["/welcome", "/login", "/test"];
+const WHITE_LIST = ["/welcome", "/login", "/test", "/api"];
 const routeGuarding = defineMiddleware(async (context, next) => {
   const isWhiteListed = WHITE_LIST.some((path) =>
     context.url.pathname.startsWith(path),
