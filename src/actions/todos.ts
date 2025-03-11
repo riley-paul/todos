@@ -1,9 +1,8 @@
 import { ActionError, defineAction } from "astro:actions";
 import db from "@/db";
-import { User, Todo, ListShare, List } from "@/db/schema";
+import { User, Todo, ListShare, List, type TodoSelect } from "@/db/schema";
 import { eq, and, desc, inArray } from "drizzle-orm";
 import { z } from "zod";
-import type { TodoSelect } from "@/lib/types";
 import {
   isAuthorized,
   filterTodos,

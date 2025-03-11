@@ -4,9 +4,9 @@ import {
   encodeHexLowerCase,
 } from "@oslojs/encoding";
 import { sha256 } from "@oslojs/crypto/sha2";
-import { User, UserSession } from "@/db/schema";
+import { User, UserSession, type UserSelect } from "@/db/schema";
 import db from "@/db";
-import type { UserSelect, UserSessionInfo } from "../types";
+import type { UserSessionInfo } from "../types";
 
 export const SESSION_COOKIE_NAME = "session";
 

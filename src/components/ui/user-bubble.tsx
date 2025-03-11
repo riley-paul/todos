@@ -1,4 +1,4 @@
-import type { UserSelect } from "@/lib/types";
+import type { UserSelect } from "@/db/schema";
 import { cn } from "@/lib/client/utils";
 import { Avatar } from "@radix-ui/themes";
 import React from "react";

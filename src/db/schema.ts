@@ -1,6 +1,6 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import type { z } from "zod";
+import { z } from "zod";
 
 const id = text("id")
   .primaryKey()
@@ -31,9 +31,15 @@ export const User = sqliteTable("user", {
   githubUsername: text().unique(),
   ...timeStamps,
 });
-export const zUserSelect = createSelectSchema(User);
+export const zUserSelect = createSelectSchema(User).pick({
+  id: true,
+  name: true,
+  email: true,
+  avatarUrl: true,
+});
 export const zUserInsert = createInsertSchema(User);
 export type UserInsert = z.infer<typeof zUserInsert>;
+export type UserSelect = z.infer<typeof zUserSelect>;
 
 export const UserSession = sqliteTable("userSession", {
   id,
@@ -79,7 +85,24 @@ export const Todo = sqliteTable("todo", {
   isCompleted: integer({ mode: "boolean" }).notNull().default(false),
   ...timeStamps,
 });
-export const zTodoSelect = createSelectSchema(Todo);
-export const zTodoInsert = createInsertSchema(Todo);
-export type TodoSelect = z.infer<typeof zTodoSelect>;
+export const zTodoSelect = createSelectSchema(Todo)
+  .pick({
+    id: true,
+    text: true,
+    isCompleted: true,
+  })
+  .extend({
+    author: zUserSelect,
+    isAuthor: z.boolean(),
+    list: z.object({ id: z.string(), name: z.string() }).nullable(),
+  });
+export const zTodoInsert = createInsertSchema(Todo)
+  .extend({
+    text: createInsertSchema(Todo).shape.text.trim().min(1),
+    listId: createInsertSchema(Todo).shape.listId.transform((v) =>
+      v === "all" ? null : v,
+    ),
+  })
+  .omit({ userId: true });
 export type TodoInsert = z.infer<typeof zTodoInsert>;
+export type TodoSelect = z.infer<typeof zTodoSelect>;

@@ -1,4 +1,5 @@
-import type { UserSelect, UserSessionInfo } from "@/lib/types";
+import type { UserSelect } from "@/db/schema";
+import type { UserSessionInfo } from "@/lib/types";
 import type { OpenAPIHono, RouteConfig, RouteHandler } from "@hono/zod-openapi";
 
 export type AppBindings = {

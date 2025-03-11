@@ -2,9 +2,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ActionInputError, actions, isActionError } from "astro:actions";
 import { listsQueryOptions, todosQueryOptions } from "@/lib/client/queries";
-import type { SelectedList, TodoSelect } from "@/lib/types";
+import type { SelectedList } from "@/lib/types";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { goToList } from "@/lib/client/links";
+import type { TodoSelect } from "@/db/schema";
 
 type TodosUpdater = (todos: TodoSelect[] | undefined) => TodoSelect[];
 

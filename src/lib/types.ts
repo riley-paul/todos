@@ -1,28 +1,9 @@
-import type { User, Todo } from "@/db/schema";
-
-export type UserSelect = {
-  id: string;
-  name: string;
-  email: string;
-  avatarUrl: string | null;
-};
+import type { User, Todo, UserSelect } from "@/db/schema";
 
 export type UserSessionInfo = {
   id: string;
   userId: string;
   expiresAt: Date;
-};
-
-export type TodoSelect = {
-  id: string;
-  text: string;
-  isCompleted: boolean;
-  author: UserSelect;
-  isAuthor: boolean;
-  list: {
-    id: string;
-    name: string;
-  } | null;
 };
 
 export type ListSelect = {
