@@ -1,5 +1,5 @@
+import { google } from "@/lib/server/oauth";
 import { generateCodeVerifier, generateState } from "arctic";
-import { google } from "@/lib/auth";
 
 import type { APIContext } from "astro";
 
