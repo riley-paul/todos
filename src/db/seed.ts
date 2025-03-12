@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import db from ".";
 import { List, ListShare, Todo, User } from "./schema";
+import { deleteAllData } from "./scripts";
 
 function capitalize(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -8,12 +9,7 @@ function capitalize(string: string) {
 
 // https://astro.build/db/seed
 export default async function seed() {
-  await Promise.all([
-    db.delete(User),
-    db.delete(List),
-    db.delete(ListShare),
-    db.delete(Todo),
-  ]);
+  await deleteAllData();
   console.log("✅ Deleted all data");
 
   const userIds = await db
