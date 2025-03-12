@@ -1,5 +1,5 @@
 import { ActionError, type ActionHandler } from "astro:actions";
-import * as input from "./lists.inputs";
+import * as inputs from "./lists.inputs";
 import type { ListSelect, ListSelectShallow } from "@/lib/types";
 import { getLists } from "./lists.helpers";
 import { getListUsers, invalidateUsers, isAuthorized } from "../helpers";
@@ -7,7 +7,7 @@ import db from "@/db";
 import { List, ListShare, Todo } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
-export const getAll: ActionHandler<typeof input.getAll, ListSelect[]> = async (
+export const getAll: ActionHandler<typeof inputs.getAll, ListSelect[]> = async (
   _,
   c,
 ) => {
@@ -16,7 +16,7 @@ export const getAll: ActionHandler<typeof input.getAll, ListSelect[]> = async (
 };
 
 export const update: ActionHandler<
-  typeof input.update,
+  typeof inputs.update,
   ListSelectShallow
 > = async ({ id, data }, c) => {
   const userId = isAuthorized(c).id;
@@ -40,7 +40,7 @@ export const update: ActionHandler<
 };
 
 export const create: ActionHandler<
-  typeof input.create,
+  typeof inputs.create,
   ListSelectShallow
 > = async ({ data }, c) => {
   const userId = isAuthorized(c).id;
@@ -52,7 +52,7 @@ export const create: ActionHandler<
   return list;
 };
 
-export const remove: ActionHandler<typeof input.remove, null> = async (
+export const remove: ActionHandler<typeof inputs.remove, null> = async (
   { id },
   c,
 ) => {
