@@ -4,44 +4,82 @@ import mockApiContext from "../__test__/mock-api-context";
 import { execSync } from "child_process";
 import { rmSync } from "fs";
 import db from "@/db";
-import { List, Todo, User } from "@/db/schema";
+import { List, ListShare, Todo, User } from "@/db/schema";
 import { isActionError } from "astro:actions";
+import { eq } from "drizzle-orm";
 
-const USER_ID = crypto.randomUUID();
+const USER1_ID = crypto.randomUUID();
+const USER2_ID = crypto.randomUUID();
+
 const LIST1_ID = crypto.randomUUID();
 const LIST2_ID = crypto.randomUUID();
+const LIST3_ID = crypto.randomUUID();
+
 const LIST1_LENGTH = 10;
 const LIST2_LENGTH = 5;
+const LIST3_LENGTH = 17;
 const INBOX_LENGTH = 3;
 
-const arrayOfLength = (length: number) => Array.from({ length });
+const USER1_LENGTH = LIST1_LENGTH + LIST2_LENGTH + INBOX_LENGTH;
+
+const LIST_SHARE_ID = crypto.randomUUID();
 
 describe("todo fetching", () => {
   beforeAll(async () => {
     execSync("npm run db:push:test");
 
-    await db.insert(User).values({
-      id: USER_ID,
-      email: "test_user@example.com",
-      name: "Test User",
+    await db.insert(User).values([
+      {
+        id: USER1_ID,
+        email: "test_user@example.com",
+        name: "Main Test User",
+      },
+      {
+        id: USER2_ID,
+        email: "test_user2@example.com",
+        name: "Other Test User",
+      },
+    ]);
+
+    await db
+      .insert(List)
+      .values([
+        { id: LIST1_ID, name: "Test List 1", userId: USER1_ID },
+        { id: LIST2_ID, name: "Test List 2", userId: USER1_ID },
+        { id: LIST3_ID, name: "Test List 3", userId: USER2_ID },
+      ])
+      .returning();
+
+    await db.insert(Todo).values([
+      ...Array.from({ length: LIST1_LENGTH }, () => ({
+        userId: USER1_ID,
+        listId: LIST1_ID,
+        text: "Test Todo",
+      })),
+      ...Array.from({ length: LIST2_LENGTH }, () => ({
+        userId: USER1_ID,
+        listId: LIST2_ID,
+        text: "Test Todo",
+      })),
+      ...Array.from({ length: INBOX_LENGTH }, () => ({
+        userId: USER1_ID,
+        listId: null,
+        text: "Inbox todo",
+      })),
+      ...Array.from({ length: LIST3_LENGTH }, () => ({
+        userId: USER2_ID,
+        listId: LIST3_ID,
+        text: "Other users todo",
+      })),
+    ]);
+
+    await db.insert(ListShare).values({
+      id: LIST_SHARE_ID,
+      userId: USER2_ID,
+      listId: LIST3_ID,
+      sharedUserId: USER1_ID,
+      isPending: true,
     });
-
-    await db
-      .insert(List)
-      .values({ id: LIST1_ID, name: "Test List 1", userId: USER_ID })
-      .returning();
-
-    await db
-      .insert(List)
-      .values({ id: LIST2_ID, name: "Test List 2", userId: USER_ID })
-      .returning();
-
-    const addTodo = (listId: string | null) =>
-      db.insert(Todo).values({ userId: USER_ID, listId, text: "Test Todo" });
-
-    await Promise.all(arrayOfLength(LIST1_LENGTH).map(() => addTodo(LIST1_ID)));
-    await Promise.all(arrayOfLength(LIST2_LENGTH).map(() => addTodo(LIST2_ID)));
-    await Promise.all(arrayOfLength(INBOX_LENGTH).map(() => addTodo(null)));
   });
 
   afterAll(() => {
@@ -51,26 +89,29 @@ describe("todo fetching", () => {
   test("returns all todos in a list", async () => {
     const todos = await actions.get(
       { listId: LIST1_ID },
-      mockApiContext(USER_ID),
+      mockApiContext(USER1_ID),
     );
     expect(Array.isArray(todos)).toBe(true);
     expect(todos.length).toBe(LIST1_LENGTH);
   });
 
   test("returns all todos in the inbox", async () => {
-    const todos = await actions.get({ listId: null }, mockApiContext(USER_ID));
+    const todos = await actions.get({ listId: null }, mockApiContext(USER1_ID));
     expect(Array.isArray(todos)).toBe(true);
     expect(todos.length).toBe(INBOX_LENGTH);
   });
 
   test("returns todos from all lists in 'all'", async () => {
-    const todos = await actions.get({ listId: "all" }, mockApiContext(USER_ID));
-    expect(todos.length).toBe(LIST1_LENGTH + LIST2_LENGTH + INBOX_LENGTH);
+    const todos = await actions.get(
+      { listId: "all" },
+      mockApiContext(USER1_ID),
+    );
+    expect(todos.length).toBe(USER1_LENGTH);
   });
 
   test("throws error when list does not exist", async () => {
     try {
-      await actions.get({ listId: "nonexistent" }, mockApiContext(USER_ID));
+      await actions.get({ listId: "nonexistent" }, mockApiContext(USER1_ID));
     } catch (error) {
       expect(error).toBeInstanceOf(Error);
       expect(isActionError(error)).toBe(true);
@@ -78,5 +119,18 @@ describe("todo fetching", () => {
         expect(error.status).toBe(404);
       }
     }
+  });
+
+  test("includes shared todos in 'all' when share accepted", async () => {
+    await db
+      .update(ListShare)
+      .set({ isPending: false })
+      .where(eq(ListShare.id, LIST_SHARE_ID));
+
+    const inboxTodos = await actions.get(
+      { listId: "all" },
+      mockApiContext(USER1_ID),
+    );
+    expect(inboxTodos.length).toBe(USER1_LENGTH + LIST3_LENGTH);
   });
 });
