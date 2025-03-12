@@ -7,9 +7,14 @@ import db from "@/db";
 import { List, Todo, User } from "@/db/schema";
 
 const USER_ID = crypto.randomUUID();
-const LIST_ID = crypto.randomUUID();
+const LIST1_ID = crypto.randomUUID();
+const LIST2_ID = crypto.randomUUID();
+const LIST1_LENGTH = 10;
+const LIST2_LENGTH = 5;
 
-describe("todos actions", () => {
+const arrayOfLength = (length: number) => Array.from({ length });
+
+describe("todo fetching", () => {
   beforeAll(async () => {
     execSync("npm run db:push:test");
 
@@ -21,27 +26,36 @@ describe("todos actions", () => {
 
     await db
       .insert(List)
-      .values({ id: LIST_ID, name: "Test List", userId: USER_ID })
+      .values({ id: LIST1_ID, name: "Test List 1", userId: USER_ID })
       .returning();
 
-    const addTodo = () =>
-      db
-        .insert(Todo)
-        .values({ userId: USER_ID, listId: LIST_ID, text: "Test Todo" });
+    await db
+      .insert(List)
+      .values({ id: LIST2_ID, name: "Test List 2", userId: USER_ID })
+      .returning();
 
-    await Promise.all(Array.from({ length: 10 }, addTodo));
+    const addTodo = (listId: string) =>
+      db.insert(Todo).values({ userId: USER_ID, listId, text: "Test Todo" });
+
+    await Promise.all(arrayOfLength(LIST1_LENGTH).map(() => addTodo(LIST1_ID)));
+    await Promise.all(arrayOfLength(LIST2_LENGTH).map(() => addTodo(LIST2_ID)));
   });
 
   afterAll(() => {
     rmSync("test.db", { force: true });
   });
 
-  test("returns an array", async () => {
+  test("returns all todos in a list", async () => {
     const todos = await actions.get(
-      { listId: LIST_ID },
+      { listId: LIST1_ID },
       mockApiContext(USER_ID),
     );
     expect(Array.isArray(todos)).toBe(true);
-    expect(todos.length).toBe(10);
+    expect(todos.length).toBe(LIST1_LENGTH);
+  });
+
+  test("returns todos from all lists in 'all'", async () => {
+    const todos = await actions.get({ listId: "all" }, mockApiContext(USER_ID));
+    expect(todos.length).toBe(LIST1_LENGTH + LIST2_LENGTH);
   });
 });
