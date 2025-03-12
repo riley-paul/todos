@@ -5,9 +5,9 @@ import { execSync } from "child_process";
 import { rmSync } from "fs";
 import db from "@/db";
 import { List, ListShare, Todo, User } from "@/db/schema";
-import { ActionError } from "astro:actions";
 import { eq } from "drizzle-orm";
 import { deleteAllData } from "@/db/scripts";
+import actionErrors from "../errors";
 
 const USER1_ID = crypto.randomUUID();
 const USER2_ID = crypto.randomUUID();
@@ -114,7 +114,7 @@ describe("todo fetching", () => {
   test("throws error when list does not exist", async () => {
     await expect(() =>
       actions.get({ listId: "nonexistent" }, mockApiContext(USER1_ID)),
-    ).rejects.toThrow(ActionError);
+    ).rejects.toThrow(actionErrors.NOT_FOUND);
   });
 
   test("includes shared todos in 'all' when share accepted", async () => {
@@ -160,7 +160,7 @@ describe("todo creation", () => {
         },
         mockApiContext(USER1_ID),
       ),
-    ).rejects.toThrow(ActionError);
+    ).rejects.toThrow(actionErrors.NOT_FOUND);
   });
 
   test("throw error when user is not allowed to create a todo in list", async () => {
@@ -180,6 +180,6 @@ describe("todo creation", () => {
         },
         mockApiContext(USER1_ID),
       ),
-    ).rejects.toThrow(ActionError);
+    ).rejects.toThrow(actionErrors.NO_PERMISSION);
   });
 });

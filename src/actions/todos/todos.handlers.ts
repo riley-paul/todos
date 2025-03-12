@@ -1,4 +1,4 @@
-import { ActionError, type ActionHandler } from "astro:actions";
+import { type ActionHandler } from "astro:actions";
 import db from "@/db";
 import { User, Todo, ListShare, List } from "@/db/schema";
 import { eq, and, desc, inArray } from "drizzle-orm";
@@ -12,6 +12,7 @@ import {
 } from "../helpers";
 
 import * as inputs from "./todos.inputs";
+import actionErrors from "../errors";
 
 export const get: ActionHandler<typeof inputs.get, TodoSelect[]> = async (
   { listId },
@@ -22,10 +23,7 @@ export const get: ActionHandler<typeof inputs.get, TodoSelect[]> = async (
   if (listId && listId !== "all") {
     const listUsers = await getListUsers(listId);
     if (!listUsers.includes(userId)) {
-      throw new ActionError({
-        code: "FORBIDDEN",
-        message: "You are not allowed to access this list",
-      });
+      throw actionErrors.NO_PERMISSION;
     }
   }
 
@@ -67,10 +65,7 @@ export const create: ActionHandler<
   if (data.listId) {
     const listUsers = await getListUsers(data.listId);
     if (!listUsers.includes(userId)) {
-      throw new ActionError({
-        code: "FORBIDDEN",
-        message: "You are not allowed to create a task in this list",
-      });
+      throw actionErrors.NO_PERMISSION;
     }
   }
 
@@ -91,10 +86,7 @@ export const update: ActionHandler<
   const users = await getTodoUsers(id);
 
   if (!users.includes(userId)) {
-    throw new ActionError({
-      code: "FORBIDDEN",
-      message: "You are not allowed to update this task",
-    });
+    throw actionErrors.NO_PERMISSION;
   }
 
   const [todo] = await db
@@ -115,10 +107,7 @@ export const remove: ActionHandler<typeof inputs.remove, null> = async (
   const users = await getTodoUsers(id);
 
   if (!users.includes(userId)) {
-    throw new ActionError({
-      code: "FORBIDDEN",
-      message: "You are not allowed to delete this task",
-    });
+    throw actionErrors.NO_PERMISSION;
   }
 
   await db.delete(Todo).where(eq(Todo.id, id));

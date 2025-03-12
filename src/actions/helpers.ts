@@ -1,9 +1,9 @@
 import type { ActionAPIContext } from "astro/actions/runtime/utils.js";
-import { ActionError } from "astro:actions";
 import InvalidationController from "@/lib/server/invalidation-controller";
 import db from "@/db";
 import { ListShare, Todo, List } from "@/db/schema";
 import { eq, or, and, ne, isNull } from "drizzle-orm";
+import actionErrors from "./errors";
 
 export const filterByListShare = (userId: string) =>
   or(
@@ -47,10 +47,7 @@ export const invalidateUsers = (userIds: string[]) => {
 export const isAuthorized = (context: ActionAPIContext) => {
   const user = context.locals.user;
   if (!user) {
-    throw new ActionError({
-      code: "UNAUTHORIZED",
-      message: "You are not logged in.",
-    });
+    throw actionErrors.UNAUTHORIZED;
   }
   return user;
 };
@@ -63,10 +60,7 @@ export const getListUsers = async (listId: string): Promise<string[]> => {
     .then((rows) => rows[0]);
 
   if (!list) {
-    throw new ActionError({
-      code: "NOT_FOUND",
-      message: "List not found",
-    });
+    throw actionErrors.NOT_FOUND;
   }
 
   const shares = await db
@@ -85,10 +79,7 @@ export const getTodoUsers = async (todoId: string): Promise<string[]> => {
     .then((rows) => rows[0]);
 
   if (!todo) {
-    throw new ActionError({
-      code: "NOT_FOUND",
-      message: "Task not found",
-    });
+    throw actionErrors.NOT_FOUND;
   }
 
   if (!todo.listId) {

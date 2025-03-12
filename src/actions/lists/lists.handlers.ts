@@ -1,4 +1,4 @@
-import { ActionError, type ActionHandler } from "astro:actions";
+import { type ActionHandler } from "astro:actions";
 import * as inputs from "./lists.inputs";
 import type { ListSelect, ListSelectShallow } from "@/lib/types";
 import { getLists } from "./lists.helpers";
@@ -6,6 +6,7 @@ import { getListUsers, invalidateUsers, isAuthorized } from "../helpers";
 import db from "@/db";
 import { List, ListShare, Todo } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import actionErrors from "../errors";
 
 export const getAll: ActionHandler<typeof inputs.getAll, ListSelect[]> = async (
   _,
@@ -23,10 +24,7 @@ export const update: ActionHandler<
   const users = await getListUsers(id);
 
   if (!users.includes(userId)) {
-    throw new ActionError({
-      code: "FORBIDDEN",
-      message: "You do not have permission to update this list",
-    });
+    throw actionErrors.NO_PERMISSION;
   }
 
   const [list] = await db
@@ -60,10 +58,7 @@ export const remove: ActionHandler<typeof inputs.remove, null> = async (
   const users = await getListUsers(id);
 
   if (!users.includes(userId)) {
-    throw new ActionError({
-      code: "FORBIDDEN",
-      message: "You do not have permission to delete this list",
-    });
+    throw actionErrors.NO_PERMISSION;
   }
 
   await db.delete(Todo).where(eq(Todo.listId, id));

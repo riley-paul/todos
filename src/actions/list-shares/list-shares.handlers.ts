@@ -1,10 +1,11 @@
-import { ActionError, type ActionHandler } from "astro:actions";
+import { type ActionHandler } from "astro:actions";
 import db from "@/db";
 import { User, ListShare, List } from "@/db/schema";
 import { eq, and, or, desc } from "drizzle-orm";
 import * as inputs from "./list-shares.inputs";
 import type { ListShareSelect, ListShareSelectShallow } from "@/lib/types";
 import { isAuthorized } from "../helpers";
+import actionErrors from "../errors";
 
 export const create: ActionHandler<
   typeof inputs.create,
@@ -18,33 +19,21 @@ export const create: ActionHandler<
     .where(eq(User.email, email));
 
   if (!sharedUser) {
-    throw new ActionError({
-      message: "User with email not found",
-      code: "BAD_REQUEST",
-    });
+    throw actionErrors.EMAIL_NOT_FOUND;
   }
 
   if (sharedUser.id === userId) {
-    throw new ActionError({
-      message: "You cannot share a list with yourself",
-      code: "BAD_REQUEST",
-    });
+    throw actionErrors.SHARE_WITH_SELF;
   }
 
   const [list] = await db.select().from(List).where(eq(List.id, listId));
 
   if (!list) {
-    throw new ActionError({
-      message: "List not found",
-      code: "NOT_FOUND",
-    });
+    throw actionErrors.NOT_FOUND;
   }
 
   if (list.userId !== userId) {
-    throw new ActionError({
-      message: "You do not have permission to share this list",
-      code: "FORBIDDEN",
-    });
+    throw actionErrors.NO_PERMISSION;
   }
 
   const existingShares = await db
@@ -58,10 +47,8 @@ export const create: ActionHandler<
     );
 
   if (existingShares.length > 0) {
-    throw new ActionError({
-      message: "User already has access to this list",
-      code: "BAD_REQUEST",
-    });
+    // user already has access to this list
+    throw actionErrors.DUPLICATE;
   }
 
   const [listShare] = await db
@@ -84,10 +71,7 @@ export const remove: ActionHandler<typeof inputs.remove, null> = async (
   const [share] = await db.select().from(ListShare).where(eq(ListShare.id, id));
 
   if (share.sharedUserId !== userId && share.userId !== userId) {
-    throw new ActionError({
-      message: "You do not have permission to delete this share",
-      code: "FORBIDDEN",
-    });
+    throw actionErrors.NO_PERMISSION;
   }
 
   await db
@@ -133,17 +117,11 @@ export const accept: ActionHandler<
     .where(eq(ListShare.id, id));
 
   if (!listShare) {
-    throw new ActionError({
-      message: "List share not found",
-      code: "NOT_FOUND",
-    });
+    throw actionErrors.NOT_FOUND;
   }
 
   if (listShare.sharedUserId !== userId) {
-    throw new ActionError({
-      message: "You do not have permission to accept this share",
-      code: "FORBIDDEN",
-    });
+    throw actionErrors.NO_PERMISSION;
   }
 
   await db
