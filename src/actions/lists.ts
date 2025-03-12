@@ -1,7 +1,6 @@
 import { ActionError, defineAction } from "astro:actions";
 import { z } from "zod";
 import type { ListSelect } from "@/lib/types";
-import { v4 as uuid } from "uuid";
 import {
   isAuthorized,
   filterTodos,
@@ -117,7 +116,7 @@ export const create = defineAction({
     const userId = isAuthorized(c).id;
     const result = await db
       .insert(List)
-      .values({ id: uuid(), name, userId })
+      .values({ name, userId })
       .returning()
       .then((rows) => rows[0]);
 
