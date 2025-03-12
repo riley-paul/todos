@@ -67,5 +67,8 @@
     "prettier-plugin-tailwindcss": "^0.6.9",
     "vite-plugin-pwa": "^0.20.5",
     "vitest": "^3.0.8"
+  },
+  "overrides": {
+    "vite": "6.0.2"
   }
 }
