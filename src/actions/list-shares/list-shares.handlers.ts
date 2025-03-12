@@ -2,13 +2,13 @@ import { type ActionHandler } from "astro:actions";
 import db from "@/db";
 import { User, ListShare, List } from "@/db/schema";
 import { eq, and, or, desc } from "drizzle-orm";
-import * as inputs from "./list-shares.inputs";
 import type { ListShareSelect, ListShareSelectShallow } from "@/lib/types";
 import { isAuthorized } from "../helpers";
 import actionErrors from "../errors";
+import type listShareInputs from "./list-shares.inputs";
 
-export const create: ActionHandler<
-  typeof inputs.create,
+const create: ActionHandler<
+  typeof listShareInputs.create,
   ListShareSelectShallow
 > = async ({ email, listId }, c) => {
   const userId = isAuthorized(c).id;
@@ -63,7 +63,7 @@ export const create: ActionHandler<
   return listShare;
 };
 
-export const remove: ActionHandler<typeof inputs.remove, null> = async (
+const remove: ActionHandler<typeof listShareInputs.remove, null> = async (
   { id },
   c,
 ) => {
@@ -86,7 +86,7 @@ export const remove: ActionHandler<typeof inputs.remove, null> = async (
   return null;
 };
 
-export const leave: ActionHandler<typeof inputs.leave, null> = async (
+const leave: ActionHandler<typeof listShareInputs.leave, null> = async (
   { listId },
   c,
 ) => {
@@ -101,8 +101,8 @@ export const leave: ActionHandler<typeof inputs.leave, null> = async (
   return null;
 };
 
-export const accept: ActionHandler<
-  typeof inputs.accept,
+const accept: ActionHandler<
+  typeof listShareInputs.accept,
   ListShareSelectShallow
 > = async ({ id }, c) => {
   const userId = isAuthorized(c).id;
@@ -132,8 +132,8 @@ export const accept: ActionHandler<
   return listShare;
 };
 
-export const getAllPending: ActionHandler<
-  typeof inputs.getAllPending,
+const getAllPending: ActionHandler<
+  typeof listShareInputs.getAllPending,
   ListShareSelect[]
 > = async (_, c) => {
   const userId = isAuthorized(c).id;
@@ -162,3 +162,6 @@ export const getAllPending: ActionHandler<
     .orderBy(desc(ListShare.createdAt));
   return listShares;
 };
+
+const listShareHandlers = { create, remove, leave, accept, getAllPending };
+export default listShareHandlers;

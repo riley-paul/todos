@@ -1,28 +1,28 @@
 import { defineAction } from "astro:actions";
-import * as handlers from "./list-shares.handlers";
-import * as inputs from "./list-shares.inputs";
+import listShareInputs from "./list-shares.inputs";
+import listShareHandlers from "./list-shares.handlers";
 
 export const create = defineAction({
-  input: inputs.create,
-  handler: handlers.create,
+  input: listShareInputs.create,
+  handler: listShareHandlers.create,
 });
 
 export const remove = defineAction({
-  input: inputs.remove,
-  handler: handlers.remove,
+  input: listShareInputs.remove,
+  handler: listShareHandlers.remove,
 });
 
 export const leave = defineAction({
-  input: inputs.leave,
-  handler: handlers.leave,
+  input: listShareInputs.leave,
+  handler: listShareHandlers.leave,
 });
 
 export const accept = defineAction({
-  input: inputs.accept,
-  handler: handlers.accept,
+  input: listShareInputs.accept,
+  handler: listShareHandlers.accept,
 });
 
 export const getAllPending = defineAction({
-  input: inputs.getAllPending,
-  handler: handlers.getAllPending,
+  input: listShareInputs.getAllPending,
+  handler: listShareHandlers.getAllPending,
 });

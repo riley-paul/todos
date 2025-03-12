@@ -1,18 +1,18 @@
-import * as inputs from "./users.inputs";
-import * as handlers from "./users.handlers";
 import { defineAction } from "astro:actions";
+import userInputs from "./users.inputs";
+import userHandlers from "./users.handlers";
 
 export const getMe = defineAction({
-  input: inputs.getMe,
-  handler: handlers.getMe,
+  input: userInputs.getMe,
+  handler: userHandlers.getMe,
 });
 
 export const remove = defineAction({
-  input: inputs.remove,
-  handler: handlers.remove,
+  input: userInputs.remove,
+  handler: userHandlers.remove,
 });
 
 export const checkIfEmailExists = defineAction({
-  input: inputs.checkIfEmailExists,
-  handler: handlers.checkIfEmailExists,
+  input: userInputs.checkIfEmailExists,
+  handler: userHandlers.checkIfEmailExists,
 });

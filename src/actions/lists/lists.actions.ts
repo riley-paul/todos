@@ -1,23 +1,23 @@
 import { defineAction } from "astro:actions";
-import * as inputs from "./lists.inputs";
-import * as handlers from "./lists.handlers";
+import listInputs from "./lists.inputs";
+import listHandlers from "./lists.handlers";
 
 export const getAll = defineAction({
-  input: inputs.getAll,
-  handler: handlers.getAll,
+  input: listInputs.getAll,
+  handler: listHandlers.getAll,
 });
 
 export const update = defineAction({
-  input: inputs.update,
-  handler: handlers.update,
+  input: listInputs.update,
+  handler: listHandlers.update,
 });
 
 export const create = defineAction({
-  input: inputs.create,
-  handler: handlers.create,
+  input: listInputs.create,
+  handler: listHandlers.create,
 });
 
 export const remove = defineAction({
-  input: inputs.remove,
-  handler: handlers.remove,
+  input: listInputs.remove,
+  handler: listHandlers.remove,
 });

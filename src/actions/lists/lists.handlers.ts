@@ -1,5 +1,4 @@
 import { type ActionHandler } from "astro:actions";
-import * as inputs from "./lists.inputs";
 import type { ListSelect, ListSelectShallow } from "@/lib/types";
 import { getLists } from "./lists.helpers";
 import { getListUsers, invalidateUsers, isAuthorized } from "../helpers";
@@ -7,8 +6,9 @@ import db from "@/db";
 import { List, ListShare, Todo } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import actionErrors from "../errors";
+import type listInputs from "./lists.inputs";
 
-export const getAll: ActionHandler<typeof inputs.getAll, ListSelect[]> = async (
+const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
   _,
   c,
 ) => {
@@ -16,8 +16,8 @@ export const getAll: ActionHandler<typeof inputs.getAll, ListSelect[]> = async (
   return getLists(userId);
 };
 
-export const update: ActionHandler<
-  typeof inputs.update,
+const update: ActionHandler<
+  typeof listInputs.update,
   ListSelectShallow
 > = async ({ id, data }, c) => {
   const userId = isAuthorized(c).id;
@@ -37,8 +37,8 @@ export const update: ActionHandler<
   return list;
 };
 
-export const create: ActionHandler<
-  typeof inputs.create,
+const create: ActionHandler<
+  typeof listInputs.create,
   ListSelectShallow
 > = async ({ data }, c) => {
   const userId = isAuthorized(c).id;
@@ -50,7 +50,7 @@ export const create: ActionHandler<
   return list;
 };
 
-export const remove: ActionHandler<typeof inputs.remove, null> = async (
+const remove: ActionHandler<typeof listInputs.remove, null> = async (
   { id },
   c,
 ) => {
@@ -68,3 +68,6 @@ export const remove: ActionHandler<typeof inputs.remove, null> = async (
   invalidateUsers(users);
   return null;
 };
+
+const listHandlers = { getAll, update, create, remove };
+export default listHandlers;
