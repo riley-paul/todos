@@ -90,10 +90,10 @@ const UserMenu: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid gap-rx-2">
+            <div className="grid gap-2">
               <Button asChild className="relative" variant="soft">
                 <a href="/logout">
-                  <i className="fa-solid fa-arrow-right-from-bracket absolute left-rx-2" />
+                  <i className="fa-solid fa-arrow-right-from-bracket absolute left-4" />
                   <span>Logout</span>
                 </a>
               </Button>
@@ -109,7 +109,7 @@ const UserMenu: React.FC = () => {
                 }}
                 className="relative"
               >
-                <i className="fa-solid fa-trash absolute left-rx-2" />
+                <i className="fa-solid fa-trash absolute left-4" />
                 <span>Delete Account</span>
               </Button>
             </div>

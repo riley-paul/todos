@@ -42,7 +42,7 @@ const Lists: React.FC = () => {
     <>
       <div className="flex flex-wrap gap-rx-2 px-rx-3">
         <List value={null} name="Inbox" count={inboxCount} />
-        <List value="all" name="All" count={allCount} />
+        {lists.length > 0 && <List value="all" name="All" count={allCount} />}
         <Flex align="center">
           <Separator orientation="vertical" size="1" />
         </Flex>
