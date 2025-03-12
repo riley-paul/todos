@@ -40,9 +40,9 @@ const RenameForm: React.FC<{ list: ListSelect }> = ({ list }) => {
 
   return (
     <form onSubmit={onSubmit} className="grid gap-2">
-      <Text as="label" size="2" weight="bold">
+      <Heading as="h3" size="3" weight="medium">
         Update Name
-      </Text>
+      </Heading>
       <div className="grid w-full gap-2 sm:grid-cols-[1fr_8rem]">
         <Controller
           control={control}
@@ -102,9 +102,9 @@ const InviteForm: React.FC<{ list: ListSelect }> = ({ list }) => {
 
   return (
     <form onSubmit={onSubmit} className="grid gap-2">
-      <Text as="label" size="2" weight="bold">
+      <Heading as="h3" size="3" weight="medium">
         Share with
-      </Text>
+      </Heading>
 
       <div className="grid w-full gap-2 sm:grid-cols-[1fr_8rem]">
         <Controller
@@ -177,26 +177,30 @@ function RouteComponent() {
 
   return (
     <>
-      <div className="grid gap-4">
-        <header>
-          <Heading as="h2" size="4">
-            Edit "{list.name}"
-          </Heading>
-          <Text size="2" color="gray">
-            Edit, share, or delete this list
-          </Text>
-        </header>
-        <Callout.Root variant="soft">
-          <Callout.Icon>
-            <UserBubble user={list.author} size="md" />
-          </Callout.Icon>
-          <Callout.Text>
-            Created by <Strong>{list.author.name}</Strong>
-          </Callout.Text>
-        </Callout.Root>
+      <div className="grid gap-8">
+        <section className="grid gap-4">
+          <header>
+            <Heading as="h2" size="4">
+              Edit "{list.name}"
+            </Heading>
+            <Text size="2" color="gray">
+              Edit, share, or delete this list
+            </Text>
+          </header>
+          <Callout.Root variant="soft">
+            <Callout.Icon>
+              <UserBubble user={list.author} size="md" />
+            </Callout.Icon>
+            <Callout.Text>
+              Created by <Strong>{list.author.name}</Strong>
+            </Callout.Text>
+          </Callout.Root>
+        </section>
         <RenameForm list={list} />
-        <InviteForm list={list} />
-        <ListShares list={list} />
+        <section className="grid gap-4">
+          <InviteForm list={list} />
+          <ListShares list={list} />
+        </section>
         <div className="grid w-full grid-cols-2 gap-2 sm:ml-auto sm:max-w-72">
           <Button variant="soft" asChild>
             <Link to="/">
@@ -207,6 +211,7 @@ function RouteComponent() {
           {list.isAuthor ? (
             <Button
               color="red"
+              variant="soft"
               onClick={async () => {
                 const ok = await confirmDelete();
                 if (ok) deleteList.mutate({ id: list.id });
@@ -218,6 +223,7 @@ function RouteComponent() {
           ) : (
             <Button
               color="amber"
+              variant="soft"
               onClick={async () => {
                 const ok = await confirmLeave();
                 if (ok) leaveListShare.mutate({ listId: list.id });
