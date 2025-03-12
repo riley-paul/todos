@@ -1,5 +1,4 @@
 import { expect, test, describe, beforeAll, afterAll } from "vitest";
-import * as actions from "./todos.handlers";
 import mockApiContext from "../__test__/mock-api-context";
 import { execSync } from "child_process";
 import { rmSync } from "fs";
@@ -8,6 +7,7 @@ import { List, ListShare, Todo, User } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { deleteAllData } from "@/db/scripts";
 import actionErrors from "../errors";
+import todoHanders from "./todos.handlers";
 
 const USER1_ID = crypto.randomUUID();
 const USER2_ID = crypto.randomUUID();
@@ -89,7 +89,7 @@ afterAll(() => {
 
 describe("todo fetching", () => {
   test("returns all todos in a list", async () => {
-    const todos = await actions.get(
+    const todos = await todoHanders.get(
       { listId: LIST1_ID },
       mockApiContext(USER1_ID),
     );
@@ -98,13 +98,16 @@ describe("todo fetching", () => {
   });
 
   test("returns all todos in the inbox", async () => {
-    const todos = await actions.get({ listId: null }, mockApiContext(USER1_ID));
+    const todos = await todoHanders.get(
+      { listId: null },
+      mockApiContext(USER1_ID),
+    );
     expect(Array.isArray(todos)).toBe(true);
     expect(todos.length).toBe(INBOX_LENGTH);
   });
 
   test("returns todos from all lists in 'all'", async () => {
-    const todos = await actions.get(
+    const todos = await todoHanders.get(
       { listId: "all" },
       mockApiContext(USER1_ID),
     );
@@ -113,7 +116,7 @@ describe("todo fetching", () => {
 
   test("throws error when list does not exist", async () => {
     await expect(() =>
-      actions.get({ listId: "nonexistent" }, mockApiContext(USER1_ID)),
+      todoHanders.get({ listId: "nonexistent" }, mockApiContext(USER1_ID)),
     ).rejects.toThrow(actionErrors.NOT_FOUND);
   });
 
@@ -123,7 +126,7 @@ describe("todo fetching", () => {
       .set({ isPending: false })
       .where(eq(ListShare.id, LIST_SHARE_ID));
 
-    const inboxTodos = await actions.get(
+    const inboxTodos = await todoHanders.get(
       { listId: "all" },
       mockApiContext(USER1_ID),
     );
@@ -133,7 +136,7 @@ describe("todo fetching", () => {
 
 describe("todo creation", () => {
   test("creates a todo", async () => {
-    const result = await actions.create(
+    const result = await todoHanders.create(
       {
         data: {
           listId: LIST1_ID,
@@ -148,9 +151,44 @@ describe("todo creation", () => {
     expect(todo.text).toBe("New Todo");
   });
 
+  test("creates a todo in shared list", async () => {
+    await expect(
+      todoHanders.create(
+        {
+          data: {
+            listId: LIST3_ID,
+            text: "New Todo",
+            isCompleted: false,
+          },
+        },
+        mockApiContext(USER1_ID),
+      ),
+    ).resolves.not.toThrow();
+  });
+
+  test("cannot create a todo in a pending shared list", async () => {
+    await db
+      .update(ListShare)
+      .set({ isPending: true })
+      .where(eq(ListShare.id, LIST_SHARE_ID));
+
+    await expect(() =>
+      todoHanders.create(
+        {
+          data: {
+            listId: LIST3_ID,
+            text: "New Todo",
+            isCompleted: false,
+          },
+        },
+        mockApiContext(USER1_ID),
+      ),
+    ).rejects.toThrow(actionErrors.NO_PERMISSION);
+  });
+
   test("throws error when list does not exist", async () => {
     await expect(() =>
-      actions.create(
+      todoHanders.create(
         {
           data: {
             listId: "nonexistent",
@@ -170,7 +208,7 @@ describe("todo creation", () => {
       .where(eq(ListShare.id, LIST_SHARE_ID));
 
     await expect(() =>
-      actions.create(
+      todoHanders.create(
         {
           data: {
             listId: LIST3_ID,
@@ -183,3 +221,5 @@ describe("todo creation", () => {
     ).rejects.toThrow(actionErrors.NO_PERMISSION);
   });
 });
+
+describe("todo update", () => {});

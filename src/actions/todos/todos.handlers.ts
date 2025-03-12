@@ -11,10 +11,10 @@ import {
   getListUsers,
 } from "../helpers";
 
-import * as inputs from "./todos.inputs";
 import actionErrors from "../errors";
+import type todoInputs from "./todos.inputs";
 
-export const get: ActionHandler<typeof inputs.get, TodoSelect[]> = async (
+const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
   { listId },
   c,
 ) => {
@@ -56,8 +56,8 @@ export const get: ActionHandler<typeof inputs.get, TodoSelect[]> = async (
   return todos;
 };
 
-export const create: ActionHandler<
-  typeof inputs.create,
+const create: ActionHandler<
+  typeof todoInputs.create,
   TodoSelectShallow
 > = async ({ data }, c) => {
   const userId = isAuthorized(c).id;
@@ -78,8 +78,8 @@ export const create: ActionHandler<
   return todo;
 };
 
-export const update: ActionHandler<
-  typeof inputs.update,
+const update: ActionHandler<
+  typeof todoInputs.update,
   TodoSelectShallow
 > = async ({ id, data }, c) => {
   const userId = isAuthorized(c).id;
@@ -99,7 +99,7 @@ export const update: ActionHandler<
   return todo;
 };
 
-export const remove: ActionHandler<typeof inputs.remove, null> = async (
+const remove: ActionHandler<typeof todoInputs.remove, null> = async (
   { id },
   c,
 ) => {
@@ -116,8 +116,8 @@ export const remove: ActionHandler<typeof inputs.remove, null> = async (
   return null;
 };
 
-export const removeCompleted: ActionHandler<
-  typeof inputs.removeCompleted,
+const removeCompleted: ActionHandler<
+  typeof todoInputs.removeCompleted,
   null
 > = async ({ listId }, c) => {
   const userId = isAuthorized(c).id;
@@ -134,3 +134,6 @@ export const removeCompleted: ActionHandler<
 
   return null;
 };
+
+const todoHanders = { get, create, update, remove, removeCompleted };
+export default todoHanders;
