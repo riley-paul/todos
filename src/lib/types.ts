@@ -39,14 +39,16 @@ export const zListShareSelect = createSelectSchema(ListShare)
     isPending: true,
   })
   .extend({
-    list: createSelectSchema(List)
-      .pick({ id: true, name: true })
-      .extend({ author: zUserSelect }),
+    list: createSelectSchema(List).pick({ id: true, name: true }),
     user: zUserSelect,
-    isAuthor: z.boolean(),
   });
+export const zListShareSelectShallow = createSelectSchema(ListShare).pick({
+  id: true,
+  isPending: true,
+});
 export const zListShareInsert = createInsertSchema(ListShare);
 export type ListShareSelect = z.infer<typeof zListShareSelect>;
+export type ListShareSelectShallow = z.infer<typeof zListShareSelectShallow>;
 export type ListShareInsert = z.infer<typeof zListShareInsert>;
 
 export const zListSelect = createSelectSchema(List)
