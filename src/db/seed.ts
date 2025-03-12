@@ -8,6 +8,14 @@ function capitalize(string: string) {
 
 // https://astro.build/db/seed
 export default async function seed() {
+  await Promise.all([
+    db.delete(User),
+    db.delete(List),
+    db.delete(ListShare),
+    db.delete(Todo),
+  ]);
+  console.log("✅ Deleted all data");
+
   const userIds = await db
     .insert(User)
     .values([

@@ -10,8 +10,13 @@
     "astro": "astro",
     "test": "vitest",
     "db:push": "drizzle-kit push",
+    "db:push:prod": "NODE_ENV=production drizzle-kit push",
+    "db:push:test": "NODE_ENV=test drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx src/db/seed.ts"
+    "db:studio:prod": "NODE_ENV=production drizzle-kit studio",
+    "db:studio:test": "NODE_ENV=test drizzle-kit studio",
+    "db:seed": "tsx src/db/seed.ts",
+    "db:seed:test": "NODE_ENV=test tsx src/db/seed.ts"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
