@@ -108,7 +108,7 @@ const AppSearch: React.FC = () => {
               <CommandItem
                 onSelect={() =>
                   createTodo.mutate(
-                    { text: value, listId: null },
+                    { data: { text: value, listId: null } },
                     { onSuccess: () => setIsOpen(false) },
                   )
                 }

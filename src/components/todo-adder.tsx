@@ -32,7 +32,7 @@ const TodoAdder: React.FC<{ listId: SelectedList }> = ({ listId }) => {
   };
 
   const onSubmit = handleSubmit(({ text }) => {
-    createTodo.mutate({ text, listId });
+    createTodo.mutate({ data: { text, listId } });
     resetInput();
   });
 

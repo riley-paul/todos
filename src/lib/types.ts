@@ -29,8 +29,27 @@ export const zTodoSelect = createSelectSchema(Todo)
     isAuthor: z.boolean(),
     list: createSelectSchema(List).pick({ id: true, name: true }).nullable(),
   });
-export const zTodoInsert = createInsertSchema(Todo);
+export const zTodoSelectShallow = createSelectSchema(Todo).pick({
+  id: true,
+  text: true,
+  listId: true,
+  isCompleted: true,
+});
+export const zTodoInsert = createInsertSchema(Todo)
+  .pick({
+    listId: true,
+    text: true,
+    isCompleted: true,
+  })
+  .extend({
+    listId: createInsertSchema(Todo).shape.listId.transform((v) => {
+      if (v === "all") return null;
+      return v;
+    }),
+    text: createInsertSchema(Todo).shape.text.trim().min(1),
+  });
 export type TodoSelect = z.infer<typeof zTodoSelect>;
+export type TodoSelectShallow = z.infer<typeof zTodoSelectShallow>;
 export type TodoInsert = z.infer<typeof zTodoInsert>;
 
 export const zListShareSelect = createSelectSchema(ListShare)
