@@ -27,12 +27,7 @@ export const zTodoSelect = createSelectSchema(Todo)
   .extend({
     author: zUserSelect,
     isAuthor: z.boolean(),
-    list: z
-      .object({
-        id: z.string(),
-        name: z.string(),
-      })
-      .nullable(),
+    list: createSelectSchema(List).pick({ id: true, name: true }).nullable(),
   });
 export const zTodoInsert = createInsertSchema(Todo);
 export type TodoSelect = z.infer<typeof zTodoSelect>;
@@ -44,11 +39,9 @@ export const zListShareSelect = createSelectSchema(ListShare)
     isPending: true,
   })
   .extend({
-    list: z.object({
-      id: z.string(),
-      name: z.string(),
-      author: zUserSelect,
-    }),
+    list: createSelectSchema(List)
+      .pick({ id: true, name: true })
+      .extend({ author: zUserSelect }),
     user: zUserSelect,
     isAuthor: z.boolean(),
   });
@@ -72,5 +65,4 @@ export const zListInsert = createInsertSchema(List);
 export type ListSelect = z.infer<typeof zListSelect>;
 export type ListInsert = z.infer<typeof zListInsert>;
 
-export type TableUnion = typeof User | typeof Todo;
 export type SelectedList = string | "all" | null;
