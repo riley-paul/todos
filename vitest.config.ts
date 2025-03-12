@@ -1,4 +1,13 @@
 /// <reference types="vitest" />
 import { getViteConfig } from "astro/config";
+import { defineConfig, mergeConfig } from "vitest/config";
 
-export default getViteConfig({});
+const viteConfig = getViteConfig({});
+export default defineConfig((configEnv) =>
+  mergeConfig(
+    viteConfig(configEnv),
+    defineConfig({
+      test: {},
+    }),
+  ),
+);
