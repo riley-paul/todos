@@ -1,6 +1,4 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import type { z } from "zod";
 
 const id = text("id")
   .primaryKey()
@@ -31,10 +29,6 @@ export const User = sqliteTable("user", {
   githubUsername: text().unique(),
   ...timeStamps,
 });
-export const zUserSelect = createSelectSchema(User);
-export const zUserInsert = createInsertSchema(User);
-export type UserSelect = z.infer<typeof zUserSelect>;
-export type UserInsert = z.infer<typeof zUserInsert>;
 
 export const UserSession = sqliteTable("userSession", {
   id,
@@ -49,10 +43,6 @@ export const List = sqliteTable("list", {
   name: text().notNull(),
   ...timeStamps,
 });
-export const zListSelect = createSelectSchema(List);
-export const zListInsert = createInsertSchema(List);
-export type ListSelect = z.infer<typeof zListSelect>;
-export type ListInsert = z.infer<typeof zListInsert>;
 
 export const ListShare = sqliteTable("listShare", {
   id,
@@ -66,10 +56,6 @@ export const ListShare = sqliteTable("listShare", {
   isPending: integer({ mode: "boolean" }).notNull().default(true),
   ...timeStamps,
 });
-export const zListShareSelect = createSelectSchema(ListShare);
-export const zListShareInsert = createInsertSchema(ListShare);
-export type ListShareSelect = z.infer<typeof zListShareSelect>;
-export type ListShareInsert = z.infer<typeof zListShareInsert>;
 
 export const Todo = sqliteTable("todo", {
   id,
@@ -80,7 +66,3 @@ export const Todo = sqliteTable("todo", {
   isCompleted: integer({ mode: "boolean" }).notNull().default(false),
   ...timeStamps,
 });
-export const zTodoSelect = createSelectSchema(Todo);
-export const zTodoInsert = createInsertSchema(Todo);
-export type TodoSelect = z.infer<typeof zTodoSelect>;
-export type TodoInsert = z.infer<typeof zTodoInsert>;

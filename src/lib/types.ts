@@ -1,11 +1,16 @@
-import type { User, Todo } from "@/db/schema";
+import { User, Todo, List, ListShare } from "@/db/schema";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { z } from "zod";
 
-export type UserSelect = {
-  id: string;
-  name: string;
-  email: string;
-  avatarUrl: string | null;
-};
+export const zUserSelect = createSelectSchema(User).pick({
+  id: true,
+  name: true,
+  email: true,
+  avatarUrl: true,
+});
+export const zUserInsert = createInsertSchema(User);
+export type UserSelect = z.infer<typeof zUserSelect>;
+export type UserInsert = z.infer<typeof zUserInsert>;
 
 export type UserSessionInfo = {
   id: string;
@@ -13,35 +18,59 @@ export type UserSessionInfo = {
   expiresAt: Date;
 };
 
-export type TodoSelect = {
-  id: string;
-  text: string;
-  isCompleted: boolean;
-  author: UserSelect;
-  isAuthor: boolean;
-  list: {
-    id: string;
-    name: string;
-  } | null;
-};
+export const zTodoSelect = createSelectSchema(Todo)
+  .pick({
+    id: true,
+    text: true,
+    isCompleted: true,
+  })
+  .extend({
+    author: zUserSelect,
+    isAuthor: z.boolean(),
+    list: z
+      .object({
+        id: z.string(),
+        name: z.string(),
+      })
+      .nullable(),
+  });
+export const zTodoInsert = createInsertSchema(Todo);
+export type TodoSelect = z.infer<typeof zTodoSelect>;
+export type TodoInsert = z.infer<typeof zTodoInsert>;
 
-export type ListSelect = {
-  id: string;
-  name: string;
-  author: UserSelect;
-  isAuthor: boolean;
-  todoCount: number;
-  shares: ListShareSelect[];
-  otherUsers: UserSelect[];
-};
+export const zListShareSelect = createSelectSchema(ListShare)
+  .pick({
+    id: true,
+    isPending: true,
+  })
+  .extend({
+    list: z.object({
+      id: z.string(),
+      name: z.string(),
+      author: zUserSelect,
+    }),
+    user: zUserSelect,
+    isAuthor: z.boolean(),
+  });
+export const zListShareInsert = createInsertSchema(ListShare);
+export type ListShareSelect = z.infer<typeof zListShareSelect>;
+export type ListShareInsert = z.infer<typeof zListShareInsert>;
 
-export type ListShareSelect = {
-  id: string;
-  list: { id: string; name: string; author: UserSelect };
-  user: UserSelect;
-  isPending: boolean;
-  isAuthor: boolean;
-};
+export const zListSelect = createSelectSchema(List)
+  .pick({
+    id: true,
+    name: true,
+  })
+  .extend({
+    author: zUserSelect,
+    isAuthor: z.boolean(),
+    todoCount: z.number(),
+    shares: z.array(zListShareSelect),
+    otherUsers: z.array(zUserSelect),
+  });
+export const zListInsert = createInsertSchema(List);
+export type ListSelect = z.infer<typeof zListSelect>;
+export type ListInsert = z.infer<typeof zListInsert>;
 
 export type TableUnion = typeof User | typeof Todo;
 export type SelectedList = string | "all" | null;
