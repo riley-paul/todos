@@ -221,5 +221,3 @@ describe("todo creation", () => {
     ).rejects.toThrow(actionErrors.NO_PERMISSION);
   });
 });
-
-describe("todo update", () => {});
