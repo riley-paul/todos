@@ -1,11 +1,11 @@
-import { expect, test, describe, beforeAll, afterAll, assert } from "vitest";
+import { expect, test, describe, beforeAll, afterAll } from "vitest";
 import * as actions from "./todos.handlers";
 import mockApiContext from "../__test__/mock-api-context";
 import { execSync } from "child_process";
 import { rmSync } from "fs";
 import db from "@/db";
 import { List, ListShare, Todo, User } from "@/db/schema";
-import { isActionError } from "astro:actions";
+import { ActionError } from "astro:actions";
 import { eq } from "drizzle-orm";
 import { deleteAllData } from "@/db/scripts";
 
@@ -24,7 +24,6 @@ const INBOX_LENGTH = 3;
 const USER1_LENGTH = LIST1_LENGTH + LIST2_LENGTH + INBOX_LENGTH;
 
 const LIST_SHARE_ID = crypto.randomUUID();
-const TODO_ID = crypto.randomUUID();
 
 beforeAll(async () => {
   execSync("npm run db:push:test");
@@ -113,19 +112,9 @@ describe("todo fetching", () => {
   });
 
   test("throws error when list does not exist", async () => {
-    assert.throws(async () =>
-      await actions.get({ listId: "nonexistent" }, mockApiContext(USER1_ID)),
-    );
-    
-    try {
-      await actions.get({ listId: "nonexistent" }, mockApiContext(USER1_ID));
-    } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      expect(isActionError(error)).toBe(true);
-      if (isActionError(error)) {
-        expect(error.status).toBe(404);
-      }
-    }
+    await expect(() =>
+      actions.get({ listId: "nonexistent" }, mockApiContext(USER1_ID)),
+    ).rejects.toThrow(ActionError);
   });
 
   test("includes shared todos in 'all' when share accepted", async () => {
@@ -160,8 +149,8 @@ describe("todo creation", () => {
   });
 
   test("throws error when list does not exist", async () => {
-    try {
-      await actions.create(
+    await expect(() =>
+      actions.create(
         {
           data: {
             listId: "nonexistent",
@@ -170,24 +159,18 @@ describe("todo creation", () => {
           },
         },
         mockApiContext(USER1_ID),
-      );
-    } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      expect(isActionError(error)).toBe(true);
-      if (isActionError(error)) {
-        expect(error.status).toBe(404);
-      }
-    }
+      ),
+    ).rejects.toThrow(ActionError);
   });
 
   test("throw error when user is not allowed to create a todo in list", async () => {
     await db
       .update(ListShare)
-      .set({ isPending: false })
+      .set({ isPending: true })
       .where(eq(ListShare.id, LIST_SHARE_ID));
 
-    try {
-      await actions.create(
+    await expect(() =>
+      actions.create(
         {
           data: {
             listId: LIST3_ID,
@@ -196,13 +179,7 @@ describe("todo creation", () => {
           },
         },
         mockApiContext(USER1_ID),
-      );
-    } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      expect(isActionError(error)).toBe(true);
-      if (isActionError(error)) {
-        expect(error.status).toBe(403);
-      }
-    }
+      ),
+    ).rejects.toThrow(ActionError);
   });
 });
