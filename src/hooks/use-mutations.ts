@@ -142,7 +142,7 @@ export default function useMutations() {
 
   const createList = useMutation({
     mutationFn: actions.lists.create.orThrow,
-    onSuccess: ({ id }, { name }) => {
+    onSuccess: ({ id }, { data: { name } }) => {
       toast.success(`List "${name}" created`);
       navigate(goToList(id));
     },

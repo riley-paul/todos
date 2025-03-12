@@ -61,8 +61,15 @@ export const zListSelect = createSelectSchema(List)
     shares: z.array(zListShareSelect),
     otherUsers: z.array(zUserSelect),
   });
-export const zListInsert = createInsertSchema(List);
+export const zListSelectShallow = createSelectSchema(List).pick({
+  id: true,
+  name: true,
+});
+export const zListInsert = createInsertSchema(List)
+  .pick({ name: true })
+  .extend({ name: createInsertSchema(List).shape.name.trim().min(1) });
 export type ListSelect = z.infer<typeof zListSelect>;
+export type ListSelectShallow = z.infer<typeof zListSelectShallow>;
 export type ListInsert = z.infer<typeof zListInsert>;
 
 export type SelectedList = string | "all" | null;

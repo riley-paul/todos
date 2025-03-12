@@ -74,7 +74,7 @@ const AppSearch: React.FC = () => {
               <CommandItem
                 onSelect={() =>
                   createList.mutate(
-                    { name: value },
+                    { data: { name: value } },
                     { onSuccess: () => setIsOpen(false) },
                   )
                 }

@@ -34,7 +34,7 @@ function RouteComponent() {
     },
   });
 
-  const onSubmit = handleSubmit((data) => create.mutate(data));
+  const onSubmit = handleSubmit((data) => create.mutate({ data }));
 
   return (
     <div className="grid gap-4">
