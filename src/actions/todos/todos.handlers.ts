@@ -8,6 +8,7 @@ import {
   filterTodos,
   invalidateUsers,
   getTodoUsers,
+  getListUsers,
 } from "../helpers";
 
 import * as inputs from "./todos.inputs";
@@ -17,6 +18,17 @@ export const get: ActionHandler<typeof inputs.get, TodoSelect[]> = async (
   c,
 ) => {
   const userId = isAuthorized(c).id;
+
+  if (listId && listId !== "all") {
+    const listUsers = await getListUsers(listId);
+    if (!listUsers.includes(userId)) {
+      throw new ActionError({
+        code: "FORBIDDEN",
+        message: "You are not allowed to access this list",
+      });
+    }
+  }
+
   const todos: TodoSelect[] = await db
     .selectDistinct({
       id: Todo.id,
@@ -51,6 +63,17 @@ export const create: ActionHandler<
   TodoSelectShallow
 > = async ({ data }, c) => {
   const userId = isAuthorized(c).id;
+
+  if (data.listId) {
+    const listUsers = await getListUsers(data.listId);
+    if (!listUsers.includes(userId)) {
+      throw new ActionError({
+        code: "FORBIDDEN",
+        message: "You are not allowed to create a task in this list",
+      });
+    }
+  }
+
   const [todo] = await db
     .insert(Todo)
     .values({ ...data, userId })
