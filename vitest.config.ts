@@ -1,8 +1,4 @@
 /// <reference types="vitest" />
-import { defineConfig } from "vitest/config";
+import { getViteConfig } from "astro/config";
 
-export default defineConfig({
-  test: {
-    environment: "node", // Use Node.js for testing backend logic
-  },
-});
+export default getViteConfig({});
