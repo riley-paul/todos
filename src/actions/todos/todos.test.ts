@@ -2,12 +2,13 @@ import { expect, test, describe, beforeAll, afterAll } from "vitest";
 import mockApiContext from "../__test__/mock-api-context";
 import { execSync } from "child_process";
 import { rmSync } from "fs";
-import db from "@/db";
 import { List, ListShare, Todo, User } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { deleteAllData } from "@/db/scripts";
 import actionErrors from "../errors";
 import todoHanders from "./todos.handlers";
+import { createDb } from "@/db";
+import env from "@/envs-runtime";
 
 const USER1_ID = crypto.randomUUID();
 const USER2_ID = crypto.randomUUID();
@@ -24,6 +25,8 @@ const INBOX_LENGTH = 3;
 const USER1_LENGTH = LIST1_LENGTH + LIST2_LENGTH + INBOX_LENGTH;
 
 const LIST_SHARE_ID = crypto.randomUUID();
+
+const db = createDb(env);
 
 beforeAll(async () => {
   execSync("npm run db:push:test");

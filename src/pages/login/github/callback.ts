@@ -1,10 +1,10 @@
 import { OAuth2RequestError } from "arctic";
 
 import type { APIContext } from "astro";
-import db from "@/db";
+import { createDb } from "@/db";
 import { User } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { getGithubUser, github } from "@/lib/server/oauth";
+import { getGithubUser, createGithub } from "@/lib/server/oauth";
 import {
   createSession,
   generateSessionToken,
@@ -12,6 +12,9 @@ import {
 } from "@/lib/server/lucia";
 
 export async function GET(context: APIContext): Promise<Response> {
+  const db = createDb(context.locals.runtime.env);
+  const github = createGithub(context);
+
   const code = context.url.searchParams.get("code");
   const state = context.url.searchParams.get("state");
   const storedState = context.cookies.get("github_oauth_state")?.value ?? null;
@@ -36,7 +39,11 @@ export async function GET(context: APIContext): Promise<Response> {
         .set({ githubId: githubUser.id })
         .where(eq(User.id, existingUser.id));
       const sessionToken = generateSessionToken();
-      const session = await createSession(sessionToken, existingUser.id);
+      const session = await createSession(
+        context,
+        sessionToken,
+        existingUser.id,
+      );
       setSessionTokenCookie(context, sessionToken, session.expiresAt);
       return context.redirect("/");
     }
@@ -54,7 +61,7 @@ export async function GET(context: APIContext): Promise<Response> {
       .returning();
 
     const sessionToken = generateSessionToken();
-    const session = await createSession(sessionToken, user.id);
+    const session = await createSession(context, sessionToken, user.id);
     setSessionTokenCookie(context, sessionToken, session.expiresAt);
     return context.redirect("/");
   } catch (e) {

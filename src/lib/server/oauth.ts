@@ -1,18 +1,24 @@
-import env from "@/envs";
 import { GitHub, Google } from "arctic";
+import type { APIContext } from "astro";
 import { z } from "zod";
 
-export const github = new GitHub(
-  env.GITHUB_CLIENT_ID,
-  env.GITHUB_CLIENT_SECRET,
-  env.SITE + "/login/github/callback",
-);
+export const createGithub = (context: APIContext) => {
+  const { env } = context.locals.runtime;
+  return new GitHub(
+    env.GITHUB_CLIENT_ID,
+    env.GITHUB_CLIENT_SECRET,
+    env.SITE + "/login/github/callback",
+  );
+};
 
-export const google = new Google(
-  env.GOOGLE_CLIENT_ID,
-  env.GOOGLE_CLIENT_SECRET,
-  env.SITE + "/login/google/callback",
-);
+export const createGoogle = (context: APIContext) => {
+  const { env } = context.locals.runtime;
+  return new Google(
+    env.GOOGLE_CLIENT_ID,
+    env.GOOGLE_CLIENT_SECRET,
+    env.SITE + "/login/google/callback",
+  );
+};
 
 // Get the user's email from the GitHub API
 // https://docs.github.com/en/rest/reference/users#get-the-authenticated-user
@@ -33,12 +39,24 @@ const zGithubEmail = z.object({
 
 export const getGithubUser = async (accessToken: string) => {
   const fetchInit: RequestInit = {
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "User-Agent": "Todos/1.0",
+    },
   };
 
   const getUser = async () => {
     const res = await fetch("https://api.github.com/user", fetchInit);
-    if (!res.ok) throw new Error("Failed to fetch user");
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error(
+        "Failed to fetch user:",
+        res.status,
+        res.statusText,
+        errorText,
+      );
+      throw new Error("Failed to fetch user");
+    }
     return zGithubUser.parse(await res.json());
   };
 

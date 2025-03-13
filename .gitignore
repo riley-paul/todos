@@ -162,5 +162,8 @@ sketch
 
 # End of https://www.toptal.com/developers/gitignore/api/node,react,vercel
 
-dev.db
+dev.db*
 test.db
+
+.wrangler
+.dev.vars

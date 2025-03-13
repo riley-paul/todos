@@ -11,7 +11,7 @@ export async function GET(context: APIContext): Promise<Response> {
     });
   }
 
-  invalidateSession(context.locals.session.id);
+  invalidateSession(context, context.locals.session.id);
   deleteSessionTokenCookie(context);
 
   return context.redirect("/");

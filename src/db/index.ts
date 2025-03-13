@@ -1,19 +1,21 @@
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "./schema";
-import env from "@/envs";
+import type { Environment } from "@/envs";
 
-export const getDbUrl = () => {
-  if (env.NODE_ENV === "development") return "file:dev.db";
+export const getDbUrl = (env: Environment) => {
+  if (env.NODE_ENV === "development") return "http://127.0.0.1:8080";
   if (env.NODE_ENV === "test") return "file:test.db";
   if (env.NODE_ENV === "production") return env.DATABASE_URL;
   return "";
 };
 
-const client = createClient({
-  url: getDbUrl(),
-  authToken: env.DATABASE_AUTH_TOKEN,
-});
+export const createDb = (env: Environment) => {
+  const client = createClient({
+    url: getDbUrl(env),
+    authToken: env.DATABASE_AUTH_TOKEN,
+  });
+  return drizzle(client, { schema });
+};
 
-const db = drizzle(client, { schema });
-export default db;
+export type Db = ReturnType<typeof createDb>;
