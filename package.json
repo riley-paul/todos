@@ -62,6 +62,7 @@
     "typescript": "^5.4.5",
     "usehooks-ts": "^3.1.0",
     "vaul": "^1.0.0",
+    "vite-plugin-pwa": "^0.20.5",
     "zod": "^3.24.2"
   },
   "devDependencies": {
@@ -73,7 +74,6 @@
     "drizzle-kit": "^0.30.5",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.9",
-    "vite-plugin-pwa": "^0.20.5",
     "vitest": "^3.0.8",
     "wrangler": "^3.114.1"
   },
