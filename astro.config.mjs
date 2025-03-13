@@ -1,13 +1,11 @@
-import path from "node:path";
-import url from "node:url";
-import react from "@astrojs/react";
 import { defineConfig, envField } from "astro/config";
+
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
-import node from "@astrojs/node";
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 import { VitePWA } from "vite-plugin-pwa";
-import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+
+import react from "@astrojs/react";
 import tailwind from "@astrojs/tailwind";
+import cloudflare from "@astrojs/cloudflare";
 
 // https://astro.build/config
 export default defineConfig({
@@ -34,13 +32,8 @@ export default defineConfig({
         },
       }),
     ],
-    resolve: {
-      alias: {
-        "@": path.resolve(__dirname, "./src"),
-      },
-    },
   },
   output: "server",
-  adapter: node({ mode: "standalone" }),
+  adapter: cloudflare(),
   security: { checkOrigin: true },
 });
