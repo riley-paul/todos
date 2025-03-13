@@ -46,4 +46,4 @@ const routeGuarding = defineMiddleware(async (context, next) => {
   return next();
 });
 
-export const onRequest = sequence(validateEnv, userValidation, routeGuarding);
+export const onRequest = sequence(userValidation, routeGuarding);

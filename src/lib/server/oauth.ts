@@ -39,12 +39,24 @@ const zGithubEmail = z.object({
 
 export const getGithubUser = async (accessToken: string) => {
   const fetchInit: RequestInit = {
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "User-Agent": "Todos/1.0",
+    },
   };
 
   const getUser = async () => {
     const res = await fetch("https://api.github.com/user", fetchInit);
-    if (!res.ok) throw new Error("Failed to fetch user");
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error(
+        "Failed to fetch user:",
+        res.status,
+        res.statusText,
+        errorText,
+      );
+      throw new Error("Failed to fetch user");
+    }
     return zGithubUser.parse(await res.json());
   };
 
