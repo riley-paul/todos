@@ -1,9 +1,11 @@
-import { google } from "@/lib/server/oauth";
+import { createGoogle } from "@/lib/server/oauth";
 import { generateCodeVerifier, generateState } from "arctic";
 
 import type { APIContext } from "astro";
 
 export async function GET(context: APIContext): Promise<Response> {
+  const google = createGoogle(context);
+
   const state = generateState();
   const codeVerifier = generateCodeVerifier();
 

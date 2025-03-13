@@ -22,7 +22,7 @@ const userValidation = defineMiddleware(async (context, next) => {
     return next();
   }
 
-  const { user, session } = await validateSessionToken(token);
+  const { user, session } = await validateSessionToken(context, token);
 
   if (session) {
     setSessionTokenCookie(context, token, session.expiresAt);
