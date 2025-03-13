@@ -1,5 +1,5 @@
 import { type ActionHandler } from "astro:actions";
-import db from "@/db";
+import { createDb } from "@/db";
 import { User, ListShare, List } from "@/db/schema";
 import { eq, and, or, desc } from "drizzle-orm";
 import type { ListShareSelect, ListShareSelectShallow } from "@/lib/types";
@@ -11,6 +11,7 @@ const create: ActionHandler<
   typeof listShareInputs.create,
   ListShareSelectShallow
 > = async ({ email, listId }, c) => {
+  const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
   const [sharedUser] = await db
@@ -67,6 +68,7 @@ const remove: ActionHandler<typeof listShareInputs.remove, null> = async (
   { id },
   c,
 ) => {
+  const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
   const [share] = await db.select().from(ListShare).where(eq(ListShare.id, id));
 
@@ -90,6 +92,7 @@ const leave: ActionHandler<typeof listShareInputs.leave, null> = async (
   { listId },
   c,
 ) => {
+  const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
   await db
@@ -105,6 +108,7 @@ const accept: ActionHandler<
   typeof listShareInputs.accept,
   ListShareSelectShallow
 > = async ({ id }, c) => {
+  const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
   const [listShare] = await db
@@ -136,6 +140,7 @@ const getAllPending: ActionHandler<
   typeof listShareInputs.getAllPending,
   ListShareSelect[]
 > = async (_, c) => {
+  const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
   const listShares = await db
     .selectDistinct({

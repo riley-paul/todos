@@ -1,7 +1,7 @@
 import { OAuth2RequestError } from "arctic";
 
 import type { APIContext } from "astro";
-import db from "@/db";
+import { createDb } from "@/db";
 import { User } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getGoogleUser, google } from "@/lib/server/oauth";
@@ -12,6 +12,8 @@ import {
 } from "@/lib/server/lucia";
 
 export async function GET(context: APIContext): Promise<Response> {
+  const db = createDb(context.locals.runtime.env);
+
   const code = context.url.searchParams.get("code");
   const state = context.url.searchParams.get("state");
   const storedState = context.cookies.get("google_oauth_state")?.value ?? null;

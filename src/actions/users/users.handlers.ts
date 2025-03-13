@@ -1,6 +1,6 @@
 import type { ActionHandler } from "astro:actions";
 import { isAuthorized } from "../helpers";
-import db from "@/db";
+import { createDb } from "@/db";
 import { Todo, User, UserSession } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import type { UserSelect } from "@/lib/types";
@@ -10,6 +10,7 @@ const getMe: ActionHandler<typeof userInputs.getMe, UserSelect | null> = async (
   _,
   c,
 ) => {
+  const db = createDb(c.locals.runtime.env);
   const user = c.locals.user;
   if (!user) {
     return null;
@@ -27,6 +28,7 @@ const getMe: ActionHandler<typeof userInputs.getMe, UserSelect | null> = async (
 };
 
 const remove: ActionHandler<typeof userInputs.remove, null> = async (_, c) => {
+  const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
   await db.delete(UserSession).where(eq(UserSession.userId, userId));
   await db.delete(Todo).where(eq(Todo.userId, userId));
@@ -38,6 +40,7 @@ const checkIfEmailExists: ActionHandler<
   typeof userInputs.checkIfEmailExists,
   boolean
 > = async ({ email }, c) => {
+  const db = createDb(c.locals.runtime.env);
   isAuthorized(c);
   const data = await db.select().from(User).where(eq(User.email, email));
   return data.length > 0;

@@ -1,5 +1,5 @@
 import { type ActionHandler } from "astro:actions";
-import db from "@/db";
+import { createDb } from "@/db";
 import { User, Todo, ListShare, List } from "@/db/schema";
 import { eq, and, desc, inArray } from "drizzle-orm";
 import type { TodoSelect, TodoSelectShallow } from "@/lib/types";
@@ -18,6 +18,7 @@ const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
   { listId },
   c,
 ) => {
+  const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
   if (listId && listId !== "all") {
@@ -60,6 +61,7 @@ const create: ActionHandler<
   typeof todoInputs.create,
   TodoSelectShallow
 > = async ({ data }, c) => {
+  const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
   if (data.listId) {
@@ -82,6 +84,7 @@ const update: ActionHandler<
   typeof todoInputs.update,
   TodoSelectShallow
 > = async ({ id, data }, c) => {
+  const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
   const users = await getTodoUsers(id);
 
@@ -103,6 +106,7 @@ const remove: ActionHandler<typeof todoInputs.remove, null> = async (
   { id },
   c,
 ) => {
+  const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
   const users = await getTodoUsers(id);
 
@@ -120,6 +124,7 @@ const removeCompleted: ActionHandler<
   typeof todoInputs.removeCompleted,
   null
 > = async ({ listId }, c) => {
+  const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
   const todoIds = await db
     .selectDistinct({ id: Todo.id })

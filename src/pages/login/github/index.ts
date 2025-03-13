@@ -1,10 +1,10 @@
 import { generateState } from "arctic";
 
 import type { APIContext } from "astro";
-import env from "@/envs";
 import { github } from "@/lib/server/oauth";
 
 export async function GET(context: APIContext): Promise<Response> {
+  const { env } = context.locals.runtime;
   const state = generateState();
   const url = github.createAuthorizationURL(state, []);
 
