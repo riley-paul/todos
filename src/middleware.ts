@@ -5,14 +5,14 @@ import {
   setSessionTokenCookie,
   validateSessionToken,
 } from "./lib/server/lucia";
-import { parseEnv } from "./envs";
+// import { parseEnv } from "./envs";
 
-const validateEnv = defineMiddleware(async (context, next) => {
-  const currentEnv = context.locals.runtime.env;
-  const parsedEnv = parseEnv(Object.assign(currentEnv, process.env));
-  context.locals.runtime.env = Object.assign(currentEnv, parsedEnv);
-  return next();
-});
+// const validateEnv = defineMiddleware(async (context, next) => {
+//   const currentEnv = context.locals.runtime.env;
+//   const parsedEnv = parseEnv(Object.assign(currentEnv, process.env));
+//   context.locals.runtime.env = Object.assign(currentEnv, parsedEnv);
+//   return next();
+// });
 
 const userValidation = defineMiddleware(async (context, next) => {
   const token = context.cookies.get(SESSION_COOKIE_NAME)?.value ?? null;
