@@ -5,7 +5,6 @@ import { eq, and, desc, inArray } from "drizzle-orm";
 import type { TodoSelect, TodoSelectShallow } from "@/lib/types";
 import {
   isAuthorized,
-  filterTodos,
   invalidateUsers,
   getTodoUsers,
   getListUsers,
@@ -13,6 +12,7 @@ import {
 
 import actionErrors from "../errors";
 import type todoInputs from "./todos.inputs";
+import { filterTodos } from "../filters";
 
 const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
   { listId },
@@ -22,7 +22,7 @@ const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
   const userId = isAuthorized(c).id;
 
   if (listId && listId !== "all") {
-    const listUsers = await getListUsers(listId);
+    const listUsers = await getListUsers(c, listId);
     if (!listUsers.includes(userId)) {
       throw actionErrors.NO_PERMISSION;
     }
@@ -65,7 +65,7 @@ const create: ActionHandler<
   const userId = isAuthorized(c).id;
 
   if (data.listId) {
-    const listUsers = await getListUsers(data.listId);
+    const listUsers = await getListUsers(c, data.listId);
     if (!listUsers.includes(userId)) {
       throw actionErrors.NO_PERMISSION;
     }
@@ -76,7 +76,7 @@ const create: ActionHandler<
     .values({ ...data, userId })
     .returning();
 
-  invalidateUsers(await getTodoUsers(todo.id));
+  invalidateUsers(await getTodoUsers(c, todo.id));
   return todo;
 };
 
@@ -86,7 +86,7 @@ const update: ActionHandler<
 > = async ({ id, data }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
-  const users = await getTodoUsers(id);
+  const users = await getTodoUsers(c, id);
 
   if (!users.includes(userId)) {
     throw actionErrors.NO_PERMISSION;
@@ -108,7 +108,7 @@ const remove: ActionHandler<typeof todoInputs.remove, null> = async (
 ) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
-  const users = await getTodoUsers(id);
+  const users = await getTodoUsers(c, id);
 
   if (!users.includes(userId)) {
     throw actionErrors.NO_PERMISSION;

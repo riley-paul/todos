@@ -1,7 +1,8 @@
 import { faker } from "@faker-js/faker";
-import db from ".";
 import { List, ListShare, Todo, User } from "./schema";
 import { deleteAllData } from "./scripts";
+import { createDb } from ".";
+import env from "@/envs-runtime";
 
 function capitalize(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -9,6 +10,8 @@ function capitalize(string: string) {
 
 // https://astro.build/db/seed
 export default async function seed() {
+  const db = createDb(env);
+
   await deleteAllData();
   console.log("✅ Deleted all data");
 

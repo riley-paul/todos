@@ -1,44 +1,9 @@
 import type { ActionAPIContext } from "astro/actions/runtime/utils.js";
 import InvalidationController from "@/lib/server/invalidation-controller";
-import db from "@/db";
 import { ListShare, Todo, List } from "@/db/schema";
-import { eq, or, and, ne, isNull } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import actionErrors from "./errors";
-
-export const filterByListShare = (userId: string) =>
-  or(
-    // User is the author of the list
-    eq(ListShare.userId, userId),
-
-    // User is shared on the list
-    // and the share is not pending
-    and(
-      eq(ListShare.sharedUserId, userId),
-      or(ne(ListShare.isPending, true), isNull(ListShare.isPending)),
-    ),
-  );
-
-export const filterTodos = (userId: string, listId: string | null) => {
-  const INBOX = and(isNull(Todo.listId), eq(Todo.userId, userId));
-
-  if (listId === null) {
-    return INBOX;
-  }
-
-  if (listId === "all") {
-    return or(filterByListShare(userId), INBOX, eq(Todo.userId, userId));
-  }
-
-  return and(
-    or(
-      // List is shared with the user
-      filterByListShare(userId),
-      // User owns the list
-      eq(Todo.userId, userId),
-    ),
-    eq(Todo.listId, listId),
-  );
-};
+import { createDb } from "@/db";
 
 export const invalidateUsers = (userIds: string[]) => {
   InvalidationController.getInstance().invalidateKey(userIds);
@@ -52,7 +17,11 @@ export const isAuthorized = (context: ActionAPIContext) => {
   return user;
 };
 
-export const getListUsers = async (listId: string): Promise<string[]> => {
+export const getListUsers = async (
+  context: ActionAPIContext,
+  listId: string,
+): Promise<string[]> => {
+  const db = createDb(context.locals.runtime.env);
   const list = await db
     .select({ id: List.id, userId: List.userId })
     .from(List)
@@ -71,7 +40,11 @@ export const getListUsers = async (listId: string): Promise<string[]> => {
   return [list.userId, ...shares.map((share) => share.sharedUserId)];
 };
 
-export const getTodoUsers = async (todoId: string): Promise<string[]> => {
+export const getTodoUsers = async (
+  context: ActionAPIContext,
+  todoId: string,
+): Promise<string[]> => {
+  const db = createDb(context.locals.runtime.env);
   const todo = await db
     .select({ id: Todo.id, listId: Todo.listId, userId: Todo.userId })
     .from(Todo)
@@ -86,5 +59,5 @@ export const getTodoUsers = async (todoId: string): Promise<string[]> => {
     return [todo.userId];
   }
 
-  return await getListUsers(todo.listId);
+  return await getListUsers(context, todo.listId);
 };
