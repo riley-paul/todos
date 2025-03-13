@@ -1,4 +1,4 @@
-import { z, type ZodError } from "zod";
+import { z } from "zod";
 import { config } from "dotenv";
 import { expand } from "dotenv-expand";
 
@@ -31,17 +31,15 @@ const zEnv = z
     }
   });
 
-export type Env = z.infer<typeof zEnv>;
+export type Environment = z.infer<typeof zEnv>;
 
-let env: Env;
+export function parseEnv(data: any) {
+  const { data: env, error } = zEnv.safeParse(data);
 
-try {
-  env = zEnv.parse(process.env);
-} catch (e) {
-  const error = e as ZodError;
-  console.error("❌ Invalid environment variables:");
-  console.error(error.flatten());
-  process.exit(1);
+  if (error) {
+    const errorMessage = `Invalid environment variables: ${error.flatten().fieldErrors}`;
+    throw new Error(errorMessage);
+  }
+
+  return env;
 }
-
-export default env;

@@ -12,6 +12,7 @@ export default defineConfig({
   prefetch: true,
   integrations: [react(), tailwind({ applyBaseStyles: false })],
   vite: {
+    build: { minify: false },
     plugins: [
       TanStackRouterVite({
         routesDirectory: "./src/app/routes",
@@ -34,6 +35,6 @@ export default defineConfig({
     ],
   },
   output: "server",
-  adapter: cloudflare(),
+  adapter: cloudflare({ platformProxy: { enabled: true } }),
   security: { checkOrigin: true },
 });
