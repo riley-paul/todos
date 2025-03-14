@@ -3,13 +3,12 @@
   "type": "module",
   "version": "1.0.0",
   "scripts": {
-    "dev": "astro dev --host",
-    "start": "astro dev",
+    "dev": "npm-run-all --parallel dev:db dev:server",
     "build": "astro check && astro build --remote",
     "preview": "astro build && wrangler pages dev --port 4321",
-    "astro": "astro",
     "test": "vitest",
     "dev:db": "turso dev --db-file dev.db",
+    "dev:server": "astro dev --host",
     "cf-typegen": "wrangler types",
     "db:push": "drizzle-kit push",
     "db:push:prod": "NODE_ENV=production drizzle-kit push",
@@ -72,6 +71,7 @@
     "@cloudflare/workers-types": "^4.20250312.0",
     "@tanstack/router-devtools": "^1.97.25",
     "@types/node": "^20.12.11",
+    "npm-run-all": "^4.1.5",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "wrangler": "^3.114.1"

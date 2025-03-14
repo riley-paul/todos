@@ -1,6 +1,6 @@
 import { defineConfig, envField } from "astro/config";
 
-import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 import react from "@astrojs/react";
