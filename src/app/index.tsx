@@ -11,6 +11,7 @@ import {
 import { handleMutationError } from "@/hooks/use-mutations";
 import CustomToaster from "@/components/ui/custom-toaster";
 import { Spinner } from "@radix-ui/themes";
+import ErrorPage from "@/components/error-page";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -35,6 +36,7 @@ const router = createRouter({
       <Spinner size="3" />
     </section>
   ),
+  defaultErrorComponent: ({ error }) => <ErrorPage error={error} goHome />,
 });
 
 // Register the router instance for type safety

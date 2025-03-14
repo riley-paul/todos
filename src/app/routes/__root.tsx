@@ -1,9 +1,8 @@
 import AppSearch from "@/components/app-search";
 import PendingInvites from "@/components/pending-invites";
 import UserMenu from "@/components/user-menu";
-import useQueryStream from "@/hooks/use-query-stream";
 import { Heading } from "@radix-ui/themes";
-import { useQueryClient, type QueryClient } from "@tanstack/react-query";
+import { type QueryClient } from "@tanstack/react-query";
 import {
   createRootRouteWithContext,
   Link,
@@ -17,9 +16,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 );
 
 function Component() {
-  const queryClient = useQueryClient();
-  const { StreamStateIcon } = useQueryStream(queryClient);
-
   return (
     <>
       <header className="sticky top-0 z-50 border-b bg-panel-translucent backdrop-blur">
@@ -30,9 +26,7 @@ function Component() {
               <Heading asChild size="6" weight="bold">
                 <Link to="/">Todos</Link>
               </Heading>
-              <div className="ml-2">
-                <StreamStateIcon />
-              </div>
+              <div className="ml-2"></div>
             </div>
             <div className="flex items-center gap-4">
               <AppSearch />

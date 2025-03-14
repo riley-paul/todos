@@ -2,15 +2,17 @@ import React from "react";
 import { isActionError } from "astro:actions";
 import { cn } from "@/lib/client/utils";
 import { Button, Heading, Text } from "@radix-ui/themes";
+import { Link } from "@tanstack/react-router";
 
 interface Props {
   retry?: () => void;
   notFullHeight?: boolean;
   error?: unknown;
+  goHome?: boolean;
 }
 
 const ErrorPage: React.FC<Props> = (props) => {
-  const { retry, notFullHeight, error } = props;
+  const { retry, notFullHeight, error, goHome } = props;
 
   console.error(error);
 
@@ -29,9 +31,9 @@ const ErrorPage: React.FC<Props> = (props) => {
         notFullHeight && "min-h-52",
       )}
     >
-      <div className="flex h-full w-full max-w-sm flex-col gap-4 px-4 py-16">
+      <div className="flex h-full w-full max-w-xs flex-col gap-4 px-4 py-16">
         <div className="flex flex-row items-center gap-4">
-          <i className="text=[3rem] fa-solid fa-bug text-red-9" />
+          <i className="fas fa-bug text-[2.5rem] text-red-10" />
           <div className="flex flex-col">
             <Heading as="h3" size="4">
               {status} Error
@@ -45,6 +47,11 @@ const ErrorPage: React.FC<Props> = (props) => {
           {retry && (
             <Button variant="soft" onClick={() => retry()}>
               Retry
+            </Button>
+          )}
+          {goHome && (
+            <Button variant="soft" asChild>
+              <Link to="/">Go Home</Link>
             </Button>
           )}
         </div>
