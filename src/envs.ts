@@ -12,6 +12,7 @@ const zEnv = z
     SITE: z.string().url().default("http://localhost:4321"),
     DATABASE_URL: z.string().url(),
     DATABASE_AUTH_TOKEN: z.string().optional(),
+    ABLY_API_KEY: z.string(),
   })
   .superRefine(({ NODE_ENV, DATABASE_AUTH_TOKEN }, ctx) => {
     if (NODE_ENV === "production" && !DATABASE_AUTH_TOKEN) {
