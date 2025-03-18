@@ -1,5 +1,5 @@
 import { Text, Tooltip, type TextProps } from "@radix-ui/themes";
-import { type QueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 
 type StreamState = "connecting" | "connected" | "disconnected";
@@ -28,7 +28,8 @@ const getStreamStateDescription = (streamState: StreamState): string => {
   }
 };
 
-export default function useQueryStream(queryClient: QueryClient) {
+export default function useQueryStream() {
+  const queryClient = useQueryClient();
   const [streamState, setStreamState] =
     React.useState<StreamState>("connecting");
 
