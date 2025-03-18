@@ -19,6 +19,10 @@ const ErrorPage: React.FC<Props> = (props) => {
   let status = 500;
   let message = "An unknown error occurred. Please try again later.";
 
+  if (error instanceof Error) {
+    message = error.message;
+  }
+
   if (isActionError(error)) {
     status = error.status;
     message = error.message;

@@ -8,6 +8,9 @@ import {
   Link,
   Outlet,
 } from "@tanstack/react-router";
+import type { ConnectionState } from "ably";
+import { useConnectionStateListener } from "ably/react";
+import { useState } from "react";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   {
@@ -16,6 +19,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 );
 
 function Component() {
+  const [ablyState, setAblyState] = useState<ConnectionState>("initialized");
+
+  useConnectionStateListener((state) => {
+    setAblyState(state.current);
+  });
+
   return (
     <>
       <header className="sticky top-0 z-50 border-b bg-panel-translucent backdrop-blur">
@@ -26,6 +35,7 @@ function Component() {
               <Heading asChild size="6" weight="bold">
                 <Link to="/">Todos</Link>
               </Heading>
+              {ablyState}
               <div className="ml-2"></div>
             </div>
             <div className="flex items-center gap-4">
