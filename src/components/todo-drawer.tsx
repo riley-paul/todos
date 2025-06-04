@@ -1,4 +1,4 @@
-import { Button, Text } from "@radix-ui/themes";
+import { Text } from "@radix-ui/themes";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions } from "@/lib/client/queries";
@@ -10,21 +10,35 @@ import { selectedTodoIdAtom } from "./todos.store";
 import useTodoActions from "./use-todo-actions";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 
+const GroupContainer: React.FC<
+  React.PropsWithChildren<{ header?: string }>
+> = ({ children, header }) => (
+  <div className="grid gap-2">
+    {header && (
+      <Text size="1" ml="2" weight="medium" color="gray" className="uppercase">
+        {header}
+      </Text>
+    )}
+    <div className="grid divide-y rounded-2 bg-panel-translucent backdrop-blur">
+      {children}
+    </div>
+  </div>
+);
+
 const MenuItem: React.FC<{
   text: string;
   icon: string;
   onClick: () => void;
 }> = ({ text, icon, onClick }) => {
   return (
-    <Button
-      variant="soft"
+    <button
       color="gray"
-      className="justify-between"
+      className="flex items-center justify-between gap-2 px-3 py-2 text-2"
       onClick={onClick}
     >
-      <Text>{text}</Text>
-      <i className={cn("fa-solid opacity-80", icon)} />
-    </Button>
+      <Text weight="medium">{text}</Text>
+      <i className={cn("fas fa-sm opacity-80", icon)} />
+    </button>
   );
 };
 
@@ -44,22 +58,21 @@ const TodoDrawer: React.FC = () => {
       }}
     >
       <DrawerContent>
-        <div className="grid gap-2">
-          <MenuItem text="Edit" icon="fa-solid fa-pen" onClick={handleEdit} />
-          <MenuItem
-            text="Delete"
-            icon="fa-solid fa-backspace"
-            onClick={handleDelete}
-          />
+        <article className="grid gap-6">
+          <GroupContainer>
+            <MenuItem text="Edit" icon="fas fa-pen" onClick={handleEdit} />
+            <MenuItem
+              text="Delete"
+              icon="fas fa-backspace"
+              onClick={handleDelete}
+            />
+          </GroupContainer>
           {lists.length > 0 && (
-            <>
-              <Text size="2" weight="medium" color="gray" mt="2">
-                Move
-              </Text>
+            <GroupContainer header="Move">
               {listId && (
                 <MenuItem
                   text="Inbox"
-                  icon="fa-solid fa-arrow-right"
+                  icon="fas fa-arrow-right"
                   onClick={() => handleMove(null)}
                 />
               )}
@@ -69,13 +82,13 @@ const TodoDrawer: React.FC = () => {
                   <MenuItem
                     key={list.id}
                     text={list.name}
-                    icon="fa-solid fa-arrow-right"
+                    icon="fas fa-arrow-right"
                     onClick={() => handleMove(list.id)}
                   />
                 ))}
-            </>
+            </GroupContainer>
           )}
-        </div>
+        </article>
       </DrawerContent>
     </Drawer>
   );
