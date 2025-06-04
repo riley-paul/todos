@@ -19,7 +19,7 @@ const GroupContainer: React.FC<
         {header}
       </Text>
     )}
-    <div className="grid divide-y rounded-2 bg-panel-translucent backdrop-blur">
+    <div className="grid divide-y divide-gray-4 rounded-2 bg-panel-translucent backdrop-blur">
       {children}
     </div>
   </div>

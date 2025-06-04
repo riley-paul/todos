@@ -36,6 +36,7 @@ const TodoForm: React.FC<{
 
   React.useEffect(() => {
     resizeTextArea(ref.current);
+    ref.current?.focus();
   }, []);
 
   return (
@@ -97,15 +98,11 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
     if (e.key === "Escape") setEditingTodoId(null);
   });
 
-  React.useEffect(() => {
-    setEditingTodoId(null);
-  }, [todo]);
-
   return (
     <div
       ref={ref}
       className={cn(
-        "flex min-h-11 items-center gap-rx-2 rounded-3 px-rx-3 py-rx-1 transition-colors ease-out sm:hover:bg-accent-3",
+        "flex min-h-11 items-center gap-2 rounded-3 px-3 py-1 transition-colors ease-out sm:hover:bg-accent-3",
       )}
     >
       {editingTodoId === todo.id ? (
