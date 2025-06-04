@@ -8,21 +8,20 @@ import {
   Button,
   Checkbox,
   Flex,
+  IconButton,
   Spinner,
   Text,
   TextArea,
 } from "@radix-ui/themes";
 import { cn } from "@/lib/client/utils";
-import {
-  focusInputAtEnd,
-  resizeTextArea,
-} from "@/lib/client/utils";
+import { focusInputAtEnd, resizeTextArea } from "@/lib/client/utils";
 import TextWithLinks from "./ui/text-with-links";
 import TodoDropdown from "./todo-dropdown";
 import { useIsMobile } from "@/hooks/use-is-mobile";
-import TodoDrawer from "./todo-drawer";
 import { Link, useParams } from "@tanstack/react-router";
 import { goToList } from "@/lib/client/links";
+import { useAtom } from "jotai";
+import { editingTodoIdAtom, selectedTodoIdAtom } from "./todos.store";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -83,22 +82,23 @@ const TodoForm: React.FC<{
 };
 
 const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
-  const { deleteTodo, updateTodo, moveTodo } = useMutations();
+  const { updateTodo } = useMutations();
+  const [_, setSelectedTodoId] = useAtom(selectedTodoIdAtom);
+  const [editingTodoId, setEditingTodoId] = useAtom(editingTodoIdAtom);
 
   const { listId } = useParams({ strict: false });
 
-  const [editorOpen, setEditorOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
 
   const isMobile = useIsMobile();
 
-  useOnClickOutside(ref, () => setEditorOpen(false));
+  useOnClickOutside(ref, () => setEditingTodoId(null));
   useEventListener("keydown", (e) => {
-    if (e.key === "Escape") setEditorOpen(false);
+    if (e.key === "Escape") setEditingTodoId(null);
   });
 
   React.useEffect(() => {
-    setEditorOpen(false);
+    setEditingTodoId(null);
   }, [todo]);
 
   return (
@@ -108,7 +108,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
         "flex min-h-11 items-center gap-rx-2 rounded-3 px-rx-3 py-rx-1 transition-colors ease-out sm:hover:bg-accent-3",
       )}
     >
-      {editorOpen ? (
+      {editingTodoId === todo.id ? (
         <TodoForm
           initialValue={todo.text}
           handleSubmit={(text) => {
@@ -116,7 +116,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
               id: todo.id,
               data: { text },
             });
-            setEditorOpen(false);
+            setEditingTodoId(null);
           }}
         />
       ) : (
@@ -137,7 +137,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
           <Flex
             flexGrow="1"
             align="center"
-            onClick={() => setEditorOpen(true)}
+            onClick={() => setEditingTodoId(todo.id)}
             className="min-w-0 whitespace-normal break-words"
           >
             <Text
@@ -154,21 +154,15 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
           )}
           {!todo.isAuthor && <UserBubble user={todo.author} size="md" />}
           {isMobile ? (
-            <TodoDrawer
-              handleDelete={() => deleteTodo.mutate({ id: todo.id })}
-              handleEdit={() => setEditorOpen(true)}
-              handleMove={(listId) =>
-                moveTodo.mutate({ id: todo.id, data: { listId } })
-              }
-            />
+            <IconButton
+              size="2"
+              variant="ghost"
+              onClick={() => setSelectedTodoId(todo.id)}
+            >
+              <i className="fa-solid fa-ellipsis" />
+            </IconButton>
           ) : (
-            <TodoDropdown
-              handleDelete={() => deleteTodo.mutate({ id: todo.id })}
-              handleEdit={() => setEditorOpen(true)}
-              handleMove={(listId) =>
-                moveTodo.mutate({ id: todo.id, data: { listId } })
-              }
-            />
+            <TodoDropdown todoId={todo.id} />
           )}
         </>
       )}

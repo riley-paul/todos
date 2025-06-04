@@ -1,10 +1,14 @@
-import { Button, IconButton, Text } from "@radix-ui/themes";
+import { Button, Text } from "@radix-ui/themes";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions } from "@/lib/client/queries";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { useParams } from "@tanstack/react-router";
 import { cn } from "@/lib/client/utils";
+import { useAtom } from "jotai";
+import { selectedTodoIdAtom } from "./todos.store";
+import useTodoActions from "./use-todo-actions";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 const MenuItem: React.FC<{
   text: string;
@@ -24,29 +28,21 @@ const MenuItem: React.FC<{
   );
 };
 
-type Props = {
-  handleEdit: () => void;
-  handleDelete: () => void;
-  handleMove: (listId: string | null) => void;
-};
+const TodoDrawer: React.FC = () => {
+  const { handleDelete, handleEdit, handleMove } = useTodoActions();
+  const [selectedTodoId, setSelectedTodoId] = useAtom(selectedTodoIdAtom);
 
-const TodoDrawer: React.FC<Props> = ({
-  handleDelete,
-  handleEdit,
-  handleMove,
-}) => {
   const { listId } = useParams({ strict: false });
-
-  const listsQuery = useQuery(listsQueryOptions);
-  const lists = listsQuery.data ?? [];
+  const { data: lists = [] } = useQuery(listsQueryOptions);
+  const isMobile = useIsMobile();
 
   return (
-    <Drawer>
-      <DrawerTrigger asChild>
-        <IconButton size="2" variant="ghost">
-          <i className="fa-solid fa-ellipsis" />
-        </IconButton>
-      </DrawerTrigger>
+    <Drawer
+      open={!!selectedTodoId && isMobile}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) setSelectedTodoId(null);
+      }}
+    >
       <DrawerContent>
         <div className="grid gap-2">
           <MenuItem text="Edit" icon="fa-solid fa-pen" onClick={handleEdit} />

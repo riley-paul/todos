@@ -4,6 +4,9 @@ import { cn } from "@/lib/client/utils";
 import { useQuery } from "@tanstack/react-query";
 import { listsQueryOptions } from "@/lib/client/queries";
 import { useParams } from "@tanstack/react-router";
+import useTodoActions from "./use-todo-actions";
+import { useAtom } from "jotai";
+import { selectedTodoIdAtom } from "./todos.store";
 
 const MenuItem: React.FC<{ text: string; icon: string }> = ({ text, icon }) => {
   return (
@@ -14,24 +17,17 @@ const MenuItem: React.FC<{ text: string; icon: string }> = ({ text, icon }) => {
   );
 };
 
-type Props = {
-  handleEdit: () => void;
-  handleDelete: () => void;
-  handleMove: (listId: string | null) => void;
-};
+const TodoDropdown: React.FC<{ todoId: string }> = ({ todoId }) => {
+  const { handleDelete, handleEdit, handleMove } = useTodoActions();
+  const [_, setSelectedTodoId] = useAtom(selectedTodoIdAtom);
 
-const TodoDropdown: React.FC<Props> = ({
-  handleDelete,
-  handleEdit,
-  handleMove,
-}) => {
   const { listId } = useParams({ strict: false });
-
-  const listsQuery = useQuery(listsQueryOptions);
-  const lists = listsQuery.data ?? [];
+  const { data: lists = [] } = useQuery(listsQueryOptions);
 
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu.Root
+      onOpenChange={(isOpen) => setSelectedTodoId(isOpen ? todoId : null)}
+    >
       <DropdownMenu.Trigger>
         <IconButton size="2" variant="ghost">
           <i className="fa-solid fa-ellipsis" />

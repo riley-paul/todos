@@ -7,6 +7,7 @@ import Todo from "./todo";
 import { Button, Text } from "@radix-ui/themes";
 import type { SelectedList } from "@/lib/types";
 import { todosQueryOptions } from "@/lib/client/queries";
+import TodoDrawer from "./todo-drawer";
 
 const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
   const { data: todos } = useSuspenseQuery(todosQueryOptions(listId));
@@ -73,6 +74,7 @@ const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
           )}
         </>
       )}
+      <TodoDrawer />
     </section>
   );
 };
