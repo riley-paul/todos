@@ -1,4 +1,4 @@
-import { listsQueryOptions } from "@/lib/client/queries";
+import { qLists } from "@/lib/client/queries";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import React from "react";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
@@ -134,7 +134,7 @@ const InviteForm: React.FC<{ list: ListSelect }> = ({ list }) => {
 export const Route = createFileRoute("/_withBack/list/$listId/edit")({
   component: RouteComponent,
   loader: ({ context: { queryClient } }) => {
-    queryClient.ensureQueryData(listsQueryOptions);
+    queryClient.ensureQueryData(qLists);
   },
 });
 
@@ -170,7 +170,7 @@ function RouteComponent() {
   });
 
   const { listId } = useParams({ strict: false });
-  const { data: lists } = useSuspenseQuery(listsQueryOptions);
+  const { data: lists } = useSuspenseQuery(qLists);
   const list = lists.find((list) => list.id === listId);
 
   if (!list) return null;

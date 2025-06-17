@@ -12,7 +12,7 @@ import {
 import { Badge, IconButton, Kbd, Text, Tooltip } from "@radix-ui/themes";
 import { useEventListener } from "usehooks-ts";
 import { useQuery } from "@tanstack/react-query";
-import { listsQueryOptions, todosQueryOptions } from "@/lib/client/queries";
+import { qLists, qTodos } from "@/lib/client/queries";
 import UserBubbleGroup from "./ui/user-bubble-group";
 import TextWithLinks from "./ui/text-with-links";
 import { cn } from "@/lib/client/utils";
@@ -26,8 +26,8 @@ const AppSearch: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const { data: lists = [] } = useQuery(listsQueryOptions);
-  const { data: todos = [] } = useQuery(todosQueryOptions("all"));
+  const { data: lists = [] } = useQuery(qLists);
+  const { data: todos = [] } = useQuery(qTodos("all"));
 
   const { createList, createTodo } = useMutations();
 

@@ -1,11 +1,11 @@
 import Todos from "@/components/todos";
-import { todosQueryOptions } from "@/lib/client/queries";
+import { qTodos } from "@/lib/client/queries";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_withAdder/")({
   component: RouteComponent,
   loader: ({ context: { queryClient } }) => {
-    queryClient.ensureQueryData(todosQueryOptions(null));
+    queryClient.ensureQueryData(qTodos(null));
   },
 });
 

@@ -2,7 +2,7 @@ import { DropdownMenu, Flex, IconButton, Text } from "@radix-ui/themes";
 import React from "react";
 import { cn } from "@/lib/client/utils";
 import { useQuery } from "@tanstack/react-query";
-import { listsQueryOptions } from "@/lib/client/queries";
+import { qLists } from "@/lib/client/queries";
 import { useParams } from "@tanstack/react-router";
 import useTodoActions from "./use-todo-actions";
 import { useAtom } from "jotai";
@@ -22,7 +22,7 @@ const TodoDropdown: React.FC<{ todoId: string }> = ({ todoId }) => {
   const [_, setSelectedTodoId] = useAtom(selectedTodoIdAtom);
 
   const { listId } = useParams({ strict: false });
-  const { data: lists = [] } = useQuery(listsQueryOptions);
+  const { data: lists = [] } = useQuery(qLists);
 
   return (
     <DropdownMenu.Root

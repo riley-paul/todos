@@ -75,6 +75,33 @@ const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
     );
 };
 
+const get: ActionHandler<typeof listInputs.get, ListSelectShallow> = async (
+  { id },
+  c,
+) => {
+  const db = createDb(c.locals.runtime.env);
+  const userId = isAuthorized(c).id;
+
+  if (id === "all") {
+    return { id: "all", name: "All" };
+  }
+
+  const users = await getListUsers(c, id);
+  if (!users.includes(userId)) {
+    throw actionErrors.NO_PERMISSION;
+  }
+
+  const [list] = await db
+    .select({
+      id: List.id,
+      name: List.name,
+    })
+    .from(List)
+    .where(eq(List.id, id));
+
+  return list;
+};
+
 const update: ActionHandler<
   typeof listInputs.update,
   ListSelectShallow
@@ -131,5 +158,5 @@ const remove: ActionHandler<typeof listInputs.remove, null> = async (
   return null;
 };
 
-const listHandlers = { getAll, update, create, remove };
+const listHandlers = { getAll, get, update, create, remove };
 export default listHandlers;

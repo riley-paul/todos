@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ActionInputError, actions, isActionError } from "astro:actions";
-import { listsQueryOptions, todosQueryOptions } from "@/lib/client/queries";
+import { qLists, qTodos } from "@/lib/client/queries";
 import type { SelectedList, TodoSelect } from "@/lib/types";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { goToList } from "@/lib/client/links";
@@ -39,7 +39,7 @@ export default function useMutations() {
     listId: SelectedList,
     updater: TodosUpdater,
   ) => {
-    const queryKey = todosQueryOptions(listId).queryKey;
+    const queryKey = qTodos(listId).queryKey;
     await queryClient.cancelQueries({ queryKey });
 
     const previous = queryClient.getQueryData(queryKey);
@@ -122,7 +122,7 @@ export default function useMutations() {
       context?.resetters.forEach((reset) => reset());
     },
     onSuccess: (_, { data: { listId } }) => {
-      const lists = queryClient.getQueryData(listsQueryOptions.queryKey);
+      const lists = queryClient.getQueryData(qLists.queryKey);
       const nextList = lists?.find((list) => list.id === listId);
       toast.success(`Todo moved to ${nextList?.name ?? "Unknown"}`);
     },

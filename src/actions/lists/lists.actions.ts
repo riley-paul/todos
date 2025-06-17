@@ -7,6 +7,11 @@ export const getAll = defineAction({
   handler: listHandlers.getAll,
 });
 
+export const get = defineAction({
+  input: listInputs.get,
+  handler: listHandlers.get,
+});
+
 export const update = defineAction({
   input: listInputs.update,
   handler: listHandlers.update,

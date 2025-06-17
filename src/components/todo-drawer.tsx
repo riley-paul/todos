@@ -1,7 +1,7 @@
 import { Text } from "@radix-ui/themes";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { listsQueryOptions } from "@/lib/client/queries";
+import { qLists } from "@/lib/client/queries";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { useParams } from "@tanstack/react-router";
 import { cn } from "@/lib/client/utils";
@@ -47,7 +47,7 @@ const TodoDrawer: React.FC = () => {
   const [selectedTodoId, setSelectedTodoId] = useAtom(selectedTodoIdAtom);
 
   const { listId } = useParams({ strict: false });
-  const { data: lists = [] } = useQuery(listsQueryOptions);
+  const { data: lists = [] } = useQuery(qLists);
   const isMobile = useIsMobile();
 
   return (

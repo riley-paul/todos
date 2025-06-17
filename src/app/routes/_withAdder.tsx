@@ -2,7 +2,7 @@ import Lists from "@/components/lists";
 import RefreshButton from "@/components/refresh-button";
 import TodoAdder from "@/components/todo-adder";
 import { goToListEditor } from "@/lib/client/links";
-import { listsQueryOptions } from "@/lib/client/queries";
+import { qLists } from "@/lib/client/queries";
 import { IconButton, Tooltip } from "@radix-ui/themes";
 import {
   createFileRoute,
@@ -14,7 +14,7 @@ import {
 export const Route = createFileRoute("/_withAdder")({
   component: RouteComponent,
   loader: ({ context: { queryClient } }) => {
-    queryClient.ensureQueryData(listsQueryOptions);
+    queryClient.ensureQueryData(qLists);
   },
 });
 

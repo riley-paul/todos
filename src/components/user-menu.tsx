@@ -2,7 +2,7 @@ import React from "react";
 
 import LoginButton from "./login-button";
 import { useQuery } from "@tanstack/react-query";
-import { userQueryOptions } from "@/lib/client/queries";
+import { qUser } from "@/lib/client/queries";
 import {
   Avatar,
   Button,
@@ -23,7 +23,7 @@ const UserMenu: React.FC = () => {
       "This action cannot be undone. This will permanently delete your account and remove your data from our servers.",
   });
 
-  const userQuery = useQuery(userQueryOptions);
+  const userQuery = useQuery(qUser);
 
   if (userQuery.isLoading) {
     return <Avatar size="3" radius="full" src="" fallback={<Spinner />} />;
