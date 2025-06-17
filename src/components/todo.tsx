@@ -83,19 +83,24 @@ const TodoForm: React.FC<{
 };
 
 const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
+  const { listId } = useParams({ strict: false });
   const { updateTodo } = useMutations();
+  const isMobile = useIsMobile();
+
   const [_, setSelectedTodoId] = useAtom(selectedTodoIdAtom);
   const [editingTodoId, setEditingTodoId] = useAtom(editingTodoIdAtom);
 
-  const { listId } = useParams({ strict: false });
-
   const ref = React.useRef<HTMLDivElement>(null);
 
-  const isMobile = useIsMobile();
-
-  useOnClickOutside(ref, () => setEditingTodoId(null));
+  useOnClickOutside(ref, () => {
+    if (editingTodoId !== todo.id) return;
+    setEditingTodoId(null);
+  });
   useEventListener("keydown", (e) => {
-    if (e.key === "Escape") setEditingTodoId(null);
+    if (editingTodoId !== todo.id) return;
+    if (e.key === "Escape" && editingTodoId === todo.id) {
+      setEditingTodoId(null);
+    }
   });
 
   return (
