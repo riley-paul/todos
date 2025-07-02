@@ -152,6 +152,22 @@ export default function useMutations() {
     mutationFn: actions.listShares.create.orThrow,
   });
 
+  const deleteList = useMutation({
+    mutationFn: actions.lists.remove.orThrow,
+    onSuccess: () => {
+      navigate({ to: "/" });
+      toast.success("List deleted");
+    },
+  });
+
+  const leaveListShare = useMutation({
+    mutationFn: actions.listShares.leave.orThrow,
+    onSuccess: () => {
+      navigate({ to: "/" });
+      toast.success("You no longer have access to this list");
+    },
+  });
+
   return {
     updateTodo,
     deleteTodo,
@@ -161,6 +177,8 @@ export default function useMutations() {
     deleteUser,
     updateList,
     createList,
+    deleteList,
+    leaveListShare,
     createListShare,
   };
 }

@@ -1,3 +1,4 @@
+import AlertSystem from "@/components/alert-system/alert-system";
 import AppSearch from "@/components/app-search";
 import PendingInvites from "@/components/pending-invites";
 import UserMenu from "@/components/user-menu";
@@ -43,6 +44,7 @@ function Component() {
       <div className="container2 pb-24 pt-6">
         <Outlet />
       </div>
+      <AlertSystem />
     </>
   );
 }

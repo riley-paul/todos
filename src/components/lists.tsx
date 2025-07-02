@@ -1,64 +1,81 @@
 import React from "react";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { qLists, qTodos } from "@/lib/client/queries";
-import type { SelectedList, UserSelect } from "@/lib/types";
+import type { ListSelect, SelectedList } from "@/lib/types";
 import UserBubbleGroup from "./ui/user-bubble-group";
-import { Button, Flex, Separator, Text } from "@radix-ui/themes";
-import { Link } from "@tanstack/react-router";
+import { Badge, Button, Flex, Separator, Text } from "@radix-ui/themes";
+import { Link, useLinkProps } from "@tanstack/react-router";
 import { goToList } from "@/lib/client/links";
+import ListMenu from "./list-menu";
+import { cn } from "@/lib/client/utils";
 
-const List: React.FC<{
-  value: SelectedList;
-  name: string;
-  count: number | undefined;
-  users?: UserSelect[];
-}> = ({ value, count = 0, name, users = [] }) => {
+type ListProps =
+  | {
+      type: "list";
+      list: ListSelect;
+    }
+  | {
+      type: "custom";
+      id: SelectedList;
+      name: string;
+      count: number;
+    };
+
+const List: React.FC<ListProps> = (props) => {
+  const id = props.type === "list" ? props.list.id : props.id;
+  const name = props.type === "list" ? props.list.name : props.name;
+  const todoCount =
+    props.type === "list" ? props.list.todoCount : (props.count ?? 0);
+
+  const linkProps = useLinkProps(goToList(id)) as any;
+  const isActive = linkProps["data-status"] === "active";
+
   return (
-    <Link {...goToList(value)}>
-      {({ isActive }) => (
-        <Button
-          size="1"
-          color={isActive ? undefined : "gray"}
-          variant={isActive ? "surface" : "soft"}
-          className="flex items-center gap-2"
-        >
-          <Text truncate className="max-w-[70vw]">
-            {name}
-          </Text>
-          <Text className="font-mono text-accentA-12">{count}</Text>
-          <UserBubbleGroup users={users} numAvatars={3} />
-        </Button>
+    <Badge
+      size="2"
+      color={isActive ? undefined : "gray"}
+      variant={isActive ? "surface" : "soft"}
+      className={cn(
+        "flex items-center gap-2 transition-colors",
+        isActive ? "hover:bg-accent-5" : "hover:bg-accent-6",
       )}
-    </Link>
+    >
+      <Link {...goToList(id)} className="flex items-center gap-2">
+        <Text truncate className="max-w-[70vw]">
+          {name}
+        </Text>
+        <Text className="font-mono text-accentA-12">{todoCount}</Text>
+        {props.type === "list" && (
+          <UserBubbleGroup users={props.list.otherUsers} numAvatars={3} />
+        )}
+      </Link>
+      {props.type === "list" && <ListMenu list={props.list} />}
+    </Badge>
   );
 };
 
 const Lists: React.FC = () => {
   const { data: lists } = useSuspenseQuery(qLists);
-  const inboxCount = useQuery(qTodos(null))?.data?.length;
-  const allCount = useQuery(qTodos("all"))?.data?.length;
+  const inboxCount = useQuery(qTodos(null))?.data?.length ?? 0;
+  const allCount = useQuery(qTodos("all"))?.data?.length ?? 0;
 
   return (
     <>
       <div className="flex flex-wrap gap-rx-2 px-rx-3">
-        <List value={null} name="Inbox" count={inboxCount} />
-        {lists.length > 0 && <List value="all" name="All" count={allCount} />}
+        <List type="custom" id={null} name="Inbox" count={inboxCount} />
+        {lists.length > 0 && (
+          <List type="custom" id="all" name="All" count={allCount} />
+        )}
         <Flex align="center">
           <Separator orientation="vertical" size="1" />
         </Flex>
         {lists.map((list) => (
-          <List
-            key={list.id}
-            value={list.id}
-            name={list.name}
-            count={list.todoCount}
-            users={list.otherUsers}
-          />
+          <List type="list" key={list.id} list={list} />
         ))}
         <Button asChild variant="soft" size="1" color="gray">
           <Link to="/list/new">
             <i className="fa-solid fa-plus text-accent-10" />
-            New list
+            <span className="sr-only">New list</span>
           </Link>
         </Button>
       </div>
