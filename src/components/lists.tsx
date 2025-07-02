@@ -3,11 +3,16 @@ import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { qLists, qTodos } from "@/lib/client/queries";
 import type { ListSelect, SelectedList } from "@/lib/types";
 import UserBubbleGroup from "./ui/user-bubble-group";
-import { Badge, Button, Flex, Separator, Text } from "@radix-ui/themes";
+import { Badge, Flex, IconButton, Separator, Text } from "@radix-ui/themes";
 import { Link, useLinkProps } from "@tanstack/react-router";
 import { goToList } from "@/lib/client/links";
 import ListMenu from "./list-menu";
 import { cn } from "@/lib/client/utils";
+import { useAtom } from "jotai";
+import { alertSystemAtom } from "./alert-system/alert-system.store";
+import z from "zod/v4";
+import { toast } from "sonner";
+import useMutations from "@/hooks/use-mutations";
 
 type ListProps =
   | {
@@ -55,9 +60,31 @@ const List: React.FC<ListProps> = (props) => {
 };
 
 const Lists: React.FC = () => {
+  const [, dispatchAlert] = useAtom(alertSystemAtom);
+  const { createList } = useMutations();
+
   const { data: lists } = useSuspenseQuery(qLists);
   const inboxCount = useQuery(qTodos(null))?.data?.length ?? 0;
   const allCount = useQuery(qTodos("all"))?.data?.length ?? 0;
+
+  const handleCreateList = () => {
+    dispatchAlert({
+      type: "open",
+      data: {
+        type: "input",
+        title: "Create New List",
+        message: "Enter a name for your new list",
+        value: "",
+        placeholder: "List name",
+        schema: z.string().min(1).max(100),
+        handleSubmit: (name: string) => {
+          createList.mutate({ data: { name } });
+          dispatchAlert({ type: "close" });
+          toast.success("List created successfully");
+        },
+      },
+    });
+  };
 
   return (
     <>
@@ -72,12 +99,15 @@ const Lists: React.FC = () => {
         {lists.map((list) => (
           <List type="list" key={list.id} list={list} />
         ))}
-        <Button asChild variant="soft" size="1" color="gray">
-          <Link to="/list/new">
-            <i className="fa-solid fa-plus text-accent-10" />
-            <span className="sr-only">New list</span>
-          </Link>
-        </Button>
+        <IconButton
+          onClick={handleCreateList}
+          variant="ghost"
+          size="1"
+          className="m-0 size-[26px] p-0"
+        >
+          <i className="fa-solid fa-plus text-accent-10" />
+          <span className="sr-only">New list</span>
+        </IconButton>
       </div>
     </>
   );
