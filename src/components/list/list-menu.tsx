@@ -113,10 +113,12 @@ const ListMenu: React.FC<Props> = ({ list }) => {
             <Edit2Icon className="size-4 opacity-70" />
             <span>Rename</span>
           </DropdownMenu.Item>
-          <DropdownMenu.Item onClick={() => setShareDialogOpen(true)}>
-            <Share2Icon className="size-4 opacity-70" />
-            <span>Share</span>
-          </DropdownMenu.Item>
+          {list.isAuthor && (
+            <DropdownMenu.Item onClick={() => setShareDialogOpen(true)}>
+              <Share2Icon className="size-4 opacity-70" />
+              <span>Share</span>
+            </DropdownMenu.Item>
+          )}
           <DropdownMenu.Separator />
           <DropdownMenu.Item onClick={handleCopyLink}>
             <Link2Icon className="size-4 opacity-70" />

@@ -25,7 +25,6 @@ type Props = {
 
 const inviteFormSchema = z.object({
   email: z
-    .string()
     .email()
     .refine((email) => actions.users.checkIfEmailExists.orThrow({ email }), {
       message: "User not found",
