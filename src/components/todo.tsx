@@ -16,7 +16,7 @@ import {
 import { cn } from "@/lib/client/utils";
 import { focusInputAtEnd, resizeTextArea } from "@/lib/client/utils";
 import TextWithLinks from "./ui/text-with-links";
-import TodoDropdown from "./todo-dropdown";
+import TodoMenu from "./todo-menu";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { Link, useParams } from "@tanstack/react-router";
 import { goToList } from "@/lib/client/links";
@@ -164,7 +164,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
               <i className="fa-solid fa-ellipsis" />
             </IconButton>
           ) : (
-            <TodoDropdown todoId={todo.id} />
+            <TodoMenu todoId={todo.id} />
           )}
         </>
       )}
