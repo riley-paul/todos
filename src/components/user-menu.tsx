@@ -3,18 +3,17 @@ import React from "react";
 import LoginButton from "./login-button";
 import { useQuery } from "@tanstack/react-query";
 import { qUser } from "@/lib/client/queries";
-import {
-  Avatar,
-  Button,
-  Popover,
-  Spinner,
-  Text,
-  Tooltip,
-} from "@radix-ui/themes";
+import { Avatar, DropdownMenu, Spinner, Text, Tooltip } from "@radix-ui/themes";
 import useMutations from "@/hooks/use-mutations";
-import { LogOutIcon, TrashIcon, TriangleAlert } from "lucide-react";
+import {
+  LogOutIcon,
+  Settings2Icon,
+  TrashIcon,
+  TriangleAlert,
+} from "lucide-react";
 import { useAtom } from "jotai";
 import { alertSystemAtom } from "./alert-system/alert-system.store";
+import { Link } from "@tanstack/react-router";
 
 const UserMenu: React.FC = () => {
   const { deleteUser } = useMutations();
@@ -69,59 +68,62 @@ const UserMenu: React.FC = () => {
     );
   }
 
+  const fallback = user.name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
+
   return (
-    <Popover.Root>
-      <Popover.Trigger title="User settings">
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger title="User settings">
         <button>
           <Avatar
             size="3"
             radius="full"
             src={user.avatarUrl ?? ""}
-            fallback={user.name[0].toUpperCase()}
+            fallback={fallback}
             className="cursor-pointer"
           />
         </button>
-      </Popover.Trigger>
-      <Popover.Content align="end">
-        <div className="grid gap-rx-4">
-          <div className="align-center flex gap-rx-4">
-            <Avatar
-              size="5"
-              radius="full"
-              src={user.avatarUrl ?? ""}
-              fallback={user.name[0].toUpperCase()}
-            />
-            <div className="flex flex-col justify-center">
-              <Text weight="bold" size="4">
-                {user.name}
-              </Text>
-              <Text size="2" color="gray">
-                {user.email}
-              </Text>
-            </div>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content side="right" className="grid gap-3">
+        <header className="flex items-center gap-2 p-2">
+          <Avatar
+            src={user.avatarUrl ?? ""}
+            alt={user.name}
+            fallback={fallback}
+            radius="full"
+          />
+          <div className="leading-0.5 grid flex-1">
+            <Text weight="medium" truncate>
+              {user.name}
+            </Text>
+            <Text color="gray" size="2">
+              {user.email}
+            </Text>
           </div>
-
-          <div className="grid gap-2">
-            <Button asChild className="relative" variant="soft">
-              <a href="/logout">
-                <LogOutIcon className="absolute left-4 size-4" />
-                <span>Logout</span>
-              </a>
-            </Button>
-            <Button
-              color="red"
-              variant="soft"
-              size="2"
-              onClick={handleDeleteAccount}
-              className="relative"
-            >
-              <TrashIcon className="size-4 absolute left-4" />
-              <span>Delete Account</span>
-            </Button>
-          </div>
-        </div>
-      </Popover.Content>
-    </Popover.Root>
+        </header>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item asChild>
+          <Link to="/settings">
+            <Settings2Icon className="size-4 opacity-70" />
+            <span>Settings</span>
+          </Link>
+        </DropdownMenu.Item>
+        <DropdownMenu.Item asChild>
+          <a href="/logout">
+            <LogOutIcon className="size-4 opacity-70" />
+            <span>Log out</span>
+          </a>
+        </DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item color="red" onClick={handleDeleteAccount}>
+          <TrashIcon className="size-4 opacity-70" />
+          <span>Delete Account</span>
+        </DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
   );
 };
 

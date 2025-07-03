@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as WithBackImport } from './routes/_withBack'
 import { Route as WithAdderImport } from './routes/_withAdder'
 import { Route as WithAdderIndexImport } from './routes/_withAdder.index'
+import { Route as WithBackSettingsImport } from './routes/_withBack.settings'
 import { Route as WithBackListNewImport } from './routes/_withBack.list.new'
 import { Route as WithAdderTodosListIdImport } from './routes/_withAdder.todos.$listId'
 import { Route as WithBackListListIdEditImport } from './routes/_withBack.list.$listId.edit'
@@ -34,6 +35,12 @@ const WithAdderIndexRoute = WithAdderIndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => WithAdderRoute,
+} as any)
+
+const WithBackSettingsRoute = WithBackSettingsImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => WithBackRoute,
 } as any)
 
 const WithBackListNewRoute = WithBackListNewImport.update({
@@ -71,6 +78,13 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof WithBackImport
       parentRoute: typeof rootRoute
+    }
+    '/_withBack/settings': {
+      id: '/_withBack/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof WithBackSettingsImport
+      parentRoute: typeof WithBackImport
     }
     '/_withAdder/': {
       id: '/_withAdder/'
@@ -120,11 +134,13 @@ const WithAdderRouteWithChildren = WithAdderRoute._addFileChildren(
 )
 
 interface WithBackRouteChildren {
+  WithBackSettingsRoute: typeof WithBackSettingsRoute
   WithBackListNewRoute: typeof WithBackListNewRoute
   WithBackListListIdEditRoute: typeof WithBackListListIdEditRoute
 }
 
 const WithBackRouteChildren: WithBackRouteChildren = {
+  WithBackSettingsRoute: WithBackSettingsRoute,
   WithBackListNewRoute: WithBackListNewRoute,
   WithBackListListIdEditRoute: WithBackListListIdEditRoute,
 }
@@ -135,6 +151,7 @@ const WithBackRouteWithChildren = WithBackRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '': typeof WithBackRouteWithChildren
+  '/settings': typeof WithBackSettingsRoute
   '/': typeof WithAdderIndexRoute
   '/todos/$listId': typeof WithAdderTodosListIdRoute
   '/list/new': typeof WithBackListNewRoute
@@ -143,6 +160,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '': typeof WithBackRouteWithChildren
+  '/settings': typeof WithBackSettingsRoute
   '/': typeof WithAdderIndexRoute
   '/todos/$listId': typeof WithAdderTodosListIdRoute
   '/list/new': typeof WithBackListNewRoute
@@ -153,6 +171,7 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_withAdder': typeof WithAdderRouteWithChildren
   '/_withBack': typeof WithBackRouteWithChildren
+  '/_withBack/settings': typeof WithBackSettingsRoute
   '/_withAdder/': typeof WithAdderIndexRoute
   '/_withAdder/todos/$listId': typeof WithAdderTodosListIdRoute
   '/_withBack/list/new': typeof WithBackListNewRoute
@@ -161,13 +180,26 @@ export interface FileRoutesById {
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/' | '/todos/$listId' | '/list/new' | '/list/$listId/edit'
+  fullPaths:
+    | ''
+    | '/settings'
+    | '/'
+    | '/todos/$listId'
+    | '/list/new'
+    | '/list/$listId/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '' | '/' | '/todos/$listId' | '/list/new' | '/list/$listId/edit'
+  to:
+    | ''
+    | '/settings'
+    | '/'
+    | '/todos/$listId'
+    | '/list/new'
+    | '/list/$listId/edit'
   id:
     | '__root__'
     | '/_withAdder'
     | '/_withBack'
+    | '/_withBack/settings'
     | '/_withAdder/'
     | '/_withAdder/todos/$listId'
     | '/_withBack/list/new'
@@ -209,9 +241,14 @@ export const routeTree = rootRoute
     "/_withBack": {
       "filePath": "_withBack.tsx",
       "children": [
+        "/_withBack/settings",
         "/_withBack/list/new",
         "/_withBack/list/$listId/edit"
       ]
+    },
+    "/_withBack/settings": {
+      "filePath": "_withBack.settings.tsx",
+      "parent": "/_withBack"
     },
     "/_withAdder/": {
       "filePath": "_withAdder.index.tsx",
