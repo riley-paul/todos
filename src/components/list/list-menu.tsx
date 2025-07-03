@@ -3,7 +3,7 @@ import { useAtom } from "jotai";
 import React from "react";
 import { toast } from "sonner";
 import { useCopyToClipboard } from "usehooks-ts";
-import { alertSystemAtom } from "./alert-system/alert-system.store";
+import { alertSystemAtom } from "@/components/alert-system/alert-system.store";
 import useMutations from "@/hooks/use-mutations";
 import type { ListSelect } from "@/lib/types";
 import { z } from "zod/v4";

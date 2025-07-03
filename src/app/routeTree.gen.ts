@@ -15,7 +15,6 @@ import { Route as WithBackImport } from './routes/_withBack'
 import { Route as WithAdderImport } from './routes/_withAdder'
 import { Route as WithAdderIndexImport } from './routes/_withAdder.index'
 import { Route as WithBackSettingsImport } from './routes/_withBack.settings'
-import { Route as WithBackListNewImport } from './routes/_withBack.list.new'
 import { Route as WithAdderTodosListIdImport } from './routes/_withAdder.todos.$listId'
 import { Route as WithBackListListIdEditImport } from './routes/_withBack.list.$listId.edit'
 
@@ -40,12 +39,6 @@ const WithAdderIndexRoute = WithAdderIndexImport.update({
 const WithBackSettingsRoute = WithBackSettingsImport.update({
   id: '/settings',
   path: '/settings',
-  getParentRoute: () => WithBackRoute,
-} as any)
-
-const WithBackListNewRoute = WithBackListNewImport.update({
-  id: '/list/new',
-  path: '/list/new',
   getParentRoute: () => WithBackRoute,
 } as any)
 
@@ -100,13 +93,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WithAdderTodosListIdImport
       parentRoute: typeof WithAdderImport
     }
-    '/_withBack/list/new': {
-      id: '/_withBack/list/new'
-      path: '/list/new'
-      fullPath: '/list/new'
-      preLoaderRoute: typeof WithBackListNewImport
-      parentRoute: typeof WithBackImport
-    }
     '/_withBack/list/$listId/edit': {
       id: '/_withBack/list/$listId/edit'
       path: '/list/$listId/edit'
@@ -135,13 +121,11 @@ const WithAdderRouteWithChildren = WithAdderRoute._addFileChildren(
 
 interface WithBackRouteChildren {
   WithBackSettingsRoute: typeof WithBackSettingsRoute
-  WithBackListNewRoute: typeof WithBackListNewRoute
   WithBackListListIdEditRoute: typeof WithBackListListIdEditRoute
 }
 
 const WithBackRouteChildren: WithBackRouteChildren = {
   WithBackSettingsRoute: WithBackSettingsRoute,
-  WithBackListNewRoute: WithBackListNewRoute,
   WithBackListListIdEditRoute: WithBackListListIdEditRoute,
 }
 
@@ -154,7 +138,6 @@ export interface FileRoutesByFullPath {
   '/settings': typeof WithBackSettingsRoute
   '/': typeof WithAdderIndexRoute
   '/todos/$listId': typeof WithAdderTodosListIdRoute
-  '/list/new': typeof WithBackListNewRoute
   '/list/$listId/edit': typeof WithBackListListIdEditRoute
 }
 
@@ -163,7 +146,6 @@ export interface FileRoutesByTo {
   '/settings': typeof WithBackSettingsRoute
   '/': typeof WithAdderIndexRoute
   '/todos/$listId': typeof WithAdderTodosListIdRoute
-  '/list/new': typeof WithBackListNewRoute
   '/list/$listId/edit': typeof WithBackListListIdEditRoute
 }
 
@@ -174,27 +156,14 @@ export interface FileRoutesById {
   '/_withBack/settings': typeof WithBackSettingsRoute
   '/_withAdder/': typeof WithAdderIndexRoute
   '/_withAdder/todos/$listId': typeof WithAdderTodosListIdRoute
-  '/_withBack/list/new': typeof WithBackListNewRoute
   '/_withBack/list/$listId/edit': typeof WithBackListListIdEditRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | ''
-    | '/settings'
-    | '/'
-    | '/todos/$listId'
-    | '/list/new'
-    | '/list/$listId/edit'
+  fullPaths: '' | '/settings' | '/' | '/todos/$listId' | '/list/$listId/edit'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | ''
-    | '/settings'
-    | '/'
-    | '/todos/$listId'
-    | '/list/new'
-    | '/list/$listId/edit'
+  to: '' | '/settings' | '/' | '/todos/$listId' | '/list/$listId/edit'
   id:
     | '__root__'
     | '/_withAdder'
@@ -202,7 +171,6 @@ export interface FileRouteTypes {
     | '/_withBack/settings'
     | '/_withAdder/'
     | '/_withAdder/todos/$listId'
-    | '/_withBack/list/new'
     | '/_withBack/list/$listId/edit'
   fileRoutesById: FileRoutesById
 }
@@ -242,7 +210,6 @@ export const routeTree = rootRoute
       "filePath": "_withBack.tsx",
       "children": [
         "/_withBack/settings",
-        "/_withBack/list/new",
         "/_withBack/list/$listId/edit"
       ]
     },
@@ -257,10 +224,6 @@ export const routeTree = rootRoute
     "/_withAdder/todos/$listId": {
       "filePath": "_withAdder.todos.$listId.tsx",
       "parent": "/_withAdder"
-    },
-    "/_withBack/list/new": {
-      "filePath": "_withBack.list.new.tsx",
-      "parent": "/_withBack"
     },
     "/_withBack/list/$listId/edit": {
       "filePath": "_withBack.list.$listId.edit.tsx",

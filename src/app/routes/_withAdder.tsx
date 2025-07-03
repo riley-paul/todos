@@ -1,4 +1,4 @@
-import Lists from "@/components/lists";
+import Lists from "@/components/list/lists";
 import RefreshButton from "@/components/refresh-button";
 import TodoAdder from "@/components/todo-adder";
 import { qLists } from "@/lib/client/queries";
