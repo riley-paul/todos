@@ -1,4 +1,4 @@
-import Todos from "@/components/todos";
+import Todos from "@/components/todo/todos";
 import { qList } from "@/lib/client/queries";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";

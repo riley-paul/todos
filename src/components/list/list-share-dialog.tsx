@@ -1,13 +1,6 @@
 import type { ListSelect } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Button,
-  Callout,
-  Dialog,
-  Strong,
-  Text,
-  TextField,
-} from "@radix-ui/themes";
+import { Button, Dialog, Text, TextField } from "@radix-ui/themes";
 import { useMutation } from "@tanstack/react-query";
 import { actions } from "astro:actions";
 import React from "react";
@@ -15,7 +8,6 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod/v4";
 import ListShares from "./list-shares";
-import UserBubble from "../ui/user-bubble";
 
 type Props = {
   isOpen: boolean;
@@ -92,15 +84,6 @@ const ListShareDialog: React.FC<Props> = ({ list, isOpen, onOpenChange }) => {
             Add other users to your list so they can add and delete todos
           </Dialog.Description>
         </header>
-
-        <Callout.Root variant="soft" size="1">
-          <Callout.Icon>
-            <UserBubble user={list.author} size="md" />
-          </Callout.Icon>
-          <Callout.Text>
-            Created by <Strong>{list.author.name}</Strong>
-          </Callout.Text>
-        </Callout.Root>
 
         <section className="grid gap-4">
           <InviteForm list={list} />

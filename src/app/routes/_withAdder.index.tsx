@@ -1,4 +1,4 @@
-import Todos from "@/components/todos";
+import Todos from "@/components/todo/todos";
 import { qTodos } from "@/lib/client/queries";
 import { createFileRoute } from "@tanstack/react-router";
 

@@ -2,7 +2,7 @@ import React from "react";
 import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
-import UserBubble from "./ui/user-bubble";
+import UserBubble from "../ui/user-bubble";
 import {
   Badge,
   Button,
@@ -15,7 +15,7 @@ import {
 } from "@radix-ui/themes";
 import { cn } from "@/lib/client/utils";
 import { focusInputAtEnd, resizeTextArea } from "@/lib/client/utils";
-import TextWithLinks from "./ui/text-with-links";
+import TextWithLinks from "../ui/text-with-links";
 import TodoMenu from "./todo-menu";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { Link, useParams } from "@tanstack/react-router";
