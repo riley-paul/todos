@@ -1,4 +1,3 @@
-import { cn } from "@/lib/client/utils";
 import { DropdownMenu, IconButton } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import React from "react";
@@ -8,6 +7,14 @@ import { alertSystemAtom } from "./alert-system/alert-system.store";
 import useMutations from "@/hooks/use-mutations";
 import type { ListSelect } from "@/lib/types";
 import { z } from "zod/v4";
+import {
+  Edit2Icon,
+  EllipsisIcon,
+  ExternalLinkIcon,
+  Link2Icon,
+  LogOutIcon,
+  TrashIcon,
+} from "lucide-react";
 
 type Props = {
   list: ListSelect;
@@ -87,35 +94,34 @@ const ListMenu: React.FC<Props> = ({ list: { id, name, isAuthor } }) => {
     <DropdownMenu.Root modal={false}>
       <DropdownMenu.Trigger>
         <IconButton size="1" variant="ghost">
-          <i className="fa-solid fa-ellipsis text-accent-10" />
+          <EllipsisIcon className="size-3 opacity-90" />
         </IconButton>
       </DropdownMenu.Trigger>
 
       <DropdownMenu.Content className="min-w-32">
         <DropdownMenu.Item onClick={handleRenameList}>
-          <i className="fas fa-edit opacity-70" />
+          <Edit2Icon className="size-4 opacity-70" />
           <span>Rename</span>
         </DropdownMenu.Item>
         <DropdownMenu.Separator />
         <DropdownMenu.Item onClick={handleCopyLink}>
-          <i className="fas fa-link opacity-70" />
-          <span>Copy link</span>
+          <Link2Icon className="size-4 opacity-70" />
+          <span>Copy Link</span>
         </DropdownMenu.Item>
         <DropdownMenu.Item onClick={handleOpenInNewTab}>
-          <i className="fas fa-arrow-up-right-from-square opacity-70" />
-          <span>Open in new tab</span>
+          <ExternalLinkIcon className="size-4 opacity-70" />
+          <span>Open in New Tab</span>
         </DropdownMenu.Item>
         <DropdownMenu.Separator />
         <DropdownMenu.Item
           onClick={isAuthor ? handleDeleteList : handleLeaveList}
           color={isAuthor ? "red" : "amber"}
         >
-          <i
-            className={cn(
-              "fas opacity-70",
-              isAuthor ? "fa-trash" : "fa-arrow-right-from-bracket",
-            )}
-          />
+          {isAuthor ? (
+            <TrashIcon className="size-4 opacity-70" />
+          ) : (
+            <LogOutIcon className="size-4 opacity-70" />
+          )}
           <span>{isAuthor ? "Delete" : "Leave"}</span>
         </DropdownMenu.Item>
       </DropdownMenu.Content>
