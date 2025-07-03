@@ -25,8 +25,10 @@ const AlertSystemContentInput: React.FC<InputAlertProps> = ({
   return (
     <>
       <form onSubmit={onSubmit}>
-        <Dialog.Title>{title}</Dialog.Title>
-        <Dialog.Description>{message}</Dialog.Description>
+        <Dialog.Title size="3">{title}</Dialog.Title>
+        <Dialog.Description size="2" color="gray">
+          {message}
+        </Dialog.Description>
         <Controller
           name="value"
           control={form.control}

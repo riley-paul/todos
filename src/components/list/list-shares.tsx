@@ -1,8 +1,8 @@
 import type { ListSelect } from "@/lib/types";
 import React from "react";
-import UserBubble from "./ui/user-bubble";
+import UserBubble from "../ui/user-bubble";
 import { Text, Tooltip } from "@radix-ui/themes";
-import DeleteButton from "./ui/delete-button";
+import DeleteButton from "../ui/delete-button";
 import { useMutation } from "@tanstack/react-query";
 import { actions } from "astro:actions";
 

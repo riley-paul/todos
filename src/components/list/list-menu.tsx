@@ -16,16 +16,19 @@ import {
   Share2Icon,
   TrashIcon,
 } from "lucide-react";
+import ListShareDialog from "./list-share-dialog";
 
 type Props = {
   list: ListSelect;
 };
 
-const ListMenu: React.FC<Props> = ({ list: { id, name, isAuthor } }) => {
+const ListMenu: React.FC<Props> = ({ list }) => {
+  const { id, name, isAuthor } = list;
   const { deleteList, leaveListShare, updateList } = useMutations();
 
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const [, copyToClipboard] = useCopyToClipboard();
+  const [shareDialogOpen, setShareDialogOpen] = React.useState(false);
 
   const handleRenameList = () => {
     dispatchAlert({
@@ -92,45 +95,52 @@ const ListMenu: React.FC<Props> = ({ list: { id, name, isAuthor } }) => {
   };
 
   return (
-    <DropdownMenu.Root modal={false}>
-      <DropdownMenu.Trigger>
-        <IconButton size="1" variant="ghost">
-          <EllipsisIcon className="size-3 opacity-90" />
-        </IconButton>
-      </DropdownMenu.Trigger>
+    <>
+      <ListShareDialog
+        list={list}
+        isOpen={shareDialogOpen}
+        onOpenChange={setShareDialogOpen}
+      />
+      <DropdownMenu.Root modal={false}>
+        <DropdownMenu.Trigger>
+          <IconButton size="1" variant="ghost">
+            <EllipsisIcon className="size-3 opacity-90" />
+          </IconButton>
+        </DropdownMenu.Trigger>
 
-      <DropdownMenu.Content className="min-w-32">
-        <DropdownMenu.Item onClick={handleRenameList}>
-          <Edit2Icon className="size-4 opacity-70" />
-          <span>Rename</span>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item disabled>
-          <Share2Icon className="size-4 opacity-70" />
-          <span>Share</span>
-        </DropdownMenu.Item>
-        <DropdownMenu.Separator />
-        <DropdownMenu.Item onClick={handleCopyLink}>
-          <Link2Icon className="size-4 opacity-70" />
-          <span>Copy Link</span>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item onClick={handleOpenInNewTab}>
-          <ExternalLinkIcon className="size-4 opacity-70" />
-          <span>Open in New Tab</span>
-        </DropdownMenu.Item>
-        <DropdownMenu.Separator />
-        <DropdownMenu.Item
-          onClick={isAuthor ? handleDeleteList : handleLeaveList}
-          color={isAuthor ? "red" : "amber"}
-        >
-          {isAuthor ? (
-            <TrashIcon className="size-4 opacity-70" />
-          ) : (
-            <LogOutIcon className="size-4 opacity-70" />
-          )}
-          <span>{isAuthor ? "Delete" : "Leave"}</span>
-        </DropdownMenu.Item>
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
+        <DropdownMenu.Content className="min-w-32">
+          <DropdownMenu.Item onClick={handleRenameList}>
+            <Edit2Icon className="size-4 opacity-70" />
+            <span>Rename</span>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item onClick={() => setShareDialogOpen(true)}>
+            <Share2Icon className="size-4 opacity-70" />
+            <span>Share</span>
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item onClick={handleCopyLink}>
+            <Link2Icon className="size-4 opacity-70" />
+            <span>Copy Link</span>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item onClick={handleOpenInNewTab}>
+            <ExternalLinkIcon className="size-4 opacity-70" />
+            <span>Open in New Tab</span>
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item
+            onClick={isAuthor ? handleDeleteList : handleLeaveList}
+            color={isAuthor ? "red" : "amber"}
+          >
+            {isAuthor ? (
+              <TrashIcon className="size-4 opacity-70" />
+            ) : (
+              <LogOutIcon className="size-4 opacity-70" />
+            )}
+            <span>{isAuthor ? "Delete" : "Leave"}</span>
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
+    </>
   );
 };
 
