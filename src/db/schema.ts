@@ -27,6 +27,9 @@ export const User = sqliteTable("user", {
   googleId: text().unique(),
   githubId: integer().unique(),
   githubUsername: text().unique(),
+
+  settingGroupCompleted: integer({ mode: "boolean" }).notNull().default(true),
+
   ...timeStamps,
 });
 

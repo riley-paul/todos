@@ -5,6 +5,7 @@ import { Todo, User, UserSession } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import type { UserSelect } from "@/lib/types";
 import type userInputs from "./users.inputs";
+import actionErrors from "../errors";
 
 const getMe: ActionHandler<typeof userInputs.getMe, UserSelect | null> = async (
   _,
@@ -46,9 +47,35 @@ const checkIfEmailExists: ActionHandler<
   return data.length > 0;
 };
 
+const updateUserSettings: ActionHandler<
+  typeof userInputs.updateUserSettings,
+  UserSelect
+> = async ({ settingGroupCompleted }, c) => {
+  const db = createDb(c.locals.runtime.env);
+  const user = c.locals.user;
+  if (!user) {
+    throw actionErrors.UNAUTHORIZED;
+  }
+  const [updatedUser] = await db
+    .update(User)
+    .set({ settingGroupCompleted })
+    .where(eq(User.id, user.id))
+    .returning({
+      id: User.id,
+      name: User.name,
+      email: User.email,
+      avatarUrl: User.avatarUrl,
+    });
+
+  if (!updatedUser) throw actionErrors.NOT_FOUND;
+
+  return updatedUser;
+};
+
 const userHandlers = {
   getMe,
   remove,
   checkIfEmailExists,
+  updateUserSettings,
 };
 export default userHandlers;

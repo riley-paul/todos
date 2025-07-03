@@ -16,3 +16,8 @@ export const checkIfEmailExists = defineAction({
   input: userInputs.checkIfEmailExists,
   handler: userHandlers.checkIfEmailExists,
 });
+
+export const updateUserSettings = defineAction({
+  input: userInputs.updateUserSettings,
+  handler: userHandlers.updateUserSettings,
+});
