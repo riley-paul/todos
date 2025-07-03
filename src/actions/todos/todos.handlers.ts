@@ -140,5 +140,33 @@ const removeCompleted: ActionHandler<
   return null;
 };
 
-const todoHanders = { get, create, update, remove, removeCompleted };
+const uncheckCompleted: ActionHandler<
+  typeof todoInputs.uncheckCompleted,
+  null
+> = async ({ listId }, c) => {
+  const db = createDb(c.locals.runtime.env);
+  const userId = isAuthorized(c).id;
+  const todoIds = await db
+    .selectDistinct({ id: Todo.id })
+    .from(Todo)
+    .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
+    .where(and(filterTodos(userId, listId), eq(Todo.isCompleted, true)))
+    .then((rows) => rows.map((row) => row.id));
+
+  await db
+    .update(Todo)
+    .set({ isCompleted: false })
+    .where(and(eq(Todo.isCompleted, true), inArray(Todo.id, todoIds)));
+
+  return null;
+};
+
+const todoHanders = {
+  get,
+  create,
+  update,
+  remove,
+  removeCompleted,
+  uncheckCompleted,
+};
 export default todoHanders;

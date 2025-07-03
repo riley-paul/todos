@@ -97,6 +97,13 @@ export default function useMutations() {
     },
   });
 
+  const uncheckCompletedTodos = useMutation({
+    mutationFn: actions.todos.uncheckCompleted.orThrow,
+    onSuccess: () => {
+      toast.success("All completed todos unchecked");
+    },
+  });
+
   const createTodo = useMutation({
     mutationFn: actions.todos.create.orThrow,
     onSuccess: ({ listId }) => {
@@ -172,6 +179,7 @@ export default function useMutations() {
     updateTodo,
     deleteTodo,
     deleteCompletedTodos,
+    uncheckCompletedTodos,
     createTodo,
     moveTodo,
     deleteUser,

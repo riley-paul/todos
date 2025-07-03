@@ -7,6 +7,7 @@ const todoInputs = {
   update: z.object({ id: z.string(), data: zTodoInsert.partial() }),
   remove: z.object({ id: z.string() }),
   removeCompleted: z.object({ listId: z.string().nullable() }),
+  uncheckCompleted: z.object({ listId: z.string().nullable() }),
 };
 
 export default todoInputs;

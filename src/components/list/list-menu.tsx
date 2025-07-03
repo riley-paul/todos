@@ -12,8 +12,10 @@ import {
   EllipsisIcon,
   ExternalLinkIcon,
   Link2Icon,
+  ListXIcon,
   LogOutIcon,
   Share2Icon,
+  SquareMinusIcon,
   TrashIcon,
 } from "lucide-react";
 import ListShareDialog from "./list-share-dialog";
@@ -24,7 +26,13 @@ type Props = {
 
 const ListMenu: React.FC<Props> = ({ list }) => {
   const { id, name, isAuthor } = list;
-  const { deleteList, leaveListShare, updateList } = useMutations();
+  const {
+    deleteList,
+    leaveListShare,
+    updateList,
+    uncheckCompletedTodos,
+    deleteCompletedTodos,
+  } = useMutations();
 
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const [, copyToClipboard] = useCopyToClipboard();
@@ -127,6 +135,19 @@ const ListMenu: React.FC<Props> = ({ list }) => {
           <DropdownMenu.Item onClick={handleOpenInNewTab}>
             <ExternalLinkIcon className="size-4 opacity-70" />
             <span>Open in New Tab</span>
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item
+            onClick={() => uncheckCompletedTodos.mutate({ listId: id })}
+          >
+            <SquareMinusIcon className="size-4 opacity-70" />
+            <span>Uncheck all</span>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            onClick={() => deleteCompletedTodos.mutate({ listId: id })}
+          >
+            <ListXIcon className="size-4 opacity-70" />
+            <span>Delete completed</span>
           </DropdownMenu.Item>
           <DropdownMenu.Separator />
           <DropdownMenu.Item

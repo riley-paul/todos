@@ -26,3 +26,8 @@ export const removeCompleted = defineAction({
   input: todoInputs.removeCompleted,
   handler: todoHanders.removeCompleted,
 });
+
+export const uncheckCompleted = defineAction({
+  input: todoInputs.uncheckCompleted,
+  handler: todoHanders.uncheckCompleted,
+});
