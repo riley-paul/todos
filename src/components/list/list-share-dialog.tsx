@@ -8,6 +8,7 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod/v4";
 import ListShares from "./list-shares";
+import { SendIcon } from "lucide-react";
 
 type Props = {
   isOpen: boolean;
@@ -67,7 +68,7 @@ const InviteForm: React.FC<{ list: ListSelect }> = ({ list }) => {
       />
       <input type="submit" hidden />
       <Button type="submit">
-        <i className="fa-solid fa-paper-plane" />
+        <SendIcon className="size-4 opacity-70" />
         Invite
       </Button>
     </form>

@@ -22,13 +22,6 @@
     @apply border-gray-6;
   }
 
-  i.fas,
-  i.fa-solid {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
   .container2 {
     @apply mx-auto w-full max-w-screen-sm px-2;
   }

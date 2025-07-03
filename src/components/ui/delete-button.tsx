@@ -1,6 +1,7 @@
 import React from "react";
 import useConfirmButton from "@/hooks/use-confirm-button";
 import { IconButton } from "@radix-ui/themes";
+import { CheckIcon, XIcon } from "lucide-react";
 
 interface Props {
   handleDelete: () => void;
@@ -17,7 +18,11 @@ const DeleteButton: React.FC<Props> = (props) => {
 
   return (
     <IconButton ref={ref} size="1" radius="full" type="button" {...buttonProps}>
-      {isConfirming ? <i className="fa-solid fa-check" /> : <i className="fa-solid fa-xmark" />}
+      {isConfirming ? (
+        <CheckIcon className="size-4" />
+      ) : (
+        <XIcon className="size-4" />
+      )}
     </IconButton>
   );
 };
