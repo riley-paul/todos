@@ -1,21 +1,21 @@
 import Todos from "@/components/todo/todos";
 import { qList } from "@/lib/client/queries";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useDocumentTitle } from "usehooks-ts";
 
 export const Route = createFileRoute("/_withAdder/todos/$listId")({
   component: RouteComponent,
-  loader: ({ context: { queryClient }, params: { listId } }) => {
-    queryClient.ensureQueryData(qList(listId));
+  loader: async ({ context: { queryClient }, params: { listId } }) => {
+    const list = await queryClient.ensureQueryData(qList(listId));
+    return { list };
   },
 });
 
 function RouteComponent() {
   const { listId } = Route.useParams();
-  const {
-    data: { name },
-  } = useSuspenseQuery(qList(listId));
-  useDocumentTitle(name);
+  const { list } = Route.useLoaderData();
+
+  useDocumentTitle(list.name);
+
   return <Todos listId={listId} />;
 }
