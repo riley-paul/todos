@@ -19,6 +19,7 @@ import { cn } from "@/lib/client/utils";
 import { useNavigate } from "@tanstack/react-router";
 import useMutations from "@/hooks/use-mutations";
 import { goToList } from "@/lib/client/links";
+import { PlusIcon, SearchIcon } from "lucide-react";
 
 const AppSearch: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -58,7 +59,7 @@ const AppSearch: React.FC = () => {
           radius="full"
           onClick={() => setIsOpen(true)}
         >
-          <i className="fas fa-search" />
+          <SearchIcon className="size-4" />
         </IconButton>
       </Tooltip>
       <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
@@ -79,7 +80,7 @@ const AppSearch: React.FC = () => {
                   )
                 }
               >
-                <i className="fas fa-plus text-accent-10" />
+                <PlusIcon className="size-4 text-accent-10" />
                 <span>Create new list "{value}"</span>
               </CommandItem>
             )}
@@ -113,7 +114,7 @@ const AppSearch: React.FC = () => {
                   )
                 }
               >
-                <i className="fas fa-plus text-accent-10" />
+                <PlusIcon className="size-4 text-accent-10" />
                 <span>Create new todo "{value}"</span>
               </CommandItem>
             )}

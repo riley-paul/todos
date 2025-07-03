@@ -1,4 +1,5 @@
 import { Badge } from "@radix-ui/themes";
+import { Link2Icon } from "lucide-react";
 import React from "react";
 
 function getDomain(url: string) {
@@ -22,7 +23,7 @@ const TextWithLinks: React.FC<{ text: string }> = ({ text }) => {
               onClick={(e) => e.stopPropagation()}
             >
               {getDomain(part)}
-              <i className="fas fa-link"></i>
+              <Link2Icon className="inline size-3 opacity-70" />
             </a>
           </Badge>
         );

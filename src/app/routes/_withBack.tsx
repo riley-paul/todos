@@ -6,6 +6,7 @@ import {
   Outlet,
   useParams,
 } from "@tanstack/react-router";
+import { MoveLeftIcon } from "lucide-react";
 
 export const Route = createFileRoute("/_withBack")({
   component: RouteComponent,
@@ -18,7 +19,7 @@ function RouteComponent() {
       <div>
         <Button asChild size="2" variant="ghost" className="gap-2">
           <Link {...goToList(listId)}>
-            <i className="fas fa-arrow-left" />
+            <MoveLeftIcon className="size-4" />
             Back
           </Link>
         </Button>
