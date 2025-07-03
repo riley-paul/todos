@@ -13,6 +13,7 @@ import { alertSystemAtom } from "./alert-system/alert-system.store";
 import z from "zod/v4";
 import { toast } from "sonner";
 import useMutations from "@/hooks/use-mutations";
+import { PlusIcon } from "lucide-react";
 
 type ListProps =
   | {
@@ -105,7 +106,7 @@ const Lists: React.FC = () => {
           size="1"
           className="m-0 size-[26px] p-0"
         >
-          <i className="fa-solid fa-plus text-accent-10" />
+          <PlusIcon className="size-5 text-accent-10" />
           <span className="sr-only">New list</span>
         </IconButton>
       </div>

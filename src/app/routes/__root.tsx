@@ -10,6 +10,7 @@ import {
   Link,
   Outlet,
 } from "@tanstack/react-router";
+import { CircleCheckBigIcon } from "lucide-react";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   {
@@ -25,7 +26,7 @@ function Component() {
         <div className="container2">
           <div className="flex items-center justify-between px-3 py-3">
             <div className="flex items-center gap-2">
-              <i className="fa-solid fa-check-double text-7 text-accent-9" />
+              <CircleCheckBigIcon className="size-6 text-accent-10" />
               <Heading asChild size="6" weight="bold">
                 <Link to="/">Todos</Link>
               </Heading>

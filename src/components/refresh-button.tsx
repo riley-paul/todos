@@ -1,6 +1,7 @@
 import { cn } from "@/lib/client/utils";
 import { IconButton, Tooltip } from "@radix-ui/themes";
 import { useQueryClient } from "@tanstack/react-query";
+import { RefreshCwIcon } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
 
@@ -19,7 +20,7 @@ const RefreshButton: React.FC = () => {
           setTimeout(() => setIsRotating(false), 1000);
         }}
       >
-        <i className={cn("fa-solid fa-rotate", isRotating && "animate-spin")} />
+        <RefreshCwIcon className={cn("size-4", isRotating && "animate-spin")} />
       </IconButton>
     </Tooltip>
   );

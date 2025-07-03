@@ -12,6 +12,7 @@ import {
 } from "@radix-ui/themes";
 import { actions } from "astro:actions";
 import { toast } from "sonner";
+import { BellIcon, CheckIcon, XIcon } from "lucide-react";
 
 const PendingInvites: React.FC = () => {
   const pendingSharesQuery = useQuery(qPendingShares);
@@ -32,7 +33,7 @@ const PendingInvites: React.FC = () => {
     <Popover.Root>
       <Popover.Trigger>
         <IconButton variant="soft" className="relative rounded-full">
-          <i className="fa-solid fa-bell" />
+          <BellIcon className="size-4" />
           {numPendingShares > 0 && (
             <Badge
               variant="solid"
@@ -68,7 +69,7 @@ const PendingInvites: React.FC = () => {
                     variant="soft"
                     onClick={() => acceptListShare.mutate({ id: share.id })}
                   >
-                    <i className="fa-solid fa-check" />
+                    <CheckIcon className="size-3" />
                     <span>Accept</span>
                   </Button>
                   <Button
@@ -77,7 +78,7 @@ const PendingInvites: React.FC = () => {
                     color="red"
                     onClick={() => deleteListShare.mutate({ id: share.id })}
                   >
-                    <i className="fa-solid fa-xmark" />
+                    <XIcon className="size-3" />
                     <span>Decline</span>
                   </Button>
                 </div>

@@ -8,6 +8,7 @@ import { Button, Text } from "@radix-ui/themes";
 import type { SelectedList } from "@/lib/types";
 import { qTodos } from "@/lib/client/queries";
 import TodoDrawer from "./todo-drawer";
+import { ChevronRightIcon, EraserIcon } from "lucide-react";
 
 const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
   const { data: todos } = useSuspenseQuery(qTodos(listId));
@@ -46,9 +47,9 @@ const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
             >
               <span>Completed</span>
               <Text className="font-mono text-accentA-12">{numCompleted}</Text>
-              <i
+              <ChevronRightIcon
                 className={cn(
-                  "fa-solid fa-chevron-right transition-transform duration-200",
+                  "size-4 transition-transform duration-200",
                   showCompleted && "rotate-90",
                 )}
               />
@@ -59,7 +60,7 @@ const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
               color="gray"
               onClick={() => deleteCompletedTodos.mutate({ listId })}
             >
-              <i className="fa-solid fa-eraser" />
+              <EraserIcon className="size-3" />
               Clear
             </Button>
           </div>

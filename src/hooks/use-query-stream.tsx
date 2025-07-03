@@ -1,5 +1,6 @@
 import { Text, Tooltip, type TextProps } from "@radix-ui/themes";
 import { useQueryClient } from "@tanstack/react-query";
+import { CircleIcon } from "lucide-react";
 import React from "react";
 
 type StreamState = "connecting" | "connected" | "disconnected";
@@ -37,7 +38,7 @@ export default function useQueryStream() {
     return (
       <Tooltip content={getStreamStateDescription(streamState)} side="right">
         <Text size="1" color={getStreamStateIconColor(streamState)}>
-          <i className="fa-solid fa-circle fa-sm" />
+          <CircleIcon className="size-3" />
         </Text>
       </Tooltip>
     );

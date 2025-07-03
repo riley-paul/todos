@@ -6,7 +6,12 @@ import { useParams } from "@tanstack/react-router";
 import useTodoActions from "./use-todo-actions";
 import { useAtom } from "jotai";
 import { selectedTodoIdAtom } from "./todos.store";
-import { CornerDownRightIcon, DeleteIcon, Edit2Icon } from "lucide-react";
+import {
+  CornerDownRightIcon,
+  DeleteIcon,
+  Edit2Icon,
+  EllipsisIcon,
+} from "lucide-react";
 
 const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
   const { handleDelete, handleEdit, handleMove } = useTodoActions();
@@ -21,7 +26,7 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
     >
       <DropdownMenu.Trigger>
         <IconButton size="2" variant="ghost">
-          <i className="fa-solid fa-ellipsis" />
+          <EllipsisIcon className="size-4" />
         </IconButton>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content align="end" className="min-w-48">

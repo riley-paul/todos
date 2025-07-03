@@ -22,6 +22,7 @@ import { Link, useParams } from "@tanstack/react-router";
 import { goToList } from "@/lib/client/links";
 import { useAtom } from "jotai";
 import { editingTodoIdAtom, selectedTodoIdAtom } from "./todos.store";
+import { EllipsisIcon, SaveIcon } from "lucide-react";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -75,7 +76,7 @@ const TodoForm: React.FC<{
         size="2"
         onClick={() => handleSubmit(value)}
       >
-        <i className="fa-solid fa-save" />
+        <SaveIcon className="size-4" />
         Save
       </Button>
     </form>
@@ -161,7 +162,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
               variant="ghost"
               onClick={() => setSelectedTodoId(todo.id)}
             >
-              <i className="fa-solid fa-ellipsis" />
+              <EllipsisIcon className="size-4" />
             </IconButton>
           ) : (
             <TodoMenu todoId={todo.id} />
