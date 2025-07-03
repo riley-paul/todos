@@ -87,7 +87,7 @@ const UserMenu: React.FC = () => {
           />
         </button>
       </DropdownMenu.Trigger>
-      <DropdownMenu.Content side="right" className="grid gap-3">
+      <DropdownMenu.Content align="end" className="grid gap-3">
         <header className="flex items-center gap-2 p-2">
           <Avatar
             src={user.avatarUrl ?? ""}

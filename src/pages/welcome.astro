@@ -3,6 +3,7 @@ import LoginButton from "@/components/login-button";
 import RadixProvider from "@/components/radix-provider";
 import RootLayout from "@/layouts/root-layout.astro";
 import { Heading, Text } from "@radix-ui/themes";
+import { CircleCheckBigIcon } from "lucide-react";
 ---
 
 <RootLayout>
@@ -12,7 +13,7 @@ import { Heading, Text } from "@radix-ui/themes";
     >
       <main class="max-w-sm w-full mx-auto grid gap-6 px-4 pb-32">
         <div class="flex items-center justify-center">
-          <i class="text-accent-10 text-[5rem] fa-solid fa-check-double"></i>
+          <CircleCheckBigIcon className="text-accent-10 size-[5rem]" />
         </div>
         <section class="prose w-full max-w-none text-center dark:prose-invert">
           <Heading size="8" mb="2">Todos</Heading>
