@@ -8,8 +8,16 @@ export const zUserSelect = createSelectSchema(User).pick({
   email: true,
   avatarUrl: true,
 });
+export const zUserSelectWithSettings = createSelectSchema(User).pick({
+  id: true,
+  name: true,
+  email: true,
+  avatarUrl: true,
+  settingGroupCompleted: true,
+});
 export const zUserInsert = createInsertSchema(User);
 export type UserSelect = z.infer<typeof zUserSelect>;
+export type UserSelectWithSettings = z.infer<typeof zUserSelectWithSettings>;
 export type UserInsert = z.infer<typeof zUserInsert>;
 
 export type UserSessionInfo = {

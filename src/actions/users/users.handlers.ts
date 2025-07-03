@@ -3,28 +3,30 @@ import { isAuthorized } from "../helpers";
 import { createDb } from "@/db";
 import { Todo, User, UserSession } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import type { UserSelect } from "@/lib/types";
+import type { UserSelectWithSettings } from "@/lib/types";
 import type userInputs from "./users.inputs";
 import actionErrors from "../errors";
 
-const getMe: ActionHandler<typeof userInputs.getMe, UserSelect | null> = async (
-  _,
-  c,
-) => {
+const getMe: ActionHandler<
+  typeof userInputs.getMe,
+  UserSelectWithSettings
+> = async (_, c) => {
   const db = createDb(c.locals.runtime.env);
   const user = c.locals.user;
-  if (!user) {
-    return null;
-  }
+  if (!user) throw actionErrors.UNAUTHORIZED;
+
   const [data] = await db
     .select({
       id: User.id,
       name: User.name,
       email: User.email,
       avatarUrl: User.avatarUrl,
+      settingGroupCompleted: User.settingGroupCompleted,
     })
     .from(User)
     .where(eq(User.id, user.id));
+
+  if (!data) throw actionErrors.NOT_FOUND;
   return data;
 };
 
@@ -49,7 +51,7 @@ const checkIfEmailExists: ActionHandler<
 
 const updateUserSettings: ActionHandler<
   typeof userInputs.updateUserSettings,
-  UserSelect
+  UserSelectWithSettings
 > = async ({ settingGroupCompleted }, c) => {
   const db = createDb(c.locals.runtime.env);
   const user = c.locals.user;
@@ -65,6 +67,7 @@ const updateUserSettings: ActionHandler<
       name: User.name,
       email: User.email,
       avatarUrl: User.avatarUrl,
+      settingGroupCompleted: User.settingGroupCompleted,
     });
 
   if (!updatedUser) throw actionErrors.NOT_FOUND;

@@ -6,12 +6,13 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import Todo from "./todo";
 import { Button, Text } from "@radix-ui/themes";
 import type { SelectedList } from "@/lib/types";
-import { qTodos } from "@/lib/client/queries";
+import { qTodos, qUser } from "@/lib/client/queries";
 import TodoDrawer from "./todo-drawer";
 import { ChevronRightIcon, EraserIcon } from "lucide-react";
 
 const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
   const { data: todos } = useSuspenseQuery(qTodos(listId));
+  const { data: user } = useSuspenseQuery(qUser);
   const { deleteCompletedTodos } = useMutations();
 
   const numCompleted = todos.filter((i) => i.isCompleted).length ?? 0;
@@ -27,54 +28,67 @@ const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
     );
   }
 
-  return (
-    <section className="grid gap-4">
-      <div className="grid gap-1">
-        {todos
-          .filter((i) => !i.isCompleted)
-          .map((todo) => (
-            <Todo key={todo.id} todo={todo} />
-          ))}
-      </div>
-      {numCompleted > 0 && (
-        <>
-          <div className="flex items-center justify-between gap-rx-2 px-rx-2">
-            <Button
-              size="1"
-              className="flex h-6 gap-2 px-3"
-              variant="ghost"
-              onClick={() => setShowCompleted((prev) => !prev)}
-            >
-              <span>Completed</span>
-              <Text className="font-mono text-accentA-12">{numCompleted}</Text>
-              <ChevronRightIcon
-                className={cn(
-                  "size-4 transition-transform duration-200",
-                  showCompleted && "rotate-90",
-                )}
-              />
-            </Button>
-            <Button
-              size="1"
-              variant="soft"
-              color="gray"
-              onClick={() => deleteCompletedTodos.mutate({ listId })}
-            >
-              <EraserIcon className="size-3" />
-              Clear
-            </Button>
-          </div>
-          {showCompleted && (
-            <div className="grid gap-1">
-              {todos
-                .filter((i) => i.isCompleted)
-                .map((todo) => (
-                  <Todo key={todo.id} todo={todo} />
-                ))}
+  if (user.settingGroupCompleted) {
+    return (
+      <section className="grid gap-4">
+        <div className="grid gap-1">
+          {todos
+            .filter((i) => !i.isCompleted)
+            .map((todo) => (
+              <Todo key={todo.id} todo={todo} />
+            ))}
+        </div>
+        {numCompleted > 0 && (
+          <>
+            <div className="flex items-center justify-between gap-rx-2 px-rx-2">
+              <Button
+                size="1"
+                className="flex h-6 gap-2 px-3"
+                variant="ghost"
+                onClick={() => setShowCompleted((prev) => !prev)}
+              >
+                <span>Completed</span>
+                <Text className="font-mono text-accentA-12">
+                  {numCompleted}
+                </Text>
+                <ChevronRightIcon
+                  className={cn(
+                    "size-4 transition-transform duration-200",
+                    showCompleted && "rotate-90",
+                  )}
+                />
+              </Button>
+              <Button
+                size="1"
+                variant="soft"
+                color="gray"
+                onClick={() => deleteCompletedTodos.mutate({ listId })}
+              >
+                <EraserIcon className="size-3" />
+                Clear
+              </Button>
             </div>
-          )}
-        </>
-      )}
+            {showCompleted && (
+              <div className="grid gap-1">
+                {todos
+                  .filter((i) => i.isCompleted)
+                  .map((todo) => (
+                    <Todo key={todo.id} todo={todo} />
+                  ))}
+              </div>
+            )}
+          </>
+        )}
+        <TodoDrawer />
+      </section>
+    );
+  }
+
+  return (
+    <section className="grid gap-1">
+      {todos.map((todo) => (
+        <Todo key={todo.id} todo={todo} />
+      ))}
       <TodoDrawer />
     </section>
   );
