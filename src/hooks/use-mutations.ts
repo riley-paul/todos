@@ -131,7 +131,12 @@ export default function useMutations() {
     onSuccess: (_, { data: { listId } }) => {
       const lists = queryClient.getQueryData(qLists.queryKey);
       const nextList = lists?.find((list) => list.id === listId);
-      toast.success(`Todo moved to ${nextList?.name ?? "Unknown"}`);
+      toast.success(`Todo moved to ${nextList?.name ?? "Unknown"}`, {
+        action: {
+          label: "Go to list",
+          onClick: () => navigate(goToList(listId)),
+        },
+      });
     },
   });
 
