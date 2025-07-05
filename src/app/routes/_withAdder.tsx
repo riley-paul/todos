@@ -1,5 +1,4 @@
 import Lists from "@/components/list/lists";
-import ListsSelect from "@/components/list/lists-select";
 import RefreshButton from "@/components/refresh-button";
 import TodoAdder from "@/components/todo-adder";
 import { qLists } from "@/lib/client/queries";
@@ -17,9 +16,8 @@ function RouteComponent() {
   return (
     <>
       <main className="grid gap-4">
-        <ListsSelect />
         <TodoAdder listId={listId ?? null} />
-        {/* <Lists /> */}
+        <Lists />
         <Outlet />
       </main>
       <div className="fixed bottom-8 right-8 flex items-center gap-3">

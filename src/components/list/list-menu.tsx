@@ -19,6 +19,8 @@ import {
   TrashIcon,
 } from "lucide-react";
 import ListShareDialog from "./list-share-dialog";
+import type { MenuItem } from "../ui/menu/types";
+import MenuDropdown from "../ui/menu/menu-dropdown";
 
 type Props = {
   list: ListSelect;
@@ -102,6 +104,81 @@ const ListMenu: React.FC<Props> = ({ list }) => {
     window.open(link, "_blank");
   };
 
+  const menuItems: MenuItem[] = [
+    {
+      type: "item",
+      key: "rename",
+      text: "Rename",
+      icon: <Edit2Icon className="size-4 opacity-70" />,
+      onClick: handleRenameList,
+    },
+
+    {
+      type: "item",
+      key: "share",
+      text: "Share",
+      icon: <Share2Icon className="size-4 opacity-70" />,
+      onClick: () => setShareDialogOpen(true),
+      hide: !list.isAuthor,
+    },
+
+    {
+      type: "separator",
+    },
+    {
+      type: "item",
+      key: "copy-link",
+      text: "Copy Link",
+      icon: <Link2Icon className="size-4 opacity-70" />,
+      onClick: handleCopyLink,
+    },
+    {
+      type: "item",
+      key: "open-in-new-tab",
+      text: "Open in New Tab",
+      icon: <ExternalLinkIcon className="size-4 opacity-70" />,
+      onClick: handleOpenInNewTab,
+    },
+    {
+      type: "separator",
+    },
+    {
+      type: "item",
+      key: "uncheck-all",
+      text: "Uncheck all",
+      icon: <SquareMinusIcon className="size-4 opacity-70" />,
+      onClick: () => uncheckCompletedTodos.mutate({ listId: id }),
+    },
+    {
+      type: "item",
+      key: "delete-completed",
+      text: "Delete completed",
+      icon: <ListXIcon className="size-4 opacity-70" />,
+      onClick: () => deleteCompletedTodos.mutate({ listId: id }),
+    },
+    {
+      type: "separator",
+    },
+    {
+      type: "item",
+      key: "leave-list",
+      text: "Leave",
+      icon: <LogOutIcon className="size-4 opacity-70" />,
+      color: "amber",
+      onClick: handleLeaveList,
+      hide: isAuthor,
+    },
+    {
+      type: "item",
+      key: "delete-list",
+      text: "Delete",
+      icon: <TrashIcon className="size-4 opacity-70" />,
+      color: "red",
+      onClick: handleDeleteList,
+      hide: !isAuthor,
+    },
+  ];
+
   return (
     <>
       <ListShareDialog
@@ -117,50 +194,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content className="min-w-32">
-          <DropdownMenu.Item onClick={handleRenameList}>
-            <Edit2Icon className="size-4 opacity-70" />
-            <span>Rename</span>
-          </DropdownMenu.Item>
-          {list.isAuthor && (
-            <DropdownMenu.Item onClick={() => setShareDialogOpen(true)}>
-              <Share2Icon className="size-4 opacity-70" />
-              <span>Share</span>
-            </DropdownMenu.Item>
-          )}
-          <DropdownMenu.Separator />
-          <DropdownMenu.Item onClick={handleCopyLink}>
-            <Link2Icon className="size-4 opacity-70" />
-            <span>Copy Link</span>
-          </DropdownMenu.Item>
-          <DropdownMenu.Item onClick={handleOpenInNewTab}>
-            <ExternalLinkIcon className="size-4 opacity-70" />
-            <span>Open in New Tab</span>
-          </DropdownMenu.Item>
-          <DropdownMenu.Separator />
-          <DropdownMenu.Item
-            onClick={() => uncheckCompletedTodos.mutate({ listId: id })}
-          >
-            <SquareMinusIcon className="size-4 opacity-70" />
-            <span>Uncheck all</span>
-          </DropdownMenu.Item>
-          <DropdownMenu.Item
-            onClick={() => deleteCompletedTodos.mutate({ listId: id })}
-          >
-            <ListXIcon className="size-4 opacity-70" />
-            <span>Delete completed</span>
-          </DropdownMenu.Item>
-          <DropdownMenu.Separator />
-          <DropdownMenu.Item
-            onClick={isAuthor ? handleDeleteList : handleLeaveList}
-            color={isAuthor ? "red" : "amber"}
-          >
-            {isAuthor ? (
-              <TrashIcon className="size-4 opacity-70" />
-            ) : (
-              <LogOutIcon className="size-4 opacity-70" />
-            )}
-            <span>{isAuthor ? "Delete" : "Leave"}</span>
-          </DropdownMenu.Item>
+          <MenuDropdown menuItems={menuItems} />
         </DropdownMenu.Content>
       </DropdownMenu.Root>
     </>
