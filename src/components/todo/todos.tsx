@@ -7,7 +7,6 @@ import Todo from "./todo";
 import { Button, Text } from "@radix-ui/themes";
 import type { SelectedList } from "@/lib/types";
 import { qTodos, qUser } from "@/lib/client/queries";
-import TodoDrawer from "./todo-drawer";
 import { ChevronRightIcon, EraserIcon } from "lucide-react";
 
 const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
@@ -79,7 +78,6 @@ const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
             )}
           </>
         )}
-        <TodoDrawer />
       </section>
     );
   }
@@ -89,7 +87,6 @@ const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
       {todos.map((todo) => (
         <Todo key={todo.id} todo={todo} />
       ))}
-      <TodoDrawer />
     </section>
   );
 };

@@ -1,40 +1,30 @@
 import useMutations from "@/hooks/use-mutations";
 import { useAtom } from "jotai";
-import { editingTodoIdAtom, selectedTodoIdAtom } from "./todos.store";
+import { editingTodoIdAtom } from "./todos.store";
 import { Edit2Icon, CornerDownRightIcon, DeleteIcon } from "lucide-react";
 import type { MenuItem } from "../ui/menu/types";
 import { useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { qLists } from "@/lib/client/queries";
 
-export default function useTodoActions() {
+export default function useTodoActions(todoId: string) {
   const { deleteTodo, moveTodo } = useMutations();
 
   const { listId } = useParams({ strict: false });
   const { data: lists = [] } = useQuery(qLists);
 
-  const [selectedTodoId, setSelectedTodoId] = useAtom(selectedTodoIdAtom);
   const [_, setEditingTodoId] = useAtom(editingTodoIdAtom);
 
   const handleMove = (targetListId: string | null) => {
-    if (!selectedTodoId) return;
-    moveTodo.mutate(
-      { id: selectedTodoId, data: { listId: targetListId } },
-      { onSuccess: () => setSelectedTodoId(null) },
-    );
+    moveTodo.mutate({ id: todoId, data: { listId: targetListId } });
   };
 
   const handleDelete = () => {
-    if (!selectedTodoId) return;
-    deleteTodo.mutate(
-      { id: selectedTodoId },
-      { onSuccess: () => setSelectedTodoId(null) },
-    );
+    deleteTodo.mutate({ id: todoId });
   };
 
   const handleEdit = () => {
-    setEditingTodoId(selectedTodoId);
-    setSelectedTodoId(null);
+    setEditingTodoId(todoId);
   };
 
   const moveMenuItems: MenuItem[] = [

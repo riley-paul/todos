@@ -8,7 +8,6 @@ import {
   Button,
   Checkbox,
   Flex,
-  IconButton,
   Spinner,
   Text,
   TextArea,
@@ -21,8 +20,9 @@ import { useIsMobile } from "@/hooks/use-is-mobile";
 import { Link, useParams } from "@tanstack/react-router";
 import { goToList } from "@/lib/client/links";
 import { useAtom } from "jotai";
-import { editingTodoIdAtom, selectedTodoIdAtom } from "./todos.store";
-import { EllipsisIcon, SaveIcon } from "lucide-react";
+import { editingTodoIdAtom } from "./todos.store";
+import { SaveIcon } from "lucide-react";
+import TodoDrawer from "./todo-drawer";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -88,7 +88,6 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   const { updateTodo } = useMutations();
   const isMobile = useIsMobile();
 
-  const [_, setSelectedTodoId] = useAtom(selectedTodoIdAtom);
   const [editingTodoId, setEditingTodoId] = useAtom(editingTodoIdAtom);
 
   const ref = React.useRef<HTMLDivElement>(null);
@@ -157,13 +156,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
           )}
           {!todo.isAuthor && <UserBubble user={todo.author} size="md" />}
           {isMobile ? (
-            <IconButton
-              size="2"
-              variant="ghost"
-              onClick={() => setSelectedTodoId(todo.id)}
-            >
-              <EllipsisIcon className="size-4" />
-            </IconButton>
+            <TodoDrawer todoId={todo.id} />
           ) : (
             <TodoMenu todoId={todo.id} />
           )}
