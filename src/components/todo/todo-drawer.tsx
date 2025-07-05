@@ -19,7 +19,7 @@ const GroupContainer: React.FC<
         {header}
       </Text>
     )}
-    <div className="grid divide-y divide-gray-4 rounded-2 bg-panel-translucent backdrop-blur">
+    <div className="grid divide-y divide-gray-4 rounded-3 bg-panel-translucent backdrop-blur">
       {children}
     </div>
   </div>
@@ -33,7 +33,7 @@ const MenuItem: React.FC<{
   return (
     <button
       color="gray"
-      className="flex items-center justify-between gap-2 px-3 py-2 text-2"
+      className="flex items-center justify-between gap-2 px-4 py-2 text-2"
       onClick={onClick}
     >
       <Text weight="medium">{text}</Text>

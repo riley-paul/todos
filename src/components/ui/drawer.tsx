@@ -12,6 +12,14 @@ function DrawerRoot({
   return <DrawerPrimitive.Root data-slot="drawer" {...props} />;
 }
 
+function DrawerNestedRoot({
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.NestedRoot>) {
+  return (
+    <DrawerPrimitive.NestedRoot data-slot="drawer-nested-root" {...props} />
+  );
+}
+
 function DrawerTrigger({
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Trigger>) {
@@ -58,7 +66,7 @@ function DrawerContent({
         <DrawerPrimitive.Content
           data-slot="drawer-content"
           className={cn(
-            "group/drawer-content fixed z-50 flex h-auto flex-col bg-gray-1",
+            "group/drawer-content fixed z-50 flex h-auto flex-col bg-panel-solid",
             "data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80vh] data-[vaul-drawer-direction=top]:rounded-b-3 data-[vaul-drawer-direction=top]:border-b",
             "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80vh] data-[vaul-drawer-direction=bottom]:rounded-t-3 data-[vaul-drawer-direction=bottom]:border-t",
             "data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:sm:max-w-sm",
@@ -126,6 +134,7 @@ function DrawerDescription({
 
 const Drawer = {
   Root: DrawerRoot,
+  NestedRoot: DrawerNestedRoot,
   Trigger: DrawerTrigger,
   Portal: DrawerPortal,
   Overlay: DrawerOverlay,

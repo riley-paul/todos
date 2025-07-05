@@ -12,6 +12,8 @@ import {
   Edit2Icon,
   EllipsisIcon,
 } from "lucide-react";
+import type { MenuItem } from "../ui/menu/types";
+import MenuDropdown from "../ui/menu/menu-dropdown";
 
 const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
   const { handleDelete, handleEdit, handleMove } = useTodoActions();
@@ -19,6 +21,53 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
 
   const { listId } = useParams({ strict: false });
   const { data: lists = [] } = useQuery(qLists);
+
+  const moveMenuItems: MenuItem[] = [
+    {
+      type: "item",
+      key: "move-inbox",
+      text: "Inbox",
+      onClick: () => handleMove(null),
+      hide: !listId,
+    },
+    ...lists.map(
+      (list): MenuItem => ({
+        type: "item",
+        key: `move-${list.id}`,
+        text: list.name,
+        onClick: () => handleMove(list.id),
+        hide: list.id === listId,
+      }),
+    ),
+  ];
+
+  const menuItems: MenuItem[] = [
+    {
+      type: "item",
+      key: "edit",
+      text: "Edit",
+      icon: <Edit2Icon className="size-4 opacity-70" />,
+      onClick: handleEdit,
+    },
+    {
+      type: "item",
+      key: "move",
+      text: "Move",
+      icon: <CornerDownRightIcon className="size-4 opacity-70" />,
+      children: moveMenuItems,
+    },
+    {
+      type: "separator",
+    },
+    {
+      type: "item",
+      key: "delete",
+      text: "Delete",
+      icon: <DeleteIcon className="size-4 opacity-70" />,
+      color: "red",
+      onClick: handleDelete,
+    },
+  ];
 
   return (
     <DropdownMenu.Root
@@ -30,39 +79,7 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
         </IconButton>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content align="end" className="min-w-48">
-        <DropdownMenu.Item onClick={handleEdit}>
-          <Edit2Icon className="size-4 opacity-70" />
-          <span>Edit</span>
-        </DropdownMenu.Item>
-
-        <DropdownMenu.Sub>
-          <DropdownMenu.SubTrigger>
-            <CornerDownRightIcon className="size-4 opacity-70" />
-            <span>Move</span>
-          </DropdownMenu.SubTrigger>
-          <DropdownMenu.SubContent>
-            {listId && (
-              <DropdownMenu.Item onClick={() => handleMove(null)}>
-                Inbox
-              </DropdownMenu.Item>
-            )}
-            {lists
-              .filter((list) => list.id !== listId)
-              .map((list) => (
-                <DropdownMenu.Item
-                  key={list.id}
-                  onClick={() => handleMove(list.id)}
-                >
-                  {list.name}
-                </DropdownMenu.Item>
-              ))}
-          </DropdownMenu.SubContent>
-        </DropdownMenu.Sub>
-        <DropdownMenu.Separator />
-        <DropdownMenu.Item color="red" onClick={handleDelete}>
-          <DeleteIcon className="size-4 opacity-70" />
-          <span>Delete</span>
-        </DropdownMenu.Item>
+        <MenuDropdown menuItems={menuItems} />
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   );
