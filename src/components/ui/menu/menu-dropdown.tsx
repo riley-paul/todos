@@ -1,6 +1,7 @@
 import { DropdownMenu } from "@radix-ui/themes";
 import React from "react";
 import type { MenuItem } from "./types";
+import { Link } from "@tanstack/react-router";
 
 type Props = {
   menuItems: MenuItem[];
@@ -15,14 +16,17 @@ const MenuDropdown: React.FC<Props> = ({ menuItems }) => {
       }
 
       if (item.type === "item") {
+        const itemProps = {
+          key: item.key,
+          onClick: item.onClick,
+          disabled: item.disabled,
+          color: item.color,
+        };
+
         if (item.children) {
           return (
             <DropdownMenu.Sub>
-              <DropdownMenu.SubTrigger
-                key={item.key}
-                onClick={item.onClick}
-                disabled={item.disabled}
-              >
+              <DropdownMenu.SubTrigger {...itemProps}>
                 {item.icon}
                 <span>{item.text}</span>
               </DropdownMenu.SubTrigger>
@@ -33,13 +37,30 @@ const MenuDropdown: React.FC<Props> = ({ menuItems }) => {
           );
         }
 
+        if (item.linkOptions) {
+          return (
+            <DropdownMenu.Item {...itemProps} asChild>
+              <Link {...item.linkOptions}>
+                {item.icon}
+                <span>{item.text}</span>
+              </Link>
+            </DropdownMenu.Item>
+          );
+        }
+
+        if (item.anchorOptions) {
+          return (
+            <DropdownMenu.Item {...itemProps} asChild>
+              <a {...item.anchorOptions}>
+                {item.icon}
+                <span>{item.text}</span>
+              </a>
+            </DropdownMenu.Item>
+          );
+        }
+
         return (
-          <DropdownMenu.Item
-            key={item.key}
-            onClick={item.onClick}
-            disabled={item.disabled}
-            color={item.color}
-          >
+          <DropdownMenu.Item {...itemProps}>
             {item.icon}
             <span>{item.text}</span>
           </DropdownMenu.Item>

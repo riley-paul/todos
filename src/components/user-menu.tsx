@@ -13,7 +13,9 @@ import {
 } from "lucide-react";
 import { useAtom } from "jotai";
 import { alertSystemAtom } from "./alert-system/alert-system.store";
-import { Link } from "@tanstack/react-router";
+import { linkOptions } from "@tanstack/react-router";
+import type { MenuItem } from "./ui/menu/types";
+import MenuDropdown from "./ui/menu/menu-dropdown";
 
 const UserMenu: React.FC = () => {
   const { deleteUser } = useMutations();
@@ -74,8 +76,35 @@ const UserMenu: React.FC = () => {
     .join("")
     .toUpperCase();
 
+  const menuItems: MenuItem[] = [
+    { type: "separator" },
+    {
+      type: "item",
+      key: "settings",
+      text: "Settings",
+      icon: <Settings2Icon className="size-4 opacity-70" />,
+      linkOptions: linkOptions({ to: "/settings" }),
+    },
+    {
+      type: "item",
+      key: "logout",
+      text: "Log out",
+      icon: <LogOutIcon className="size-4 opacity-70" />,
+      anchorOptions: { href: "/logout" },
+    },
+    { type: "separator" },
+    {
+      type: "item",
+      key: "delete-account",
+      text: "Delete Account",
+      icon: <TrashIcon className="size-4 opacity-70" />,
+      color: "red",
+      onClick: handleDeleteAccount,
+    },
+  ];
+
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu.Root modal={false}>
       <DropdownMenu.Trigger title="User settings">
         <button>
           <Avatar
@@ -104,24 +133,7 @@ const UserMenu: React.FC = () => {
             </Text>
           </div>
         </header>
-        <DropdownMenu.Separator />
-        <DropdownMenu.Item asChild>
-          <Link to="/settings">
-            <Settings2Icon className="size-4 opacity-70" />
-            <span>Settings</span>
-          </Link>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item asChild>
-          <a href="/logout">
-            <LogOutIcon className="size-4 opacity-70" />
-            <span>Log out</span>
-          </a>
-        </DropdownMenu.Item>
-        <DropdownMenu.Separator />
-        <DropdownMenu.Item color="red" onClick={handleDeleteAccount}>
-          <TrashIcon className="size-4 opacity-70" />
-          <span>Delete Account</span>
-        </DropdownMenu.Item>
+        <MenuDropdown menuItems={menuItems} />
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   );
