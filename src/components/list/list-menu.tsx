@@ -112,7 +112,6 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       icon: <Edit2Icon className="size-4 opacity-70" />,
       onClick: handleRenameList,
     },
-
     {
       type: "item",
       key: "share",
@@ -121,7 +120,6 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       onClick: () => setShareDialogOpen(true),
       hide: !list.isAuthor,
     },
-
     {
       type: "separator",
     },
