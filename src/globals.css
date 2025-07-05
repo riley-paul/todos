@@ -1,5 +1,6 @@
 @import "tailwindcss/base";
 @import "@radix-ui/themes/styles.css";
+@import "tw-animate-css";
 
 @tailwind components;
 @tailwind utilities;
