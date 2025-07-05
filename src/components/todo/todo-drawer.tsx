@@ -2,7 +2,7 @@ import { Text } from "@radix-ui/themes";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { qLists } from "@/lib/client/queries";
-import { Drawer, DrawerContent } from "@/components/ui/drawer";
+import Drawer from "@/components/ui/drawer";
 import { useParams } from "@tanstack/react-router";
 import { cn } from "@/lib/client/utils";
 import { useAtom } from "jotai";
@@ -51,46 +51,44 @@ const TodoDrawer: React.FC = () => {
   const isMobile = useIsMobile();
 
   return (
-    <Drawer
+    <Drawer.Root
       open={!!selectedTodoId && isMobile}
       onOpenChange={(isOpen) => {
         if (!isOpen) setSelectedTodoId(null);
       }}
     >
-      <DrawerContent>
-        <article className="grid gap-6">
-          <GroupContainer>
-            <MenuItem text="Edit" icon="fas fa-pen" onClick={handleEdit} />
-            <MenuItem
-              text="Delete"
-              icon="fas fa-backspace"
-              onClick={handleDelete}
-            />
-          </GroupContainer>
-          {lists.length > 0 && (
-            <GroupContainer header="Move">
-              {listId && (
+      <Drawer.Content className="grid gap-6 p-3">
+        <GroupContainer>
+          <MenuItem text="Edit" icon="fas fa-pen" onClick={handleEdit} />
+          <MenuItem
+            text="Delete"
+            icon="fas fa-backspace"
+            onClick={handleDelete}
+          />
+        </GroupContainer>
+        {lists.length > 0 && (
+          <GroupContainer header="Move">
+            {listId && (
+              <MenuItem
+                text="Inbox"
+                icon="fas fa-arrow-right"
+                onClick={() => handleMove(null)}
+              />
+            )}
+            {lists
+              .filter((list) => list.id !== listId)
+              .map((list) => (
                 <MenuItem
-                  text="Inbox"
+                  key={list.id}
+                  text={list.name}
                   icon="fas fa-arrow-right"
-                  onClick={() => handleMove(null)}
+                  onClick={() => handleMove(list.id)}
                 />
-              )}
-              {lists
-                .filter((list) => list.id !== listId)
-                .map((list) => (
-                  <MenuItem
-                    key={list.id}
-                    text={list.name}
-                    icon="fas fa-arrow-right"
-                    onClick={() => handleMove(list.id)}
-                  />
-                ))}
-            </GroupContainer>
-          )}
-        </article>
-      </DrawerContent>
-    </Drawer>
+              ))}
+          </GroupContainer>
+        )}
+      </Drawer.Content>
+    </Drawer.Root>
   );
 };
 
