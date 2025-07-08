@@ -79,7 +79,6 @@ const UserMenu: React.FC = () => {
   const menuItems: MenuItem[] = [
     {
       type: "custom",
-      key: "user-info",
       component: (
         <header className="flex items-center gap-2 p-2">
           <Avatar
@@ -101,14 +100,14 @@ const UserMenu: React.FC = () => {
     },
     { type: "separator" },
     {
-      type: "item",
+      type: "link",
       key: "settings",
       text: "Settings",
       icon: <Settings2Icon className="size-4 opacity-70" />,
       linkOptions: linkOptions({ to: "/settings" }),
     },
     {
-      type: "item",
+      type: "anchor",
       key: "logout",
       text: "Log out",
       icon: <LogOutIcon className="size-4 opacity-70" />,

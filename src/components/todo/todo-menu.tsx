@@ -63,7 +63,7 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
       onClick: handleEdit,
     },
     {
-      type: "item",
+      type: "parent",
       key: "move",
       text: "Move",
       icon: <CornerDownRightIcon className="size-4 opacity-70" />,
