@@ -7,8 +7,7 @@ type Props = {
   menuItems: MenuItem[];
 };
 
-const getItemProps = ({ key, disabled, color }: BaseMenuItem) => ({
-  key,
+const getItemProps = ({ disabled, color }: BaseMenuItem) => ({
   disabled,
   color,
 });
@@ -25,7 +24,11 @@ const MenuDropdown: React.FC<Props> = ({ menuItems }) => {
         case "item": {
           const itemProps = getItemProps(item);
           return (
-            <DropdownMenu.Item {...itemProps} onClick={item.onClick}>
+            <DropdownMenu.Item
+              {...itemProps}
+              key={item.key}
+              onClick={item.onClick}
+            >
               {item.icon}
               <span>{item.text}</span>
             </DropdownMenu.Item>
@@ -34,7 +37,7 @@ const MenuDropdown: React.FC<Props> = ({ menuItems }) => {
         case "anchor": {
           const itemProps = getItemProps(item);
           return (
-            <DropdownMenu.Item {...itemProps} asChild>
+            <DropdownMenu.Item {...itemProps} key={item.key} asChild>
               <a {...item.anchorOptions}>
                 {item.icon}
                 <span>{item.text}</span>
@@ -45,7 +48,7 @@ const MenuDropdown: React.FC<Props> = ({ menuItems }) => {
         case "link": {
           const itemProps = getItemProps(item);
           return (
-            <DropdownMenu.Item {...itemProps} asChild>
+            <DropdownMenu.Item {...itemProps} key={item.key} asChild>
               <Link {...item.linkOptions}>
                 {item.icon}
                 <span>{item.text}</span>
@@ -56,7 +59,7 @@ const MenuDropdown: React.FC<Props> = ({ menuItems }) => {
         case "parent": {
           const itemProps = getItemProps(item);
           return (
-            <DropdownMenu.Sub>
+            <DropdownMenu.Sub key={item.key}>
               <DropdownMenu.SubTrigger {...itemProps}>
                 {item.icon}
                 <span>{item.text}</span>

@@ -80,7 +80,7 @@ const UserMenu: React.FC = () => {
     {
       type: "custom",
       component: (
-        <header className="flex items-center gap-2 p-2">
+        <header key="user-info" className="flex items-center gap-2 p-2">
           <Avatar
             src={user.avatarUrl ?? ""}
             alt={user.name}

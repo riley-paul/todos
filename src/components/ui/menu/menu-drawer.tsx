@@ -10,7 +10,6 @@ type Props = {
 };
 
 const getButtonProps = (item: BaseMenuItem): ButtonProps => ({
-  key: item.key,
   disabled: item.disabled,
   color: item.color,
   variant: "ghost",
