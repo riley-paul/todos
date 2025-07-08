@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import z from "zod/v4";
 import ListShares from "./list-shares";
 import { SendIcon } from "lucide-react";
+import ResponsiveDialog from "../ui/responsive-dialog";
 
 type Props = {
   isOpen: boolean;
@@ -77,26 +78,22 @@ const InviteForm: React.FC<{ list: ListSelect }> = ({ list }) => {
 
 const ListShareDialog: React.FC<Props> = ({ list, isOpen, onOpenChange }) => {
   return (
-    <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
-      <Dialog.Content className="grid gap-6">
-        <header>
-          <Dialog.Title size="3">Share List</Dialog.Title>
-          <Dialog.Description size="2" color="gray">
-            Add other users to your list so they can add and delete todos
-          </Dialog.Description>
-        </header>
-
-        <section className="grid gap-4">
-          <InviteForm list={list} />
-          <ListShares list={list} />
-        </section>
-        <footer className="text-right">
-          <Dialog.Close>
-            <Button variant="soft">Close</Button>
-          </Dialog.Close>
-        </footer>
-      </Dialog.Content>
-    </Dialog.Root>
+    <ResponsiveDialog
+      open={isOpen}
+      onOpenChange={onOpenChange}
+      title="Share List"
+      description="Add other users to your list so they can add and delete todos"
+    >
+      <section className="grid gap-4 py-6">
+        <InviteForm list={list} />
+        <ListShares list={list} />
+      </section>
+      <footer className="text-right">
+        <Dialog.Close>
+          <Button variant="soft">Close</Button>
+        </Dialog.Close>
+      </footer>
+    </ResponsiveDialog>
   );
 };
 

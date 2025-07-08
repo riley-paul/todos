@@ -75,7 +75,7 @@ function DrawerContent({
           )}
           {...props}
         >
-          <DrawerPrimitive.Handle className="-top-3" />
+          <DrawerPrimitive.Handle className="absolute -top-3" />
           {children}
         </DrawerPrimitive.Content>
       </RadixProvider>
@@ -113,7 +113,7 @@ function DrawerTitle({
   return (
     <DrawerPrimitive.Title
       data-slot="drawer-title"
-      className={cn("font-medium text-gray-12", className)}
+      className={cn(className)}
       {...props}
     />
   );
@@ -126,7 +126,7 @@ function DrawerDescription({
   return (
     <DrawerPrimitive.Description
       data-slot="drawer-description"
-      className={cn("text-2 text-gray-11", className)}
+      className={cn(className)}
       {...props}
     />
   );

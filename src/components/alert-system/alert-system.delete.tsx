@@ -3,17 +3,11 @@ import type { DeleteAlertProps } from "./alert-system.types";
 import { Dialog, Button } from "@radix-ui/themes";
 
 const AlertSystemContentDelete: React.FC<DeleteAlertProps> = ({
-  title,
-  message,
   handleDelete,
   confirmButtonProps,
 }) => {
   return (
     <>
-      <Dialog.Title size="3">{title}</Dialog.Title>
-      <Dialog.Description size="2" color="gray">
-        {message}
-      </Dialog.Description>
       <footer className="mt-4 flex justify-end gap-3">
         <Dialog.Close>
           <Button variant="soft" color="gray">

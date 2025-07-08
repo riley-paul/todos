@@ -8,8 +8,6 @@ import { z } from "zod/v4";
 type Schema = { value: string };
 
 const AlertSystemContentInput: React.FC<InputAlertProps> = ({
-  title,
-  message,
   value = "",
   placeholder,
   schema = z.string().min(1, "This field is required"),
@@ -25,10 +23,6 @@ const AlertSystemContentInput: React.FC<InputAlertProps> = ({
   return (
     <>
       <form onSubmit={onSubmit}>
-        <Dialog.Title size="3">{title}</Dialog.Title>
-        <Dialog.Description size="2" color="gray">
-          {message}
-        </Dialog.Description>
         <Controller
           name="value"
           control={form.control}

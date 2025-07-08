@@ -1,11 +1,11 @@
 import React from "react";
-import { Dialog } from "@radix-ui/themes";
 import { useAtom } from "jotai/react";
 import type { AlertProps } from "./alert-system.types";
 import { alertSystemAtom } from "./alert-system.store";
 import AlertSystemContentDelete from "./alert-system.delete";
 import AlertSystemContentError from "./alert-system.error";
 import AlertSystemContentInput from "./alert-system.input";
+import ResponsiveDialog from "../ui/responsive-dialog";
 
 const AlertContent: React.FC<AlertProps> = (props) => {
   switch (props.type) {
@@ -23,14 +23,14 @@ const AlertContent: React.FC<AlertProps> = (props) => {
 const AlertSystem: React.FC = () => {
   const [state, dispatch] = useAtom(alertSystemAtom);
   return (
-    <Dialog.Root
+    <ResponsiveDialog
+      title={state.data?.title}
+      description={state.data?.message}
       open={state.isOpen}
       onOpenChange={(open) => open || dispatch({ type: "close" })}
     >
-      <Dialog.Content maxWidth="450px">
-        {state.data && <AlertContent {...state.data} />}
-      </Dialog.Content>
-    </Dialog.Root>
+      {state.data && <AlertContent {...state.data} />}
+    </ResponsiveDialog>
   );
 };
 

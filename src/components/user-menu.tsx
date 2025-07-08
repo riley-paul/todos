@@ -127,7 +127,7 @@ const UserMenu: React.FC = () => {
   return (
     <ResponsiveMenu
       menuItems={menuItems}
-      dropdownProps={{ className: "min-w-48" }}
+      dropdownProps={{ className: "min-w-48", align: "end" }}
     >
       <button>
         <Avatar
