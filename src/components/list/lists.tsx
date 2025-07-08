@@ -1,64 +1,14 @@
 import React from "react";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { qLists, qTodos } from "@/lib/client/queries";
-import type { ListSelect, SelectedList } from "@/lib/types";
-import UserBubbleGroup from "../ui/user-bubble-group";
-import { Badge, Flex, IconButton, Separator, Text } from "@radix-ui/themes";
-import { Link, useLinkProps } from "@tanstack/react-router";
-import { goToList } from "@/lib/client/links";
-import ListMenu from "./list-menu";
-import { cn } from "@/lib/client/utils";
+import { Flex, IconButton, Separator } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { alertSystemAtom } from "../alert-system/alert-system.store";
 import z from "zod/v4";
 import { toast } from "sonner";
 import useMutations from "@/hooks/use-mutations";
 import { PlusIcon } from "lucide-react";
-
-type ListProps =
-  | {
-      type: "list";
-      list: ListSelect;
-    }
-  | {
-      type: "custom";
-      id: SelectedList;
-      name: string;
-      count: number;
-    };
-
-const List: React.FC<ListProps> = (props) => {
-  const id = props.type === "list" ? props.list.id : props.id;
-  const name = props.type === "list" ? props.list.name : props.name;
-  const todoCount =
-    props.type === "list" ? props.list.todoCount : (props.count ?? 0);
-
-  const linkProps = useLinkProps(goToList(id)) as any;
-  const isActive = linkProps["data-status"] === "active";
-
-  return (
-    <Badge
-      size="2"
-      color={isActive ? undefined : "gray"}
-      variant={isActive ? "surface" : "soft"}
-      className={cn(
-        "flex items-center gap-2 transition-colors",
-        isActive ? "hover:bg-accent-5" : "hover:bg-accent-6",
-      )}
-    >
-      <Link {...goToList(id)} className="flex items-center gap-2">
-        <Text truncate className="max-w-[70vw]">
-          {name}
-        </Text>
-        <Text className="font-mono text-accentA-12">{todoCount}</Text>
-        {props.type === "list" && (
-          <UserBubbleGroup users={props.list.otherUsers} numAvatars={3} />
-        )}
-      </Link>
-      {props.type === "list" && <ListMenu list={props.list} />}
-    </Badge>
-  );
-};
+import List from "./list";
 
 const Lists: React.FC = () => {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
