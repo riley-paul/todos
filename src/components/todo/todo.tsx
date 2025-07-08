@@ -16,13 +16,11 @@ import { cn } from "@/lib/client/utils";
 import { focusInputAtEnd, resizeTextArea } from "@/lib/client/utils";
 import TextWithLinks from "../ui/text-with-links";
 import TodoMenu from "./todo-menu";
-import { useIsMobile } from "@/hooks/use-is-mobile";
 import { Link, useParams } from "@tanstack/react-router";
 import { goToList } from "@/lib/client/links";
 import { useAtom } from "jotai";
 import { editingTodoIdAtom } from "./todos.store";
 import { SaveIcon } from "lucide-react";
-import TodoDrawer from "./todo-drawer";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -86,7 +84,6 @@ const TodoForm: React.FC<{
 const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   const { listId } = useParams({ strict: false });
   const { updateTodo } = useMutations();
-  const isMobile = useIsMobile();
 
   const [editingTodoId, setEditingTodoId] = useAtom(editingTodoIdAtom);
 
@@ -155,11 +152,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
             </Badge>
           )}
           {!todo.isAuthor && <UserBubble user={todo.author} size="md" />}
-          {isMobile ? (
-            <TodoDrawer todoId={todo.id} />
-          ) : (
-            <TodoMenu todoId={todo.id} />
-          )}
+          <TodoMenu todoId={todo.id} />
         </>
       )}
     </div>

@@ -1,19 +1,22 @@
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { DropdownMenu } from "@radix-ui/themes";
-import type { ClassValue } from "clsx";
 import React from "react";
 import Drawer from "../drawer";
 import type { MenuItem } from "./types";
 import MenuDrawer from "./menu-drawer";
 import MenuDropdown from "./menu-dropdown";
+import { cn } from "@/lib/client/utils";
 
 type Props = React.PropsWithChildren<{
   menuItems: MenuItem[];
-  dropdownProps?: DropdownMenu.RootProps;
-  contentClassName?: ClassValue;
+  dropdownProps?: DropdownMenu.ContentProps;
 }>;
 
-const ResponsiveMenu: React.FC<Props> = ({ children, menuItems }) => {
+const ResponsiveMenu: React.FC<Props> = ({
+  children,
+  menuItems,
+  dropdownProps,
+}) => {
   const isMobile = useIsMobile();
 
   if (isMobile) {
@@ -30,7 +33,10 @@ const ResponsiveMenu: React.FC<Props> = ({ children, menuItems }) => {
   return (
     <DropdownMenu.Root modal={false}>
       <DropdownMenu.Trigger>{children}</DropdownMenu.Trigger>
-      <DropdownMenu.Content className="min-w-32">
+      <DropdownMenu.Content
+        {...dropdownProps}
+        className={cn("min-w-32", dropdownProps?.className)}
+      >
         <MenuDropdown menuItems={menuItems} />
       </DropdownMenu.Content>
     </DropdownMenu.Root>
