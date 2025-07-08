@@ -14,6 +14,8 @@ import z from "zod/v4";
 import { toast } from "sonner";
 import useMutations from "@/hooks/use-mutations";
 import { PlusIcon } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-is-mobile";
+import ListDrawer from "./list-drawer";
 
 type ListProps =
   | {
@@ -35,6 +37,7 @@ const List: React.FC<ListProps> = (props) => {
 
   const linkProps = useLinkProps(goToList(id)) as any;
   const isActive = linkProps["data-status"] === "active";
+  const isMobile = useIsMobile();
 
   return (
     <Badge
@@ -55,7 +58,12 @@ const List: React.FC<ListProps> = (props) => {
           <UserBubbleGroup users={props.list.otherUsers} numAvatars={3} />
         )}
       </Link>
-      {props.type === "list" && <ListMenu list={props.list} />}
+      {props.type === "list" &&
+        (isMobile ? (
+          <ListDrawer list={props.list} />
+        ) : (
+          <ListMenu list={props.list} />
+        ))}
     </Badge>
   );
 };

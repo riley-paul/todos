@@ -1,33 +1,34 @@
-import { DropdownMenu, IconButton } from "@radix-ui/themes";
+import { IconButton } from "@radix-ui/themes";
 import React from "react";
 import type { ListSelect } from "@/lib/types";
 import { EllipsisIcon } from "lucide-react";
-import MenuDropdown from "../ui/menu/menu-dropdown";
 import useListMenuItems from "./use-list-menu-items";
+import MenuDrawer from "../ui/menu/menu-drawer";
+import Drawer from "../ui/drawer";
 
 type Props = {
   list: ListSelect;
 };
 
-const ListMenu: React.FC<Props> = ({ list }) => {
+const ListDrawer: React.FC<Props> = ({ list }) => {
   const { shareDialog, menuItems } = useListMenuItems({ list });
 
   return (
     <>
       {shareDialog}
-      <DropdownMenu.Root modal={false}>
-        <DropdownMenu.Trigger>
+      <Drawer.Root modal={false}>
+        <Drawer.Trigger asChild>
           <IconButton size="1" variant="ghost">
             <EllipsisIcon className="size-3 opacity-90" />
           </IconButton>
-        </DropdownMenu.Trigger>
+        </Drawer.Trigger>
 
-        <DropdownMenu.Content className="min-w-32">
-          <MenuDropdown menuItems={menuItems} />
-        </DropdownMenu.Content>
-      </DropdownMenu.Root>
+        <Drawer.Content>
+          <MenuDrawer menuItems={menuItems} />
+        </Drawer.Content>
+      </Drawer.Root>
     </>
   );
 };
 
-export default ListMenu;
+export default ListDrawer;
