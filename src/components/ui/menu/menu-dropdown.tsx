@@ -15,6 +15,10 @@ const MenuDropdown: React.FC<Props> = ({ menuItems }) => {
         return <DropdownMenu.Separator key={`sep-${index}`} />;
       }
 
+      if (item.type === "custom") {
+        return item.component;
+      }
+
       if (item.type === "item") {
         const itemProps = {
           key: item.key,

@@ -3,7 +3,7 @@ import React from "react";
 import LoginButton from "./login-button";
 import { useQuery } from "@tanstack/react-query";
 import { qUser } from "@/lib/client/queries";
-import { Avatar, DropdownMenu, Spinner, Text, Tooltip } from "@radix-ui/themes";
+import { Avatar, Spinner, Text, Tooltip } from "@radix-ui/themes";
 import useMutations from "@/hooks/use-mutations";
 import {
   LogOutIcon,
@@ -15,7 +15,7 @@ import { useAtom } from "jotai";
 import { alertSystemAtom } from "./alert-system/alert-system.store";
 import { linkOptions } from "@tanstack/react-router";
 import type { MenuItem } from "./ui/menu/types";
-import MenuDropdown from "./ui/menu/menu-dropdown";
+import ResponsiveMenu from "./ui/menu/responsive-menu";
 
 const UserMenu: React.FC = () => {
   const { deleteUser } = useMutations();
@@ -77,6 +77,28 @@ const UserMenu: React.FC = () => {
     .toUpperCase();
 
   const menuItems: MenuItem[] = [
+    {
+      type: "custom",
+      key: "user-info",
+      component: (
+        <header className="flex items-center gap-2 p-2">
+          <Avatar
+            src={user.avatarUrl ?? ""}
+            alt={user.name}
+            fallback={fallback}
+            radius="full"
+          />
+          <div className="leading-0.5 grid flex-1">
+            <Text weight="medium" truncate>
+              {user.name}
+            </Text>
+            <Text color="gray" size="2">
+              {user.email}
+            </Text>
+          </div>
+        </header>
+      ),
+    },
     { type: "separator" },
     {
       type: "item",
@@ -104,38 +126,20 @@ const UserMenu: React.FC = () => {
   ];
 
   return (
-    <DropdownMenu.Root modal={false}>
-      <DropdownMenu.Trigger title="User settings">
-        <button>
-          <Avatar
-            size="3"
-            radius="full"
-            src={user.avatarUrl ?? ""}
-            fallback={fallback}
-            className="cursor-pointer"
-          />
-        </button>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content align="end" className="grid gap-3">
-        <header className="flex items-center gap-2 p-2">
-          <Avatar
-            src={user.avatarUrl ?? ""}
-            alt={user.name}
-            fallback={fallback}
-            radius="full"
-          />
-          <div className="leading-0.5 grid flex-1">
-            <Text weight="medium" truncate>
-              {user.name}
-            </Text>
-            <Text color="gray" size="2">
-              {user.email}
-            </Text>
-          </div>
-        </header>
-        <MenuDropdown menuItems={menuItems} />
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
+    <ResponsiveMenu
+      menuItems={menuItems}
+      dropdownProps={{ className: "min-w-48" }}
+    >
+      <button>
+        <Avatar
+          size="3"
+          radius="full"
+          src={user.avatarUrl ?? ""}
+          fallback={fallback}
+          className="cursor-pointer"
+        />
+      </button>
+    </ResponsiveMenu>
   );
 };
 

@@ -22,6 +22,10 @@ const MenuDrawer: React.FC<Props> = ({ menuItems }) => {
         );
       }
 
+      if (item.type === "custom") {
+        return item.component;
+      }
+
       const buttonProps: ButtonProps = {
         key: item.key,
         onClick: item.onClick,

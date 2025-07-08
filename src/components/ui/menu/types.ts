@@ -22,4 +22,10 @@ export type MenuItem =
   | {
       type: "separator";
       hide?: boolean;
+    }
+  | {
+      type: "custom";
+      key: string;
+      component: React.ReactNode;
+      hide?: boolean;
     };
