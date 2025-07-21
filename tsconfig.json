@@ -11,9 +11,6 @@
     },
     "noUnusedLocals": true,
     "moduleResolution": "bundler",
-    "types": [
-      "@cloudflare/workers-types/2023-07-01"
-    ]
   },
   "exclude": [
     "node_modules",

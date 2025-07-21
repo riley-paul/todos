@@ -2,9 +2,9 @@ import {
   deleteSessionTokenCookie,
   invalidateSession,
 } from "@/lib/server/lucia";
-import type { APIContext } from "astro";
+import type { APIRoute } from "astro";
 
-export async function GET(context: APIContext): Promise<Response> {
+export const GET: APIRoute = (context) => {
   if (!context.locals.session) {
     return new Response(null, {
       status: 401,
@@ -15,4 +15,4 @@ export async function GET(context: APIContext): Promise<Response> {
   deleteSessionTokenCookie(context);
 
   return context.redirect("/");
-}
+};
