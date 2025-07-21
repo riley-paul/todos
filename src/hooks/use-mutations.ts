@@ -92,14 +92,22 @@ export default function useMutations() {
 
   const deleteCompletedTodos = useMutation({
     mutationFn: actions.todos.removeCompleted.orThrow,
-    onSuccess: () => {
+    onSuccess: (_, { listId }) => {
+      queryClient.setQueryData(qTodos(listId).queryKey, (prev) => {
+        if (!prev) return prev;
+        return prev.filter((todo) => !todo.isCompleted);
+      });
       toast.success("Completed todos deleted");
     },
   });
 
   const uncheckCompletedTodos = useMutation({
     mutationFn: actions.todos.uncheckCompleted.orThrow,
-    onSuccess: () => {
+    onSuccess: (_, { listId }) => {
+      queryClient.setQueryData(qTodos(listId).queryKey, (prev) => {
+        if (!prev) return prev;
+        return prev.map((todo) => ({ ...todo, isCompleted: false }));
+      });
       toast.success("All completed todos unchecked");
     },
   });

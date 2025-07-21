@@ -1,18 +1,17 @@
 import React from "react";
 import { cn } from "@/lib/client/utils";
-import useMutations from "@/hooks/use-mutations";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Todo from "./todo";
 import { Button, Text } from "@radix-ui/themes";
 import type { SelectedList } from "@/lib/types";
 import { qTodos, qUser } from "@/lib/client/queries";
-import { ChevronRightIcon, EraserIcon } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
+import ClearCompletedTodosButton from "./clear-completed-todos-button";
 
 const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
   const { data: todos } = useSuspenseQuery(qTodos(listId));
   const { data: user } = useSuspenseQuery(qUser);
-  const { deleteCompletedTodos } = useMutations();
 
   const numCompleted = todos.filter((i) => i.isCompleted).length ?? 0;
   const [showCompleted, setShowCompleted] = React.useState(false);
@@ -57,15 +56,7 @@ const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
                   )}
                 />
               </Button>
-              <Button
-                size="1"
-                variant="soft"
-                color="gray"
-                onClick={() => deleteCompletedTodos.mutate({ listId })}
-              >
-                <EraserIcon className="size-3" />
-                Clear
-              </Button>
+              <ClearCompletedTodosButton listId={listId} />
             </div>
             {showCompleted && (
               <div className="grid gap-1">
@@ -87,6 +78,9 @@ const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
       {todos.map((todo) => (
         <Todo key={todo.id} todo={todo} />
       ))}
+      <div className="px-3 py-1 text-right">
+        <ClearCompletedTodosButton listId={listId} />
+      </div>
     </section>
   );
 };
