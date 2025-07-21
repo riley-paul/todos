@@ -1,4 +1,6 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { AblyProvider } from "ably/react";
+import * as Ably from "ably";
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
@@ -25,7 +27,6 @@ const queryClient = new QueryClient({
   }),
 });
 
-// Create a new router instance
 const router = createRouter({
   routeTree,
   context: { queryClient },
@@ -39,7 +40,8 @@ const router = createRouter({
   defaultErrorComponent: ({ error }) => <ErrorPage error={error} goHome />,
 });
 
-// Register the router instance for type safety
+const realtimeClient = new Ably.Realtime({ authUrl: "/ably-auth" });
+
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
@@ -48,10 +50,12 @@ declare module "@tanstack/react-router" {
 
 // Render the app
 export default () => (
-  <QueryClientProvider client={queryClient}>
-    <RadixProvider>
-      <RouterProvider router={router} />
-      <CustomToaster />
-    </RadixProvider>
-  </QueryClientProvider>
+  <AblyProvider client={realtimeClient}>
+    <QueryClientProvider client={queryClient}>
+      <RadixProvider>
+        <RouterProvider router={router} />
+        <CustomToaster />
+      </RadixProvider>
+    </QueryClientProvider>
+  </AblyProvider>
 );

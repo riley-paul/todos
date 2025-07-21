@@ -1,8 +1,8 @@
 import AlertSystem from "@/components/alert-system/alert-system";
 import AppSearch from "@/components/app-search";
+import ConnectionState from "@/components/connection-state";
 import PendingInvites from "@/components/pending-invites";
 import UserMenu from "@/components/user-menu";
-import useQueryStream from "@/hooks/use-query-stream";
 import { qUser } from "@/lib/client/queries";
 import { Heading } from "@radix-ui/themes";
 import { type QueryClient } from "@tanstack/react-query";
@@ -13,18 +13,19 @@ import {
 } from "@tanstack/react-router";
 import { CircleCheckBigIcon } from "lucide-react";
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
-  {
-    component: Component,
-    loader: async ({ context }) => {
-      const user = await context.queryClient.ensureQueryData(qUser);
-      return { user };
-    },
+type RouterContext = {
+  queryClient: QueryClient;
+};
+
+export const Route = createRootRouteWithContext<RouterContext>()({
+  component: Component,
+  loader: async ({ context }) => {
+    const user = await context.queryClient.ensureQueryData(qUser);
+    return { user };
   },
-);
+});
 
 function Component() {
-  const { StreamStateIcon } = useQueryStream();
   return (
     <>
       <header className="sticky top-0 z-50 border-b bg-panel-translucent backdrop-blur">
@@ -36,7 +37,7 @@ function Component() {
                 <Link to="/">Todos</Link>
               </Heading>
               <div className="ml-2">
-                <StreamStateIcon />
+                <ConnectionState />
               </div>
             </div>
             <div className="flex items-center gap-4">

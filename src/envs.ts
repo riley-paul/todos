@@ -9,6 +9,7 @@ const zEnv = z
     GITHUB_CLIENT_SECRET: z.string(),
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
+    ABLY_API_KEY: z.string(),
     SITE: z.string().url().default("http://localhost:4321"),
     DATABASE_URL: z.string().url(),
     DATABASE_AUTH_TOKEN: z.string().optional(),
