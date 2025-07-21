@@ -1,6 +1,7 @@
 import Todos from "@/components/todo/todos";
 import { qList } from "@/lib/client/queries";
 import { createFileRoute } from "@tanstack/react-router";
+import { ChannelProvider } from "ably/react";
 import { useDocumentTitle } from "usehooks-ts";
 
 export const Route = createFileRoute("/_withAdder/todos/$listId")({
@@ -17,5 +18,9 @@ function RouteComponent() {
 
   useDocumentTitle(list.name);
 
-  return <Todos listId={listId} />;
+  return (
+    <ChannelProvider channelName={`list:${listId}`}>
+      <Todos listId={listId} />
+    </ChannelProvider>
+  );
 }

@@ -27,7 +27,6 @@ const TodoAdder: React.FC<{ listId: SelectedList }> = ({ listId }) => {
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
 
   const resetInput = () => {
-    console.log("resetInput");
     flushSync(() => reset());
     resizeTextArea(inputRef.current);
   };

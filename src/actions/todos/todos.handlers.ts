@@ -10,6 +10,8 @@ import {
   getListUsers,
 } from "../helpers";
 
+import Ably from "ably";
+
 import actionErrors from "../errors";
 import type todoInputs from "./todos.inputs";
 import { filterTodos } from "../filters";
@@ -69,6 +71,9 @@ const create: ActionHandler<
     if (!listUsers.includes(userId)) {
       throw actionErrors.NO_PERMISSION;
     }
+
+    const ably = new Ably.Rest(c.locals.runtime.env.ABLY_API_KEY);
+    ably.channels.get(`list:${data.listId}`).publish([{ name: "invalidate" }]);
   }
 
   const [todo] = await db
