@@ -48,9 +48,9 @@ beforeAll(async () => {
     .returning();
 
   await db.insert(ListUser).values([
-    { userId: USER1_ID, listId: LIST1_ID, isAdmin: true, isPending: false },
-    { userId: USER1_ID, listId: LIST2_ID, isAdmin: true, isPending: false },
-    { userId: USER2_ID, listId: LIST3_ID, isAdmin: true, isPending: false },
+    { userId: USER1_ID, listId: LIST1_ID, isPending: false },
+    { userId: USER1_ID, listId: LIST2_ID, isPending: false },
+    { userId: USER2_ID, listId: LIST3_ID, isPending: false },
   ]);
 
   await db.insert(ListUser).values({
@@ -65,18 +65,12 @@ afterAll(() => {
   rmSync("test.db", { force: true });
 });
 
-
 describe("List fetching", () => {
-
   test("get all lists for a user", async () => {
     const result = await listHandlers.getAll({}, mockApiContext(USER1_ID));
     expect(result.length).toBe(2);
-  })
-
-
-
-})
-
+  });
+});
 
 describe("List creation", () => {
   test("able to create a list", async () => {
@@ -100,7 +94,7 @@ describe("List creation", () => {
 });
 
 describe("List deletion", () => {
-  test("able to delete a list if admin", async () => {
+  test("able to delete a list if member", async () => {
     const [{ numListsBefore }] = await db
       .select({ numListsBefore: count() })
       .from(List);
@@ -116,7 +110,7 @@ describe("List deletion", () => {
     expect(numListsBefore - numListsAfter).toBe(1);
   });
 
-  test("unable to delete a list if not list admin", async () => {
+  test("unable to delete a list if not list member", async () => {
     await expect(() =>
       listHandlers.remove({ id: LIST3_ID }, mockApiContext(USER1_ID)),
     ).rejects.toThrow(actionErrors.NO_PERMISSION);

@@ -47,13 +47,12 @@ export default async function seed() {
   console.log("✅ Seeded lists");
 
   listIds.forEach(async (listId) => {
-    // Assign a random user as the admin of the list
-    const [{ userId: adminUserId }] = await db
+    // Assign a random user as the first user of the list
+    const [{ userId: firstUserId }] = await db
       .insert(ListUser)
       .values({
         userId: faker.helpers.arrayElement(userIds),
         listId,
-        isAdmin: true,
         isPending: false,
       })
       .returning({ userId: ListUser.userId });
@@ -68,7 +67,6 @@ export default async function seed() {
         listUserIds.map((userId) => ({
           userId,
           listId,
-          isAdmin: faker.datatype.boolean(0.2), // Randomly assign admin status
           isPending: faker.datatype.boolean(0.2), // Randomly assign pending status
         })),
       );
@@ -76,7 +74,7 @@ export default async function seed() {
 
     // Create todos for the list
     const numTodos = faker.number.int(30);
-    const todoUserIds = [...listUserIds, adminUserId];
+    const todoUserIds = [...listUserIds, firstUserId];
     if (numTodos > 0) {
       await db.insert(Todo).values(
         Array.from({ length: numTodos }).map(() => ({

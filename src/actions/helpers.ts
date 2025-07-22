@@ -18,20 +18,6 @@ export const isAuthorized = (context: ActionAPIContext) => {
   return user;
 };
 
-export const getListUsers = async (
-  context: ActionAPIContext,
-  listId: string,
-) => {
-  const db = createDb(context.locals.runtime.env);
-  return db
-    .select({
-      id: ListUser.userId,
-      isAdmin: ListUser.isAdmin,
-    })
-    .from(ListUser)
-    .where(and(eq(ListUser.listId, listId), eq(ListUser.isPending, false)));
-};
-
 export const getAllUserTodos = async (
   context: ActionAPIContext,
   userId: string,
@@ -50,39 +36,27 @@ export const getAllUserTodos = async (
     .then((ids) => ids.map(({ id }) => id));
 };
 
-type GetUserIsListAdminArgs = {
-  listId: string;
-  userId: string;
-};
-export const getUserIsListAdmin = async (
-  context: ActionAPIContext,
-  { listId, userId }: GetUserIsListAdminArgs,
-) => {
-  const db = createDb(context.locals.runtime.env);
-  const [listUser] = await db
-    .select({ isAdmin: ListUser.isAdmin })
-    .from(ListUser)
-    .where(and(eq(ListUser.listId, listId), eq(ListUser.userId, userId)))
-    .limit(1);
-
-  if (!listUser) throw actionErrors.NOT_FOUND;
-  return listUser.isAdmin;
-};
-
 type GetUserIsListMemberArgs = {
   listId: string | null;
   userId: string;
+  checkPending?: boolean;
 };
 export const getUserIsListMember = async (
   context: ActionAPIContext,
-  { listId, userId }: GetUserIsListMemberArgs,
+  { listId, userId, checkPending = true }: GetUserIsListMemberArgs,
 ) => {
   if (listId === null || listId === "all") return true;
   const db = createDb(context.locals.runtime.env);
   const [listUser] = await db
     .select({ id: ListUser.id })
     .from(ListUser)
-    .where(and(eq(ListUser.listId, listId), eq(ListUser.userId, userId)))
+    .where(
+      and(
+        eq(ListUser.listId, listId),
+        eq(ListUser.userId, userId),
+        checkPending ? eq(ListUser.isPending, false) : undefined,
+      ),
+    )
     .limit(1);
 
   if (!listUser) throw actionErrors.NOT_FOUND;
@@ -102,7 +76,6 @@ export const getListUser = async (
       id: ListUser.id,
       userId: ListUser.userId,
       listId: ListUser.listId,
-      isAdmin: ListUser.isAdmin,
       isPending: ListUser.isPending,
       list: {
         id: List.id,

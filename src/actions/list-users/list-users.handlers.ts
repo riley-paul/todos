@@ -2,7 +2,7 @@ import { type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
 import { User, List, ListUser } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
-import { getListUser, getUserIsListAdmin, isAuthorized } from "../helpers";
+import { getListUser, getUserIsListMember, isAuthorized } from "../helpers";
 import actionErrors from "../errors";
 import type listUserInputs from "./list-users.inputs";
 import type { ListUserSelect } from "@/lib/types";
@@ -16,12 +16,14 @@ const create: ActionHandler<
 
   const data = { userId, ...input };
 
-  const isAdmin = await getUserIsListAdmin(c, {
+  // only list members can add other users
+  const isMember = await getUserIsListMember(c, {
     listId: data.listId,
     userId,
   });
-  if (!isAdmin) throw actionErrors.NO_PERMISSION;
+  if (!isMember) throw actionErrors.NO_PERMISSION;
 
+  // check if the user is already a member of the list
   const [existingListUser] = await db
     .select()
     .from(ListUser)
@@ -30,6 +32,7 @@ const create: ActionHandler<
     );
   if (existingListUser) throw actionErrors.DUPLICATE;
 
+  // insert the new list user
   const [{ listUserId }] = await db
     .insert(ListUser)
     .values(data)
@@ -39,69 +42,57 @@ const create: ActionHandler<
 };
 
 const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
-  input,
+  { id: listUserId },
   c,
 ) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
-  const data = { userId, ...input };
+  // ensure list user exists
+  const [existingListUser] = await db
+    .select()
+    .from(ListUser)
+    .where(eq(ListUser.id, listUserId));
+  if (!existingListUser) throw actionErrors.NOT_FOUND;
 
-  const isAdmin = await getUserIsListAdmin(c, {
-    listId: data.listId,
+  // ensure current user is a member of the list
+  const isMember = await getUserIsListMember(c, {
+    listId: existingListUser.listId,
     userId,
   });
+  if (!isMember) throw actionErrors.NO_PERMISSION;
 
-  // TODO: Ensure that user is not the only admin of the list
-
-  if (!isAdmin && data.userId !== userId) throw actionErrors.NO_PERMISSION;
-
-  const [result] = await db
-    .delete(ListUser)
-    .where(
-      and(eq(ListUser.listId, data.listId), eq(ListUser.userId, data.userId)),
-    )
-    .returning();
-
-  if (!result) throw actionErrors.NOT_FOUND;
+  await db.delete(ListUser).where(eq(ListUser.id, listUserId));
   return null;
 };
 
-const update: ActionHandler<
-  typeof listUserInputs.update,
+const accept: ActionHandler<
+  typeof listUserInputs.accept,
   ListUserSelect
-> = async (input, c) => {
+> = async ({ id: listUserId }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
-  const data = { userId, ...input };
-
-  const isAdmin = await getUserIsListAdmin(c, {
-    listId: data.listId,
-    userId,
-  });
-
-  // only admins can make other users admins
-  if (!isAdmin && data.isAdmin === true) throw actionErrors.NO_PERMISSION;
-
-  // users can only update their own pending status
-  if (data.userId !== userId && data.isPending === false)
-    throw actionErrors.NO_PERMISSION;
-
+  // ensure list user exists and is pending and pertains to current user
   const [listUser] = await db
-    .update(ListUser)
-    .set({
-      isAdmin: data.isAdmin,
-      isPending: data.isPending,
-    })
+    .select()
+    .from(ListUser)
     .where(
-      and(eq(ListUser.listId, data.listId), eq(ListUser.userId, data.userId)),
-    )
-    .returning();
-
+      and(
+        eq(ListUser.id, listUserId),
+        eq(ListUser.userId, userId),
+        eq(ListUser.isPending, true),
+      ),
+    );
   if (!listUser) throw actionErrors.NOT_FOUND;
 
-  return getListUser(c, { listUserId: listUser.id });
+  // update the list user to accept the invitation
+  await db
+    .update(ListUser)
+    .set({ isPending: false })
+    .where(eq(ListUser.id, listUserId));
+
+  return getListUser(c, { listUserId });
 };
 
 const getAllForList: ActionHandler<
@@ -111,14 +102,14 @@ const getAllForList: ActionHandler<
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
-  await getUserIsListAdmin(c, { listId, userId });
+  const isMember = await getUserIsListMember(c, { listId, userId });
+  if (!isMember) throw actionErrors.NO_PERMISSION;
 
   return db
     .select({
       id: ListUser.id,
       userId: ListUser.userId,
       listId: ListUser.listId,
-      isAdmin: ListUser.isAdmin,
       isPending: ListUser.isPending,
       list: {
         id: List.id,
@@ -149,7 +140,6 @@ const getAllPending: ActionHandler<
       id: ListUser.id,
       userId: ListUser.userId,
       listId: ListUser.listId,
-      isAdmin: ListUser.isAdmin,
       isPending: ListUser.isPending,
       list: {
         id: List.id,
@@ -171,7 +161,7 @@ const getAllPending: ActionHandler<
 const listShareHandlers = {
   create,
   remove,
-  update,
+  accept,
   getAllForList,
   getAllPending,
 };

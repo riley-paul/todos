@@ -1,6 +1,6 @@
 import { type ActionHandler } from "astro:actions";
 import type { ListSelect, ListSelectShallow } from "@/lib/types";
-import { getUserIsListAdmin, isAuthorized } from "../helpers";
+import { getUserIsListMember, isAuthorized } from "../helpers";
 import { createDb } from "@/db";
 import { List, ListUser, Todo, User } from "@/db/schema";
 import { and, asc, count, eq, not } from "drizzle-orm";
@@ -31,7 +31,6 @@ const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
               name: User.name,
               email: User.email,
               avatarUrl: User.avatarUrl,
-              isAdmin: ListUser.isAdmin,
             })
             .from(ListUser)
             .innerJoin(User, eq(User.id, ListUser.userId))
@@ -48,16 +47,10 @@ const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
             .where(eq(Todo.listId, list.id))
             .then(([{ count }]) => count);
 
-          const isAdmin = await getUserIsListAdmin(c, {
-            userId,
-            listId: list.id,
-          });
-
           return {
             ...list,
             todoCount,
             otherUsers,
-            isAdmin,
           };
         }),
       ),
@@ -95,8 +88,8 @@ const update: ActionHandler<
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
-  const isAdmin = await getUserIsListAdmin(c, { listId, userId });
-  if (!isAdmin) throw actionErrors.NO_PERMISSION;
+  const isMember = await getUserIsListMember(c, { listId, userId });
+  if (!isMember) throw actionErrors.NO_PERMISSION;
 
   const [list] = await db
     .update(List)
@@ -123,7 +116,6 @@ const create: ActionHandler<
   await db.insert(ListUser).values({
     listId: list.id,
     userId,
-    isAdmin: true,
     isPending: false,
   });
 
@@ -137,8 +129,8 @@ const remove: ActionHandler<typeof listInputs.remove, null> = async (
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
-  const isAdmin = await getUserIsListAdmin(c, { listId, userId });
-  if (!isAdmin) throw actionErrors.NO_PERMISSION;
+  const isMember = await getUserIsListMember(c, { listId, userId });
+  if (!isMember) throw actionErrors.NO_PERMISSION;
 
   const [result] = await db.delete(List).where(eq(List.id, listId)).returning();
   if (!result) throw actionErrors.NOT_FOUND;

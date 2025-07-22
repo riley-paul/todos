@@ -26,7 +26,7 @@ type Props = {
 };
 
 const ListMenu: React.FC<Props> = ({ list }) => {
-  const { id, name, isAdmin, otherUsers } = list;
+  const { id, name, otherUsers } = list;
   const {
     deleteList,
     leaveListShare,
@@ -39,8 +39,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
   const [, copyToClipboard] = useCopyToClipboard();
   const [shareDialogOpen, setShareDialogOpen] = React.useState(false);
 
-  const isOnlyAdminUser =
-    otherUsers.filter(({ isAdmin }) => isAdmin).length === 0;
+  const isOnlyUser = otherUsers.length === 0;
 
   const handleRenameList = () => {
     dispatchAlert({
@@ -120,7 +119,6 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       text: "Share",
       icon: <Share2Icon className="size-4 opacity-70" />,
       onClick: () => setShareDialogOpen(true),
-      hide: !list.isAdmin,
     },
     {
       type: "separator",
@@ -166,7 +164,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       icon: <LogOutIcon className="size-4 opacity-70" />,
       color: "amber",
       onClick: handleLeaveList,
-      hide: isOnlyAdminUser,
+      hide: isOnlyUser,
     },
     {
       type: "item",
@@ -175,7 +173,6 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       icon: <TrashIcon className="size-4 opacity-70" />,
       color: "red",
       onClick: handleDeleteList,
-      hide: !isAdmin,
     },
   ];
 

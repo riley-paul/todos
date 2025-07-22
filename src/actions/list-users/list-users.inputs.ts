@@ -4,21 +4,10 @@ const listUserInputs = {
   create: z.object({
     listId: z.string(),
     userId: z.string().optional(),
-    isAdmin: z.boolean().optional(),
   }),
-  remove: z.object({
-    listId: z.string(),
-    userId: z.string().optional(),
-  }),
-  update: z.object({
-    listId: z.string(),
-    userId: z.string().optional(),
-    isAdmin: z.boolean().optional(),
-    isPending: z.boolean().optional(),
-  }),
-  getAllForList: z.object({
-    listId: z.string(),
-  }),
+  remove: z.object({ id: z.string() }),
+  accept: z.object({ id: z.string() }),
+  getAllForList: z.object({ listId: z.string() }),
   getAllPending: z.any(),
 };
 

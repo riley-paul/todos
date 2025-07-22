@@ -38,16 +38,14 @@ const ListShares: React.FC<Props> = ({ list }) => {
               </Text>
             </div>
 
-            {list.isAdmin && (
-              <DeleteButton
-                handleDelete={() =>
-                  deleteListShare.mutate({
-                    listId: share.listId,
-                    userId: share.userId,
-                  })
-                }
-              />
-            )}
+            <DeleteButton
+              handleDelete={() =>
+                deleteListShare.mutate({
+                  listId: share.listId,
+                  userId: share.userId,
+                })
+              }
+            />
           </div>
         ))}
         {listShares.length === 0 && (

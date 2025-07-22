@@ -55,9 +55,9 @@ beforeAll(async () => {
     .returning();
 
   await db.insert(ListUser).values([
-    { userId: USER1_ID, listId: LIST1_ID, isAdmin: true, isPending: false },
-    { userId: USER1_ID, listId: LIST2_ID, isAdmin: true, isPending: false },
-    { userId: USER2_ID, listId: LIST3_ID, isAdmin: true, isPending: false },
+    { userId: USER1_ID, listId: LIST1_ID, isPending: false },
+    { userId: USER1_ID, listId: LIST2_ID, isPending: false },
+    { userId: USER2_ID, listId: LIST3_ID, isPending: false },
   ]);
 
   await db.insert(Todo).values([
