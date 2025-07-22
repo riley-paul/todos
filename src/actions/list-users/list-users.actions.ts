@@ -13,16 +13,21 @@ export const remove = defineAction({
 });
 
 export const leave = defineAction({
-  input: listUserInputs.leave,
-  handler: listShareHandlers.leave,
+  input: listUserInputs.update,
+  handler: listShareHandlers.update,
 });
 
 export const accept = defineAction({
-  input: listUserInputs.accept,
-  handler: listShareHandlers.accept,
+  input: listUserInputs.getAllForList,
+  handler: listShareHandlers.getAllForList,
 });
 
 export const getAllPending = defineAction({
   input: listUserInputs.getAllPending,
   handler: listShareHandlers.getAllPending,
+});
+
+export const getAllForList = defineAction({
+  input: listUserInputs.getAllForList,
+  handler: listShareHandlers.getAllForList,
 });

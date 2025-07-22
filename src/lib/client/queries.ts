@@ -26,7 +26,13 @@ export const qList = (listId: string) =>
     queryFn: () => actions.lists.get.orThrow({ id: listId }),
   });
 
+export const qListShares = (listId: string) =>
+  queryOptions({
+    queryKey: ["listShares", listId],
+    queryFn: () => actions.listUsers.getAllForList.orThrow({ listId }),
+  });
+
 export const qPendingShares = queryOptions({
   queryKey: ["pendingShares"],
-  queryFn: actions.listShares.getAllPending.orThrow,
+  queryFn: actions.listUsers.getAllPending.orThrow,
 });

@@ -10,9 +10,11 @@ import type { ListUserSelect } from "@/lib/types";
 const create: ActionHandler<
   typeof listUserInputs.create,
   ListUserSelect
-> = async (data, c) => {
+> = async (input, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
+
+  const data = { userId, ...input };
 
   const isAdmin = await getUserIsListAdmin(c, {
     listId: data.listId,
@@ -37,11 +39,13 @@ const create: ActionHandler<
 };
 
 const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
-  data,
+  input,
   c,
 ) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
+
+  const data = { userId, ...input };
 
   const isAdmin = await getUserIsListAdmin(c, {
     listId: data.listId,
@@ -64,9 +68,11 @@ const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
 const update: ActionHandler<
   typeof listUserInputs.update,
   ListUserSelect
-> = async (data, c) => {
+> = async (input, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
+
+  const data = { userId, ...input };
 
   const isAdmin = await getUserIsListAdmin(c, {
     listId: data.listId,
