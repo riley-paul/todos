@@ -179,8 +179,20 @@ export default function useMutations() {
     },
   });
 
-  const createListShare = useMutation({
+  const joinList = useMutation({
     mutationFn: actions.listUsers.create.orThrow,
+  });
+
+  const acceptListJoin = useMutation({
+    mutationFn: actions.listUsers.accept.orThrow,
+    onSuccess: (data) => {
+      toast.success(`You now have access to "${data.list.name}"`, {
+        action: {
+          label: "Go to list",
+          onClick: () => navigate(goToList(data.list.id)),
+        },
+      });
+    },
   });
 
   const deleteList = useMutation({
@@ -191,7 +203,7 @@ export default function useMutations() {
     },
   });
 
-  const leaveListShare = useMutation({
+  const leaveList = useMutation({
     mutationFn: actions.listUsers.remove.orThrow,
     onSuccess: () => {
       navigate({ to: "/" });
@@ -211,7 +223,8 @@ export default function useMutations() {
     updateList,
     createList,
     deleteList,
-    leaveListShare,
-    createListShare,
+    leaveList,
+    joinList,
+    acceptListJoin,
   };
 }

@@ -42,17 +42,21 @@ const create: ActionHandler<
 };
 
 const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
-  { id: listUserId },
+  input,
   c,
 ) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
+  const data = { userId, ...input };
+
   // ensure list user exists
   const [existingListUser] = await db
     .select()
     .from(ListUser)
-    .where(eq(ListUser.id, listUserId));
+    .where(
+      and(eq(ListUser.listId, data.listId), eq(ListUser.userId, data.userId)),
+    );
   if (!existingListUser) throw actionErrors.NOT_FOUND;
 
   // ensure current user is a member of the list
@@ -62,7 +66,7 @@ const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
   });
   if (!isMember) throw actionErrors.NO_PERMISSION;
 
-  await db.delete(ListUser).where(eq(ListUser.id, listUserId));
+  await db.delete(ListUser).where(eq(ListUser.id, existingListUser.id));
   return null;
 };
 

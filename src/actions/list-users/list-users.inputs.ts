@@ -5,7 +5,7 @@ const listUserInputs = {
     listId: z.string(),
     userId: z.string().optional(),
   }),
-  remove: z.object({ id: z.string() }),
+  remove: z.object({ listId: z.string(), userId: z.string().optional() }),
   accept: z.object({ id: z.string() }),
   getAllForList: z.object({ listId: z.string() }),
   getAllPending: z.any(),

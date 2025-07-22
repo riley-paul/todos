@@ -29,7 +29,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
   const { id, name, otherUsers } = list;
   const {
     deleteList,
-    leaveListShare,
+    leaveList,
     updateList,
     uncheckCompletedTodos,
     deleteCompletedTodos,
@@ -83,7 +83,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         title: "Leave List",
         message: `Are you sure you want to leave this list? This action cannot be undone. You will have to be re-invited to access it again.`,
         handleDelete: () => {
-          leaveListShare.mutate({ listId: id });
+          leaveList.mutate({ listId: id });
           dispatchAlert({ type: "close" });
         },
         confirmButtonProps: {
