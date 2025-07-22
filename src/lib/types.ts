@@ -1,4 +1,4 @@
-import { User, Todo, List } from "@/db/schema";
+import { User, Todo, List, ListUser } from "@/db/schema";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -84,3 +84,19 @@ export type ListSelectShallow = z.infer<typeof zListSelectShallow>;
 export type ListInsert = z.infer<typeof zListInsert>;
 
 export type SelectedList = string | "all" | null;
+
+export const zListUserInsert = createInsertSchema(ListUser);
+export const zListUserSelect = createSelectSchema(ListUser)
+  .pick({
+    id: true,
+    listId: true,
+    userId: true,
+    isAdmin: true,
+    isPending: true,
+  })
+  .extend({
+    user: zUserSelect,
+    list: zListSelectShallow,
+  });
+export type ListUserInsert = z.infer<typeof zListUserInsert>;
+export type ListUserSelect = z.infer<typeof zListUserSelect>;

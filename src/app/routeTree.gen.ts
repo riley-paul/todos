@@ -8,88 +8,113 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as WithBackRouteImport } from './routes/_withBack'
+import { Route as WithAdderRouteImport } from './routes/_withAdder'
+import { Route as WithAdderIndexRouteImport } from './routes/_withAdder.index'
+import { Route as WithBackSettingsRouteImport } from './routes/_withBack.settings'
+import { Route as WithAdderTodosListIdRouteImport } from './routes/_withAdder.todos.$listId'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as WithBackImport } from './routes/_withBack'
-import { Route as WithAdderImport } from './routes/_withAdder'
-import { Route as WithAdderIndexImport } from './routes/_withAdder.index'
-import { Route as WithBackSettingsImport } from './routes/_withBack.settings'
-import { Route as WithAdderTodosListIdImport } from './routes/_withAdder.todos.$listId'
-
-// Create/Update Routes
-
-const WithBackRoute = WithBackImport.update({
+const WithBackRoute = WithBackRouteImport.update({
   id: '/_withBack',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const WithAdderRoute = WithAdderImport.update({
+const WithAdderRoute = WithAdderRouteImport.update({
   id: '/_withAdder',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const WithAdderIndexRoute = WithAdderIndexImport.update({
+const WithAdderIndexRoute = WithAdderIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => WithAdderRoute,
 } as any)
-
-const WithBackSettingsRoute = WithBackSettingsImport.update({
+const WithBackSettingsRoute = WithBackSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
   getParentRoute: () => WithBackRoute,
 } as any)
-
-const WithAdderTodosListIdRoute = WithAdderTodosListIdImport.update({
+const WithAdderTodosListIdRoute = WithAdderTodosListIdRouteImport.update({
   id: '/todos/$listId',
   path: '/todos/$listId',
   getParentRoute: () => WithAdderRoute,
 } as any)
 
-// Populate the FileRoutesByPath interface
+export interface FileRoutesByFullPath {
+  '/settings': typeof WithBackSettingsRoute
+  '/': typeof WithAdderIndexRoute
+  '/todos/$listId': typeof WithAdderTodosListIdRoute
+}
+export interface FileRoutesByTo {
+  '/settings': typeof WithBackSettingsRoute
+  '/': typeof WithAdderIndexRoute
+  '/todos/$listId': typeof WithAdderTodosListIdRoute
+}
+export interface FileRoutesById {
+  __root__: typeof rootRouteImport
+  '/_withAdder': typeof WithAdderRouteWithChildren
+  '/_withBack': typeof WithBackRouteWithChildren
+  '/_withBack/settings': typeof WithBackSettingsRoute
+  '/_withAdder/': typeof WithAdderIndexRoute
+  '/_withAdder/todos/$listId': typeof WithAdderTodosListIdRoute
+}
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/settings' | '/' | '/todos/$listId'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/settings' | '/' | '/todos/$listId'
+  id:
+    | '__root__'
+    | '/_withAdder'
+    | '/_withBack'
+    | '/_withBack/settings'
+    | '/_withAdder/'
+    | '/_withAdder/todos/$listId'
+  fileRoutesById: FileRoutesById
+}
+export interface RootRouteChildren {
+  WithAdderRoute: typeof WithAdderRouteWithChildren
+  WithBackRoute: typeof WithBackRouteWithChildren
+}
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_withAdder': {
-      id: '/_withAdder'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof WithAdderImport
-      parentRoute: typeof rootRoute
-    }
     '/_withBack': {
       id: '/_withBack'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof WithBackImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof WithBackRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_withBack/settings': {
-      id: '/_withBack/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof WithBackSettingsImport
-      parentRoute: typeof WithBackImport
+    '/_withAdder': {
+      id: '/_withAdder'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof WithAdderRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_withAdder/': {
       id: '/_withAdder/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof WithAdderIndexImport
-      parentRoute: typeof WithAdderImport
+      preLoaderRoute: typeof WithAdderIndexRouteImport
+      parentRoute: typeof WithAdderRoute
+    }
+    '/_withBack/settings': {
+      id: '/_withBack/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof WithBackSettingsRouteImport
+      parentRoute: typeof WithBackRoute
     }
     '/_withAdder/todos/$listId': {
       id: '/_withAdder/todos/$listId'
       path: '/todos/$listId'
       fullPath: '/todos/$listId'
-      preLoaderRoute: typeof WithAdderTodosListIdImport
-      parentRoute: typeof WithAdderImport
+      preLoaderRoute: typeof WithAdderTodosListIdRouteImport
+      parentRoute: typeof WithAdderRoute
     }
   }
 }
-
-// Create and export the route tree
 
 interface WithAdderRouteChildren {
   WithAdderIndexRoute: typeof WithAdderIndexRoute
@@ -117,93 +142,10 @@ const WithBackRouteWithChildren = WithBackRoute._addFileChildren(
   WithBackRouteChildren,
 )
 
-export interface FileRoutesByFullPath {
-  '': typeof WithBackRouteWithChildren
-  '/settings': typeof WithBackSettingsRoute
-  '/': typeof WithAdderIndexRoute
-  '/todos/$listId': typeof WithAdderTodosListIdRoute
-}
-
-export interface FileRoutesByTo {
-  '': typeof WithBackRouteWithChildren
-  '/settings': typeof WithBackSettingsRoute
-  '/': typeof WithAdderIndexRoute
-  '/todos/$listId': typeof WithAdderTodosListIdRoute
-}
-
-export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/_withAdder': typeof WithAdderRouteWithChildren
-  '/_withBack': typeof WithBackRouteWithChildren
-  '/_withBack/settings': typeof WithBackSettingsRoute
-  '/_withAdder/': typeof WithAdderIndexRoute
-  '/_withAdder/todos/$listId': typeof WithAdderTodosListIdRoute
-}
-
-export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/settings' | '/' | '/todos/$listId'
-  fileRoutesByTo: FileRoutesByTo
-  to: '' | '/settings' | '/' | '/todos/$listId'
-  id:
-    | '__root__'
-    | '/_withAdder'
-    | '/_withBack'
-    | '/_withBack/settings'
-    | '/_withAdder/'
-    | '/_withAdder/todos/$listId'
-  fileRoutesById: FileRoutesById
-}
-
-export interface RootRouteChildren {
-  WithAdderRoute: typeof WithAdderRouteWithChildren
-  WithBackRoute: typeof WithBackRouteWithChildren
-}
-
 const rootRouteChildren: RootRouteChildren = {
   WithAdderRoute: WithAdderRouteWithChildren,
   WithBackRoute: WithBackRouteWithChildren,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/_withAdder",
-        "/_withBack"
-      ]
-    },
-    "/_withAdder": {
-      "filePath": "_withAdder.tsx",
-      "children": [
-        "/_withAdder/",
-        "/_withAdder/todos/$listId"
-      ]
-    },
-    "/_withBack": {
-      "filePath": "_withBack.tsx",
-      "children": [
-        "/_withBack/settings"
-      ]
-    },
-    "/_withBack/settings": {
-      "filePath": "_withBack.settings.tsx",
-      "parent": "/_withBack"
-    },
-    "/_withAdder/": {
-      "filePath": "_withAdder.index.tsx",
-      "parent": "/_withAdder"
-    },
-    "/_withAdder/todos/$listId": {
-      "filePath": "_withAdder.todos.$listId.tsx",
-      "parent": "/_withAdder"
-    }
-  }
-}
-ROUTE_MANIFEST_END */

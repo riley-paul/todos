@@ -8,17 +8,7 @@ const listInputs = {
     id: z.string(),
     data: zListInsert.partial(),
   }),
-  create: z.object({ data: zListName }),
+  create: z.object({ name: zListName }),
   remove: z.object({ id: z.string() }),
-
-  addUser: z.object({
-    listId: z.string(),
-    userId: z.string(),
-    isAdmin: z.boolean().optional(),
-  }),
-  removeUser: z.object({
-    listId: z.string(),
-    userId: z.string(),
-  }),
 };
 export default listInputs;

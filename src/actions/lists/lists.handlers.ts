@@ -1,6 +1,11 @@
 import { type ActionHandler } from "astro:actions";
 import type { ListSelect, ListSelectShallow } from "@/lib/types";
-import { getListUsers, invalidateUsers, isAuthorized } from "../helpers";
+import {
+  getListUsers,
+  getUserIsListAdmin,
+  invalidateUsers,
+  isAuthorized,
+} from "../helpers";
 import { createDb } from "@/db";
 import { List, ListUser, Todo, User } from "@/db/schema";
 import { and, asc, count, eq, not } from "drizzle-orm";
@@ -114,13 +119,13 @@ const update: ActionHandler<
 const create: ActionHandler<
   typeof listInputs.create,
   ListSelectShallow
-> = async ({ data }, c) => {
+> = async ({ name }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
   const [list] = await db
     .insert(List)
-    .values(data)
+    .values({ name })
     .returning({ id: List.id, name: List.name });
 
   await db.insert(ListUser).values({
@@ -134,22 +139,16 @@ const create: ActionHandler<
 };
 
 const remove: ActionHandler<typeof listInputs.remove, null> = async (
-  { id },
+  { id: listId },
   c,
 ) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
-  const [listUser] = await db
-    .select({ isAdmin: ListUser.isAdmin })
-    .from(ListUser)
-    .where(and(eq(ListUser.listId, id), eq(ListUser.userId, userId)))
-    .limit(1);
+  const isAdmin = await getUserIsListAdmin(c, { listId, userId });
+  if (!isAdmin) throw actionErrors.NO_PERMISSION;
 
-  if (!listUser) throw actionErrors.NOT_FOUND;
-  if (!listUser.isAdmin) throw actionErrors.NO_PERMISSION;
-
-  await db.delete(List).where(eq(List.id, id));
+  await db.delete(List).where(eq(List.id, listId));
   return null;
 };
 
