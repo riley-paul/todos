@@ -21,7 +21,7 @@ const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
     .from(List)
     .innerJoin(ListUser, eq(ListUser.listId, List.id))
     .orderBy(asc(List.name))
-    .where(eq(ListUser.userId, userId))
+    .where(and(eq(ListUser.userId, userId), eq(ListUser.isPending, false)))
     .then((lists) =>
       Promise.all(
         lists.map(async (list) => {

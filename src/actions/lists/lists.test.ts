@@ -8,7 +8,7 @@ import env from "@/envs-runtime";
 import listHandlers from "./lists.handlers";
 import mockApiContext from "../__test__/mock-api-context";
 import actionErrors from "../errors";
-import { count } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 
 const USER1_ID = crypto.randomUUID();
 const USER2_ID = crypto.randomUUID();
@@ -65,8 +65,42 @@ afterAll(() => {
   rmSync("test.db", { force: true });
 });
 
+
+describe("List fetching", () => {
+
+  test("get all lists for a user", async () => {
+    const result = await listHandlers.getAll({}, mockApiContext(USER1_ID));
+    expect(result.length).toBe(2);
+  })
+
+
+
+})
+
+
+describe("List creation", () => {
+  test("able to create a list", async () => {
+    const result = await listHandlers.create(
+      { name: "New Test List" },
+      mockApiContext(USER1_ID),
+    );
+    expect(result).toEqual({
+      id: expect.any(String),
+      name: "New Test List",
+    });
+    const [list] = await db
+      .select({ id: List.id, name: List.name })
+      .from(List)
+      .where(eq(List.id, result.id));
+    expect(list).toEqual({
+      id: result.id,
+      name: "New Test List",
+    });
+  });
+});
+
 describe("List deletion", () => {
-  test("able to delete a todo if admin", async () => {
+  test("able to delete a list if admin", async () => {
     const [{ numListsBefore }] = await db
       .select({ numListsBefore: count() })
       .from(List);
@@ -82,7 +116,7 @@ describe("List deletion", () => {
     expect(numListsBefore - numListsAfter).toBe(1);
   });
 
-  test("unable to delete a todo if admin", async () => {
+  test("unable to delete a list if not list admin", async () => {
     await expect(() =>
       listHandlers.remove({ id: LIST3_ID }, mockApiContext(USER1_ID)),
     ).rejects.toThrow(actionErrors.NO_PERMISSION);
