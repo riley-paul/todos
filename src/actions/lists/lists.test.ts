@@ -8,6 +8,7 @@ import env from "@/envs-runtime";
 import listHandlers from "./lists.handlers";
 import mockApiContext from "../__test__/mock-api-context";
 import actionErrors from "../errors";
+import { count } from "drizzle-orm";
 
 const USER1_ID = crypto.randomUUID();
 const USER2_ID = crypto.randomUUID();
@@ -66,11 +67,19 @@ afterAll(() => {
 
 describe("List deletion", () => {
   test("able to delete a todo if admin", async () => {
+    const [{ numListsBefore }] = await db
+      .select({ numListsBefore: count() })
+      .from(List);
     const result = await listHandlers.remove(
       { id: LIST1_ID },
       mockApiContext(USER1_ID),
     );
+    const [{ numListsAfter }] = await db
+      .select({ numListsAfter: count() })
+      .from(List);
+
     expect(result).toBe(null);
+    expect(numListsBefore - numListsAfter).toBe(1);
   });
 
   test("unable to delete a todo if admin", async () => {
