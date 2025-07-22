@@ -173,14 +173,14 @@ export default function useMutations() {
 
   const createList = useMutation({
     mutationFn: actions.lists.create.orThrow,
-    onSuccess: ({ id }, { data: { name } }) => {
+    onSuccess: ({ id }, { name }) => {
       toast.success(`List "${name}" created`);
       navigate(goToList(id));
     },
   });
 
   const createListShare = useMutation({
-    mutationFn: actions.listShares.create.orThrow,
+    mutationFn: actions.listUsers.create.orThrow,
   });
 
   const deleteList = useMutation({
@@ -192,7 +192,7 @@ export default function useMutations() {
   });
 
   const leaveListShare = useMutation({
-    mutationFn: actions.listShares.leave.orThrow,
+    mutationFn: actions.listUsers.remove.orThrow,
     onSuccess: () => {
       navigate({ to: "/" });
       toast.success("You no longer have access to this list");

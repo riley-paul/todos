@@ -58,14 +58,15 @@ const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
         id: List.id,
         name: List.name,
       },
-      isAuthor: ListUser.isAdmin,
     })
     .from(Todo)
     .leftJoin(List, eq(List.id, Todo.listId))
-    .leftJoin(ListUser, eq(ListUser.listId, Todo.listId))
     .innerJoin(User, eq(User.id, Todo.userId))
     .where(filterTodos())
     .orderBy(desc(Todo.createdAt))
+    .then((data) =>
+      data.map((todo) => ({ ...todo, isAuthor: todo.author.id === userId })),
+    );
 
   return todos;
 };

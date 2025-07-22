@@ -12,14 +12,9 @@ export const remove = defineAction({
   handler: listShareHandlers.remove,
 });
 
-export const leave = defineAction({
+export const update = defineAction({
   input: listUserInputs.update,
   handler: listShareHandlers.update,
-});
-
-export const accept = defineAction({
-  input: listUserInputs.getAllForList,
-  handler: listShareHandlers.getAllForList,
 });
 
 export const getAllPending = defineAction({

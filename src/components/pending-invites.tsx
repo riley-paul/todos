@@ -19,11 +19,11 @@ const PendingInvites: React.FC = () => {
   const numPendingShares = pendingSharesQuery.data?.length ?? 0;
 
   const deleteListShare = useMutation({
-    mutationFn: actions.listShares.remove.orThrow,
+    mutationFn: actions.listUsers.remove.orThrow,
   });
 
-  const acceptListShare = useMutation({
-    mutationFn: actions.listShares.accept.orThrow,
+  const updateListShare = useMutation({
+    mutationFn: actions.listUsers.update.orThrow,
     onSuccess: () => {
       toast.success("You now have access to this list");
     },
@@ -67,7 +67,9 @@ const PendingInvites: React.FC = () => {
                   <Button
                     size="1"
                     variant="soft"
-                    onClick={() => acceptListShare.mutate({ id: share.id })}
+                    onClick={() =>
+                      updateListShare.mutate({ listId: share.list.id })
+                    }
                   >
                     <CheckIcon className="size-3" />
                     <span>Accept</span>
@@ -76,7 +78,9 @@ const PendingInvites: React.FC = () => {
                     size="1"
                     variant="soft"
                     color="red"
-                    onClick={() => deleteListShare.mutate({ id: share.id })}
+                    onClick={() =>
+                      deleteListShare.mutate({ listId: share.list.id })
+                    }
                   >
                     <XIcon className="size-3" />
                     <span>Decline</span>

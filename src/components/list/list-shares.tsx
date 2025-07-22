@@ -3,20 +3,23 @@ import React from "react";
 import UserBubble from "../ui/user-bubble";
 import { Text, Tooltip } from "@radix-ui/themes";
 import DeleteButton from "../ui/delete-button";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { actions } from "astro:actions";
+import { qListShares } from "@/lib/client/queries";
 
 type Props = { list: ListSelect };
 
 const ListShares: React.FC<Props> = ({ list }) => {
   const deleteListShare = useMutation({
-    mutationFn: actions.listShares.remove.orThrow,
+    mutationFn: actions.listUsers.remove.orThrow,
   });
+
+  const { data: listShares = [] } = useQuery(qListShares(list.id));
 
   return (
     <div className="min-h-12 overflow-y-auto rounded-3 border bg-panel-translucent px-2">
       <div className="grid divide-y">
-        {list.shares.map((share) => (
+        {listShares.map((share) => (
           <div key={share.id} className="flex items-center gap-rx-3 py-2">
             <div className="relative">
               <UserBubble user={share.user} size="md" />
@@ -35,14 +38,19 @@ const ListShares: React.FC<Props> = ({ list }) => {
               </Text>
             </div>
 
-            {list.isAuthor && (
+            {list.isAdmin && (
               <DeleteButton
-                handleDelete={() => deleteListShare.mutate({ id: share.id })}
+                handleDelete={() =>
+                  deleteListShare.mutate({
+                    listId: share.listId,
+                    userId: share.userId,
+                  })
+                }
               />
             )}
           </div>
         ))}
-        {list.shares.length === 0 && (
+        {listShares.length === 0 && (
           <Text size="2" color="gray" align="center" className="p-6">
             No shares
           </Text>

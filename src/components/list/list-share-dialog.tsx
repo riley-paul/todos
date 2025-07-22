@@ -32,7 +32,7 @@ const InviteForm: React.FC<{ list: ListSelect }> = ({ list }) => {
   });
 
   const invite = useMutation({
-    mutationFn: actions.listShares.create.orThrow,
+    mutationFn: actions.listUsers.create.orThrow,
     onSuccess: () => {
       toast.success("Invitation sent");
     },
@@ -40,7 +40,7 @@ const InviteForm: React.FC<{ list: ListSelect }> = ({ list }) => {
 
   const onSubmit = handleSubmit(
     (data) => {
-      invite.mutate({ listId: list.id, email: data.email });
+      invite.mutate({ listId: list.id, userId: data.email });
     },
     (errors) => {
       console.error(errors);

@@ -1,6 +1,6 @@
 import { defineConfig, envField } from "astro/config";
 
-import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 import react from "@astrojs/react";
@@ -14,7 +14,8 @@ export default defineConfig({
   vite: {
     build: { minify: false },
     plugins: [
-      TanStackRouterVite({
+      tanstackRouter({
+        target: "react",
         routesDirectory: "./src/app/routes",
         generatedRouteTree: "./src/app/routeTree.gen.ts",
       }),
