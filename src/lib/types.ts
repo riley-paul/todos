@@ -2,6 +2,8 @@ import { User, Todo, List } from "@/db/schema";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
+export const zListName = z.string().trim().min(1).max(256);
+
 export const zUserSelect = createSelectSchema(User).pick({
   id: true,
   name: true,

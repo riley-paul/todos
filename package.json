@@ -48,7 +48,7 @@
     "dotenv-expand": "^12.0.1",
     "drizzle-kit": "^0.30.5",
     "drizzle-orm": "^0.40.0",
-    "drizzle-zod": "^0.7.0",
+    "drizzle-zod": "^0.8.2",
     "jotai": "^2.12.5",
     "lucide-react": "^0.525.0",
     "postcss-import": "^16.1.0",
@@ -68,7 +68,7 @@
     "vaul": "^1.0.0",
     "vite-plugin-pwa": "^0.20.5",
     "vitest": "^3.0.8",
-    "zod": "^3.25.67"
+    "zod": "^4.0.5"
   },
   "devDependencies": {
     "@tanstack/router-devtools": "^1.97.25",

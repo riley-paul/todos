@@ -1,4 +1,4 @@
-import { zListInsert } from "@/lib/types";
+import { zListInsert, zListName } from "@/lib/types";
 import { z } from "zod";
 
 const listInputs = {
@@ -8,7 +8,17 @@ const listInputs = {
     id: z.string(),
     data: zListInsert.partial(),
   }),
-  create: z.object({ data: zListInsert }),
+  create: z.object({ data: zListName }),
   remove: z.object({ id: z.string() }),
+
+  addUser: z.object({
+    listId: z.string(),
+    userId: z.string(),
+    isAdmin: z.boolean().optional(),
+  }),
+  removeUser: z.object({
+    listId: z.string(),
+    userId: z.string(),
+  }),
 };
 export default listInputs;

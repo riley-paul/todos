@@ -1,6 +1,6 @@
 import { IconButton } from "@radix-ui/themes";
 import React from "react";
-import type { ListSelect } from "@/lib/types";
+import { zListName, type ListSelect } from "@/lib/types";
 import {
   Edit2Icon,
   EllipsisIcon,
@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
 import useMutations from "@/hooks/use-mutations";
-import { z } from "zod/v4";
 import { useAtom } from "jotai";
 import { toast } from "sonner";
 import { useCopyToClipboard } from "usehooks-ts";
@@ -49,7 +48,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         message: "Update the name of your list",
         value: name,
         placeholder: "Enter new list name",
-        schema: z.string().min(1).max(100),
+        schema: zListName,
         handleSubmit: (name: string) => {
           updateList.mutate({ id, data: { name } });
           dispatchAlert({ type: "close" });
