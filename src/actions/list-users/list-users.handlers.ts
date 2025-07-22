@@ -50,23 +50,19 @@ const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
 
   const data = { userId, ...input };
 
-  // ensure list user exists
-  const [existingListUser] = await db
-    .select()
-    .from(ListUser)
-    .where(
-      and(eq(ListUser.listId, data.listId), eq(ListUser.userId, data.userId)),
-    );
-  if (!existingListUser) throw actionErrors.NOT_FOUND;
-
-  // ensure current user is a member of the list
+  // ensure current user is a member of the list or the one being removed
   const isMember = await getUserIsListMember(c, {
-    listId: existingListUser.listId,
+    listId: data.listId,
     userId,
+    checkPending: false,
   });
   if (!isMember) throw actionErrors.NO_PERMISSION;
 
-  await db.delete(ListUser).where(eq(ListUser.id, existingListUser.id));
+  await db
+    .delete(ListUser)
+    .where(
+      and(eq(ListUser.listId, data.listId), eq(ListUser.userId, data.userId)),
+    );
   return null;
 };
 
