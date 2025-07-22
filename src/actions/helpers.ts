@@ -1,6 +1,6 @@
 import type { ActionAPIContext } from "astro/actions/runtime/utils.js";
 import InvalidationController from "@/lib/server/invalidation-controller";
-import { ListShare, Todo, List } from "@/db/schema";
+import { ListShare, Todo, List, ListUser } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import actionErrors from "./errors";
 import { createDb } from "@/db";
@@ -60,4 +60,15 @@ export const getTodoUsers = async (
   }
 
   return await getListUsers(context, todo.listId);
+};
+
+export const getAllUserTodos = async (
+  context: ActionAPIContext,
+  userId: string,
+) => {
+  const db = createDb(context.locals.runtime.env);
+  const todos = await db
+    .select()
+    .from(Todo)
+    .rightJoin(ListUser, eq(ListUser.listId, Todo.listId));
 };

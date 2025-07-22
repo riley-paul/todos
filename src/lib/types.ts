@@ -1,4 +1,4 @@
-import { User, Todo, List, ListShare } from "@/db/schema";
+import { User, Todo, List } from "@/db/schema";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -60,24 +60,6 @@ export type TodoSelect = z.infer<typeof zTodoSelect>;
 export type TodoSelectShallow = z.infer<typeof zTodoSelectShallow>;
 export type TodoInsert = z.infer<typeof zTodoInsert>;
 
-export const zListShareSelect = createSelectSchema(ListShare)
-  .pick({
-    id: true,
-    isPending: true,
-  })
-  .extend({
-    list: createSelectSchema(List).pick({ id: true, name: true }),
-    user: zUserSelect,
-  });
-export const zListShareSelectShallow = createSelectSchema(ListShare).pick({
-  id: true,
-  isPending: true,
-});
-export const zListShareInsert = createInsertSchema(ListShare);
-export type ListShareSelect = z.infer<typeof zListShareSelect>;
-export type ListShareSelectShallow = z.infer<typeof zListShareSelectShallow>;
-export type ListShareInsert = z.infer<typeof zListShareInsert>;
-
 export const zListSelect = createSelectSchema(List)
   .pick({
     id: true,
@@ -87,7 +69,6 @@ export const zListSelect = createSelectSchema(List)
     author: zUserSelect,
     isAuthor: z.boolean(),
     todoCount: z.number(),
-    shares: z.array(zListShareSelect),
     otherUsers: z.array(zUserSelect),
   });
 export const zListSelectShallow = createSelectSchema(List).pick({

@@ -1,6 +1,6 @@
 import { type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
-import { User, ListShare, List } from "@/db/schema";
+import { User, List } from "@/db/schema";
 import { eq, and, or, desc } from "drizzle-orm";
 import type { ListShareSelect, ListShareSelectShallow } from "@/lib/types";
 import { isAuthorized } from "../helpers";

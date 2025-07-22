@@ -1,8 +1,8 @@
 import { faker } from "@faker-js/faker";
-import { List, ListShare, Todo, User } from "./schema";
-import { deleteAllData } from "./scripts";
+import { List, ListUser, Todo, User } from "./schema";
 import { createDb } from ".";
 import env from "@/envs-runtime";
+import { deleteAllData } from "./scripts/delete-all-data";
 
 function capitalize(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -50,6 +50,12 @@ export default async function seed() {
       .then((lists) => lists.map((list) => list.id));
 
     listIds.forEach(async (listId) => {
+      await db.insert(ListUser).values({
+        userId,
+        listId,
+        isAdmin: true,
+        isPending: false,
+      });
       const isShared = faker.helpers.maybe(() => true, { probability: 0.3 });
       if (!isShared) return;
 
@@ -58,12 +64,11 @@ export default async function seed() {
         faker.number.int(7),
       );
 
-      sharedUserIds.forEach(async (sharedUserId) => {
-        await db.insert(ListShare).values({
+      sharedUserIds.forEach(async () => {
+        await db.insert(ListUser).values({
           userId,
           listId,
-          sharedUserId,
-          isPending: Math.random() > 0.5,
+          isPending: Math.random() > 0.2,
         });
       });
     });

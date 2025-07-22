@@ -1,6 +1,6 @@
 import { type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
-import { User, Todo, ListShare, List } from "@/db/schema";
+import { User, Todo, List, ListUser } from "@/db/schema";
 import { eq, and, desc, inArray } from "drizzle-orm";
 import type { TodoSelect, TodoSelectShallow } from "@/lib/types";
 import {
@@ -45,7 +45,6 @@ const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
       },
     })
     .from(Todo)
-    .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
     .leftJoin(List, eq(List.id, Todo.listId))
     .innerJoin(User, eq(User.id, Todo.userId))
     .where(filterTodos(userId, listId))
@@ -146,18 +145,35 @@ const uncheckCompleted: ActionHandler<
 > = async ({ listId }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
-  const todoIds = await db
-    .selectDistinct({ id: Todo.id })
-    .from(Todo)
-    .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
-    .where(and(filterTodos(userId, listId), eq(Todo.isCompleted, true)))
-    .then((rows) => rows.map((row) => row.id));
+
+  // inbox
+  if (!listId) {
+    await db
+      .update(Todo)
+      .set({ isCompleted: false })
+      .where(eq(Todo.userId, userId));
+    return null;
+  }
+
+  // all
+  if (listId === "all") {
+    const listIds = await db
+      .select({ id: Todo.listId })
+      .from(Todo)
+      .rightJoin(ListUser, eq(ListUser.listId, Todo.listId))
+      .where(eq(ListUser.userId, userId))
+      .then((ids) => ids.map(({ id }) => id));
+    await db
+      .update(Todo)
+      .set({ isCompleted: false })
+      .where(inArray(Todo.listId, listIds));
+    return null;
+  }
 
   await db
     .update(Todo)
     .set({ isCompleted: false })
-    .where(and(eq(Todo.isCompleted, true), inArray(Todo.id, todoIds)));
-
+    .where(and(eq(Todo.isCompleted, true), eq(Todo.listId, listId)));
   return null;
 };
 
