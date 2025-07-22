@@ -54,7 +54,7 @@ export const ListUser = sqliteTable("listUser", {
   id,
   userId,
   listId,
-  isAdmin: integer({ mode: "boolean" }).notNull().default(true),
+  isAdmin: integer({ mode: "boolean" }).notNull().default(false),
   isPending: integer({ mode: "boolean" }).notNull().default(true),
 });
 

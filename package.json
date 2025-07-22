@@ -6,7 +6,7 @@
     "dev": "npm-run-all --parallel dev:db dev:server",
     "build": "astro check && astro build --remote",
     "preview": "astro build && wrangler pages dev --port 4321",
-    "test": "vitest",
+    "test": "vitest --no-file-parallelism",
     "dev:db": "turso dev --db-file dev.db",
     "dev:server": "astro dev --host",
     "cf-typegen": "wrangler types",

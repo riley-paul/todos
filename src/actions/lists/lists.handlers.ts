@@ -50,7 +50,9 @@ const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
           const [{ isAdmin }] = await db
             .select({ isAdmin: ListUser.isAdmin })
             .from(ListUser)
-            .where(eq(ListUser.userId, userId));
+            .where(
+              and(eq(ListUser.userId, userId), eq(ListUser.listId, list.id)),
+            );
 
           return {
             ...list,
@@ -137,17 +139,17 @@ const remove: ActionHandler<typeof listInputs.remove, null> = async (
 ) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
-  const users = await getListUsers(c, id);
 
-  if (!users.includes(userId)) {
-    throw actionErrors.NO_PERMISSION;
-  }
+  const [listUser] = await db
+    .select({ isAdmin: ListUser.isAdmin })
+    .from(ListUser)
+    .where(and(eq(ListUser.listId, id), eq(ListUser.userId, userId)))
+    .limit(1);
 
-  await db.delete(Todo).where(eq(Todo.listId, id));
-  await db.delete(ListUser).where(eq(ListUser.listId, id));
+  if (!listUser) throw actionErrors.NOT_FOUND;
+  if (!listUser.isAdmin) throw actionErrors.NO_PERMISSION;
+
   await db.delete(List).where(eq(List.id, id));
-
-  invalidateUsers(users);
   return null;
 };
 
