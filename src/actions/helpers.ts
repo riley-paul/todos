@@ -1,14 +1,9 @@
 import type { ActionAPIContext } from "astro/actions/runtime/utils.js";
-import InvalidationController from "@/lib/server/invalidation-controller";
 import { Todo, ListUser, List, User } from "@/db/schema";
 import { eq, and, or } from "drizzle-orm";
 import actionErrors from "./errors";
 import { createDb } from "@/db";
 import type { ListUserSelect } from "@/lib/types";
-
-export const invalidateUsers = (userIds: string[]) => {
-  InvalidationController.getInstance().invalidateKey(userIds);
-};
 
 export const isAuthorized = (context: ActionAPIContext) => {
   const user = context.locals.user;
