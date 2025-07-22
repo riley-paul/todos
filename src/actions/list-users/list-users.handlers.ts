@@ -52,7 +52,7 @@ const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
     userId,
   });
 
-  if (!isAdmin || data.userId !== userId) throw actionErrors.NO_PERMISSION;
+  if (!isAdmin && data.userId !== userId) throw actionErrors.NO_PERMISSION;
 
   const [result] = await db
     .delete(ListUser)

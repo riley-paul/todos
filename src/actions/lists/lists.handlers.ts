@@ -1,11 +1,6 @@
 import { type ActionHandler } from "astro:actions";
 import type { ListSelect, ListSelectShallow } from "@/lib/types";
-import {
-  getListUsers,
-  getUserIsListAdmin,
-  invalidateUsers,
-  isAuthorized,
-} from "../helpers";
+import { getUserIsListAdmin, isAuthorized } from "../helpers";
 import { createDb } from "@/db";
 import { List, ListUser, Todo, User } from "@/db/schema";
 import { and, asc, count, eq, not } from "drizzle-orm";
@@ -89,30 +84,28 @@ const get: ActionHandler<typeof listInputs.get, ListSelectShallow> = async (
     .from(List)
     .innerJoin(ListUser, eq(ListUser.listId, List.id))
     .where(and(eq(ListUser.userId, userId), eq(List.id, id)));
-
   if (!list) throw actionErrors.NOT_FOUND;
+
   return list;
 };
 
 const update: ActionHandler<
   typeof listInputs.update,
   ListSelectShallow
-> = async ({ id, data }, c) => {
+> = async ({ id: listId, data }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
-  const users = await getListUsers(c, id);
 
-  if (!users.includes(userId)) {
-    throw actionErrors.NO_PERMISSION;
-  }
+  const isAdmin = await getUserIsListAdmin(c, { listId, userId });
+  if (!isAdmin) throw actionErrors.NO_PERMISSION;
 
   const [list] = await db
     .update(List)
     .set(data)
-    .where(eq(List.id, id))
+    .where(eq(List.id, listId))
     .returning({ id: List.id, name: List.name });
 
-  invalidateUsers(users);
+  if (!list) throw actionErrors.NOT_FOUND;
   return list;
 };
 
@@ -148,7 +141,9 @@ const remove: ActionHandler<typeof listInputs.remove, null> = async (
   const isAdmin = await getUserIsListAdmin(c, { listId, userId });
   if (!isAdmin) throw actionErrors.NO_PERMISSION;
 
-  await db.delete(List).where(eq(List.id, listId));
+  const [result] = await db.delete(List).where(eq(List.id, listId)).returning();
+  if (!result) throw actionErrors.NOT_FOUND;
+
   return null;
 };
 

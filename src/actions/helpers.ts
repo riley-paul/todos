@@ -24,32 +24,12 @@ export const getListUsers = async (
 ) => {
   const db = createDb(context.locals.runtime.env);
   return db
-    .select()
+    .select({
+      id: ListUser.userId,
+      isAdmin: ListUser.isAdmin,
+    })
     .from(ListUser)
-    .where(and(eq(ListUser.listId, listId), eq(ListUser.isPending, false)))
-    .then((data) => data.map(({ userId }) => userId));
-};
-
-export const getAllTodoUsers = async (
-  context: ActionAPIContext,
-  todoId: string,
-) => {
-  const db = createDb(context.locals.runtime.env);
-  const todo = await db
-    .select({ id: Todo.id, listId: Todo.listId, userId: Todo.userId })
-    .from(Todo)
-    .where(eq(Todo.id, todoId))
-    .then((rows) => rows[0]);
-
-  if (!todo) {
-    throw actionErrors.NOT_FOUND;
-  }
-
-  if (!todo.listId) {
-    return [todo.userId];
-  }
-
-  return getListUsers(context, todo.listId);
+    .where(and(eq(ListUser.listId, listId), eq(ListUser.isPending, false)));
 };
 
 export const getAllUserTodos = async (
@@ -87,6 +67,26 @@ export const getUserIsListAdmin = async (
 
   if (!listUser) throw actionErrors.NOT_FOUND;
   return listUser.isAdmin;
+};
+
+type GetUserIsListMemberArgs = {
+  listId: string | null;
+  userId: string;
+};
+export const getUserIsListMember = async (
+  context: ActionAPIContext,
+  { listId, userId }: GetUserIsListMemberArgs,
+) => {
+  if (listId === null || listId === "all") return true;
+  const db = createDb(context.locals.runtime.env);
+  const [listUser] = await db
+    .select({ id: ListUser.id })
+    .from(ListUser)
+    .where(and(eq(ListUser.listId, listId), eq(ListUser.userId, userId)))
+    .limit(1);
+
+  if (!listUser) throw actionErrors.NOT_FOUND;
+  return !!listUser;
 };
 
 type GetListUserArgs = {
