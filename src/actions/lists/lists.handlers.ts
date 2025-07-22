@@ -17,37 +17,20 @@ const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
     .selectDistinct({
       id: List.id,
       name: List.name,
-      author: {
-        id: User.id,
-        name: User.name,
-        email: User.email,
-        avatarUrl: User.avatarUrl,
-      },
     })
     .from(List)
     .innerJoin(ListUser, eq(ListUser.listId, List.id))
-    .innerJoin(User, eq(User.id, ListUser.userId))
     .orderBy(asc(List.name))
     .where(eq(ListUser.userId, userId))
     .then((lists) =>
       Promise.all(
-        lists.map(async (list) => ({
-          ...list,
-          todoCount: await db
-            .select({ count: count() })
-            .from(Todo)
-            .where(eq(Todo.listId, list.id))
-            .then((rows) => rows[0].count),
-          shares: await db
+        lists.map(async (list) => {
+          const otherUsers = await db
             .selectDistinct({
-              id: ListUser.id,
-              user: {
-                id: User.id,
-                name: User.name,
-                email: User.email,
-                avatarUrl: User.avatarUrl,
-              },
-              isPending: ListUser.isPending,
+              id: User.id,
+              name: User.name,
+              email: User.email,
+              avatarUrl: User.avatarUrl,
             })
             .from(ListUser)
             .innerJoin(User, eq(User.id, ListUser.userId))
@@ -56,25 +39,27 @@ const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
                 eq(ListUser.listId, list.id),
                 not(eq(ListUser.userId, userId)),
               ),
-            )
-            .then((shares) =>
-              shares.map((share) => ({
-                ...share,
-                list: { id: list.id, name: list.name, author: list.author },
-                isAuthor: share.user.id === userId,
-              })),
-            ),
-          isAuthor: list.author.id === userId,
-        })),
+            );
+
+          const todoCount = await db
+            .select({ count: count() })
+            .from(Todo)
+            .where(eq(Todo.listId, list.id))
+            .then(([{ count }]) => count);
+
+          const [{ isAdmin }] = await db
+            .select({ isAdmin: ListUser.isAdmin })
+            .from(ListUser)
+            .where(eq(ListUser.userId, userId));
+
+          return {
+            ...list,
+            todoCount,
+            otherUsers,
+            isAdmin,
+          };
+        }),
       ),
-    )
-    .then((rows) =>
-      rows.map((row) => ({
-        ...row,
-        otherUsers: [...row.shares, { user: row.author }]
-          .filter((share) => share.user.id !== userId)
-          .map((share) => share.user),
-      })),
     );
 };
 
@@ -96,7 +81,7 @@ const get: ActionHandler<typeof listInputs.get, ListSelectShallow> = async (
     })
     .from(List)
     .innerJoin(ListUser, eq(ListUser.listId, List.id))
-    .where(and(eq(ListUser.id, userId), eq(List.id, id)));
+    .where(and(eq(ListUser.userId, userId), eq(List.id, id)));
 
   if (!list) throw actionErrors.NOT_FOUND;
   return list;

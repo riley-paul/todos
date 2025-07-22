@@ -64,9 +64,9 @@ export default async function seed() {
         faker.number.int(7),
       );
 
-      sharedUserIds.forEach(async () => {
+      sharedUserIds.forEach(async (sharedUserId) => {
         await db.insert(ListUser).values({
-          userId,
+          userId: sharedUserId,
           listId,
           isPending: Math.random() > 0.2,
         });

@@ -34,7 +34,7 @@ export const zTodoSelect = createSelectSchema(Todo)
   })
   .extend({
     author: zUserSelect,
-    isAuthor: z.boolean(),
+    isAuthor: z.boolean().nullable(),
     list: createSelectSchema(List).pick({ id: true, name: true }).nullable(),
   });
 export const zTodoSelectShallow = createSelectSchema(Todo).pick({
@@ -66,8 +66,7 @@ export const zListSelect = createSelectSchema(List)
     name: true,
   })
   .extend({
-    author: zUserSelect,
-    isAuthor: z.boolean(),
+    isAdmin: z.boolean(),
     todoCount: z.number(),
     otherUsers: z.array(zUserSelect),
   });

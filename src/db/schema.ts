@@ -54,8 +54,8 @@ export const ListUser = sqliteTable("listUser", {
   id,
   userId,
   listId,
-  isAdmin: integer({ mode: "boolean" }).default(true),
-  isPending: integer({ mode: "boolean" }).default(true),
+  isAdmin: integer({ mode: "boolean" }).notNull().default(true),
+  isPending: integer({ mode: "boolean" }).notNull().default(true),
 });
 
 export const Todo = sqliteTable("todo", {

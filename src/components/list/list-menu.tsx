@@ -27,7 +27,7 @@ type Props = {
 };
 
 const ListMenu: React.FC<Props> = ({ list }) => {
-  const { id, name, isAuthor } = list;
+  const { id, name, isAdmin } = list;
   const {
     deleteList,
     leaveListShare,
@@ -118,7 +118,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       text: "Share",
       icon: <Share2Icon className="size-4 opacity-70" />,
       onClick: () => setShareDialogOpen(true),
-      hide: !list.isAuthor,
+      hide: !list.isAdmin,
     },
     {
       type: "separator",
@@ -164,7 +164,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       icon: <LogOutIcon className="size-4 opacity-70" />,
       color: "amber",
       onClick: handleLeaveList,
-      hide: isAuthor,
+      hide: isAdmin,
     },
     {
       type: "item",
@@ -173,7 +173,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       icon: <TrashIcon className="size-4 opacity-70" />,
       color: "red",
       onClick: handleDeleteList,
-      hide: !isAuthor,
+      hide: !isAdmin,
     },
   ];
 

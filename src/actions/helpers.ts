@@ -1,7 +1,7 @@
 import type { ActionAPIContext } from "astro/actions/runtime/utils.js";
 import InvalidationController from "@/lib/server/invalidation-controller";
-import { ListShare, Todo, List, ListUser } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { Todo, ListUser } from "@/db/schema";
+import { eq, and, or } from "drizzle-orm";
 import actionErrors from "./errors";
 import { createDb } from "@/db";
 
@@ -20,30 +20,19 @@ export const isAuthorized = (context: ActionAPIContext) => {
 export const getListUsers = async (
   context: ActionAPIContext,
   listId: string,
-): Promise<string[]> => {
+) => {
   const db = createDb(context.locals.runtime.env);
-  const list = await db
-    .select({ id: List.id, userId: List.userId })
-    .from(List)
-    .where(eq(List.id, listId))
-    .then((rows) => rows[0]);
-
-  if (!list) {
-    throw actionErrors.NOT_FOUND;
-  }
-
-  const shares = await db
-    .select({ sharedUserId: ListShare.sharedUserId })
-    .from(ListShare)
-    .where(and(eq(ListShare.listId, listId), eq(ListShare.isPending, false)));
-
-  return [list.userId, ...shares.map((share) => share.sharedUserId)];
+  return db
+    .select()
+    .from(ListUser)
+    .where(and(eq(ListUser.listId, listId), eq(ListUser.isPending, false)))
+    .then((data) => data.map(({ userId }) => userId));
 };
 
-export const getTodoUsers = async (
+export const getAllTodoUsers = async (
   context: ActionAPIContext,
   todoId: string,
-): Promise<string[]> => {
+) => {
   const db = createDb(context.locals.runtime.env);
   const todo = await db
     .select({ id: Todo.id, listId: Todo.listId, userId: Todo.userId })
@@ -59,7 +48,7 @@ export const getTodoUsers = async (
     return [todo.userId];
   }
 
-  return await getListUsers(context, todo.listId);
+  return getListUsers(context, todo.listId);
 };
 
 export const getAllUserTodos = async (
@@ -67,8 +56,15 @@ export const getAllUserTodos = async (
   userId: string,
 ) => {
   const db = createDb(context.locals.runtime.env);
-  const todos = await db
-    .select()
+  return db
+    .select({ id: Todo.id })
     .from(Todo)
-    .rightJoin(ListUser, eq(ListUser.listId, Todo.listId));
+    .leftJoin(ListUser, eq(ListUser.listId, Todo.listId))
+    .where(
+      or(
+        and(eq(ListUser.userId, userId), eq(ListUser.isPending, false)),
+        eq(Todo.userId, userId),
+      ),
+    )
+    .then((ids) => ids.map(({ id }) => id));
 };

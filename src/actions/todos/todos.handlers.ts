@@ -1,18 +1,18 @@
 import { type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
 import { User, Todo, List, ListUser } from "@/db/schema";
-import { eq, and, desc, inArray } from "drizzle-orm";
+import { eq, and, desc, inArray, or } from "drizzle-orm";
 import type { TodoSelect, TodoSelectShallow } from "@/lib/types";
 import {
   isAuthorized,
   invalidateUsers,
-  getTodoUsers,
+  getAllTodoUsers,
   getListUsers,
+  getAllUserTodos,
 } from "../helpers";
 
 import actionErrors from "../errors";
 import type todoInputs from "./todos.inputs";
-import { filterTodos } from "../filters";
 
 const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
   { listId },
@@ -27,6 +27,21 @@ const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
       throw actionErrors.NO_PERMISSION;
     }
   }
+
+  const filterTodos = () => {
+    if (listId === null) {
+      return eq(Todo.userId, userId);
+    }
+
+    if (listId === "all") {
+      return or(
+        and(eq(ListUser.userId, userId), eq(ListUser.isPending, false)),
+        eq(Todo.userId, userId),
+      );
+    }
+
+    return eq(List.id, listId);
+  };
 
   const todos: TodoSelect[] = await db
     .selectDistinct({
@@ -43,15 +58,14 @@ const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
         id: List.id,
         name: List.name,
       },
+      isAuthor: ListUser.isAdmin,
     })
     .from(Todo)
     .leftJoin(List, eq(List.id, Todo.listId))
+    .leftJoin(ListUser, eq(ListUser.listId, Todo.listId))
     .innerJoin(User, eq(User.id, Todo.userId))
-    .where(filterTodos(userId, listId))
+    .where(filterTodos())
     .orderBy(desc(Todo.createdAt))
-    .then((rows) =>
-      rows.map((row) => ({ ...row, isAuthor: row.author.id === userId })),
-    );
 
   return todos;
 };
@@ -75,7 +89,7 @@ const create: ActionHandler<
     .values({ ...data, userId })
     .returning();
 
-  invalidateUsers(await getTodoUsers(c, todo.id));
+  invalidateUsers(await getAllTodoUsers(c, todo.id));
   return todo;
 };
 
@@ -85,7 +99,7 @@ const update: ActionHandler<
 > = async ({ id, data }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
-  const users = await getTodoUsers(c, id);
+  const users = await getAllTodoUsers(c, id);
 
   if (!users.includes(userId)) {
     throw actionErrors.NO_PERMISSION;
@@ -107,7 +121,7 @@ const remove: ActionHandler<typeof todoInputs.remove, null> = async (
 ) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
-  const users = await getTodoUsers(c, id);
+  const users = await getAllTodoUsers(c, id);
 
   if (!users.includes(userId)) {
     throw actionErrors.NO_PERMISSION;
@@ -125,17 +139,23 @@ const removeCompleted: ActionHandler<
 > = async ({ listId }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
-  const todoIds = await db
-    .selectDistinct({ id: Todo.id })
-    .from(Todo)
-    .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
-    .where(and(filterTodos(userId, listId), eq(Todo.isCompleted, true)))
-    .then((rows) => rows.map((row) => row.id));
+
+  // inbox
+  if (!listId) {
+    await db.delete(Todo).where(eq(Todo.userId, userId));
+    return null;
+  }
+
+  // all
+  if (listId === "all") {
+    const allTodos = await getAllUserTodos(c, userId);
+    await db.delete(Todo).where(inArray(Todo.id, allTodos));
+    return null;
+  }
 
   await db
     .delete(Todo)
-    .where(and(eq(Todo.isCompleted, true), inArray(Todo.id, todoIds)));
-
+    .where(and(eq(Todo.isCompleted, true), eq(Todo.listId, listId)));
   return null;
 };
 
@@ -157,16 +177,11 @@ const uncheckCompleted: ActionHandler<
 
   // all
   if (listId === "all") {
-    const listIds = await db
-      .select({ id: Todo.listId })
-      .from(Todo)
-      .rightJoin(ListUser, eq(ListUser.listId, Todo.listId))
-      .where(eq(ListUser.userId, userId))
-      .then((ids) => ids.map(({ id }) => id));
+    const allTodos = await getAllUserTodos(c, userId);
     await db
       .update(Todo)
       .set({ isCompleted: false })
-      .where(inArray(Todo.listId, listIds));
+      .where(inArray(Todo.id, allTodos));
     return null;
   }
 
