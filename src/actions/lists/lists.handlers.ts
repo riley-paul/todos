@@ -31,6 +31,7 @@ const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
               name: User.name,
               email: User.email,
               avatarUrl: User.avatarUrl,
+              isAdmin: ListUser.isAdmin,
             })
             .from(ListUser)
             .innerJoin(User, eq(User.id, ListUser.userId))
@@ -47,12 +48,10 @@ const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
             .where(eq(Todo.listId, list.id))
             .then(([{ count }]) => count);
 
-          const [{ isAdmin }] = await db
-            .select({ isAdmin: ListUser.isAdmin })
-            .from(ListUser)
-            .where(
-              and(eq(ListUser.userId, userId), eq(ListUser.listId, list.id)),
-            );
+          const isAdmin = await getUserIsListAdmin(c, {
+            userId,
+            listId: list.id,
+          });
 
           return {
             ...list,

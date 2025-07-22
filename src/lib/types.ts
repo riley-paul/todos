@@ -70,7 +70,7 @@ export const zListSelect = createSelectSchema(List)
   .extend({
     isAdmin: z.boolean(),
     todoCount: z.number(),
-    otherUsers: z.array(zUserSelect),
+    otherUsers: z.array(zUserSelect.extend({ isAdmin: z.boolean() })),
   });
 export const zListSelectShallow = createSelectSchema(List).pick({
   id: true,

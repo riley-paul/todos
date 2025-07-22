@@ -68,7 +68,10 @@ const PendingInvites: React.FC = () => {
                     size="1"
                     variant="soft"
                     onClick={() =>
-                      updateListShare.mutate({ listId: share.list.id })
+                      updateListShare.mutate({
+                        listId: share.list.id,
+                        isPending: false,
+                      })
                     }
                   >
                     <CheckIcon className="size-3" />

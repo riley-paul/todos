@@ -52,6 +52,8 @@ const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
     userId,
   });
 
+  // TODO: Ensure that user is not the only admin of the list
+
   if (!isAdmin && data.userId !== userId) throw actionErrors.NO_PERMISSION;
 
   const [result] = await db
