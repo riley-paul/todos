@@ -37,6 +37,7 @@ const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
             .where(
               and(
                 eq(ListUser.listId, list.id),
+                eq(ListUser.isPending, false),
                 not(eq(ListUser.userId, userId)),
               ),
             );

@@ -16,6 +16,8 @@ type Props = {
 
 const ListShareDialogContent: React.FC<{ list: ListSelect }> = ({ list }) => {
   const otherUserIdsSet = new Set(list.otherUsers.map((user) => user.id));
+
+  const [search, setSearch] = React.useState("");
   const [selectedUserId, setSelectedUserId] = React.useState<string>("");
 
   const { joinList } = useMutations();
@@ -24,6 +26,8 @@ const ListShareDialogContent: React.FC<{ list: ListSelect }> = ({ list }) => {
     <section className="flex min-h-64 flex-col gap-4 py-6">
       <div className="grid grid-cols-[1fr_auto] items-center gap-2">
         <UserPicker
+          search={search}
+          setSearch={setSearch}
           selectedUserId={selectedUserId}
           setSelectedUserId={setSelectedUserId}
           isUserDisabled={(user) => otherUserIdsSet.has(user.id)}
@@ -37,6 +41,7 @@ const ListShareDialogContent: React.FC<{ list: ListSelect }> = ({ list }) => {
                 onSuccess: () => {
                   toast.success(`Added user to ${list.name}!`);
                   setSelectedUserId("");
+                  setSearch("");
                 },
               },
             )

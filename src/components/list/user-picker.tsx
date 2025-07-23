@@ -9,19 +9,22 @@ import UserBubble from "../ui/user-bubble";
 import type { UserSelect } from "@/lib/types";
 
 type Props = {
+  search: string;
+  setSearch: (search: string) => void;
   selectedUserId: string;
   setSelectedUserId: (userId: string) => void;
   isUserDisabled?: (user: UserSelect) => boolean;
 };
 
 const UserPicker: React.FC<Props> = ({
+  search,
+  setSearch,
   selectedUserId,
   setSelectedUserId,
   isUserDisabled,
 }) => {
   const [isFocused, setIsFocused] = React.useState(false);
-  const [search, setSearch] = React.useState("");
-  const [debouncedSearch, updateDebouncedValue] = useDebounceValue("", 300);
+  const [debouncedSearch, updateDebouncedValue] = useDebounceValue(search, 300);
 
   const { data: userSuggestions = [], isLoading } = useQuery(
     qUsers(debouncedSearch),
@@ -67,7 +70,7 @@ const UserPicker: React.FC<Props> = ({
           <TextField.Root
             placeholder="Search users..."
             onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
+            onBlur={() => setTimeout(() => setIsFocused(false), 200)}
           >
             <TextField.Slot side="left">
               <SearchIcon className="size-4 text-accent-10" />
