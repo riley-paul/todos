@@ -2,7 +2,12 @@ import { type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
 import { User, List, ListUser } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
-import { getListUser, getUserIsListMember, isAuthorized } from "../helpers";
+import {
+  getListUser,
+  getUserIsListMember,
+  invalidateListUsers,
+  isAuthorized,
+} from "../helpers";
 import actionErrors from "../errors";
 import type listUserInputs from "./list-users.inputs";
 import type { ListUserSelect } from "@/lib/types";
@@ -38,6 +43,7 @@ const create: ActionHandler<
     .values(data)
     .returning({ listUserId: ListUser.id });
 
+  invalidateListUsers(c, data.listId);
   return getListUser(c, { listUserId });
 };
 
@@ -63,6 +69,8 @@ const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
     .where(
       and(eq(ListUser.listId, data.listId), eq(ListUser.userId, data.userId)),
     );
+
+  invalidateListUsers(c, data.listId);
   return null;
 };
 
@@ -87,11 +95,13 @@ const accept: ActionHandler<
   if (!listUser) throw actionErrors.NOT_FOUND;
 
   // update the list user to accept the invitation
-  await db
+  const [updated] = await db
     .update(ListUser)
     .set({ isPending: false })
-    .where(eq(ListUser.id, listUserId));
+    .where(eq(ListUser.id, listUserId))
+    .returning();
 
+  invalidateListUsers(c, updated.listId);
   return getListUser(c, { listUserId });
 };
 

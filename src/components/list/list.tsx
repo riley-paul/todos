@@ -5,26 +5,25 @@ import { Link, useLinkProps } from "@tanstack/react-router";
 import React from "react";
 import ListMenu from "./list-menu";
 import UserBubbleGroup from "../ui/user-bubble-group";
-import type { ListSelect, SelectedList } from "@/lib/types";
+import type { ListSelect, SelectedList, UserSelect } from "@/lib/types";
+import { useChannel } from "ably/react";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { qUser } from "@/lib/client/queries";
 
-type ListProps =
-  | {
-      type: "list";
-      list: ListSelect;
-    }
-  | {
-      type: "custom";
-      id: SelectedList;
-      name: string;
-      count: number;
-    };
+type BaseListProps = React.PropsWithChildren<{
+  id: SelectedList;
+  name: string;
+  count?: number;
+  otherUsers?: UserSelect[];
+}>;
 
-const List: React.FC<ListProps> = (props) => {
-  const id = props.type === "list" ? props.list.id : props.id;
-  const name = props.type === "list" ? props.list.name : props.name;
-  const todoCount =
-    props.type === "list" ? props.list.todoCount : (props.count ?? 0);
-
+export const BaseList: React.FC<BaseListProps> = ({
+  id,
+  name,
+  count = 0,
+  otherUsers,
+  children,
+}) => {
   const linkProps = useLinkProps(goToList(id)) as any;
   const isActive = linkProps["data-status"] === "active";
 
@@ -42,13 +41,35 @@ const List: React.FC<ListProps> = (props) => {
         <Text truncate className="max-w-[70vw]">
           {name}
         </Text>
-        <Text className="font-mono text-accentA-12">{todoCount}</Text>
-        {props.type === "list" && (
-          <UserBubbleGroup users={props.list.otherUsers} numAvatars={3} />
-        )}
+        <Text className="font-mono text-accentA-12">{count}</Text>
+        {otherUsers && <UserBubbleGroup users={otherUsers} numAvatars={3} />}
       </Link>
-      {props.type === "list" && <ListMenu list={props.list} />}
+      {children}
     </Badge>
+  );
+};
+
+export const List: React.FC<{ list: ListSelect }> = ({ list }) => {
+  const { id, name, otherUsers, todoCount } = list;
+
+  const { data: currentUser } = useSuspenseQuery(qUser);
+  const queryClient = useQueryClient();
+
+  useChannel(`list:${id}`, "invalidate", (message) => {
+    console.log("Received invalidate event for", name);
+
+    if (message.data.actionTakenBy === currentUser.id) {
+      console.log("Ignoring invalidation event from self");
+      return;
+    }
+    console.log("Invalidating...");
+    queryClient.invalidateQueries();
+  });
+
+  return (
+    <BaseList id={id} name={name} count={todoCount} otherUsers={otherUsers}>
+      <ListMenu list={list} />
+    </BaseList>
   );
 };
 

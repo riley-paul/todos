@@ -7,8 +7,9 @@ import { alertSystemAtom } from "../alert-system/alert-system.store";
 import { toast } from "sonner";
 import useMutations from "@/hooks/use-mutations";
 import { PlusIcon } from "lucide-react";
-import List from "./list";
+import List, { BaseList } from "./list";
 import { zListName } from "@/lib/types";
+import { ChannelProvider } from "ably/react";
 
 const Lists: React.FC = () => {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
@@ -40,15 +41,15 @@ const Lists: React.FC = () => {
   return (
     <>
       <div className="flex flex-wrap gap-rx-2 px-rx-3">
-        <List type="custom" id={null} name="Inbox" count={inboxCount} />
-        {lists.length > 0 && (
-          <List type="custom" id="all" name="All" count={allCount} />
-        )}
+        <BaseList id={null} name="Inbox" count={inboxCount} />
+        {lists.length > 0 && <BaseList id="all" name="All" count={allCount} />}
         <Flex align="center">
           <Separator orientation="vertical" size="1" />
         </Flex>
         {lists.map((list) => (
-          <List type="list" key={list.id} list={list} />
+          <ChannelProvider key={list.id} channelName={`list:${list.id}`}>
+            <List list={list} />
+          </ChannelProvider>
         ))}
         <IconButton
           onClick={handleCreateList}
