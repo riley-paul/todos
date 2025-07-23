@@ -205,9 +205,16 @@ export default function useMutations() {
 
   const leaveList = useMutation({
     mutationFn: actions.listUsers.remove.orThrow,
-    onSuccess: () => {
+    onSuccess: (_, { userId, listId }) => {
       navigate({ to: "/" });
-      toast.success("You no longer have access to this list");
+      const lists = queryClient.getQueryData(qLists.queryKey);
+      const list = lists?.find((l) => l.id === listId);
+
+      if (userId) {
+        toast.success(`User removed from "${list?.name ?? "the list"}"`);
+        return;
+      }
+      toast.success(`You left "${list?.name ?? "the list"}"`);
     },
   });
 
