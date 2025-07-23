@@ -16,7 +16,12 @@ import { cn } from "@/lib/client/utils";
 import { focusInputAtEnd, resizeTextArea } from "@/lib/client/utils";
 import TextWithLinks from "../ui/text-with-links";
 import TodoMenu from "./todo-menu";
-import { Link, useParams } from "@tanstack/react-router";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearch,
+} from "@tanstack/react-router";
 import { goToList } from "@/lib/client/links";
 import { useAtom } from "jotai";
 import { editingTodoIdAtom } from "./todos.store";
@@ -84,19 +89,25 @@ const TodoForm: React.FC<{
 const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   const { listId } = useParams({ strict: false });
   const { updateTodo } = useMutations();
+  const navigate = useNavigate();
 
   const [editingTodoId, setEditingTodoId] = useAtom(editingTodoIdAtom);
+  const isEditing = editingTodoId === todo.id;
 
   const ref = React.useRef<HTMLDivElement>(null);
 
+  const { highlightedTodoId } = useSearch({ from: "/_withAdder" }) || {};
+  const isHighlighted = highlightedTodoId === todo.id;
+
   useOnClickOutside(ref, () => {
-    if (editingTodoId !== todo.id) return;
-    setEditingTodoId(null);
+    if (isEditing) setEditingTodoId(null);
+    if (isHighlighted) navigate({ search: undefined });
   });
+
   useEventListener("keydown", (e) => {
-    if (editingTodoId !== todo.id) return;
-    if (e.key === "Escape" && editingTodoId === todo.id) {
-      setEditingTodoId(null);
+    if (e.key === "Escape") {
+      if (isEditing) setEditingTodoId(null);
+      if (isHighlighted) navigate({ search: undefined });
     }
   });
 
@@ -104,10 +115,11 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
     <div
       ref={ref}
       className={cn(
+        isHighlighted && "bg-accent-4",
         "flex min-h-11 items-center gap-2 rounded-3 px-3 py-1 transition-colors ease-out sm:hover:bg-accent-3",
       )}
     >
-      {editingTodoId === todo.id ? (
+      {isEditing ? (
         <TodoForm
           initialValue={todo.text}
           handleSubmit={(text) => {

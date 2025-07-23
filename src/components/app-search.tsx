@@ -191,7 +191,7 @@ const AppSearch: React.FC = () => {
                   value={todo.text + todo.id}
                   onSelect={() => {
                     setIsOpen(false);
-                    navigate(goToList(todo.list?.id));
+                    navigate(goToList(todo.list?.id, todo.id));
                   }}
                 >
                   <span

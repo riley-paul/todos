@@ -3,12 +3,16 @@ import RefreshButton from "@/components/refresh-button";
 import TodoAdder from "@/components/todo-adder";
 import { qLists } from "@/lib/client/queries";
 import { createFileRoute, Outlet, useParams } from "@tanstack/react-router";
+import z from "zod";
 
 export const Route = createFileRoute("/_withAdder")({
   component: RouteComponent,
   loader: ({ context: { queryClient } }) => {
     queryClient.ensureQueryData(qLists);
   },
+  validateSearch: z
+    .object({ highlightedTodoId: z.string().optional() })
+    .optional(),
 });
 
 function RouteComponent() {
