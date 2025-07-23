@@ -78,6 +78,20 @@ const UserPicker: React.FC<Props> = ({
             <TextField.Slot side="left">
               <SearchIcon className="size-4 text-accent-10" />
             </TextField.Slot>
+            {Boolean(search) && (
+              <TextField.Slot side="right">
+                <IconButton
+                  variant="ghost"
+                  color="gray"
+                  size="1"
+                  radius="full"
+                  onClick={() => setSearch("")}
+                  aria-label="Clear search"
+                >
+                  <XIcon className="size-4" />
+                </IconButton>
+              </TextField.Slot>
+            )}
           </TextField.Root>
         </Command.Input>
 
