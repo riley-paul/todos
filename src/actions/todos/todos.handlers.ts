@@ -3,7 +3,12 @@ import { createDb } from "@/db";
 import { User, Todo, List, ListUser } from "@/db/schema";
 import { eq, and, desc, inArray, or, isNull } from "drizzle-orm";
 import type { TodoSelect, TodoSelectShallow } from "@/lib/types";
-import { isAuthorized, getAllUserTodos, getUserIsListMember } from "../helpers";
+import {
+  isAuthorized,
+  getAllUserTodos,
+  getUserIsListMember,
+  invalidateListUsers,
+} from "../helpers";
 
 import type todoInputs from "./todos.inputs";
 import actionErrors from "../errors";
@@ -84,6 +89,7 @@ const create: ActionHandler<
     .values({ ...data, userId })
     .returning();
 
+  if (listId) invalidateListUsers(c, listId);
   return todo;
 };
 
@@ -113,13 +119,16 @@ const update: ActionHandler<
     if (!isMember || !isMemberCurrently) throw actionErrors.NOT_FOUND;
   }
 
-  const [todo] = await db
+  const [updated] = await db
     .update(Todo)
     .set(data)
     .where(and(eq(Todo.id, id)))
     .returning();
 
-  return todo;
+  if (updated.listId) invalidateListUsers(c, updated.listId);
+  if (currentTodo.listId !== updated.listId && currentTodo.listId)
+    invalidateListUsers(c, currentTodo.listId);
+  return updated;
 };
 
 const remove: ActionHandler<typeof todoInputs.remove, null> = async (
@@ -142,6 +151,7 @@ const remove: ActionHandler<typeof todoInputs.remove, null> = async (
   if (!isMember) throw actionErrors.NOT_FOUND;
 
   await db.delete(Todo).where(eq(Todo.id, id));
+  if (currentTodo.listId) invalidateListUsers(c, currentTodo.listId);
   return null;
 };
 
@@ -166,12 +176,14 @@ const removeCompleted: ActionHandler<
     await db
       .delete(Todo)
       .where(and(eq(Todo.isCompleted, true), inArray(Todo.id, allTodos)));
+    // TODO: invalidate users sharing lists with the user
     return null;
   }
 
   await db
     .delete(Todo)
     .where(and(eq(Todo.isCompleted, true), eq(Todo.listId, listId)));
+  invalidateListUsers(c, listId);
   return null;
 };
 
@@ -188,6 +200,7 @@ const uncheckCompleted: ActionHandler<
       .update(Todo)
       .set({ isCompleted: false })
       .where(eq(Todo.userId, userId));
+    // TODO: invalidate users sharing lists with the user
     return null;
   }
 
@@ -205,6 +218,7 @@ const uncheckCompleted: ActionHandler<
     .update(Todo)
     .set({ isCompleted: false })
     .where(and(eq(Todo.isCompleted, true), eq(Todo.listId, listId)));
+  invalidateListUsers(c, listId);
   return null;
 };
 

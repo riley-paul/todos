@@ -1,5 +1,6 @@
 import AlertSystem from "@/components/alert-system/alert-system";
 import AppSearch from "@/components/app-search";
+import ConnectionState from "@/components/connection-state";
 import PendingInvites from "@/components/pending-invites";
 import UserMenu from "@/components/user-menu";
 import { qUser } from "@/lib/client/queries";
@@ -12,15 +13,17 @@ import {
 } from "@tanstack/react-router";
 import { CircleCheckBigIcon } from "lucide-react";
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
-  {
-    component: Component,
-    loader: async ({ context }) => {
-      const user = await context.queryClient.ensureQueryData(qUser);
-      return { user };
-    },
+type RouterContext = {
+  queryClient: QueryClient;
+};
+
+export const Route = createRootRouteWithContext<RouterContext>()({
+  component: Component,
+  loader: async ({ context }) => {
+    const user = await context.queryClient.ensureQueryData(qUser);
+    return { user };
   },
-);
+});
 
 function Component() {
   return (
@@ -33,6 +36,9 @@ function Component() {
               <Heading asChild size="6" weight="bold">
                 <Link to="/">Todos</Link>
               </Heading>
+              <div className="ml-2">
+                <ConnectionState />
+              </div>
             </div>
             <div className="flex items-center gap-4">
               <AppSearch />

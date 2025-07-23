@@ -1,7 +1,6 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { qPendingShares } from "@/lib/client/queries";
-import UserBubble from "./ui/user-bubble";
 import {
   Badge,
   Button,
@@ -45,12 +44,9 @@ const PendingInvites: React.FC = () => {
               key={share.id}
               className="flex w-full items-center gap-rx-3 py-rx-4"
             >
-              <div className="h-full">
-                <UserBubble user={share.user} size="md" />
-              </div>
               <div className="grid flex-1 gap-3">
                 <Text size="2">
-                  <Strong>{share.user.name}</Strong> invited you to join{" "}
+                  You have been invited you to join {" "}
                   <Strong>{share.list.name}</Strong>
                 </Text>
                 <div className="grid grid-cols-2 gap-rx-2">

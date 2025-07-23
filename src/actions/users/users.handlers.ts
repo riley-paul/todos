@@ -36,6 +36,8 @@ const remove: ActionHandler<typeof userInputs.remove, null> = async (_, c) => {
   await db.delete(UserSession).where(eq(UserSession.userId, userId));
   await db.delete(Todo).where(eq(Todo.userId, userId));
   await db.delete(User).where(eq(User.id, userId));
+
+  // TODO: invalidate users sharing lists with the user
   return null;
 };
 

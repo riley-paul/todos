@@ -1,6 +1,10 @@
 import { type ActionHandler } from "astro:actions";
 import type { ListSelect, ListSelectShallow } from "@/lib/types";
-import { getUserIsListMember, isAuthorized } from "../helpers";
+import {
+  getUserIsListMember,
+  invalidateListUsers,
+  isAuthorized,
+} from "../helpers";
 import { createDb } from "@/db";
 import { List, ListUser, Todo, User } from "@/db/schema";
 import { and, asc, count, eq, not } from "drizzle-orm";
@@ -99,6 +103,7 @@ const update: ActionHandler<
     .returning({ id: List.id, name: List.name });
 
   if (!list) throw actionErrors.NOT_FOUND;
+  invalidateListUsers(c, listId);
   return list;
 };
 
@@ -120,6 +125,7 @@ const create: ActionHandler<
     isPending: false,
   });
 
+  invalidateListUsers(c, list.id);
   return list;
 };
 
@@ -136,6 +142,7 @@ const remove: ActionHandler<typeof listInputs.remove, null> = async (
   const [result] = await db.delete(List).where(eq(List.id, listId)).returning();
   if (!result) throw actionErrors.NOT_FOUND;
 
+  invalidateListUsers(c, listId);
   return null;
 };
 

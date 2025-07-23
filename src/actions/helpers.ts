@@ -4,6 +4,7 @@ import { eq, and, or } from "drizzle-orm";
 import actionErrors from "./errors";
 import { createDb } from "@/db";
 import type { ListUserSelect } from "@/lib/types";
+import { Realtime } from "ably";
 
 export const isAuthorized = (context: ActionAPIContext) => {
   const user = context.locals.user;
@@ -11,6 +12,16 @@ export const isAuthorized = (context: ActionAPIContext) => {
     throw actionErrors.UNAUTHORIZED;
   }
   return user;
+};
+
+export const invalidateListUsers = (
+  context: ActionAPIContext,
+  listId: string,
+) => {
+  const ably = new Realtime({ key: context.locals.runtime.env.ABLY_API_KEY });
+  const currentUserId = isAuthorized(context).id;
+  const channel = ably.channels.get(`list:${listId}`);
+  return channel.publish("invalidate", { actionTakenBy: currentUserId });
 };
 
 export const getAllUserTodos = async (
