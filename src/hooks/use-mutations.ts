@@ -173,14 +173,26 @@ export default function useMutations() {
 
   const createList = useMutation({
     mutationFn: actions.lists.create.orThrow,
-    onSuccess: ({ id }, { data: { name } }) => {
+    onSuccess: ({ id }, { name }) => {
       toast.success(`List "${name}" created`);
       navigate(goToList(id));
     },
   });
 
-  const createListShare = useMutation({
-    mutationFn: actions.listShares.create.orThrow,
+  const joinList = useMutation({
+    mutationFn: actions.listUsers.create.orThrow,
+  });
+
+  const acceptListJoin = useMutation({
+    mutationFn: actions.listUsers.accept.orThrow,
+    onSuccess: (data) => {
+      toast.success(`You now have access to "${data.list.name}"`, {
+        action: {
+          label: "Go to list",
+          onClick: () => navigate(goToList(data.list.id)),
+        },
+      });
+    },
   });
 
   const deleteList = useMutation({
@@ -191,11 +203,18 @@ export default function useMutations() {
     },
   });
 
-  const leaveListShare = useMutation({
-    mutationFn: actions.listShares.leave.orThrow,
-    onSuccess: () => {
+  const leaveList = useMutation({
+    mutationFn: actions.listUsers.remove.orThrow,
+    onSuccess: (_, { userId, listId }) => {
       navigate({ to: "/" });
-      toast.success("You no longer have access to this list");
+      const lists = queryClient.getQueryData(qLists.queryKey);
+      const list = lists?.find((l) => l.id === listId);
+
+      if (userId) {
+        toast.success(`User removed from "${list?.name ?? "the list"}"`);
+        return;
+      }
+      toast.success(`You left "${list?.name ?? "the list"}"`);
     },
   });
 
@@ -211,7 +230,8 @@ export default function useMutations() {
     updateList,
     createList,
     deleteList,
-    leaveListShare,
-    createListShare,
+    leaveList,
+    joinList,
+    acceptListJoin,
   };
 }

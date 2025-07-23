@@ -26,10 +26,6 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function Component() {
-  
-
-
-
   return (
     <>
       <header className="sticky top-0 z-50 border-b bg-panel-translucent backdrop-blur">

@@ -1,15 +1,17 @@
 import React, { useEffect } from "react";
 
 import {
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from "@/components/ui/command";
-import { Badge, IconButton, Kbd, Text, Tooltip } from "@radix-ui/themes";
+  Badge,
+  Dialog,
+  IconButton,
+  Kbd,
+  Separator,
+  Strong,
+  Text,
+  TextField,
+  Tooltip,
+  VisuallyHidden,
+} from "@radix-ui/themes";
 import { useEventListener } from "usehooks-ts";
 import { useQuery } from "@tanstack/react-query";
 import { qLists, qTodos } from "@/lib/client/queries";
@@ -20,6 +22,52 @@ import { useNavigate } from "@tanstack/react-router";
 import useMutations from "@/hooks/use-mutations";
 import { goToList } from "@/lib/client/links";
 import { PlusIcon, SearchIcon } from "lucide-react";
+import { Command } from "cmdk";
+
+type SearchItemProps = React.PropsWithChildren<{
+  key?: string;
+  value?: string;
+  onSelect: () => void;
+}>;
+
+const SearchItem: React.FC<SearchItemProps> = ({
+  key,
+  value,
+  onSelect,
+  children,
+}) => {
+  return (
+    <Command.Item
+      key={key}
+      value={value}
+      onSelect={onSelect}
+      className={cn(
+        "flex cursor-default select-none items-center gap-2 rounded-2 px-3 py-2 text-2 transition-colors data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent-4 data-[disabled=true]:opacity-50",
+        "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50",
+        "data-[selected=true]:bg-accent-4",
+      )}
+    >
+      {children}
+    </Command.Item>
+  );
+};
+
+const SearchGroupHeading: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
+  return (
+    <div className="px-3 py-1">
+      <Text
+        size="1"
+        weight="bold"
+        color="gray"
+        className="select-none uppercase"
+      >
+        {children}
+      </Text>
+    </div>
+  );
+};
 
 const AppSearch: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -44,106 +92,133 @@ const AppSearch: React.FC = () => {
   }, [isOpen]);
 
   return (
-    <>
-      <Tooltip
-        content={
-          <div>
-            Search <Kbd>⌘ + K</Kbd>
-          </div>
-        }
-        side="bottom"
-        align="center"
-      >
-        <IconButton
-          variant="soft"
-          radius="full"
-          onClick={() => setIsOpen(true)}
+    <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog.Trigger>
+        <Tooltip
+          content={
+            <div>
+              Search <Kbd>⌘ + K</Kbd>
+            </div>
+          }
+          side="bottom"
+          align="center"
         >
-          <SearchIcon className="size-4" />
-        </IconButton>
-      </Tooltip>
-      <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
-        <CommandInput
-          value={value}
-          onValueChange={setValue}
-          placeholder="Type a command or search..."
-        />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Lists">
-            {value && (
-              <CommandItem
-                onSelect={() =>
-                  createList.mutate(
-                    { data: { name: value } },
-                    { onSuccess: () => setIsOpen(false) },
-                  )
-                }
-              >
-                <PlusIcon className="size-4 text-accent-10" />
-                <span>Create new list "{value}"</span>
-              </CommandItem>
-            )}
-            {lists.map((list) => (
-              <CommandItem
-                key={list.id}
-                value={list.name + list.id}
-                onSelect={() => {
-                  setIsOpen(false);
-                  navigate(goToList(list.id));
-                }}
-              >
-                <span>{list.name}</span>
-                <Text className="font-mono text-accentA-12">
-                  {list.todoCount}
-                </Text>
-                <div className="ml-auto">
-                  <UserBubbleGroup users={list.otherUsers} />
-                </div>
-              </CommandItem>
-            ))}
-          </CommandGroup>
-          <CommandSeparator />
-          <CommandGroup heading="Todos">
-            {value && (
-              <CommandItem
-                onSelect={() =>
-                  createTodo.mutate(
-                    { data: { text: value, listId: null } },
-                    { onSuccess: () => setIsOpen(false) },
-                  )
-                }
-              >
-                <PlusIcon className="size-4 text-accent-10" />
-                <span>Create new todo "{value}"</span>
-              </CommandItem>
-            )}
-            {todos.map((todo) => (
-              <CommandItem
-                key={todo.id}
-                value={todo.text + todo.id}
-                onSelect={() => {
-                  setIsOpen(false);
-                  navigate(goToList(todo.list?.id));
-                }}
-              >
-                <Text
-                  size="2"
-                  className={cn(
-                    todo.isCompleted && "text-gray-10 line-through",
-                  )}
+          <IconButton
+            variant="soft"
+            radius="full"
+            onClick={() => setIsOpen(true)}
+          >
+            <SearchIcon className="size-4" />
+          </IconButton>
+        </Tooltip>
+      </Dialog.Trigger>
+      <Dialog.Content size="1" className="p-0">
+        <VisuallyHidden>
+          <Dialog.Title>Search</Dialog.Title>
+          <Dialog.Description>
+            Search for lists or todos. Use the arrow keys to navigate results.
+          </Dialog.Description>
+        </VisuallyHidden>
+        <Command>
+          <Command.Input
+            asChild
+            value={value}
+            onValueChange={setValue}
+            placeholder="Type a command or search..."
+          >
+            <TextField.Root
+              variant="soft"
+              style={{ borderRadius: 0 }}
+              className="h-auto bg-gray-1 px-2 py-3 outline-none"
+            >
+              <TextField.Slot side="left">
+                <SearchIcon className="size-4 text-accent-10" />
+              </TextField.Slot>
+            </TextField.Root>
+          </Command.Input>
+          <Separator size="4" />
+          <Command.List className="max-h-[400px] overflow-y-auto p-2">
+            <Command.Empty>No results found.</Command.Empty>
+            <Command.Group>
+              <SearchGroupHeading>Lists</SearchGroupHeading>
+              {value && (
+                <SearchItem
+                  onSelect={() =>
+                    createList.mutate(
+                      { name: value },
+                      { onSuccess: () => setIsOpen(false) },
+                    )
+                  }
                 >
-                  <TextWithLinks text={todo.text} />
-                </Text>
-                {todo.list && (
-                  <Badge className="ml-auto">{todo.list.name}</Badge>
-                )}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </CommandList>
-      </CommandDialog>
-    </>
+                  <PlusIcon className="size-4 text-accent-10" />
+                  Create new list <Strong>"{value}"</Strong>
+                </SearchItem>
+              )}
+              {lists.map((list) => (
+                <SearchItem
+                  key={list.id}
+                  value={list.name + list.id}
+                  onSelect={() => {
+                    setIsOpen(false);
+                    navigate(goToList(list.id));
+                  }}
+                >
+                  <span>{list.name}</span>
+                  <Text className="font-mono text-accentA-12">
+                    {list.todoCount}
+                  </Text>
+                  <div className="ml-auto">
+                    <UserBubbleGroup users={list.otherUsers} />
+                  </div>
+                </SearchItem>
+              ))}
+            </Command.Group>
+            <div className="px-3 py-3">
+              <Separator size="4" />
+            </div>
+            <Command.Group>
+              <SearchGroupHeading>Todos</SearchGroupHeading>
+              {value && (
+                <SearchItem
+                  onSelect={() =>
+                    createTodo.mutate(
+                      { data: { text: value, listId: null } },
+                      { onSuccess: () => setIsOpen(false) },
+                    )
+                  }
+                >
+                  <PlusIcon className="size-4 text-accent-10" />
+                  Create new todo <Strong>"{value}"</Strong>
+                </SearchItem>
+              )}
+              {todos.map((todo) => (
+                <SearchItem
+                  key={todo.id}
+                  value={[todo.text, todo.id, todo.list?.id]
+                    .filter(Boolean)
+                    .join("~")}
+                  onSelect={() => {
+                    setIsOpen(false);
+                    navigate(goToList(todo.list?.id, todo.id));
+                  }}
+                >
+                  <span
+                    className={cn(
+                      todo.isCompleted && "text-gray-10 line-through",
+                    )}
+                  >
+                    <TextWithLinks text={todo.text} />
+                  </span>
+                  {todo.list && (
+                    <Badge className="ml-auto">{todo.list.name}</Badge>
+                  )}
+                </SearchItem>
+              ))}
+            </Command.Group>
+          </Command.List>
+        </Command>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 };
 

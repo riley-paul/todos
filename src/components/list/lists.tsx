@@ -4,11 +4,11 @@ import { qLists, qTodos } from "@/lib/client/queries";
 import { Flex, IconButton, Separator } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { alertSystemAtom } from "../alert-system/alert-system.store";
-import z from "zod/v4";
 import { toast } from "sonner";
 import useMutations from "@/hooks/use-mutations";
 import { PlusIcon } from "lucide-react";
 import List from "./list";
+import { zListName } from "@/lib/types";
 
 const Lists: React.FC = () => {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
@@ -27,9 +27,9 @@ const Lists: React.FC = () => {
         message: "Enter a name for your new list",
         value: "",
         placeholder: "List name",
-        schema: z.string().min(1).max(100),
+        schema: zListName,
         handleSubmit: (name: string) => {
-          createList.mutate({ data: { name } });
+          createList.mutate({ name });
           dispatchAlert({ type: "close" });
           toast.success("List created successfully");
         },

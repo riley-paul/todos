@@ -1,20 +1,12 @@
 import { type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
-import { User, Todo, ListShare, List } from "@/db/schema";
-import { eq, and, desc, inArray } from "drizzle-orm";
+import { User, Todo, List, ListUser } from "@/db/schema";
+import { eq, and, desc, inArray, or, isNull } from "drizzle-orm";
 import type { TodoSelect, TodoSelectShallow } from "@/lib/types";
-import {
-  isAuthorized,
-  invalidateUsers,
-  getTodoUsers,
-  getListUsers,
-} from "../helpers";
+import { isAuthorized, getAllUserTodos, getUserIsListMember } from "../helpers";
 
-import Ably from "ably";
-
-import actionErrors from "../errors";
 import type todoInputs from "./todos.inputs";
-import { filterTodos } from "../filters";
+import actionErrors from "../errors";
 
 const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
   { listId },
@@ -23,12 +15,27 @@ const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
-  if (listId && listId !== "all") {
-    const listUsers = await getListUsers(c, listId);
-    if (!listUsers.includes(userId)) {
-      throw actionErrors.NO_PERMISSION;
+  const userLists =
+    listId === "all"
+      ? await db
+          .select({ listId: ListUser.listId })
+          .from(ListUser)
+          .where(
+            and(eq(ListUser.userId, userId), eq(ListUser.isPending, false)),
+          )
+          .then((data) => data.map(({ listId }) => listId))
+      : [];
+
+  const filterTodos = () => {
+    switch (listId) {
+      case null:
+        return and(eq(Todo.userId, userId), isNull(Todo.listId));
+      case "all":
+        return or(inArray(Todo.listId, userLists), eq(Todo.userId, userId));
+      default:
+        return eq(Todo.listId, listId);
     }
-  }
+  };
 
   const todos: TodoSelect[] = await db
     .selectDistinct({
@@ -47,13 +54,12 @@ const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
       },
     })
     .from(Todo)
-    .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
     .leftJoin(List, eq(List.id, Todo.listId))
     .innerJoin(User, eq(User.id, Todo.userId))
-    .where(filterTodos(userId, listId))
+    .where(filterTodos())
     .orderBy(desc(Todo.createdAt))
-    .then((rows) =>
-      rows.map((row) => ({ ...row, isAuthor: row.author.id === userId })),
+    .then((data) =>
+      data.map((todo) => ({ ...todo, isAuthor: todo.author.id === userId })),
     );
 
   return todos;
@@ -66,14 +72,11 @@ const create: ActionHandler<
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
-  if (data.listId) {
-    const listUsers = await getListUsers(c, data.listId);
-    if (!listUsers.includes(userId)) {
-      throw actionErrors.NO_PERMISSION;
-    }
+  const { listId } = data;
 
-    const ably = new Ably.Rest(c.locals.runtime.env.ABLY_API_KEY);
-    ably.channels.get(`list:${data.listId}`).publish([{ name: "invalidate" }]);
+  if (listId !== undefined) {
+    const isMember = await getUserIsListMember(c, { listId, userId });
+    if (!isMember) throw actionErrors.NOT_FOUND;
   }
 
   const [todo] = await db
@@ -81,7 +84,6 @@ const create: ActionHandler<
     .values({ ...data, userId })
     .returning();
 
-  invalidateUsers(await getTodoUsers(c, todo.id));
   return todo;
 };
 
@@ -91,10 +93,24 @@ const update: ActionHandler<
 > = async ({ id, data }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
-  const users = await getTodoUsers(c, id);
 
-  if (!users.includes(userId)) {
-    throw actionErrors.NO_PERMISSION;
+  const [currentTodo] = await db
+    .select({ listId: Todo.listId })
+    .from(Todo)
+    .where(eq(Todo.id, id))
+    .limit(1);
+  if (!currentTodo) throw actionErrors.NOT_FOUND;
+
+  if (data.listId !== undefined) {
+    const isMemberCurrently = await getUserIsListMember(c, {
+      listId: currentTodo.listId,
+      userId,
+    });
+    const isMember = await getUserIsListMember(c, {
+      listId: data.listId,
+      userId,
+    });
+    if (!isMember || !isMemberCurrently) throw actionErrors.NOT_FOUND;
   }
 
   const [todo] = await db
@@ -103,7 +119,6 @@ const update: ActionHandler<
     .where(and(eq(Todo.id, id)))
     .returning();
 
-  invalidateUsers(users);
   return todo;
 };
 
@@ -113,15 +128,20 @@ const remove: ActionHandler<typeof todoInputs.remove, null> = async (
 ) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
-  const users = await getTodoUsers(c, id);
 
-  if (!users.includes(userId)) {
-    throw actionErrors.NO_PERMISSION;
-  }
+  const [currentTodo] = await db
+    .select({ listId: Todo.listId })
+    .from(Todo)
+    .where(eq(Todo.id, id))
+    .limit(1);
+
+  const isMember = await getUserIsListMember(c, {
+    listId: currentTodo.listId,
+    userId,
+  });
+  if (!isMember) throw actionErrors.NOT_FOUND;
 
   await db.delete(Todo).where(eq(Todo.id, id));
-
-  invalidateUsers(users);
   return null;
 };
 
@@ -131,17 +151,27 @@ const removeCompleted: ActionHandler<
 > = async ({ listId }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
-  const todoIds = await db
-    .selectDistinct({ id: Todo.id })
-    .from(Todo)
-    .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
-    .where(and(filterTodos(userId, listId), eq(Todo.isCompleted, true)))
-    .then((rows) => rows.map((row) => row.id));
+
+  // inbox
+  if (!listId) {
+    await db
+      .delete(Todo)
+      .where(and(eq(Todo.isCompleted, true), eq(Todo.userId, userId)));
+    return null;
+  }
+
+  // all
+  if (listId === "all") {
+    const allTodos = await getAllUserTodos(c, userId);
+    await db
+      .delete(Todo)
+      .where(and(eq(Todo.isCompleted, true), inArray(Todo.id, allTodos)));
+    return null;
+  }
 
   await db
     .delete(Todo)
-    .where(and(eq(Todo.isCompleted, true), inArray(Todo.id, todoIds)));
-
+    .where(and(eq(Todo.isCompleted, true), eq(Todo.listId, listId)));
   return null;
 };
 
@@ -151,18 +181,30 @@ const uncheckCompleted: ActionHandler<
 > = async ({ listId }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
-  const todoIds = await db
-    .selectDistinct({ id: Todo.id })
-    .from(Todo)
-    .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
-    .where(and(filterTodos(userId, listId), eq(Todo.isCompleted, true)))
-    .then((rows) => rows.map((row) => row.id));
+
+  // inbox
+  if (!listId) {
+    await db
+      .update(Todo)
+      .set({ isCompleted: false })
+      .where(eq(Todo.userId, userId));
+    return null;
+  }
+
+  // all
+  if (listId === "all") {
+    const allTodos = await getAllUserTodos(c, userId);
+    await db
+      .update(Todo)
+      .set({ isCompleted: false })
+      .where(inArray(Todo.id, allTodos));
+    return null;
+  }
 
   await db
     .update(Todo)
     .set({ isCompleted: false })
-    .where(and(eq(Todo.isCompleted, true), inArray(Todo.id, todoIds)));
-
+    .where(and(eq(Todo.isCompleted, true), eq(Todo.listId, listId)));
   return null;
 };
 

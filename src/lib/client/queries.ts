@@ -14,6 +14,13 @@ export const qUser = queryOptions({
   queryFn: actions.users.getMe.orThrow,
 });
 
+export const qUsers = (search: string) =>
+  queryOptions({
+    queryKey: ["users", search],
+    queryFn: () => actions.users.get.orThrow({ search }),
+    enabled: !!search,
+  });
+
 export const qLists = queryOptions({
   queryKey: ["lists"],
   queryFn: actions.lists.getAll.orThrow,
@@ -26,7 +33,13 @@ export const qList = (listId: string) =>
     queryFn: () => actions.lists.get.orThrow({ id: listId }),
   });
 
+export const qListShares = (listId: string) =>
+  queryOptions({
+    queryKey: ["listShares", listId],
+    queryFn: () => actions.listUsers.getAllForList.orThrow({ listId }),
+  });
+
 export const qPendingShares = queryOptions({
   queryKey: ["pendingShares"],
-  queryFn: actions.listShares.getAllPending.orThrow,
+  queryFn: actions.listUsers.getAllPending.orThrow,
 });

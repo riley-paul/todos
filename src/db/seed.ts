@@ -1,8 +1,8 @@
 import { faker } from "@faker-js/faker";
-import { List, ListShare, Todo, User } from "./schema";
-import { deleteAllData } from "./scripts";
+import { List, ListUser, Todo, User } from "./schema";
 import { createDb } from ".";
 import env from "@/envs-runtime";
+import { deleteAllData } from "./scripts/delete-all-data";
 
 function capitalize(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -35,53 +35,66 @@ export default async function seed() {
     .then((users) => users.map((user) => user.id));
   console.log("✅ Seeded users");
 
-  userIds.forEach(async (userId) => {
-    const listIds = await db
-      .insert(List)
-      .values(
-        Array.from({ length: faker.number.int({ min: 5, max: 10 }) }).map(
-          () => ({
-            userId,
-            name: capitalize(faker.lorem.word()),
-          }),
-        ),
-      )
-      .returning()
-      .then((lists) => lists.map((list) => list.id));
+  const listIds = await db
+    .insert(List)
+    .values(
+      Array.from({ length: 120 }).map(() => ({
+        name: capitalize(faker.lorem.word()),
+      })),
+    )
+    .returning({ id: List.id })
+    .then((lists) => lists.map(({ id }) => id));
+  console.log("✅ Seeded lists");
 
-    listIds.forEach(async (listId) => {
-      const isShared = faker.helpers.maybe(() => true, { probability: 0.3 });
-      if (!isShared) return;
+  listIds.forEach(async (listId) => {
+    // Assign a random user as the first user of the list
+    const [{ userId: firstUserId }] = await db
+      .insert(ListUser)
+      .values({
+        userId: faker.helpers.arrayElement(userIds),
+        listId,
+        isPending: false,
+      })
+      .returning({ userId: ListUser.userId });
 
-      const sharedUserIds = faker.helpers.arrayElements(
-        userIds.filter((id) => id !== userId),
-        faker.number.int(7),
-      );
-
-      sharedUserIds.forEach(async (sharedUserId) => {
-        await db.insert(ListShare).values({
+    // Assign random users to the list
+    const listUserIds = faker.helpers.arrayElements(
+      userIds,
+      faker.number.int(4),
+    );
+    if (listUserIds.length > 0) {
+      await db.insert(ListUser).values(
+        listUserIds.map((userId) => ({
           userId,
           listId,
-          sharedUserId,
-          isPending: Math.random() > 0.5,
-        });
-      });
-    });
+          isPending: faker.datatype.boolean(0.2), // Randomly assign pending status
+        })),
+      );
+    }
 
-    await db.insert(Todo).values(
-      Array.from({ length: 50 }).map(() => {
-        return {
-          userId,
-          listId: faker.helpers.maybe(
-            () => faker.helpers.arrayElement(listIds),
-            { probability: 0.8 },
-          ),
+    // Create todos for the list
+    const numTodos = faker.number.int(30);
+    const todoUserIds = [...listUserIds, firstUserId];
+    if (numTodos > 0) {
+      await db.insert(Todo).values(
+        Array.from({ length: numTodos }).map(() => ({
+          userId: faker.helpers.arrayElement(todoUserIds),
+          listId,
           text: faker.lorem.sentence(),
-        };
-      }),
-    );
+        })),
+      );
+    }
   });
-  console.log("✅ Seeded data for users");
+  console.log("✅ Seeded list data");
+
+  await db.insert(Todo).values(
+    Array.from({ length: 300 }).map(() => ({
+      userId: faker.helpers.arrayElement(userIds),
+      text: faker.lorem.sentence(),
+      isCompleted: faker.datatype.boolean(),
+    })),
+  );
+  console.log("✅ Seeded additional todos");
 }
 
 seed();

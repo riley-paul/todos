@@ -1,5 +1,5 @@
 import React from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { qPendingShares } from "@/lib/client/queries";
 import UserBubble from "./ui/user-bubble";
 import {
@@ -10,24 +10,14 @@ import {
   Strong,
   Text,
 } from "@radix-ui/themes";
-import { actions } from "astro:actions";
-import { toast } from "sonner";
 import { BellIcon, CheckIcon, XIcon } from "lucide-react";
+import useMutations from "@/hooks/use-mutations";
 
 const PendingInvites: React.FC = () => {
   const pendingSharesQuery = useQuery(qPendingShares);
   const numPendingShares = pendingSharesQuery.data?.length ?? 0;
 
-  const deleteListShare = useMutation({
-    mutationFn: actions.listShares.remove.orThrow,
-  });
-
-  const acceptListShare = useMutation({
-    mutationFn: actions.listShares.accept.orThrow,
-    onSuccess: () => {
-      toast.success("You now have access to this list");
-    },
-  });
+  const { leaveList, acceptListJoin } = useMutations();
 
   return (
     <Popover.Root>
@@ -67,7 +57,7 @@ const PendingInvites: React.FC = () => {
                   <Button
                     size="1"
                     variant="soft"
-                    onClick={() => acceptListShare.mutate({ id: share.id })}
+                    onClick={() => acceptListJoin.mutate({ id: share.id })}
                   >
                     <CheckIcon className="size-3" />
                     <span>Accept</span>
@@ -76,7 +66,7 @@ const PendingInvites: React.FC = () => {
                     size="1"
                     variant="soft"
                     color="red"
-                    onClick={() => deleteListShare.mutate({ id: share.id })}
+                    onClick={() => leaveList.mutate({ listId: share.list.id })}
                   >
                     <XIcon className="size-3" />
                     <span>Decline</span>

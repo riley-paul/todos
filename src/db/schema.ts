@@ -8,6 +8,10 @@ const userId = text()
   .notNull()
   .references(() => User.id, { onDelete: "cascade" });
 
+const listId = text()
+  .notNull()
+  .references(() => List.id, { onDelete: "cascade" });
+
 const timeStamps = {
   createdAt: text()
     .notNull()
@@ -42,22 +46,15 @@ export const UserSession = sqliteTable("userSession", {
 
 export const List = sqliteTable("list", {
   id,
-  userId,
   name: text().notNull(),
   ...timeStamps,
 });
 
-export const ListShare = sqliteTable("listShare", {
+export const ListUser = sqliteTable("listUser", {
   id,
-  listId: text()
-    .notNull()
-    .references(() => List.id, { onDelete: "cascade" }),
   userId,
-  sharedUserId: text()
-    .notNull()
-    .references(() => User.id),
+  listId,
   isPending: integer({ mode: "boolean" }).notNull().default(true),
-  ...timeStamps,
 });
 
 export const Todo = sqliteTable("todo", {

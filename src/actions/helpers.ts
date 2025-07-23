@@ -1,13 +1,9 @@
 import type { ActionAPIContext } from "astro/actions/runtime/utils.js";
-import InvalidationController from "@/lib/server/invalidation-controller";
-import { ListShare, Todo, List } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { Todo, ListUser, List, User } from "@/db/schema";
+import { eq, and, or } from "drizzle-orm";
 import actionErrors from "./errors";
 import { createDb } from "@/db";
-
-export const invalidateUsers = (userIds: string[]) => {
-  InvalidationController.getInstance().invalidateKey(userIds);
-};
+import type { ListUserSelect } from "@/lib/types";
 
 export const isAuthorized = (context: ActionAPIContext) => {
   const user = context.locals.user;
@@ -17,47 +13,80 @@ export const isAuthorized = (context: ActionAPIContext) => {
   return user;
 };
 
-export const getListUsers = async (
+export const getAllUserTodos = async (
   context: ActionAPIContext,
-  listId: string,
-): Promise<string[]> => {
+  userId: string,
+) => {
   const db = createDb(context.locals.runtime.env);
-  const list = await db
-    .select({ id: List.id, userId: List.userId })
-    .from(List)
-    .where(eq(List.id, listId))
-    .then((rows) => rows[0]);
-
-  if (!list) {
-    throw actionErrors.NOT_FOUND;
-  }
-
-  const shares = await db
-    .select({ sharedUserId: ListShare.sharedUserId })
-    .from(ListShare)
-    .where(and(eq(ListShare.listId, listId), eq(ListShare.isPending, false)));
-
-  return [list.userId, ...shares.map((share) => share.sharedUserId)];
+  return db
+    .select({ id: Todo.id })
+    .from(Todo)
+    .leftJoin(ListUser, eq(ListUser.listId, Todo.listId))
+    .where(
+      or(
+        and(eq(ListUser.userId, userId), eq(ListUser.isPending, false)),
+        eq(Todo.userId, userId),
+      ),
+    )
+    .then((ids) => ids.map(({ id }) => id));
 };
 
-export const getTodoUsers = async (
+type GetUserIsListMemberArgs = {
+  listId: string | null;
+  userId: string;
+  checkPending?: boolean;
+};
+export const getUserIsListMember = async (
   context: ActionAPIContext,
-  todoId: string,
-): Promise<string[]> => {
+  { listId, userId, checkPending = true }: GetUserIsListMemberArgs,
+) => {
+  if (listId === null || listId === "all") return true;
   const db = createDb(context.locals.runtime.env);
-  const todo = await db
-    .select({ id: Todo.id, listId: Todo.listId, userId: Todo.userId })
-    .from(Todo)
-    .where(eq(Todo.id, todoId))
-    .then((rows) => rows[0]);
+  const [listUser] = await db
+    .select({ id: ListUser.id })
+    .from(ListUser)
+    .where(
+      and(
+        eq(ListUser.listId, listId),
+        eq(ListUser.userId, userId),
+        checkPending ? eq(ListUser.isPending, false) : undefined,
+      ),
+    )
+    .limit(1);
 
-  if (!todo) {
-    throw actionErrors.NOT_FOUND;
-  }
+  if (!listUser) throw actionErrors.NOT_FOUND;
+  return !!listUser;
+};
 
-  if (!todo.listId) {
-    return [todo.userId];
-  }
-
-  return await getListUsers(context, todo.listId);
+type GetListUserArgs = {
+  listUserId: string;
+};
+export const getListUser = async (
+  context: ActionAPIContext,
+  { listUserId }: GetListUserArgs,
+): Promise<ListUserSelect> => {
+  const db = createDb(context.locals.runtime.env);
+  const [listUser] = await db
+    .select({
+      id: ListUser.id,
+      userId: ListUser.userId,
+      listId: ListUser.listId,
+      isPending: ListUser.isPending,
+      list: {
+        id: List.id,
+        name: List.name,
+      },
+      user: {
+        id: User.id,
+        name: User.name,
+        email: User.email,
+        avatarUrl: User.avatarUrl,
+      },
+    })
+    .from(ListUser)
+    .innerJoin(List, eq(List.id, ListUser.listId))
+    .innerJoin(User, eq(User.id, ListUser.userId))
+    .where(eq(ListUser.id, listUserId));
+  if (!listUser) throw actionErrors.NOT_FOUND;
+  return listUser;
 };

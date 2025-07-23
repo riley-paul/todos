@@ -1,6 +1,6 @@
 import { IconButton } from "@radix-ui/themes";
 import React from "react";
-import type { ListSelect } from "@/lib/types";
+import { zListName, type ListSelect } from "@/lib/types";
 import {
   Edit2Icon,
   EllipsisIcon,
@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
 import useMutations from "@/hooks/use-mutations";
-import { z } from "zod/v4";
 import { useAtom } from "jotai";
 import { toast } from "sonner";
 import { useCopyToClipboard } from "usehooks-ts";
@@ -27,10 +26,10 @@ type Props = {
 };
 
 const ListMenu: React.FC<Props> = ({ list }) => {
-  const { id, name, isAuthor } = list;
+  const { id, name, otherUsers } = list;
   const {
     deleteList,
-    leaveListShare,
+    leaveList,
     updateList,
     uncheckCompletedTodos,
     deleteCompletedTodos,
@@ -39,6 +38,8 @@ const ListMenu: React.FC<Props> = ({ list }) => {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const [, copyToClipboard] = useCopyToClipboard();
   const [shareDialogOpen, setShareDialogOpen] = React.useState(false);
+
+  const isOnlyUser = otherUsers.length === 0;
 
   const handleRenameList = () => {
     dispatchAlert({
@@ -49,7 +50,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         message: "Update the name of your list",
         value: name,
         placeholder: "Enter new list name",
-        schema: z.string().min(1).max(100),
+        schema: zListName,
         handleSubmit: (name: string) => {
           updateList.mutate({ id, data: { name } });
           dispatchAlert({ type: "close" });
@@ -82,7 +83,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         title: "Leave List",
         message: `Are you sure you want to leave this list? This action cannot be undone. You will have to be re-invited to access it again.`,
         handleDelete: () => {
-          leaveListShare.mutate({ listId: id });
+          leaveList.mutate({ listId: id });
           dispatchAlert({ type: "close" });
         },
         confirmButtonProps: {
@@ -118,7 +119,6 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       text: "Share",
       icon: <Share2Icon className="size-4 opacity-70" />,
       onClick: () => setShareDialogOpen(true),
-      hide: !list.isAuthor,
     },
     {
       type: "separator",
@@ -164,7 +164,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       icon: <LogOutIcon className="size-4 opacity-70" />,
       color: "amber",
       onClick: handleLeaveList,
-      hide: isAuthor,
+      hide: isOnlyUser,
     },
     {
       type: "item",
@@ -173,7 +173,6 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       icon: <TrashIcon className="size-4 opacity-70" />,
       color: "red",
       onClick: handleDeleteList,
-      hide: !isAuthor,
     },
   ];
 

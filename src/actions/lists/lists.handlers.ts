@@ -1,12 +1,11 @@
 import { type ActionHandler } from "astro:actions";
 import type { ListSelect, ListSelectShallow } from "@/lib/types";
-import { getListUsers, invalidateUsers, isAuthorized } from "../helpers";
+import { getUserIsListMember, isAuthorized } from "../helpers";
 import { createDb } from "@/db";
-import { List, ListShare, Todo, User } from "@/db/schema";
-import { asc, count, eq, or } from "drizzle-orm";
+import { List, ListUser, Todo, User } from "@/db/schema";
+import { and, asc, count, eq, not } from "drizzle-orm";
 import actionErrors from "../errors";
 import type listInputs from "./lists.inputs";
-import { filterByListShare, filterTodos } from "../filters";
 
 const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
   _,
@@ -18,60 +17,44 @@ const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
     .selectDistinct({
       id: List.id,
       name: List.name,
-      author: {
-        id: User.id,
-        name: User.name,
-        email: User.email,
-        avatarUrl: User.avatarUrl,
-      },
     })
     .from(List)
-    .leftJoin(ListShare, eq(ListShare.listId, List.id))
-    .innerJoin(User, eq(User.id, List.userId))
-    .where(or(eq(List.userId, userId), filterByListShare(userId)))
+    .innerJoin(ListUser, eq(ListUser.listId, List.id))
     .orderBy(asc(List.name))
+    .where(and(eq(ListUser.userId, userId), eq(ListUser.isPending, false)))
     .then((lists) =>
       Promise.all(
-        lists.map(async (list) => ({
-          ...list,
-          todoCount: await db
+        lists.map(async (list) => {
+          const otherUsers = await db
+            .selectDistinct({
+              id: User.id,
+              name: User.name,
+              email: User.email,
+              avatarUrl: User.avatarUrl,
+            })
+            .from(ListUser)
+            .innerJoin(User, eq(User.id, ListUser.userId))
+            .where(
+              and(
+                eq(ListUser.listId, list.id),
+                eq(ListUser.isPending, false),
+                not(eq(ListUser.userId, userId)),
+              ),
+            );
+
+          const todoCount = await db
             .select({ count: count() })
             .from(Todo)
-            .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
-            .where(filterTodos(userId, list.id))
-            .then((rows) => rows[0].count),
-          shares: await db
-            .selectDistinct({
-              id: ListShare.id,
-              user: {
-                id: User.id,
-                name: User.name,
-                email: User.email,
-                avatarUrl: User.avatarUrl,
-              },
-              isPending: ListShare.isPending,
-            })
-            .from(ListShare)
-            .innerJoin(User, eq(User.id, ListShare.sharedUserId))
-            .where(eq(ListShare.listId, list.id))
-            .then((shares) =>
-              shares.map((share) => ({
-                ...share,
-                list: { id: list.id, name: list.name, author: list.author },
-                isAuthor: share.user.id === userId,
-              })),
-            ),
-          isAuthor: list.author.id === userId,
-        })),
+            .where(eq(Todo.listId, list.id))
+            .then(([{ count }]) => count);
+
+          return {
+            ...list,
+            todoCount,
+            otherUsers,
+          };
+        }),
       ),
-    )
-    .then((rows) =>
-      rows.map((row) => ({
-        ...row,
-        otherUsers: [...row.shares, { user: row.author }]
-          .filter((share) => share.user.id !== userId)
-          .map((share) => share.user),
-      })),
     );
 };
 
@@ -86,18 +69,15 @@ const get: ActionHandler<typeof listInputs.get, ListSelectShallow> = async (
     return { id: "all", name: "All" };
   }
 
-  const users = await getListUsers(c, id);
-  if (!users.includes(userId)) {
-    throw actionErrors.NO_PERMISSION;
-  }
-
   const [list] = await db
     .select({
       id: List.id,
       name: List.name,
     })
     .from(List)
-    .where(eq(List.id, id));
+    .innerJoin(ListUser, eq(ListUser.listId, List.id))
+    .where(and(eq(ListUser.userId, userId), eq(List.id, id)));
+  if (!list) throw actionErrors.NOT_FOUND;
 
   return list;
 };
@@ -105,56 +85,57 @@ const get: ActionHandler<typeof listInputs.get, ListSelectShallow> = async (
 const update: ActionHandler<
   typeof listInputs.update,
   ListSelectShallow
-> = async ({ id, data }, c) => {
+> = async ({ id: listId, data }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
-  const users = await getListUsers(c, id);
 
-  if (!users.includes(userId)) {
-    throw actionErrors.NO_PERMISSION;
-  }
+  const isMember = await getUserIsListMember(c, { listId, userId });
+  if (!isMember) throw actionErrors.NO_PERMISSION;
 
   const [list] = await db
     .update(List)
     .set(data)
-    .where(eq(List.id, id))
+    .where(eq(List.id, listId))
     .returning({ id: List.id, name: List.name });
 
-  invalidateUsers(users);
+  if (!list) throw actionErrors.NOT_FOUND;
   return list;
 };
 
 const create: ActionHandler<
   typeof listInputs.create,
   ListSelectShallow
-> = async ({ data }, c) => {
+> = async ({ name }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
+
   const [list] = await db
     .insert(List)
-    .values({ ...data, userId })
+    .values({ name })
     .returning({ id: List.id, name: List.name });
+
+  await db.insert(ListUser).values({
+    listId: list.id,
+    userId,
+    isPending: false,
+  });
 
   return list;
 };
 
 const remove: ActionHandler<typeof listInputs.remove, null> = async (
-  { id },
+  { id: listId },
   c,
 ) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
-  const users = await getListUsers(c, id);
 
-  if (!users.includes(userId)) {
-    throw actionErrors.NO_PERMISSION;
-  }
+  const isMember = await getUserIsListMember(c, { listId, userId });
+  if (!isMember) throw actionErrors.NO_PERMISSION;
 
-  await db.delete(Todo).where(eq(Todo.listId, id));
-  await db.delete(ListShare).where(eq(ListShare.listId, id));
-  await db.delete(List).where(eq(List.id, id));
+  const [result] = await db.delete(List).where(eq(List.id, listId)).returning();
+  if (!result) throw actionErrors.NOT_FOUND;
 
-  invalidateUsers(users);
   return null;
 };
 

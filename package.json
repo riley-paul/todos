@@ -6,7 +6,7 @@
     "dev": "npm-run-all --parallel dev:db dev:server",
     "build": "astro check && astro build --remote",
     "preview": "astro build && wrangler pages dev --port 4321",
-    "test": "vitest",
+    "test": "vitest --no-file-parallelism",
     "dev:db": "turso dev --db-file dev.db",
     "dev:server": "astro dev --host",
     "cf-typegen": "wrangler types",
@@ -44,12 +44,12 @@
     "astro": "^5.12.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "cmdk": "^1.0.4",
+    "cmdk": "^1.1.1",
     "dotenv": "^16.4.7",
     "dotenv-expand": "^12.0.1",
     "drizzle-kit": "^0.30.5",
     "drizzle-orm": "^0.40.0",
-    "drizzle-zod": "^0.7.0",
+    "drizzle-zod": "^0.7.1",
     "jotai": "^2.12.5",
     "lucide-react": "^0.525.0",
     "postcss-import": "^16.1.0",
@@ -69,7 +69,7 @@
     "vaul": "^1.0.0",
     "vite-plugin-pwa": "^0.20.5",
     "vitest": "^3.0.8",
-    "zod": "^3.25.67"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@tanstack/router-devtools": "^1.97.25",

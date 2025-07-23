@@ -12,9 +12,9 @@ export const remove = defineAction({
   handler: userHandlers.remove,
 });
 
-export const checkIfEmailExists = defineAction({
-  input: userInputs.checkIfEmailExists,
-  handler: userHandlers.checkIfEmailExists,
+export const get = defineAction({
+  input: userInputs.get,
+  handler: userHandlers.get,
 });
 
 export const updateUserSettings = defineAction({

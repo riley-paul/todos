@@ -2,8 +2,8 @@ import type { ActionHandler } from "astro:actions";
 import { isAuthorized } from "../helpers";
 import { createDb } from "@/db";
 import { Todo, User, UserSession } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import type { UserSelectWithSettings } from "@/lib/types";
+import { and, eq, like, not, or } from "drizzle-orm";
+import type { UserSelect, UserSelectWithSettings } from "@/lib/types";
 import type userInputs from "./users.inputs";
 import actionErrors from "../errors";
 
@@ -39,14 +39,23 @@ const remove: ActionHandler<typeof userInputs.remove, null> = async (_, c) => {
   return null;
 };
 
-const checkIfEmailExists: ActionHandler<
-  typeof userInputs.checkIfEmailExists,
-  boolean
-> = async ({ email }, c) => {
+const get: ActionHandler<typeof userInputs.get, UserSelect[]> = async (
+  { search },
+  c,
+) => {
   const db = createDb(c.locals.runtime.env);
-  isAuthorized(c);
-  const data = await db.select().from(User).where(eq(User.email, email));
-  return data.length > 0;
+  const userId = isAuthorized(c).id;
+
+  return db
+    .select()
+    .from(User)
+    .where(
+      and(
+        or(like(User.name, `%${search}%`), like(User.email, `%${search}%`)),
+        not(eq(User.id, userId)),
+      ),
+    )
+    .limit(10);
 };
 
 const updateUserSettings: ActionHandler<
@@ -78,7 +87,7 @@ const updateUserSettings: ActionHandler<
 const userHandlers = {
   getMe,
   remove,
-  checkIfEmailExists,
+  get,
   updateUserSettings,
 };
 export default userHandlers;

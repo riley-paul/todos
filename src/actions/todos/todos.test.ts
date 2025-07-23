@@ -2,9 +2,9 @@ import { expect, test, describe, beforeAll, afterAll } from "vitest";
 import mockApiContext from "../__test__/mock-api-context";
 import { execSync } from "child_process";
 import { rmSync } from "fs";
-import { List, ListShare, Todo, User } from "@/db/schema";
+import { List, ListUser, Todo, User } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { deleteAllData } from "@/db/scripts";
+import { deleteAllData } from "@/db/scripts/delete-all-data";
 import actionErrors from "../errors";
 import todoHanders from "./todos.handlers";
 import { createDb } from "@/db";
@@ -24,7 +24,7 @@ const INBOX_LENGTH = 3;
 
 const USER1_LENGTH = LIST1_LENGTH + LIST2_LENGTH + INBOX_LENGTH;
 
-const LIST_SHARE_ID = crypto.randomUUID();
+const LIST_USER_ID = crypto.randomUUID();
 
 const db = createDb(env);
 
@@ -48,11 +48,17 @@ beforeAll(async () => {
   await db
     .insert(List)
     .values([
-      { id: LIST1_ID, name: "Test List 1", userId: USER1_ID },
-      { id: LIST2_ID, name: "Test List 2", userId: USER1_ID },
-      { id: LIST3_ID, name: "Test List 3", userId: USER2_ID },
+      { id: LIST1_ID, name: "Test List 1" },
+      { id: LIST2_ID, name: "Test List 2" },
+      { id: LIST3_ID, name: "Test List 3" },
     ])
     .returning();
+
+  await db.insert(ListUser).values([
+    { userId: USER1_ID, listId: LIST1_ID, isPending: false },
+    { userId: USER1_ID, listId: LIST2_ID, isPending: false },
+    { userId: USER2_ID, listId: LIST3_ID, isPending: false },
+  ]);
 
   await db.insert(Todo).values([
     ...Array.from({ length: LIST1_LENGTH }, () => ({
@@ -77,11 +83,10 @@ beforeAll(async () => {
     })),
   ]);
 
-  await db.insert(ListShare).values({
-    id: LIST_SHARE_ID,
-    userId: USER2_ID,
+  await db.insert(ListUser).values({
+    id: LIST_USER_ID,
+    userId: USER1_ID,
     listId: LIST3_ID,
-    sharedUserId: USER1_ID,
     isPending: true,
   });
 });
@@ -125,9 +130,9 @@ describe("todo fetching", () => {
 
   test("includes shared todos in 'all' when share accepted", async () => {
     await db
-      .update(ListShare)
+      .update(ListUser)
       .set({ isPending: false })
-      .where(eq(ListShare.id, LIST_SHARE_ID));
+      .where(eq(ListUser.id, LIST_USER_ID));
 
     const inboxTodos = await todoHanders.get(
       { listId: "all" },
@@ -171,9 +176,9 @@ describe("todo creation", () => {
 
   test("cannot create a todo in a pending shared list", async () => {
     await db
-      .update(ListShare)
+      .update(ListUser)
       .set({ isPending: true })
-      .where(eq(ListShare.id, LIST_SHARE_ID));
+      .where(eq(ListUser.id, LIST_USER_ID));
 
     await expect(() =>
       todoHanders.create(
@@ -206,9 +211,9 @@ describe("todo creation", () => {
 
   test("throw error when user is not allowed to create a todo in list", async () => {
     await db
-      .update(ListShare)
+      .update(ListUser)
       .set({ isPending: true })
-      .where(eq(ListShare.id, LIST_SHARE_ID));
+      .where(eq(ListUser.id, LIST_USER_ID));
 
     await expect(() =>
       todoHanders.create(
