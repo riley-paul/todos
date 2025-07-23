@@ -18,6 +18,7 @@ export const invalidateListUsers = (
   context: ActionAPIContext,
   listId: string,
 ) => {
+  console.log("Invalidating list users for listId:", listId);
   const ably = new Realtime({ key: context.locals.runtime.env.ABLY_API_KEY });
   const currentUserId = isAuthorized(context).id;
   const channel = ably.channels.get(`list:${listId}`);
