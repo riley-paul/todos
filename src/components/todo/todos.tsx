@@ -1,28 +1,17 @@
 import React from "react";
 import { cn } from "@/lib/client/utils";
 
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import Todo from "./todo";
 import { Button, Text } from "@radix-ui/themes";
 import type { SelectedList } from "@/lib/types";
 import { qTodos, qUser } from "@/lib/client/queries";
 import { ChevronRightIcon } from "lucide-react";
 import ClearCompletedTodosButton from "./clear-completed-todos-button";
-import { useChannel } from "ably/react";
-import { toast } from "sonner";
 
 const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
   const { data: todos } = useSuspenseQuery(qTodos(listId));
   const { data: user } = useSuspenseQuery(qUser);
-
-  const queryClient = useQueryClient();
-
-  useChannel(`list:${listId}`, (message) => {
-    if (message.name === "invalidate") {
-      queryClient.invalidateQueries(qTodos(listId));
-      toast.success("Invalidated through websockets!");
-    }
-  });
 
   const numCompleted = todos.filter((i) => i.isCompleted).length ?? 0;
   const [showCompleted, setShowCompleted] = React.useState(false);

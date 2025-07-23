@@ -1,7 +1,6 @@
 import Todos from "@/components/todo/todos";
 import { qTodos } from "@/lib/client/queries";
 import { createFileRoute } from "@tanstack/react-router";
-import { ChannelProvider } from "ably/react";
 import { useDocumentTitle } from "usehooks-ts";
 
 export const Route = createFileRoute("/_withAdder/")({
@@ -13,9 +12,5 @@ export const Route = createFileRoute("/_withAdder/")({
 
 function RouteComponent() {
   useDocumentTitle("Inbox");
-  return (
-    <ChannelProvider channelName={`list:inbox`}>
-      <Todos listId={null} />;
-    </ChannelProvider>
-  );
+  return <Todos listId={null} />;
 }
