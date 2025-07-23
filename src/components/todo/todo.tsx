@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
@@ -110,6 +110,11 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
       if (isHighlighted) navigate({ search: undefined });
     }
   });
+
+  useEffect(() => {
+    if (isHighlighted)
+      ref.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [isHighlighted]);
 
   return (
     <div
