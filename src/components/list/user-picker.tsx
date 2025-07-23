@@ -23,7 +23,9 @@ const UserPicker: React.FC<Props> = ({
   setSelectedUserId,
   isUserDisabled,
 }) => {
-  const [isFocused, setIsFocused] = React.useState(false);
+  const [isFocused, setIsFocused] = React.useState(true);
+  const [showMenu, setShowMenu] = React.useState(isFocused);
+
   const [debouncedSearch, updateDebouncedValue] = useDebounceValue(search, 300);
 
   const { data: userSuggestions = [], isLoading } = useQuery(
@@ -35,8 +37,9 @@ const UserPicker: React.FC<Props> = ({
   );
 
   React.useEffect(() => {
-    console.log("Selected user ID:", selectedUserId);
-  }, [selectedUserId]);
+    if (isFocused) setShowMenu(true);
+    else setTimeout(() => setShowMenu(false), 200);
+  }, [isFocused, setShowMenu]);
 
   if (selectedUser) {
     return (
@@ -70,7 +73,7 @@ const UserPicker: React.FC<Props> = ({
           <TextField.Root
             placeholder="Search users..."
             onFocus={() => setIsFocused(true)}
-            onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+            onBlur={() => setIsFocused(false)}
           >
             <TextField.Slot side="left">
               <SearchIcon className="size-4 text-accent-10" />
@@ -78,7 +81,7 @@ const UserPicker: React.FC<Props> = ({
           </TextField.Root>
         </Command.Input>
 
-        {isFocused && Boolean(search) && (
+        {showMenu && Boolean(search) && (
           <Command.List className="border-1 absolute z-30 mt-2 max-h-52 w-full overflow-y-auto rounded-2 border bg-gray-1 shadow-3">
             <Spinner loading={isLoading}>
               <Command.Empty>
