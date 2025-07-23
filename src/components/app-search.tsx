@@ -41,7 +41,11 @@ const SearchItem: React.FC<SearchItemProps> = ({
       key={key}
       value={value}
       onSelect={onSelect}
-      className="flex cursor-default select-none items-center gap-2 px-4 py-2 text-2 transition-colors data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent-3 data-[disabled=true]:opacity-50"
+      className={cn(
+        "flex cursor-default select-none items-center gap-2 rounded-2 px-3 py-2 text-2 transition-colors data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent-4 data-[disabled=true]:opacity-50",
+        "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50",
+        "data-[selected=true]:bg-accent-4",
+      )}
     >
       {children}
     </Command.Item>
@@ -52,7 +56,7 @@ const SearchGroupHeading: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
   return (
-    <div className="px-4 py-1">
+    <div className="px-3 py-1">
       <Text
         size="1"
         weight="bold"
@@ -133,7 +137,7 @@ const AppSearch: React.FC = () => {
             </TextField.Root>
           </Command.Input>
           <Separator size="4" />
-          <Command.List className="max-h-[400px] overflow-y-auto">
+          <Command.List className="max-h-[400px] overflow-y-auto p-2">
             <Command.Empty>No results found.</Command.Empty>
             <Command.Group>
               <SearchGroupHeading>Lists</SearchGroupHeading>
@@ -169,7 +173,9 @@ const AppSearch: React.FC = () => {
                 </SearchItem>
               ))}
             </Command.Group>
-            <Separator size="4" />
+            <div className="px-3 py-3">
+              <Separator size="4" />
+            </div>
             <Command.Group>
               <SearchGroupHeading>Todos</SearchGroupHeading>
               {value && (
