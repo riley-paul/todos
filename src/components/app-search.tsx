@@ -169,7 +169,7 @@ const AppSearch: React.FC = () => {
                 </SearchItem>
               ))}
             </Command.Group>
-            <Command.Separator />
+            <Separator size="4" />
             <Command.Group>
               <SearchGroupHeading>Todos</SearchGroupHeading>
               {value && (
@@ -188,7 +188,9 @@ const AppSearch: React.FC = () => {
               {todos.map((todo) => (
                 <SearchItem
                   key={todo.id}
-                  value={todo.text + todo.id}
+                  value={[todo.text, todo.id, todo.list?.id]
+                    .filter(Boolean)
+                    .join("~")}
                   onSelect={() => {
                     setIsOpen(false);
                     navigate(goToList(todo.list?.id, todo.id));
