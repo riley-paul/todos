@@ -14,6 +14,12 @@ export const qUser = queryOptions({
   queryFn: actions.users.getMe.orThrow,
 });
 
+export const qUsers = (search?: string) =>
+  queryOptions({
+    queryKey: ["users", search],
+    queryFn: () => actions.users.get.orThrow({ search }),
+  });
+
 export const qLists = queryOptions({
   queryKey: ["lists"],
   queryFn: actions.lists.getAll.orThrow,
