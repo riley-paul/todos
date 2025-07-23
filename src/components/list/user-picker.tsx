@@ -3,16 +3,22 @@ import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { useDebounceValue } from "usehooks-ts";
 import { Command } from "cmdk";
-import { Spinner, Text, TextField } from "@radix-ui/themes";
+import { Badge, Spinner, Text, TextField } from "@radix-ui/themes";
 import { SearchIcon } from "lucide-react";
 import UserBubble from "../ui/user-bubble";
 import type { UserSelect } from "@/lib/types";
 
 type Props = {
+  selectedUserId: string | undefined;
+  setSelectedUserId: (userId: string | undefined) => void;
   isUserDisabled?: (user: UserSelect) => boolean;
 };
 
-const UserPicker: React.FC<Props> = ({ isUserDisabled }) => {
+const UserPicker: React.FC<Props> = ({
+  selectedUserId,
+  setSelectedUserId,
+  isUserDisabled,
+}) => {
   const [isFocused, setIsFocused] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const [debouncedSearch, updateDebouncedValue] = useDebounceValue("", 300);
@@ -21,8 +27,28 @@ const UserPicker: React.FC<Props> = ({ isUserDisabled }) => {
     qUsers(debouncedSearch),
   );
 
+  const selectedUser = userSuggestions.find(
+    (user) => user.id === selectedUserId,
+  );
+
+  React.useEffect(() => {
+    console.log("Selected user ID:", selectedUserId);
+  }, [selectedUserId]);
+
+  if (selectedUser) {
+    return <Badge>{selectedUser.name}</Badge>;
+  }
+
   return (
-    <Command shouldFilter={false} loop>
+    <Command
+      loop
+      shouldFilter={false}
+      value={selectedUserId}
+      onValueChange={(value) => {
+        console.log("Selected User ID Changed:", value);
+        setSelectedUserId(value);
+      }}
+    >
       <div className="relative">
         <Command.Input
           asChild

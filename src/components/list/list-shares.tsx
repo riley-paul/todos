@@ -15,14 +15,14 @@ const ListShares: React.FC<Props> = ({ list }) => {
       <div className="min-h-12 overflow-y-auto rounded-3 border bg-gray-3">
         <div className="grid">
           {listShares.map((share, index) => (
-            <>
+            <React.Fragment key={share.id}>
               {index > 0 && (
                 <div className="px-3">
                   <Separator size="4" />
                 </div>
               )}
-              <ListUser key={share.id} listUser={share} />
-            </>
+              <ListUser listUser={share} />
+            </React.Fragment>
           ))}
           {listShares.length === 0 && (
             <Text size="2" color="gray" align="center" className="p-6">

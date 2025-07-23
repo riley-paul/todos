@@ -2,7 +2,6 @@ import AlertSystem from "@/components/alert-system/alert-system";
 import AppSearch from "@/components/app-search";
 import PendingInvites from "@/components/pending-invites";
 import UserMenu from "@/components/user-menu";
-import useQueryStream from "@/hooks/use-query-stream";
 import { qUser } from "@/lib/client/queries";
 import { Heading } from "@radix-ui/themes";
 import { type QueryClient } from "@tanstack/react-query";
@@ -24,7 +23,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 );
 
 function Component() {
-  const { StreamStateIcon } = useQueryStream();
   return (
     <>
       <header className="sticky top-0 z-50 border-b bg-panel-translucent backdrop-blur">
@@ -35,9 +33,6 @@ function Component() {
               <Heading asChild size="6" weight="bold">
                 <Link to="/">Todos</Link>
               </Heading>
-              <div className="ml-2">
-                <StreamStateIcon />
-              </div>
             </div>
             <div className="flex items-center gap-4">
               <AppSearch />
