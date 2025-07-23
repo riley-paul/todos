@@ -18,12 +18,12 @@ const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
   const userLists =
     listId === "all"
       ? await db
-          .select({ id: ListUser.id })
+          .select({ listId: ListUser.listId })
           .from(ListUser)
           .where(
             and(eq(ListUser.userId, userId), eq(ListUser.isPending, false)),
           )
-          .then((data) => data.map(({ id }) => id))
+          .then((data) => data.map(({ listId }) => listId))
       : [];
 
   const filterTodos = () => {
@@ -33,7 +33,7 @@ const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
       case "all":
         return or(inArray(Todo.listId, userLists), eq(Todo.userId, userId));
       default:
-        return eq(List.id, listId);
+        return eq(Todo.listId, listId);
     }
   };
 
@@ -154,14 +154,18 @@ const removeCompleted: ActionHandler<
 
   // inbox
   if (!listId) {
-    await db.delete(Todo).where(eq(Todo.userId, userId));
+    await db
+      .delete(Todo)
+      .where(and(eq(Todo.isCompleted, true), eq(Todo.userId, userId)));
     return null;
   }
 
   // all
   if (listId === "all") {
     const allTodos = await getAllUserTodos(c, userId);
-    await db.delete(Todo).where(inArray(Todo.id, allTodos));
+    await db
+      .delete(Todo)
+      .where(and(eq(Todo.isCompleted, true), inArray(Todo.id, allTodos)));
     return null;
   }
 
