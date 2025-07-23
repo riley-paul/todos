@@ -5,6 +5,8 @@ import ListShares from "./list-shares";
 import { SendIcon } from "lucide-react";
 import ResponsiveDialog from "../ui/responsive-dialog";
 import UserPicker from "./user-picker";
+import useMutations from "@/hooks/use-mutations";
+import { toast } from "sonner";
 
 type Props = {
   isOpen: boolean;
@@ -14,20 +16,34 @@ type Props = {
 
 const ListShareDialogContent: React.FC<{ list: ListSelect }> = ({ list }) => {
   const otherUserIdsSet = new Set(list.otherUsers.map((user) => user.id));
-  const [selectedUserId, setSelectedUserId] = React.useState<
-    string | undefined
-  >();
+  const [selectedUserId, setSelectedUserId] = React.useState<string>("");
+
+  const { joinList } = useMutations();
+
   return (
     <section className="flex min-h-64 flex-col gap-4 py-6">
-      <div className="grid grid-cols-[1fr_auto] gap-2">
+      <div className="grid grid-cols-[1fr_auto] items-center gap-2">
         <UserPicker
           selectedUserId={selectedUserId}
           setSelectedUserId={setSelectedUserId}
           isUserDisabled={(user) => otherUserIdsSet.has(user.id)}
         />
-        <Button disabled={!selectedUserId} onClick={() => {}}>
+        <Button
+          disabled={!selectedUserId}
+          onClick={() =>
+            joinList.mutate(
+              { listId: list.id, userId: selectedUserId },
+              {
+                onSuccess: () => {
+                  toast.success(`Added user to ${list.name}!`);
+                  setSelectedUserId("");
+                },
+              },
+            )
+          }
+        >
           <SendIcon className="size-4" />
-          <span>Invite User</span>
+          <span>Invite</span>
         </Button>
       </div>
       <ListShares list={list} />

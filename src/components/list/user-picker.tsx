@@ -3,14 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { useDebounceValue } from "usehooks-ts";
 import { Command } from "cmdk";
-import { Badge, Spinner, Text, TextField } from "@radix-ui/themes";
-import { SearchIcon } from "lucide-react";
+import { Badge, IconButton, Spinner, Text, TextField } from "@radix-ui/themes";
+import { SearchIcon, XIcon } from "lucide-react";
 import UserBubble from "../ui/user-bubble";
 import type { UserSelect } from "@/lib/types";
 
 type Props = {
-  selectedUserId: string | undefined;
-  setSelectedUserId: (userId: string | undefined) => void;
+  selectedUserId: string;
+  setSelectedUserId: (userId: string) => void;
   isUserDisabled?: (user: UserSelect) => boolean;
 };
 
@@ -36,20 +36,26 @@ const UserPicker: React.FC<Props> = ({
   }, [selectedUserId]);
 
   if (selectedUser) {
-    return <Badge>{selectedUser.name}</Badge>;
+    return (
+      <Badge size="3" variant="surface" className="h-full">
+        <UserBubble user={selectedUser} size="sm" />
+        <span className="flex-1">{selectedUser.name}</span>
+        <IconButton
+          variant="ghost"
+          size="1"
+          radius="full"
+          onClick={() => setSelectedUserId("")}
+          aria-label="Clear selected user"
+        >
+          <XIcon className="size-4" />
+        </IconButton>
+      </Badge>
+    );
   }
 
   return (
-    <Command
-      loop
-      shouldFilter={false}
-      value={selectedUserId}
-      onValueChange={(value) => {
-        console.log("Selected User ID Changed:", value);
-        setSelectedUserId(value);
-      }}
-    >
-      <div className="relative">
+    <div className="relative">
+      <Command loop shouldFilter={false}>
         <Command.Input
           asChild
           value={search}
@@ -83,8 +89,9 @@ const UserPicker: React.FC<Props> = ({
                 <Command.Item
                   key={user.id}
                   value={user.id}
+                  onSelect={setSelectedUserId}
                   disabled={isUserDisabled?.(user)}
-                  className="flex items-center gap-2 px-3 py-2 transition-colors data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent-2 data-[disabled=true]:opacity-50"
+                  className="flex cursor-default select-none items-center gap-2 px-3 py-2 transition-colors data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent-2 data-[disabled=true]:opacity-50"
                 >
                   <UserBubble user={user} size="md" />
                   <div className="flex flex-col">
@@ -100,8 +107,8 @@ const UserPicker: React.FC<Props> = ({
             </Spinner>
           </Command.List>
         )}
-      </div>
-    </Command>
+      </Command>
+    </div>
   );
 };
 
