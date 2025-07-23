@@ -1,15 +1,13 @@
-import { Text, Tooltip, type ThemeProps } from "@radix-ui/themes";
+import { cn } from "@/lib/client/utils";
+import { Tooltip } from "@radix-ui/themes";
 import { useAbly, useConnectionStateListener } from "ably/react";
-import { CircleIcon } from "lucide-react";
 import { useState } from "react";
 
-type ConnectionDotProps = { color: ThemeProps["accentColor"]; title: string };
+type ConnectionDotProps = { className: string; title: string };
 
-const ConnectionDot: React.FC<ConnectionDotProps> = ({ color, title }) => (
+const ConnectionDot: React.FC<ConnectionDotProps> = ({ className, title }) => (
   <Tooltip content={title} side="top">
-    <Text color={color}>
-      <CircleIcon className="size-3" />
-    </Text>
+    <div className={cn("size-2 rounded-full", className)} />
   </Tooltip>
 );
 
@@ -23,15 +21,15 @@ const ConnectionState: React.FC = () => {
 
   switch (connectionState) {
     case "connected":
-      return <ConnectionDot color="green" title="Connected" />;
+      return <ConnectionDot className="bg-green-10" title="Connected" />;
     case "closed":
-      return <ConnectionDot color="red" title="Disconnected" />;
+      return <ConnectionDot className="bg-red-10" title="Disconnected" />;
     case "disconnected":
-      return <ConnectionDot color="red" title="Disconnected" />;
+      return <ConnectionDot className="bg-red-10" title="Disconnected" />;
     case "failed":
-      return <ConnectionDot color="red" title="Failed" />;
+      return <ConnectionDot className="bg-red-10" title="Failed" />;
     default:
-      return <ConnectionDot color="amber" title="Connecting..." />;
+      return <ConnectionDot className="bg-amber-10" title="Connecting..." />;
   }
 };
 
