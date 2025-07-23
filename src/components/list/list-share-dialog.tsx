@@ -1,12 +1,6 @@
 import type { ListSelect } from "@/lib/types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Dialog, Text, TextField } from "@radix-ui/themes";
-import { useMutation } from "@tanstack/react-query";
-import { actions } from "astro:actions";
+import { Button, Dialog } from "@radix-ui/themes";
 import React from "react";
-import { Controller, useForm } from "react-hook-form";
-import { toast } from "sonner";
-import z from "zod/v4";
 import ListShares from "./list-shares";
 import { SendIcon } from "lucide-react";
 import ResponsiveDialog from "../ui/responsive-dialog";
@@ -19,6 +13,8 @@ type Props = {
 };
 
 const ListShareDialog: React.FC<Props> = ({ list, isOpen, onOpenChange }) => {
+  const otherUserIdsSet = new Set(list.otherUsers.map((user) => user.id));
+
   return (
     <ResponsiveDialog
       open={isOpen}
@@ -28,7 +24,7 @@ const ListShareDialog: React.FC<Props> = ({ list, isOpen, onOpenChange }) => {
     >
       <section className="flex min-h-64 flex-col gap-4 py-6">
         <div className="grid grid-cols-[1fr_auto] gap-2">
-          <UserPicker />
+          <UserPicker isUserDisabled={(user) => otherUserIdsSet.has(user.id)} />
           <Button>
             <SendIcon className="size-4" />
             <span>Invite User</span>

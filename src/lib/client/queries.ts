@@ -14,10 +14,11 @@ export const qUser = queryOptions({
   queryFn: actions.users.getMe.orThrow,
 });
 
-export const qUsers = (search?: string) =>
+export const qUsers = (search: string) =>
   queryOptions({
     queryKey: ["users", search],
     queryFn: () => actions.users.get.orThrow({ search }),
+    enabled: !!search,
   });
 
 export const qLists = queryOptions({

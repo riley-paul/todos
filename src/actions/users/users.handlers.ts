@@ -2,7 +2,7 @@ import type { ActionHandler } from "astro:actions";
 import { isAuthorized } from "../helpers";
 import { createDb } from "@/db";
 import { Todo, User, UserSession } from "@/db/schema";
-import { eq, like, or } from "drizzle-orm";
+import { and, eq, like, not, or } from "drizzle-orm";
 import type { UserSelect, UserSelectWithSettings } from "@/lib/types";
 import type userInputs from "./users.inputs";
 import actionErrors from "../errors";
@@ -44,12 +44,17 @@ const get: ActionHandler<typeof userInputs.get, UserSelect[]> = async (
   c,
 ) => {
   const db = createDb(c.locals.runtime.env);
-  isAuthorized(c);
+  const userId = isAuthorized(c).id;
 
   return db
     .select()
     .from(User)
-    .where(or(like(User.name, `%${search}%`), like(User.email, `%${search}%`)))
+    .where(
+      and(
+        or(like(User.name, `%${search}%`), like(User.email, `%${search}%`)),
+        not(eq(User.id, userId)),
+      ),
+    )
     .limit(10);
 };
 
