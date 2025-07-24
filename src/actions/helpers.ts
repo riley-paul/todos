@@ -20,7 +20,10 @@ export const invalidateListUsers = async (
 ) => {
   console.log("Invalidating list users for listId:", listId);
   const db = createDb(context.locals.runtime.env);
-  const ably = new Rest({ key: context.locals.runtime.env.ABLY_API_KEY });
+  const ably = new Rest({
+    key: context.locals.runtime.env.ABLY_API_KEY,
+    clientId: "server",
+  });
   const userId = isAuthorized(context).id;
 
   const listUserIds = await db
