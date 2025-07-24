@@ -77,7 +77,7 @@ const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
 const accept: ActionHandler<
   typeof listUserInputs.accept,
   ListUserSelect
-> = async ({ id: listUserId }, c) => {
+> = async ({ listId }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
@@ -87,7 +87,7 @@ const accept: ActionHandler<
     .from(ListUser)
     .where(
       and(
-        eq(ListUser.id, listUserId),
+        eq(ListUser.listId, listId),
         eq(ListUser.userId, userId),
         eq(ListUser.isPending, true),
       ),
@@ -98,11 +98,17 @@ const accept: ActionHandler<
   const [updated] = await db
     .update(ListUser)
     .set({ isPending: false })
-    .where(eq(ListUser.id, listUserId))
+    .where(
+      and(
+        eq(ListUser.listId, listId),
+        eq(ListUser.userId, userId),
+        eq(ListUser.isPending, true),
+      ),
+    )
     .returning();
 
   invalidateListUsers(c, updated.listId);
-  return getListUser(c, { listUserId });
+  return getListUser(c, { listUserId: updated.id });
 };
 
 const getAllForList: ActionHandler<
@@ -138,41 +144,10 @@ const getAllForList: ActionHandler<
     .where(eq(ListUser.listId, listId));
 };
 
-const getAllPending: ActionHandler<
-  typeof listUserInputs.getAllPending,
-  ListUserSelect[]
-> = async (_, c) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
-
-  return db
-    .select({
-      id: ListUser.id,
-      userId: ListUser.userId,
-      listId: ListUser.listId,
-      isPending: ListUser.isPending,
-      list: {
-        id: List.id,
-        name: List.name,
-      },
-      user: {
-        id: User.id,
-        name: User.name,
-        email: User.email,
-        avatarUrl: User.avatarUrl,
-      },
-    })
-    .from(ListUser)
-    .innerJoin(List, eq(List.id, ListUser.listId))
-    .innerJoin(User, eq(User.id, ListUser.userId))
-    .where(and(eq(ListUser.userId, userId), eq(ListUser.isPending, true)));
-};
-
 const listShareHandlers = {
   create,
   remove,
   accept,
   getAllForList,
-  getAllPending,
 };
 export default listShareHandlers;

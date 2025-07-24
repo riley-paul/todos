@@ -87,6 +87,7 @@ export const getListUser = async (
       list: {
         id: List.id,
         name: List.name,
+        isPending: ListUser.isPending,
       },
       user: {
         id: User.id,

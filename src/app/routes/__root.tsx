@@ -1,7 +1,6 @@
 import AlertSystem from "@/components/alert-system/alert-system";
 import AppSearch from "@/components/app-search";
 import ConnectionState from "@/components/connection-state";
-import PendingInvites from "@/components/pending-invites";
 import UserMenu from "@/components/user-menu";
 import { qUser } from "@/lib/client/queries";
 import { Heading } from "@radix-ui/themes";
@@ -42,7 +41,6 @@ function Component() {
             </div>
             <div className="flex items-center gap-4">
               <AppSearch />
-              <PendingInvites />
               <UserMenu />
             </div>
           </div>

@@ -6,9 +6,8 @@ const listUserInputs = {
     userId: z.string().optional(),
   }),
   remove: z.object({ listId: z.string(), userId: z.string().optional() }),
-  accept: z.object({ id: z.string() }),
+  accept: z.object({ listId: z.string() }),
   getAllForList: z.object({ listId: z.string() }),
-  getAllPending: z.any(),
 };
 
 export default listUserInputs;

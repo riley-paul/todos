@@ -50,7 +50,7 @@ export const BaseList: React.FC<BaseListProps> = ({
 };
 
 export const List: React.FC<{ list: ListSelect }> = ({ list }) => {
-  const { id, name, otherUsers, todoCount } = list;
+  const { id, name, otherUsers, todoCount, isPending } = list;
 
   const { data: currentUser } = useSuspenseQuery(qUser);
   const queryClient = useQueryClient();
@@ -65,6 +65,19 @@ export const List: React.FC<{ list: ListSelect }> = ({ list }) => {
     console.log("Invalidating...");
     queryClient.invalidateQueries();
   });
+
+  if (isPending) {
+    return (
+      <div className="opacity-50">
+        <BaseList
+          id={id}
+          name={name}
+          count={todoCount}
+          otherUsers={otherUsers}
+        />
+      </div>
+    );
+  }
 
   return (
     <BaseList id={id} name={name} count={todoCount} otherUsers={otherUsers}>

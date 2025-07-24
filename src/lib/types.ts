@@ -70,14 +70,17 @@ export const zListSelect = createSelectSchema(List)
   .extend({
     todoCount: z.number(),
     otherUsers: z.array(zUserSelect),
+    isPending: z.boolean(),
   });
-export const zListSelectShallow = createSelectSchema(List).pick({
-  id: true,
-  name: true,
-});
+export const zListSelectShallow = createSelectSchema(List)
+  .pick({
+    id: true,
+    name: true,
+  })
+  .extend({ isPending: z.boolean().optional() });
 export const zListInsert = createInsertSchema(List)
   .pick({ name: true })
-  .extend({ name: createInsertSchema(List).shape.name.trim().min(1) });
+  .extend({ name: zListName });
 export type ListSelect = z.infer<typeof zListSelect>;
 export type ListSelectShallow = z.infer<typeof zListSelectShallow>;
 export type ListInsert = z.infer<typeof zListInsert>;

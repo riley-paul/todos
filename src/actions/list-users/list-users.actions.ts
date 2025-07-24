@@ -17,11 +17,6 @@ export const accept = defineAction({
   handler: listShareHandlers.accept,
 });
 
-export const getAllPending = defineAction({
-  input: listUserInputs.getAllPending,
-  handler: listShareHandlers.getAllPending,
-});
-
 export const getAllForList = defineAction({
   input: listUserInputs.getAllForList,
   handler: listShareHandlers.getAllForList,

@@ -21,11 +21,12 @@ const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
     .selectDistinct({
       id: List.id,
       name: List.name,
+      isPending: ListUser.isPending,
     })
     .from(List)
     .innerJoin(ListUser, eq(ListUser.listId, List.id))
     .orderBy(asc(List.name))
-    .where(and(eq(ListUser.userId, userId), eq(ListUser.isPending, false)))
+    .where(and(eq(ListUser.userId, userId)))
     .then((lists) =>
       Promise.all(
         lists.map(async (list) => {
@@ -77,6 +78,7 @@ const get: ActionHandler<typeof listInputs.get, ListSelectShallow> = async (
     .select({
       id: List.id,
       name: List.name,
+      isPending: ListUser.isPending,
     })
     .from(List)
     .innerJoin(ListUser, eq(ListUser.listId, List.id))
