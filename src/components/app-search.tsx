@@ -87,7 +87,17 @@ const Trigger: React.FC<{ open: () => void }> = ({ open }) => {
   );
 };
 
-const Content: React.FC<{ handleClose: () => void }> = ({ handleClose }) => {
+type ContentProps = {
+  handleClose: () => void;
+  className?: string;
+  textFieldProps?: TextField.RootProps;
+};
+
+const Content: React.FC<ContentProps> = ({
+  handleClose,
+  className,
+  textFieldProps,
+}) => {
   const { data: lists = [] } = useQuery(qLists);
   const { data: todos = [] } = useQuery(qTodos("all"));
 
@@ -96,26 +106,22 @@ const Content: React.FC<{ handleClose: () => void }> = ({ handleClose }) => {
   const { createList, createTodo } = useMutations();
 
   return (
-    <Command>
+    <Command className={cn("flex flex-col overflow-hidden", className)}>
       <Command.Input
         asChild
         value={value}
         onValueChange={setValue}
         placeholder="Type a command or search..."
       >
-        <TextField.Root
-          variant="soft"
-          style={{ borderRadius: 0 }}
-          className="h-auto bg-gray-1 px-2 py-3 outline-none"
-        >
+        <TextField.Root autoFocus {...textFieldProps}>
           <TextField.Slot side="left">
             <SearchIcon className="size-4 text-accent-10" />
           </TextField.Slot>
         </TextField.Root>
       </Command.Input>
       <Separator size="4" />
-      <ScrollArea>
-        <Command.List className="max-h-[400px] p-2 pr-3">
+      <ScrollArea className="flex-1 overflow-auto">
+        <Command.List className="p-2 pr-3">
           <Command.Empty>No results found.</Command.Empty>
           <Command.Group>
             <SearchGroupHeading>Lists</SearchGroupHeading>
@@ -218,7 +224,10 @@ const AppSearch: React.FC = () => {
               Search for lists or todos. Use the arrow keys to navigate results.
             </Drawer.Description>
           </VisuallyHidden>
-          <Content handleClose={() => setIsOpen(false)} />
+          <Content
+            handleClose={() => setIsOpen(false)}
+            textFieldProps={{ className: "m-3" }}
+          />
         </Drawer.Content>
       </Drawer.Root>
     );
@@ -227,14 +236,22 @@ const AppSearch: React.FC = () => {
   return (
     <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
       <Trigger open={() => setIsOpen(true)} />
-      <Dialog.Content size="1" className="p-0">
+      <Dialog.Content size="1" className="overflow-hidden p-0">
         <VisuallyHidden>
           <Dialog.Title>Search</Dialog.Title>
           <Dialog.Description>
             Search for lists or todos. Use the arrow keys to navigate results.
           </Dialog.Description>
         </VisuallyHidden>
-        <Content handleClose={() => setIsOpen(false)} />
+        <Content
+          className="max-h-[500px]"
+          handleClose={() => setIsOpen(false)}
+          textFieldProps={{
+            variant: "soft",
+            style: { borderRadius: 0 },
+            className: "h-auto bg-gray-1 px-2 py-3 outline-none",
+          }}
+        />
       </Dialog.Content>
     </Dialog.Root>
   );
