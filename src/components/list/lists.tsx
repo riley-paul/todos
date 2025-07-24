@@ -9,7 +9,6 @@ import useMutations from "@/hooks/use-mutations";
 import { PlusIcon } from "lucide-react";
 import List, { BaseList } from "./list";
 import { zListName } from "@/lib/types";
-import { ChannelProvider } from "ably/react";
 
 const Lists: React.FC = () => {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
@@ -47,9 +46,7 @@ const Lists: React.FC = () => {
           <Separator orientation="vertical" size="1" />
         </Flex>
         {lists.map((list) => (
-          <ChannelProvider key={list.id} channelName={`list:${list.id}`}>
-            <List list={list} />
-          </ChannelProvider>
+          <List key={list.id} list={list} />
         ))}
         <IconButton
           onClick={handleCreateList}

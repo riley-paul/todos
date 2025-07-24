@@ -1,5 +1,5 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { AblyProvider } from "ably/react";
+import { AblyProvider, ChannelProvider } from "ably/react";
 import * as Ably from "ably";
 
 // Import the generated route tree
@@ -14,6 +14,7 @@ import { handleMutationError } from "@/hooks/use-mutations";
 import CustomToaster from "@/components/ui/custom-toaster";
 import { Spinner } from "@radix-ui/themes";
 import ErrorPage from "@/components/error-page";
+import { qUser } from "@/lib/client/queries";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -27,9 +28,11 @@ const queryClient = new QueryClient({
   }),
 });
 
+const currentUser = await queryClient.ensureQueryData(qUser);
+
 const router = createRouter({
   routeTree,
-  context: { queryClient },
+  context: { queryClient, currentUser },
   defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
   defaultPendingComponent: () => (
@@ -51,11 +54,13 @@ declare module "@tanstack/react-router" {
 // Render the app
 export default () => (
   <AblyProvider client={realtimeClient}>
-    <QueryClientProvider client={queryClient}>
-      <RadixProvider>
-        <RouterProvider router={router} />
-        <CustomToaster />
-      </RadixProvider>
-    </QueryClientProvider>
+    <ChannelProvider channelName={`user:${currentUser.id}`}>
+      <QueryClientProvider client={queryClient}>
+        <RadixProvider>
+          <RouterProvider router={router} />
+          <CustomToaster />
+        </RadixProvider>
+      </QueryClientProvider>
+    </ChannelProvider>
   </AblyProvider>
 );

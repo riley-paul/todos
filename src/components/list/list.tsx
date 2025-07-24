@@ -6,15 +6,13 @@ import React from "react";
 import ListMenu from "./list-menu";
 import UserBubbleGroup from "../ui/user-bubble-group";
 import type { ListSelect, SelectedList, UserSelect } from "@/lib/types";
-import { useChannel } from "ably/react";
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { qUser } from "@/lib/client/queries";
 
 type BaseListProps = React.PropsWithChildren<{
   id: SelectedList;
   name: string;
   count?: number;
   otherUsers?: UserSelect[];
+  className?: string;
 }>;
 
 export const BaseList: React.FC<BaseListProps> = ({
@@ -23,6 +21,7 @@ export const BaseList: React.FC<BaseListProps> = ({
   count = 0,
   otherUsers,
   children,
+  className,
 }) => {
   const linkProps = useLinkProps(goToList(id)) as any;
   const isActive = linkProps["data-status"] === "active";
@@ -35,6 +34,7 @@ export const BaseList: React.FC<BaseListProps> = ({
       className={cn(
         "flex items-center gap-2 transition-colors",
         isActive ? "hover:bg-accent-5" : "hover:bg-accent-6",
+        className,
       )}
     >
       <Link {...goToList(id)} className="flex items-center gap-2">
@@ -52,36 +52,15 @@ export const BaseList: React.FC<BaseListProps> = ({
 export const List: React.FC<{ list: ListSelect }> = ({ list }) => {
   const { id, name, otherUsers, todoCount, isPending } = list;
 
-  const { data: currentUser } = useSuspenseQuery(qUser);
-  const queryClient = useQueryClient();
-
-  useChannel(`list:${id}`, "invalidate", (message) => {
-    console.log("Received invalidate event for", name);
-
-    if (message.data.actionTakenBy === currentUser.id) {
-      console.log("Ignoring invalidation event from self");
-      return;
-    }
-    console.log("Invalidating...");
-    queryClient.invalidateQueries();
-  });
-
-  if (isPending) {
-    return (
-      <div className="opacity-50">
-        <BaseList
-          id={id}
-          name={name}
-          count={todoCount}
-          otherUsers={otherUsers}
-        />
-      </div>
-    );
-  }
-
   return (
-    <BaseList id={id} name={name} count={todoCount} otherUsers={otherUsers}>
-      <ListMenu list={list} />
+    <BaseList
+      id={id}
+      name={name}
+      count={todoCount}
+      otherUsers={otherUsers}
+      className={cn(isPending && "opacity-50")}
+    >
+      {!isPending && <ListMenu list={list} />}
     </BaseList>
   );
 };

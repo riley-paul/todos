@@ -1,6 +1,6 @@
 import type { ActionAPIContext } from "astro/actions/runtime/utils.js";
 import { Todo, ListUser, List, User } from "@/db/schema";
-import { eq, and, or } from "drizzle-orm";
+import { eq, and, or, not } from "drizzle-orm";
 import actionErrors from "./errors";
 import { createDb } from "@/db";
 import type { ListUserSelect } from "@/lib/types";
@@ -14,15 +14,28 @@ export const isAuthorized = (context: ActionAPIContext) => {
   return user;
 };
 
-export const invalidateListUsers = (
+export const invalidateListUsers = async (
   context: ActionAPIContext,
   listId: string,
 ) => {
   console.log("Invalidating list users for listId:", listId);
+  const db = createDb(context.locals.runtime.env);
   const ably = new Realtime({ key: context.locals.runtime.env.ABLY_API_KEY });
-  const currentUserId = isAuthorized(context).id;
-  const channel = ably.channels.get(`list:${listId}`);
-  return channel.publish("invalidate", { actionTakenBy: currentUserId });
+  const userId = isAuthorized(context).id;
+
+  const listUserIds = await db
+    .select({ id: ListUser.userId })
+    .from(ListUser)
+    .where(and(eq(ListUser.listId, listId), not(eq(ListUser.userId, userId))))
+    .then((rows) => rows.map(({ id }) => id));
+
+  return Promise.all(
+    listUserIds.map((id) => {
+      console.log("Publishing invalidate for userId:", id);
+      const channel = ably.channels.get(`user:${id}`);
+      return channel.publish("invalidate", { actionTakenBy: userId });
+    }),
+  );
 };
 
 export const getAllUserTodos = async (

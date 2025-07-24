@@ -3,17 +3,20 @@ import AppSearch from "@/components/app-search";
 import ConnectionState from "@/components/connection-state";
 import UserMenu from "@/components/user-menu";
 import { qUser } from "@/lib/client/queries";
+import type { UserSelect } from "@/lib/types";
 import { Heading } from "@radix-ui/themes";
-import { type QueryClient } from "@tanstack/react-query";
+import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import {
   createRootRouteWithContext,
   Link,
   Outlet,
 } from "@tanstack/react-router";
+import { useChannel } from "ably/react";
 import { CircleCheckBigIcon } from "lucide-react";
 
 type RouterContext = {
   queryClient: QueryClient;
+  currentUser: UserSelect;
 };
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -25,6 +28,14 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function Component() {
+  const queryClient = useQueryClient();
+  const { currentUser } = Route.useRouteContext();
+
+  useChannel(`user:${currentUser.id}`, "invalidate", () => {
+    console.log("Invalidating...");
+    queryClient.invalidateQueries();
+  });
+
   return (
     <>
       <header className="sticky top-0 z-50 border-b bg-panel-translucent backdrop-blur">
