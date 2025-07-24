@@ -23,6 +23,7 @@ export const invalidateListUsers = async (
   const ably = new Rest({
     key: context.locals.runtime.env.ABLY_API_KEY,
     clientId: "server",
+    logLevel: 4,
   });
   const userId = isAuthorized(context).id;
 
@@ -31,6 +32,8 @@ export const invalidateListUsers = async (
     .from(ListUser)
     .where(and(eq(ListUser.listId, listId), not(eq(ListUser.userId, userId))))
     .then((rows) => rows.map(({ id }) => id));
+
+  console.log("List user IDs to invalidate:", listUserIds);
 
   return Promise.all(
     listUserIds.map((id) => {
