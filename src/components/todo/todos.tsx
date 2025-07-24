@@ -7,7 +7,8 @@ import { Button, Text } from "@radix-ui/themes";
 import type { SelectedList } from "@/lib/types";
 import { qTodos, qUser } from "@/lib/client/queries";
 import { ChevronRightIcon } from "lucide-react";
-import ClearCompletedTodosButton from "./clear-completed-todos-button";
+import DeleteCompletedTodosButton from "./footer-buttons/delete-completed-todos-button";
+import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
 const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
   const { data: todos } = useSuspenseQuery(qTodos(listId));
@@ -56,7 +57,7 @@ const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
                   )}
                 />
               </Button>
-              <ClearCompletedTodosButton listId={listId} />
+              <DeleteCompletedTodosButton listId={listId} />
             </div>
             {showCompleted && (
               <div className="grid gap-1">
@@ -78,8 +79,9 @@ const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
       {todos.map((todo) => (
         <Todo key={todo.id} todo={todo} />
       ))}
-      <div className="px-3 py-1 text-right">
-        <ClearCompletedTodosButton listId={listId} />
+      <div className="flex items-center justify-end gap-4 px-3 py-1">
+        <UncheckAllTodosButton listId={listId} />
+        <DeleteCompletedTodosButton listId={listId} />
       </div>
     </section>
   );
