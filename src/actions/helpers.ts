@@ -33,6 +33,7 @@ const invalidateUserChannel = async (
   });
 
   if (response.ok) {
+    console.log("Publishing invalidate for userId:", userId);
     return Promise.resolve();
   }
   const errorText = await response.text();
@@ -60,7 +61,6 @@ export const invalidateListUsers = async (
 
   return Promise.all(
     listUserIds.map((id) => {
-      console.log("Publishing invalidate for userId:", id);
       return invalidateUserChannel(context, id);
     }),
   );
