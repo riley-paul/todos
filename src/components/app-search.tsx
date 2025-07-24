@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import {
   Badge,
   Dialog,
   IconButton,
   Kbd,
+  ScrollArea,
   Separator,
   Strong,
   Text,
@@ -23,22 +24,21 @@ import useMutations from "@/hooks/use-mutations";
 import { goToList } from "@/lib/client/links";
 import { PlusIcon, SearchIcon } from "lucide-react";
 import { Command } from "cmdk";
+import Drawer from "./ui/drawer";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 type SearchItemProps = React.PropsWithChildren<{
-  key?: string;
   value?: string;
   onSelect: () => void;
 }>;
 
 const SearchItem: React.FC<SearchItemProps> = ({
-  key,
   value,
   onSelect,
   children,
 }) => {
   return (
     <Command.Item
-      key={key}
       value={value}
       onSelect={onSelect}
       className={cn(
@@ -69,16 +69,136 @@ const SearchGroupHeading: React.FC<React.PropsWithChildren> = ({
   );
 };
 
-const AppSearch: React.FC = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+const Trigger: React.FC<{ open: () => void }> = ({ open }) => {
+  return (
+    <Tooltip
+      content={
+        <>
+          Search <Kbd>⌘ + K</Kbd>
+        </>
+      }
+      side="bottom"
+      align="center"
+    >
+      <IconButton variant="soft" radius="full" onClick={open}>
+        <SearchIcon className="size-4" />
+      </IconButton>
+    </Tooltip>
+  );
+};
 
-  const navigate = useNavigate();
-
+const Content: React.FC<{ handleClose: () => void }> = ({ handleClose }) => {
   const { data: lists = [] } = useQuery(qLists);
   const { data: todos = [] } = useQuery(qTodos("all"));
 
+  const [value, setValue] = React.useState("");
+  const navigate = useNavigate();
   const { createList, createTodo } = useMutations();
+
+  return (
+    <Command>
+      <Command.Input
+        asChild
+        value={value}
+        onValueChange={setValue}
+        placeholder="Type a command or search..."
+      >
+        <TextField.Root
+          variant="soft"
+          style={{ borderRadius: 0 }}
+          className="h-auto bg-gray-1 px-2 py-3 outline-none"
+        >
+          <TextField.Slot side="left">
+            <SearchIcon className="size-4 text-accent-10" />
+          </TextField.Slot>
+        </TextField.Root>
+      </Command.Input>
+      <Separator size="4" />
+      <ScrollArea>
+        <Command.List className="max-h-[400px] p-2 pr-3">
+          <Command.Empty>No results found.</Command.Empty>
+          <Command.Group>
+            <SearchGroupHeading>Lists</SearchGroupHeading>
+            {value && (
+              <SearchItem
+                onSelect={() =>
+                  createList.mutate({ name: value }, { onSuccess: handleClose })
+                }
+              >
+                <PlusIcon className="size-4 text-accent-10" />
+                Create new list <Strong>"{value}"</Strong>
+              </SearchItem>
+            )}
+            {lists.map((list) => (
+              <SearchItem
+                key={list.id}
+                value={list.name + list.id}
+                onSelect={() => {
+                  handleClose();
+                  navigate(goToList(list.id));
+                }}
+              >
+                <span>{list.name}</span>
+                <Text className="font-mono text-accentA-12">
+                  {list.todoCount}
+                </Text>
+                <div className="ml-auto">
+                  <UserBubbleGroup users={list.otherUsers} />
+                </div>
+              </SearchItem>
+            ))}
+          </Command.Group>
+          <div className="px-3 py-3">
+            <Separator size="4" />
+          </div>
+          <Command.Group>
+            <SearchGroupHeading>Todos</SearchGroupHeading>
+            {value && (
+              <SearchItem
+                onSelect={() =>
+                  createTodo.mutate(
+                    { data: { text: value, listId: null } },
+                    { onSuccess: handleClose },
+                  )
+                }
+              >
+                <PlusIcon className="size-4 text-accent-10" />
+                Create new todo <Strong>"{value}"</Strong>
+              </SearchItem>
+            )}
+            {todos.map((todo) => (
+              <SearchItem
+                key={todo.id}
+                value={[todo.text, todo.id, todo.list?.id]
+                  .filter(Boolean)
+                  .join("~")}
+                onSelect={() => {
+                  handleClose();
+                  navigate(goToList(todo.list?.id, todo.id));
+                }}
+              >
+                <span
+                  className={cn(
+                    todo.isCompleted && "text-gray-10 line-through",
+                  )}
+                >
+                  <TextWithLinks text={todo.text} />
+                </span>
+                {todo.list && (
+                  <Badge className="ml-auto">{todo.list.name}</Badge>
+                )}
+              </SearchItem>
+            ))}
+          </Command.Group>
+        </Command.List>
+      </ScrollArea>
+    </Command>
+  );
+};
+
+const AppSearch: React.FC = () => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const isMobile = useIsMobile();
 
   useEventListener("keydown", (event) => {
     if (event.key === "k" && event.metaKey) {
@@ -87,31 +207,26 @@ const AppSearch: React.FC = () => {
     }
   });
 
-  useEffect(() => {
-    setValue("");
-  }, [isOpen]);
+  if (isMobile) {
+    return (
+      <Drawer.Root open={isOpen} onOpenChange={setIsOpen}>
+        <Trigger open={() => setIsOpen(true)} />
+        <Drawer.Content className="h-5/6 px-0">
+          <VisuallyHidden>
+            <Drawer.Title>Search</Drawer.Title>
+            <Drawer.Description>
+              Search for lists or todos. Use the arrow keys to navigate results.
+            </Drawer.Description>
+          </VisuallyHidden>
+          <Content handleClose={() => setIsOpen(false)} />
+        </Drawer.Content>
+      </Drawer.Root>
+    );
+  }
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Dialog.Trigger>
-        <Tooltip
-          content={
-            <div>
-              Search <Kbd>⌘ + K</Kbd>
-            </div>
-          }
-          side="bottom"
-          align="center"
-        >
-          <IconButton
-            variant="soft"
-            radius="full"
-            onClick={() => setIsOpen(true)}
-          >
-            <SearchIcon className="size-4" />
-          </IconButton>
-        </Tooltip>
-      </Dialog.Trigger>
+      <Trigger open={() => setIsOpen(true)} />
       <Dialog.Content size="1" className="p-0">
         <VisuallyHidden>
           <Dialog.Title>Search</Dialog.Title>
@@ -119,104 +234,7 @@ const AppSearch: React.FC = () => {
             Search for lists or todos. Use the arrow keys to navigate results.
           </Dialog.Description>
         </VisuallyHidden>
-        <Command>
-          <Command.Input
-            asChild
-            value={value}
-            onValueChange={setValue}
-            placeholder="Type a command or search..."
-          >
-            <TextField.Root
-              variant="soft"
-              style={{ borderRadius: 0 }}
-              className="h-auto bg-gray-1 px-2 py-3 outline-none"
-            >
-              <TextField.Slot side="left">
-                <SearchIcon className="size-4 text-accent-10" />
-              </TextField.Slot>
-            </TextField.Root>
-          </Command.Input>
-          <Separator size="4" />
-          <Command.List className="max-h-[400px] overflow-y-auto p-2">
-            <Command.Empty>No results found.</Command.Empty>
-            <Command.Group>
-              <SearchGroupHeading>Lists</SearchGroupHeading>
-              {value && (
-                <SearchItem
-                  onSelect={() =>
-                    createList.mutate(
-                      { name: value },
-                      { onSuccess: () => setIsOpen(false) },
-                    )
-                  }
-                >
-                  <PlusIcon className="size-4 text-accent-10" />
-                  Create new list <Strong>"{value}"</Strong>
-                </SearchItem>
-              )}
-              {lists.map((list) => (
-                <SearchItem
-                  key={list.id}
-                  value={list.name + list.id}
-                  onSelect={() => {
-                    setIsOpen(false);
-                    navigate(goToList(list.id));
-                  }}
-                >
-                  <span>{list.name}</span>
-                  <Text className="font-mono text-accentA-12">
-                    {list.todoCount}
-                  </Text>
-                  <div className="ml-auto">
-                    <UserBubbleGroup users={list.otherUsers} />
-                  </div>
-                </SearchItem>
-              ))}
-            </Command.Group>
-            <div className="px-3 py-3">
-              <Separator size="4" />
-            </div>
-            <Command.Group>
-              <SearchGroupHeading>Todos</SearchGroupHeading>
-              {value && (
-                <SearchItem
-                  onSelect={() =>
-                    createTodo.mutate(
-                      { data: { text: value, listId: null } },
-                      { onSuccess: () => setIsOpen(false) },
-                    )
-                  }
-                >
-                  <PlusIcon className="size-4 text-accent-10" />
-                  Create new todo <Strong>"{value}"</Strong>
-                </SearchItem>
-              )}
-              {todos.map((todo) => (
-                <SearchItem
-                  key={todo.id}
-                  value={[todo.text, todo.id, todo.list?.id]
-                    .filter(Boolean)
-                    .join("~")}
-                  onSelect={() => {
-                    setIsOpen(false);
-                    navigate(goToList(todo.list?.id, todo.id));
-                  }}
-                >
-                  <span
-                    className={cn(
-                      todo.isCompleted && "text-gray-10 line-through",
-                    )}
-                  >
-                    <TextWithLinks text={todo.text} />
-                  </span>
-                  {todo.list && (
-                    <Badge className="ml-auto">{todo.list.name}</Badge>
-                  )}
-                </SearchItem>
-              ))}
-            </Command.Group>
-          </Command.List>
-        </Command>
+        <Content handleClose={() => setIsOpen(false)} />
       </Dialog.Content>
     </Dialog.Root>
   );
