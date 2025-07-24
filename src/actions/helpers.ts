@@ -4,7 +4,7 @@ import { eq, and, or, not } from "drizzle-orm";
 import actionErrors from "./errors";
 import { createDb } from "@/db";
 import type { ListUserSelect } from "@/lib/types";
-import { Realtime } from "ably";
+import { Rest } from "ably";
 
 export const isAuthorized = (context: ActionAPIContext) => {
   const user = context.locals.user;
@@ -20,7 +20,7 @@ export const invalidateListUsers = async (
 ) => {
   console.log("Invalidating list users for listId:", listId);
   const db = createDb(context.locals.runtime.env);
-  const ably = new Realtime({ key: context.locals.runtime.env.ABLY_API_KEY });
+  const ably = new Rest({ key: context.locals.runtime.env.ABLY_API_KEY });
   const userId = isAuthorized(context).id;
 
   const listUserIds = await db
