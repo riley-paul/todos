@@ -4,6 +4,7 @@ import { eq, and, or, not } from "drizzle-orm";
 import actionErrors from "./errors";
 import { createDb } from "@/db";
 import type { ListUserSelect } from "@/lib/types";
+import { Rest } from "ably";
 
 export const isAuthorized = (context: ActionAPIContext) => {
   const user = context.locals.user;
@@ -13,36 +14,6 @@ export const isAuthorized = (context: ActionAPIContext) => {
   return user;
 };
 
-const invalidateUserChannel = async (
-  context: ActionAPIContext,
-  userId: string,
-) => {
-  const channelName = `user:${userId}`;
-  const eventName = "invalidate";
-
-  const authHeader = "Basic " + btoa(context.locals.runtime.env.ABLY_API_KEY);
-  const url = new URL(`https://rest.ably.io/channels/${channelName}/messages`);
-
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      Authorization: authHeader,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify([{ name: eventName }]),
-  });
-
-  if (response.ok) {
-    console.log("Publishing invalidate for userId:", userId);
-    return Promise.resolve();
-  }
-  const errorText = await response.text();
-  console.error("Failed to publish invalidate message:", errorText);
-  return Promise.reject(
-    new Error(`Failed to publish invalidate message: ${errorText}`),
-  );
-};
-
 export const invalidateListUsers = async (
   context: ActionAPIContext,
   listId: string,
@@ -50,6 +21,10 @@ export const invalidateListUsers = async (
   console.log("Invalidating list users for listId:", listId);
   const db = createDb(context.locals.runtime.env);
   const userId = isAuthorized(context).id;
+  const ably = new Rest({
+    key: context.locals.runtime.env.ABLY_API_KEY,
+    clientId: "server",
+  });
 
   const listUserIds = await db
     .select({ id: ListUser.userId })
@@ -61,7 +36,9 @@ export const invalidateListUsers = async (
 
   return Promise.all(
     listUserIds.map((id) => {
-      return invalidateUserChannel(context, id);
+      console.log("Invalidating user channel for userId:", id);
+      const channel = ably.channels.get(`user:${id}`);
+      return channel.publish("invalidate", { actionTakenBy: userId });
     }),
   );
 };

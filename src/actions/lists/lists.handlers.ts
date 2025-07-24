@@ -105,7 +105,7 @@ const update: ActionHandler<
     .returning({ id: List.id, name: List.name });
 
   if (!list) throw actionErrors.NOT_FOUND;
-  invalidateListUsers(c, listId);
+  await invalidateListUsers(c, listId);
   return list;
 };
 
@@ -127,7 +127,7 @@ const create: ActionHandler<
     isPending: false,
   });
 
-  invalidateListUsers(c, list.id);
+  await invalidateListUsers(c, list.id);
   return list;
 };
 
@@ -144,7 +144,7 @@ const remove: ActionHandler<typeof listInputs.remove, null> = async (
   const [result] = await db.delete(List).where(eq(List.id, listId)).returning();
   if (!result) throw actionErrors.NOT_FOUND;
 
-  invalidateListUsers(c, listId);
+  await invalidateListUsers(c, listId);
   return null;
 };
 

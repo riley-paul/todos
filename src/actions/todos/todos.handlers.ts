@@ -89,7 +89,7 @@ const create: ActionHandler<
     .values({ ...data, userId })
     .returning();
 
-  if (listId) invalidateListUsers(c, listId);
+  if (listId) await invalidateListUsers(c, listId);
   return todo;
 };
 
@@ -125,9 +125,9 @@ const update: ActionHandler<
     .where(and(eq(Todo.id, id)))
     .returning();
 
-  if (updated.listId) invalidateListUsers(c, updated.listId);
+  if (updated.listId) await invalidateListUsers(c, updated.listId);
   if (currentTodo.listId !== updated.listId && currentTodo.listId)
-    invalidateListUsers(c, currentTodo.listId);
+    await invalidateListUsers(c, currentTodo.listId);
   return updated;
 };
 
@@ -151,7 +151,7 @@ const remove: ActionHandler<typeof todoInputs.remove, null> = async (
   if (!isMember) throw actionErrors.NOT_FOUND;
 
   await db.delete(Todo).where(eq(Todo.id, id));
-  if (currentTodo.listId) invalidateListUsers(c, currentTodo.listId);
+  if (currentTodo.listId) await invalidateListUsers(c, currentTodo.listId);
   return null;
 };
 
@@ -183,7 +183,7 @@ const removeCompleted: ActionHandler<
   await db
     .delete(Todo)
     .where(and(eq(Todo.isCompleted, true), eq(Todo.listId, listId)));
-  invalidateListUsers(c, listId);
+  await invalidateListUsers(c, listId);
   return null;
 };
 
@@ -218,7 +218,7 @@ const uncheckCompleted: ActionHandler<
     .update(Todo)
     .set({ isCompleted: false })
     .where(and(eq(Todo.isCompleted, true), eq(Todo.listId, listId)));
-  invalidateListUsers(c, listId);
+  await invalidateListUsers(c, listId);
   return null;
 };
 

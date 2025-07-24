@@ -43,7 +43,7 @@ const create: ActionHandler<
     .values(data)
     .returning({ listUserId: ListUser.id });
 
-  invalidateListUsers(c, data.listId);
+  await invalidateListUsers(c, data.listId);
   return getListUser(c, { listUserId });
 };
 
@@ -70,7 +70,7 @@ const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
       and(eq(ListUser.listId, data.listId), eq(ListUser.userId, data.userId)),
     );
 
-  invalidateListUsers(c, data.listId);
+  await invalidateListUsers(c, data.listId);
   return null;
 };
 
@@ -107,7 +107,7 @@ const accept: ActionHandler<
     )
     .returning();
 
-  invalidateListUsers(c, updated.listId);
+  await invalidateListUsers(c, updated.listId);
   return getListUser(c, { listUserId: updated.id });
 };
 
