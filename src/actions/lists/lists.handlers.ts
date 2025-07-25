@@ -3,7 +3,7 @@ import type { ListSelect, ListSelectShallow } from "@/lib/types";
 import {
   ensureListMember,
   invalidateListUsers,
-  isAuthorized,
+  ensureAuthorized,
 } from "../helpers";
 import { createDb } from "@/db";
 import { List, ListUser, Todo, User } from "@/db/schema";
@@ -16,7 +16,7 @@ const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
   c,
 ) => {
   const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
+  const userId = ensureAuthorized(c).id;
   return db
     .selectDistinct({
       id: List.id,
@@ -68,7 +68,7 @@ const get: ActionHandler<typeof listInputs.get, ListSelectShallow> = async (
   c,
 ) => {
   const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
+  const userId = ensureAuthorized(c).id;
 
   if (id === "all") {
     return { id: "all", name: "All" };
@@ -93,7 +93,7 @@ const update: ActionHandler<
   ListSelectShallow
 > = async ({ id: listId, data }, c) => {
   const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
+  const userId = ensureAuthorized(c).id;
 
   await ensureListMember(c, { listId, userId });
 
@@ -113,7 +113,7 @@ const create: ActionHandler<
   ListSelectShallow
 > = async ({ name }, c) => {
   const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
+  const userId = ensureAuthorized(c).id;
 
   const [list] = await db
     .insert(List)
@@ -135,7 +135,7 @@ const remove: ActionHandler<typeof listInputs.remove, null> = async (
   c,
 ) => {
   const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
+  const userId = ensureAuthorized(c).id;
 
   await ensureListMember(c, { listId, userId });
 

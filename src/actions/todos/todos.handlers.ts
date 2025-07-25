@@ -1,11 +1,10 @@
-import { type ActionHandler } from "astro:actions";
+import { type ActionAPIContext, type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
 import { User, Todo, List, ListUser } from "@/db/schema";
 import { eq, and, desc, inArray, or, isNull } from "drizzle-orm";
 import type { TodoSelect, TodoSelectShallow } from "@/lib/types";
 import {
-  isAuthorized,
-  getAllUserTodos,
+  ensureAuthorized,
   invalidateListUsers,
   ensureListMember,
 } from "../helpers";
@@ -13,12 +12,27 @@ import {
 import type todoInputs from "./todos.inputs";
 import actionErrors from "../errors";
 
+const getAllUserTodos = async (context: ActionAPIContext, userId: string) => {
+  const db = createDb(context.locals.runtime.env);
+  return db
+    .select({ id: Todo.id })
+    .from(Todo)
+    .leftJoin(ListUser, eq(ListUser.listId, Todo.listId))
+    .where(
+      or(
+        and(eq(ListUser.userId, userId), eq(ListUser.isPending, false)),
+        eq(Todo.userId, userId),
+      ),
+    )
+    .then((ids) => ids.map(({ id }) => id));
+};
+
 const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
   { listId },
   c,
 ) => {
   const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
+  const userId = ensureAuthorized(c).id;
 
   const userLists =
     listId === "all"
@@ -75,7 +89,7 @@ const create: ActionHandler<
   TodoSelectShallow
 > = async ({ data }, c) => {
   const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
+  const userId = ensureAuthorized(c).id;
 
   const { listId } = data;
 
@@ -97,7 +111,7 @@ const update: ActionHandler<
   TodoSelectShallow
 > = async ({ id, data }, c) => {
   const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
+  const userId = ensureAuthorized(c).id;
 
   const [currentTodo] = await db
     .select({ listId: Todo.listId })
@@ -129,7 +143,7 @@ const remove: ActionHandler<typeof todoInputs.remove, null> = async (
   c,
 ) => {
   const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
+  const userId = ensureAuthorized(c).id;
 
   const [currentTodo] = await db
     .select({ listId: Todo.listId })
@@ -149,7 +163,7 @@ const removeCompleted: ActionHandler<
   null
 > = async ({ listId }, c) => {
   const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
+  const userId = ensureAuthorized(c).id;
 
   // inbox
   if (!listId) {
@@ -181,7 +195,7 @@ const uncheckCompleted: ActionHandler<
   null
 > = async ({ listId }, c) => {
   const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
+  const userId = ensureAuthorized(c).id;
 
   // inbox
   if (!listId) {

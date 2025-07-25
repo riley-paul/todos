@@ -1,23 +1,53 @@
-import { type ActionHandler } from "astro:actions";
+import { type ActionAPIContext, type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
 import { User, List, ListUser } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import {
   ensureListMember,
-  getListUser,
   invalidateListUsers,
-  isAuthorized,
+  ensureAuthorized,
 } from "../helpers";
 import actionErrors from "../errors";
 import type listUserInputs from "./list-users.inputs";
 import type { ListUserSelect } from "@/lib/types";
+
+const getListUser = async (
+  context: ActionAPIContext,
+  { listUserId }: { listUserId: string },
+): Promise<ListUserSelect> => {
+  const db = createDb(context.locals.runtime.env);
+  const [listUser] = await db
+    .select({
+      id: ListUser.id,
+      userId: ListUser.userId,
+      listId: ListUser.listId,
+      isPending: ListUser.isPending,
+      list: {
+        id: List.id,
+        name: List.name,
+        isPending: ListUser.isPending,
+      },
+      user: {
+        id: User.id,
+        name: User.name,
+        email: User.email,
+        avatarUrl: User.avatarUrl,
+      },
+    })
+    .from(ListUser)
+    .innerJoin(List, eq(List.id, ListUser.listId))
+    .innerJoin(User, eq(User.id, ListUser.userId))
+    .where(eq(ListUser.id, listUserId));
+  if (!listUser) throw actionErrors.NOT_FOUND;
+  return listUser;
+};
 
 const create: ActionHandler<
   typeof listUserInputs.create,
   ListUserSelect
 > = async (input, c) => {
   const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
+  const userId = ensureAuthorized(c).id;
 
   const data = { userId, ...input };
 
@@ -48,7 +78,7 @@ const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
   c,
 ) => {
   const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
+  const userId = ensureAuthorized(c).id;
 
   const data = { userId, ...input };
 
@@ -74,7 +104,7 @@ const accept: ActionHandler<
   ListUserSelect
 > = async ({ listId }, c) => {
   const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
+  const userId = ensureAuthorized(c).id;
 
   // ensure list user exists and is pending and pertains to current user
   const [listUser] = await db
@@ -111,7 +141,7 @@ const getAllForList: ActionHandler<
   ListUserSelect[]
 > = async ({ listId }, c) => {
   const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
+  const userId = ensureAuthorized(c).id;
 
   await ensureListMember(c, { listId, userId });
 

@@ -1,5 +1,5 @@
 import type { ActionHandler } from "astro:actions";
-import { isAuthorized } from "../helpers";
+import { ensureAuthorized } from "../helpers";
 import { createDb } from "@/db";
 import { Todo, User, UserSession } from "@/db/schema";
 import { and, eq, like, not, or } from "drizzle-orm";
@@ -32,7 +32,7 @@ const getMe: ActionHandler<
 
 const remove: ActionHandler<typeof userInputs.remove, null> = async (_, c) => {
   const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
+  const userId = ensureAuthorized(c).id;
   await db.delete(UserSession).where(eq(UserSession.userId, userId));
   await db.delete(Todo).where(eq(Todo.userId, userId));
   await db.delete(User).where(eq(User.id, userId));
@@ -46,7 +46,7 @@ const get: ActionHandler<typeof userInputs.get, UserSelect[]> = async (
   c,
 ) => {
   const db = createDb(c.locals.runtime.env);
-  const userId = isAuthorized(c).id;
+  const userId = ensureAuthorized(c).id;
 
   return db
     .select()
