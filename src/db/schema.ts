@@ -1,4 +1,4 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 const id = text("id")
   .primaryKey()
@@ -37,12 +37,16 @@ export const User = sqliteTable("user", {
   ...timeStamps,
 });
 
-export const UserSession = sqliteTable("userSession", {
-  id,
-  userId,
-  expiresAt: integer({ mode: "timestamp_ms" }).notNull(),
-  ...timeStamps,
-});
+export const UserSession = sqliteTable(
+  "userSession",
+  {
+    id,
+    userId,
+    expiresAt: integer({ mode: "timestamp_ms" }).notNull(),
+    ...timeStamps,
+  },
+  (table) => [index("user_id_idx").on(table.userId)],
+);
 
 export const List = sqliteTable("list", {
   id,
@@ -57,12 +61,19 @@ export const ListUser = sqliteTable("listUser", {
   isPending: integer({ mode: "boolean" }).notNull().default(true),
 });
 
-export const Todo = sqliteTable("todo", {
-  id,
-  userId,
-  listId: text().references(() => List.id, { onDelete: "cascade" }),
-  sortOrder: integer().notNull().default(0),
-  text: text().notNull(),
-  isCompleted: integer({ mode: "boolean" }).notNull().default(false),
-  ...timeStamps,
-});
+export const Todo = sqliteTable(
+  "todo",
+  {
+    id,
+    userId,
+    listId: text().references(() => List.id, { onDelete: "cascade" }),
+    sortOrder: integer().notNull().default(0),
+    text: text().notNull(),
+    isCompleted: integer({ mode: "boolean" }).notNull().default(false),
+    ...timeStamps,
+  },
+  (table) => [
+    index("todo_list_id_idx").on(table.listId),
+    index("todo_user_id_idx").on(table.userId),
+  ],
+);
