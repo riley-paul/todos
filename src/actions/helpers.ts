@@ -3,7 +3,7 @@ import { Todo, ListUser, List, User } from "@/db/schema";
 import { eq, and, or, not } from "drizzle-orm";
 import actionErrors from "./errors";
 import { createDb } from "@/db";
-import type { ListUserSelect } from "@/lib/types";
+import type { ListUserSelect, SelectedList } from "@/lib/types";
 import { Rest } from "ably";
 
 export const isAuthorized = (context: ActionAPIContext) => {
@@ -61,31 +61,24 @@ export const getAllUserTodos = async (
     .then((ids) => ids.map(({ id }) => id));
 };
 
-type GetUserIsListMemberArgs = {
-  listId: string | null;
+type EnsureListMemberArgs = {
+  listId: SelectedList;
   userId: string;
   checkPending?: boolean;
 };
-export const getUserIsListMember = async (
+export const ensureListMember = async (
   context: ActionAPIContext,
-  { listId, userId, checkPending = true }: GetUserIsListMemberArgs,
+  { listId, userId, checkPending = true }: EnsureListMemberArgs,
 ) => {
-  if (listId === null || listId === "all") return true;
+  if (listId === null || listId === "all") return;
   const db = createDb(context.locals.runtime.env);
   const [listUser] = await db
-    .select({ id: ListUser.id })
+    .select({ id: ListUser.id, isPending: ListUser.isPending })
     .from(ListUser)
-    .where(
-      and(
-        eq(ListUser.listId, listId),
-        eq(ListUser.userId, userId),
-        checkPending ? eq(ListUser.isPending, false) : undefined,
-      ),
-    )
+    .where(and(eq(ListUser.listId, listId), eq(ListUser.userId, userId)))
     .limit(1);
-
-  if (!listUser) throw actionErrors.NOT_FOUND;
-  return !!listUser;
+  if (!listUser) throw actionErrors.NO_PERMISSION;
+  if (listUser.isPending && checkPending) throw actionErrors.LIST_PENDING;
 };
 
 type GetListUserArgs = {

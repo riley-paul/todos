@@ -1,7 +1,7 @@
 import { type ActionHandler } from "astro:actions";
 import type { ListSelect, ListSelectShallow } from "@/lib/types";
 import {
-  getUserIsListMember,
+  ensureListMember,
   invalidateListUsers,
   isAuthorized,
 } from "../helpers";
@@ -95,8 +95,7 @@ const update: ActionHandler<
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
-  const isMember = await getUserIsListMember(c, { listId, userId });
-  if (!isMember) throw actionErrors.NO_PERMISSION;
+  await ensureListMember(c, { listId, userId });
 
   const [list] = await db
     .update(List)
@@ -138,8 +137,7 @@ const remove: ActionHandler<typeof listInputs.remove, null> = async (
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
-  const isMember = await getUserIsListMember(c, { listId, userId });
-  if (!isMember) throw actionErrors.NO_PERMISSION;
+  await ensureListMember(c, { listId, userId });
 
   const [result] = await db.delete(List).where(eq(List.id, listId)).returning();
   if (!result) throw actionErrors.NOT_FOUND;

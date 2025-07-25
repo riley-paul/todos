@@ -25,6 +25,10 @@ const actionErrors = {
     code: "BAD_REQUEST",
     message: "You cannot share a list with yourself",
   }),
+  LIST_PENDING: new ActionError({
+    code: "BAD_REQUEST",
+    message: "You cannot perform this action on a pending list",
+  }),
 };
 
 export default actionErrors;

@@ -3,8 +3,8 @@ import { createDb } from "@/db";
 import { User, List, ListUser } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import {
+  ensureListMember,
   getListUser,
-  getUserIsListMember,
   invalidateListUsers,
   isAuthorized,
 } from "../helpers";
@@ -22,11 +22,7 @@ const create: ActionHandler<
   const data = { userId, ...input };
 
   // only list members can add other users
-  const isMember = await getUserIsListMember(c, {
-    listId: data.listId,
-    userId,
-  });
-  if (!isMember) throw actionErrors.NO_PERMISSION;
+  await ensureListMember(c, { listId: data.listId, userId });
 
   // check if the user is already a member of the list
   const [existingListUser] = await db
@@ -57,12 +53,11 @@ const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
   const data = { userId, ...input };
 
   // ensure current user is a member of the list or the one being removed
-  const isMember = await getUserIsListMember(c, {
+  await ensureListMember(c, {
     listId: data.listId,
     userId,
     checkPending: false,
   });
-  if (!isMember) throw actionErrors.NO_PERMISSION;
 
   await db
     .delete(ListUser)
@@ -118,8 +113,7 @@ const getAllForList: ActionHandler<
   const db = createDb(c.locals.runtime.env);
   const userId = isAuthorized(c).id;
 
-  const isMember = await getUserIsListMember(c, { listId, userId });
-  if (!isMember) throw actionErrors.NO_PERMISSION;
+  await ensureListMember(c, { listId, userId });
 
   return db
     .select({

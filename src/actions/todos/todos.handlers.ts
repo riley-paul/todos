@@ -6,8 +6,8 @@ import type { TodoSelect, TodoSelectShallow } from "@/lib/types";
 import {
   isAuthorized,
   getAllUserTodos,
-  getUserIsListMember,
   invalidateListUsers,
+  ensureListMember,
 } from "../helpers";
 
 import type todoInputs from "./todos.inputs";
@@ -80,8 +80,7 @@ const create: ActionHandler<
   const { listId } = data;
 
   if (listId !== undefined) {
-    const isMember = await getUserIsListMember(c, { listId, userId });
-    if (!isMember) throw actionErrors.NOT_FOUND;
+    await ensureListMember(c, { listId, userId });
   }
 
   const [todo] = await db
@@ -108,15 +107,9 @@ const update: ActionHandler<
   if (!currentTodo) throw actionErrors.NOT_FOUND;
 
   if (data.listId !== undefined) {
-    const isMemberCurrently = await getUserIsListMember(c, {
-      listId: currentTodo.listId,
-      userId,
-    });
-    const isMember = await getUserIsListMember(c, {
-      listId: data.listId,
-      userId,
-    });
-    if (!isMember || !isMemberCurrently) throw actionErrors.NOT_FOUND;
+    // ensure the user is a member of both the current and new list
+    await ensureListMember(c, { listId: currentTodo.listId, userId });
+    await ensureListMember(c, { listId: data.listId, userId });
   }
 
   const [updated] = await db
@@ -144,11 +137,7 @@ const remove: ActionHandler<typeof todoInputs.remove, null> = async (
     .where(eq(Todo.id, id))
     .limit(1);
 
-  const isMember = await getUserIsListMember(c, {
-    listId: currentTodo.listId,
-    userId,
-  });
-  if (!isMember) throw actionErrors.NOT_FOUND;
+  await ensureListMember(c, { listId: currentTodo.listId, userId });
 
   await db.delete(Todo).where(eq(Todo.id, id));
   if (currentTodo.listId) await invalidateListUsers(c, currentTodo.listId);
