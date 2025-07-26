@@ -8,15 +8,21 @@ import { toast } from "sonner";
 import useMutations from "@/hooks/use-mutations";
 import { PlusIcon } from "lucide-react";
 import List, { BaseList } from "./list";
-import { zListName } from "@/lib/types";
+import { zListName, type TodoSelect } from "@/lib/types";
+
+const getTodoLength = (todos: TodoSelect[]) =>
+  todos.filter(({ isCompleted }) => !isCompleted).length;
 
 const Lists: React.FC = () => {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const { createList } = useMutations();
 
   const { data: lists } = useSuspenseQuery(qLists);
-  const inboxCount = useQuery(qTodos(null))?.data?.length ?? 0;
-  const allCount = useQuery(qTodos("all"))?.data?.length ?? 0;
+  const { data: inboxTodos = [] } = useQuery(qTodos(null));
+  const { data: allTodos = [] } = useQuery(qTodos("all"));
+
+  const inboxCount = getTodoLength(inboxTodos);
+  const allCount = getTodoLength(allTodos);
 
   const handleCreateList = () => {
     dispatchAlert({

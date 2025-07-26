@@ -50,7 +50,7 @@ const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
           const todoCount = await db
             .select({ count: count() })
             .from(Todo)
-            .where(eq(Todo.listId, list.id))
+            .where(and(eq(Todo.listId, list.id), eq(Todo.isCompleted, false)))
             .then(([{ count }]) => count);
 
           return {
