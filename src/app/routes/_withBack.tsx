@@ -1,11 +1,5 @@
-import { goToList } from "@/lib/client/links";
 import { Button } from "@radix-ui/themes";
-import {
-  createFileRoute,
-  Link,
-  Outlet,
-  useParams,
-} from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouter } from "@tanstack/react-router";
 import { MoveLeftIcon } from "lucide-react";
 
 export const Route = createFileRoute("/_withBack")({
@@ -13,15 +7,19 @@ export const Route = createFileRoute("/_withBack")({
 });
 
 function RouteComponent() {
-  const { listId } = useParams({ strict: false });
+  const router = useRouter();
   return (
     <main className="grid gap-4 px-3">
       <div>
-        <Button asChild size="2" variant="ghost" className="gap-2">
-          <Link {...goToList(listId)}>
-            <MoveLeftIcon className="size-4" />
-            Back
-          </Link>
+        <Button
+          onClick={() => router.history.back()}
+          disabled={!router.history.canGoBack()}
+          size="2"
+          variant="ghost"
+          className="gap-2"
+        >
+          <MoveLeftIcon className="size-4" />
+          Back
         </Button>
       </div>
       <Outlet />
