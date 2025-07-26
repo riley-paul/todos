@@ -92,22 +92,34 @@ export default function useMutations() {
 
   const deleteCompletedTodos = useMutation({
     mutationFn: actions.todos.removeCompleted.orThrow,
-    onSuccess: (_, { listId }) => {
-      queryClient.setQueryData(qTodos(listId).queryKey, (prev) => {
-        if (!prev) return prev;
-        return prev.filter((todo) => !todo.isCompleted);
-      });
+    onMutate: async ({ listId }) => {
+      const updater: TodosUpdater = (todos = []) =>
+        todos.filter((todo) => !todo.isCompleted);
+      const resetters = await Promise.all([modifyTodoCache(listId, updater)]);
+      return { resetters };
+    },
+    onError: (error, _, context) => {
+      handleMutationError(error);
+      context?.resetters.forEach((reset) => reset());
+    },
+    onSuccess: () => {
       toast.success("Completed todos deleted");
     },
   });
 
   const uncheckCompletedTodos = useMutation({
     mutationFn: actions.todos.uncheckCompleted.orThrow,
-    onSuccess: (_, { listId }) => {
-      queryClient.setQueryData(qTodos(listId).queryKey, (prev) => {
-        if (!prev) return prev;
-        return prev.map((todo) => ({ ...todo, isCompleted: false }));
-      });
+    onMutate: async ({ listId }) => {
+      const updater: TodosUpdater = (todos = []) =>
+        todos.map((todo) => ({ ...todo, isCompleted: false }));
+      const resetters = await Promise.all([modifyTodoCache(listId, updater)]);
+      return { resetters };
+    },
+    onError: (error, _, context) => {
+      handleMutationError(error);
+      context?.resetters.forEach((reset) => reset());
+    },
+    onSuccess: () => {
       toast.success("All completed todos unchecked");
     },
   });
