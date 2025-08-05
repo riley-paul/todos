@@ -5,7 +5,7 @@ import { Flex, IconButton, Separator } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { alertSystemAtom } from "../alert-system/alert-system.store";
 import { toast } from "sonner";
-import useMutations from "@/hooks/use-mutations";
+import useMutations from "@/app/hooks/use-mutations";
 import { PlusIcon } from "lucide-react";
 import List, { BaseList } from "./list";
 import { zListName, type TodoSelect } from "@/lib/types";

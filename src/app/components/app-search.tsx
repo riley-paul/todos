@@ -20,12 +20,12 @@ import UserBubbleGroup from "./ui/user-bubble-group";
 import TextWithLinks from "./ui/text-with-links";
 import { cn } from "@/lib/client/utils";
 import { useNavigate } from "@tanstack/react-router";
-import useMutations from "@/hooks/use-mutations";
+import useMutations from "@/app/hooks/use-mutations";
 import { goToList } from "@/lib/client/links";
 import { PlusIcon, SearchIcon } from "lucide-react";
 import { Command } from "cmdk";
 import Drawer from "./ui/drawer";
-import { useIsMobile } from "@/hooks/use-is-mobile";
+import { useIsMobile } from "@/app/hooks/use-is-mobile";
 
 type SearchItemProps = React.PropsWithChildren<{
   value?: string;

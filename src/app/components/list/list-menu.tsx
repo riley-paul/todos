@@ -13,7 +13,7 @@ import {
   TrashIcon,
 } from "lucide-react";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
-import useMutations from "@/hooks/use-mutations";
+import useMutations from "@/app/hooks/use-mutations";
 import { useAtom } from "jotai";
 import { toast } from "sonner";
 import { useCopyToClipboard } from "usehooks-ts";

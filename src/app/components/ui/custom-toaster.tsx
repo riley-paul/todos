@@ -1,4 +1,4 @@
-import { useIsMobile } from "@/hooks/use-is-mobile";
+import { useIsMobile } from "@/app/hooks/use-is-mobile";
 import { Portal, Spinner } from "@radix-ui/themes";
 import React from "react";
 import { Toaster } from "sonner";

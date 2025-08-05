@@ -5,7 +5,7 @@ import ListShares from "./list-shares";
 import { SendIcon } from "lucide-react";
 import ResponsiveDialog from "../ui/responsive-dialog";
 import UserPicker from "./user-picker";
-import useMutations from "@/hooks/use-mutations";
+import useMutations from "@/app/hooks/use-mutations";
 import { toast } from "sonner";
 
 type Props = {

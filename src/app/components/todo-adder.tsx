@@ -1,6 +1,6 @@
 import React from "react";
 import { useEventListener } from "usehooks-ts";
-import useMutations from "@/hooks/use-mutations";
+import useMutations from "@/app/hooks/use-mutations";
 import { Button, Spinner, Text, TextArea } from "@radix-ui/themes";
 import { resizeTextArea } from "@/lib/client/utils";
 import { flushSync } from "react-dom";

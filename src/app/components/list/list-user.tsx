@@ -1,7 +1,7 @@
 import React from "react";
 import { IconButton, Text, Tooltip } from "@radix-ui/themes";
 import type { ListUserSelect } from "@/lib/types";
-import useMutations from "@/hooks/use-mutations";
+import useMutations from "@/app/hooks/use-mutations";
 import UserBubble from "../ui/user-bubble";
 import { XIcon } from "lucide-react";
 import { useAtom } from "jotai";

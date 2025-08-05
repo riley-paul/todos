@@ -6,7 +6,7 @@ import {
   Edit2Icon,
   EllipsisIcon,
 } from "lucide-react";
-import useMutations from "@/hooks/use-mutations";
+import useMutations from "@/app/hooks/use-mutations";
 import { qLists } from "@/lib/client/queries";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";

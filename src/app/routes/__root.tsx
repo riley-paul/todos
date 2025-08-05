@@ -1,7 +1,7 @@
-import AlertSystem from "@/components/alert-system/alert-system";
-import AppSearch from "@/components/app-search";
-import ConnectionState from "@/components/connection-state";
-import UserMenu from "@/components/user-menu";
+import AlertSystem from "@/app/components/alert-system/alert-system";
+import AppSearch from "@/app/components/app-search";
+import ConnectionState from "@/app/components/connection-state";
+import UserMenu from "@/app/components/user-menu";
 import { qUser } from "@/lib/client/queries";
 import type { UserSelect } from "@/lib/types";
 import { Heading } from "@radix-ui/themes";

@@ -4,16 +4,16 @@ import * as Ably from "ably";
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
-import RadixProvider from "@/components/radix-provider";
+import RadixProvider from "@/app/components/radix-provider";
 import {
   MutationCache,
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { handleMutationError } from "@/hooks/use-mutations";
-import CustomToaster from "@/components/ui/custom-toaster";
+import { handleMutationError } from "@/app/hooks/use-mutations";
+import CustomToaster from "@/app/components/ui/custom-toaster";
 import { Spinner } from "@radix-ui/themes";
-import ErrorPage from "@/components/error-page";
+import ErrorPage from "@/app/components/error-page";
 import { qUser } from "@/lib/client/queries";
 
 const queryClient = new QueryClient({

@@ -4,7 +4,7 @@ import LoginButton from "./login-button";
 import { useQuery } from "@tanstack/react-query";
 import { qUser } from "@/lib/client/queries";
 import { Avatar, Spinner, Text, Tooltip } from "@radix-ui/themes";
-import useMutations from "@/hooks/use-mutations";
+import useMutations from "@/app/hooks/use-mutations";
 import {
   LogOutIcon,
   Settings2Icon,

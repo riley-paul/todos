@@ -1,15 +1,14 @@
-import useMutations from "@/hooks/use-mutations";
+import useMutations from "@/app/hooks/use-mutations";
 import { qTodos } from "@/lib/client/queries";
 import type { SelectedList } from "@/lib/types";
 import { Button } from "@radix-ui/themes";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { SquareMinusIcon } from "lucide-react";
-import React from "react";
+import { ListXIcon } from "lucide-react";
 
 type Props = { listId: SelectedList };
 
-const UncheckAllTodosButton: React.FC<Props> = ({ listId }) => {
-  const { uncheckCompletedTodos } = useMutations();
+const DeleteCompletedTodosButton: React.FC<Props> = ({ listId }) => {
+  const { deleteCompletedTodos } = useMutations();
   const { data: todos } = useSuspenseQuery(qTodos(listId));
   const numCompleted = todos.filter((i) => i.isCompleted).length;
 
@@ -18,13 +17,13 @@ const UncheckAllTodosButton: React.FC<Props> = ({ listId }) => {
       size="1"
       variant="ghost"
       color="gray"
-      onClick={() => uncheckCompletedTodos.mutate({ listId })}
+      onClick={() => deleteCompletedTodos.mutate({ listId })}
       disabled={numCompleted === 0}
     >
-      <SquareMinusIcon className="size-3" />
-      Uncheck
+      <ListXIcon className="size-3" />
+      Clear
     </Button>
   );
 };
 
-export default UncheckAllTodosButton;
+export default DeleteCompletedTodosButton;

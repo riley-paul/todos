@@ -1,4 +1,4 @@
-import useMutations from "@/hooks/use-mutations";
+import useMutations from "@/app/hooks/use-mutations";
 import { qUser } from "@/lib/client/queries";
 import { Card, Heading, Switch, Text } from "@radix-ui/themes";
 import { useSuspenseQuery } from "@tanstack/react-query";

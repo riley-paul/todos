@@ -1,5 +1,5 @@
-import Todos from "@/components/todo/todos";
-import useMutations from "@/hooks/use-mutations";
+import Todos from "@/app/components/todo/todos";
+import useMutations from "@/app/hooks/use-mutations";
 import { qList } from "@/lib/client/queries";
 import { Button, Text } from "@radix-ui/themes";
 import { useSuspenseQuery } from "@tanstack/react-query";

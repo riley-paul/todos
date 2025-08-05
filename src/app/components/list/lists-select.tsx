@@ -8,7 +8,7 @@ import { goToList } from "@/lib/client/links";
 import { useAtom } from "jotai";
 import { alertSystemAtom } from "../alert-system/alert-system.store";
 import { toast } from "sonner";
-import useMutations from "@/hooks/use-mutations";
+import useMutations from "@/app/hooks/use-mutations";
 import { PlusIcon } from "lucide-react";
 import { zListName } from "@/lib/types";
 
