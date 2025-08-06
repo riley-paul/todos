@@ -4,17 +4,52 @@ import { cn } from "@/lib/client/utils";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Todo from "./todo";
 import { Button, Text } from "@radix-ui/themes";
-import type { SelectedList } from "@/lib/types";
+import type { SelectedList, TodoSelect } from "@/lib/types";
 import { qTodos, qUser } from "@/lib/client/queries";
 import { ChevronRightIcon } from "lucide-react";
 import DeleteCompletedTodosButton from "./footer-buttons/delete-completed-todos-button";
 import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
+const CompletedTodosActions: React.FC<{ listId: SelectedList }> = ({
+  listId,
+}) => (
+  <div className="flex items-center justify-end gap-4 px-3 py-1">
+    <UncheckAllTodosButton listId={listId} />
+    <DeleteCompletedTodosButton listId={listId} />
+  </div>
+);
+
+const ToggleCompletedExpansionButton: React.FC<{
+  isOpen: boolean;
+  numCompleted: number;
+  toggleOpen: () => void;
+}> = ({ isOpen, toggleOpen, numCompleted }) => (
+  <Button
+    size="1"
+    className="flex h-6 gap-2 px-3 py-1"
+    variant="ghost"
+    onClick={toggleOpen}
+  >
+    <span>Completed</span>
+    <Text className="font-mono text-accentA-12">{numCompleted}</Text>
+    <ChevronRightIcon
+      className={cn(
+        "size-4 transition-transform duration-200",
+        isOpen && "rotate-90",
+      )}
+    />
+  </Button>
+);
+
+const produceTodo = (todo: TodoSelect) => <Todo key={todo.id} todo={todo} />;
+
 const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
   const { data: todos } = useSuspenseQuery(qTodos(listId));
   const { data: user } = useSuspenseQuery(qUser);
 
-  const numCompleted = todos.filter((i) => i.isCompleted).length ?? 0;
+  const completedTodos = todos.filter(({ isCompleted }) => isCompleted);
+  const notCompletedTodos = todos.filter(({ isCompleted }) => !isCompleted);
+
   const [showCompleted, setShowCompleted] = React.useState(false);
 
   if (todos.length === 0) {
@@ -30,42 +65,20 @@ const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
   if (user.settingGroupCompleted) {
     return (
       <section className="grid gap-4">
-        <div className="grid gap-1">
-          {todos
-            .filter((i) => !i.isCompleted)
-            .map((todo) => (
-              <Todo key={todo.id} todo={todo} />
-            ))}
-        </div>
-        {numCompleted > 0 && (
+        <div className="grid gap-1">{notCompletedTodos.map(produceTodo)}</div>
+        {completedTodos.length > 0 && (
           <>
-            <div className="flex items-center justify-between gap-rx-2 px-rx-2">
-              <Button
-                size="1"
-                className="flex h-6 gap-2 px-3"
-                variant="ghost"
-                onClick={() => setShowCompleted((prev) => !prev)}
-              >
-                <span>Completed</span>
-                <Text className="font-mono text-accentA-12">
-                  {numCompleted}
-                </Text>
-                <ChevronRightIcon
-                  className={cn(
-                    "size-4 transition-transform duration-200",
-                    showCompleted && "rotate-90",
-                  )}
-                />
-              </Button>
-              <DeleteCompletedTodosButton listId={listId} />
-            </div>
+            <header className="flex items-center justify-between gap-2 px-2">
+              <ToggleCompletedExpansionButton
+                isOpen={showCompleted}
+                toggleOpen={() => setShowCompleted((v) => !v)}
+                numCompleted={completedTodos.length}
+              />
+              <CompletedTodosActions listId={listId} />
+            </header>
             {showCompleted && (
               <div className="grid gap-1">
-                {todos
-                  .filter((i) => i.isCompleted)
-                  .map((todo) => (
-                    <Todo key={todo.id} todo={todo} />
-                  ))}
+                {completedTodos.map(produceTodo)}
               </div>
             )}
           </>
@@ -76,13 +89,8 @@ const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
 
   return (
     <section className="grid gap-1">
-      {todos.map((todo) => (
-        <Todo key={todo.id} todo={todo} />
-      ))}
-      <div className="flex items-center justify-end gap-4 px-3 py-1">
-        <UncheckAllTodosButton listId={listId} />
-        <DeleteCompletedTodosButton listId={listId} />
-      </div>
+      {todos.map(produceTodo)}
+      <CompletedTodosActions listId={listId} />
     </section>
   );
 };
