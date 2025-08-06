@@ -19,27 +19,42 @@ const CompletedTodosActions: React.FC<{ listId: SelectedList }> = ({
   </div>
 );
 
-const ToggleCompletedExpansionButton: React.FC<{
-  isOpen: boolean;
-  numCompleted: number;
-  toggleOpen: () => void;
-}> = ({ isOpen, toggleOpen, numCompleted }) => (
-  <Button
-    size="1"
-    className="flex h-6 gap-2 px-3 py-1"
-    variant="ghost"
-    onClick={toggleOpen}
-  >
-    <span>Completed</span>
-    <Text className="font-mono text-accentA-12">{numCompleted}</Text>
-    <ChevronRightIcon
-      className={cn(
-        "size-4 transition-transform duration-200",
-        isOpen && "rotate-90",
+const CompletedTodosGroup: React.FC<{
+  completedTodos: TodoSelect[];
+  listId: SelectedList;
+}> = ({ completedTodos, listId }) => {
+  const [showCompleted, setShowCompleted] = React.useState(false);
+
+  if (completedTodos.length === 0) return null;
+
+  return (
+    <section className="grid gap-3">
+      <header className="flex items-center justify-between gap-2 px-2">
+        <Button
+          size="1"
+          className="flex h-5 gap-2 px-3 py-1"
+          variant="ghost"
+          onClick={() => setShowCompleted((v) => !v)}
+        >
+          <span>Completed</span>
+          <Text className="font-mono text-accentA-12">
+            {completedTodos.length}
+          </Text>
+          <ChevronRightIcon
+            className={cn(
+              "size-4 transition-transform duration-200",
+              showCompleted && "rotate-90",
+            )}
+          />
+        </Button>
+        <CompletedTodosActions listId={listId} />
+      </header>
+      {showCompleted && (
+        <div className="grid gap-1">{completedTodos.map(produceTodo)}</div>
       )}
-    />
-  </Button>
-);
+    </section>
+  );
+};
 
 const produceTodo = (todo: TodoSelect) => <Todo key={todo.id} todo={todo} />;
 
@@ -49,8 +64,6 @@ const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
 
   const completedTodos = todos.filter(({ isCompleted }) => isCompleted);
   const notCompletedTodos = todos.filter(({ isCompleted }) => !isCompleted);
-
-  const [showCompleted, setShowCompleted] = React.useState(false);
 
   if (todos.length === 0) {
     return (
@@ -66,23 +79,7 @@ const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
     return (
       <section className="grid gap-4">
         <div className="grid gap-1">{notCompletedTodos.map(produceTodo)}</div>
-        {completedTodos.length > 0 && (
-          <>
-            <header className="flex items-center justify-between gap-2 px-2">
-              <ToggleCompletedExpansionButton
-                isOpen={showCompleted}
-                toggleOpen={() => setShowCompleted((v) => !v)}
-                numCompleted={completedTodos.length}
-              />
-              <CompletedTodosActions listId={listId} />
-            </header>
-            {showCompleted && (
-              <div className="grid gap-1">
-                {completedTodos.map(produceTodo)}
-              </div>
-            )}
-          </>
-        )}
+        <CompletedTodosGroup completedTodos={completedTodos} listId={listId} />
       </section>
     );
   }
