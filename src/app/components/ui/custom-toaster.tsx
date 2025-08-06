@@ -2,18 +2,18 @@ import { useIsMobile } from "@/app/hooks/use-is-mobile";
 import { Portal, Spinner } from "@radix-ui/themes";
 import React from "react";
 import { Toaster } from "sonner";
-import { useDarkMode } from "usehooks-ts";
 import RadixProvider from "../radix-provider";
 import { CircleCheckIcon, TriangleAlertIcon, InfoIcon } from "lucide-react";
+import { useAppearance } from "@/app/hooks/use-theme";
 
 const CustomToaster: React.FC = () => {
-  const { isDarkMode } = useDarkMode();
+  const appearance = useAppearance();
   const isMobile = useIsMobile();
   return (
     <Portal>
       <RadixProvider>
         <Toaster
-          theme={isDarkMode ? "dark" : "light"}
+          theme={appearance}
           toastOptions={{
             className: "bg-panel backdrop-blur border border-gray-6",
           }}
