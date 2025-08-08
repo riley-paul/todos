@@ -3,7 +3,7 @@ import type { LinkOptions } from "@tanstack/react-router";
 
 export type BaseMenuItem = {
   key: string;
-  text: React.ReactNode;
+  text: string;
   icon?: React.ReactNode;
 
   color?: ThemeProps["accentColor"];

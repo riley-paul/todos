@@ -36,10 +36,3 @@ export const resizeTextArea = (inputElement: HTMLTextAreaElement | null) => {
     inputElement.style.height = `${inputElement.scrollHeight}px`;
   }
 };
-
-export const slugToTitle = (slug: string) => {
-  return slug
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-};

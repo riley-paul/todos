@@ -30,7 +30,7 @@ const MenuDropdown: React.FC<Props> = ({ menuItems }) => {
               onClick={item.onClick}
             >
               {item.icon}
-              <span className="w-full">{item.text}</span>
+              <span>{item.text}</span>
             </DropdownMenu.Item>
           );
         }
@@ -40,7 +40,7 @@ const MenuDropdown: React.FC<Props> = ({ menuItems }) => {
             <DropdownMenu.Item {...itemProps} key={item.key} asChild>
               <a {...item.anchorOptions}>
                 {item.icon}
-                <span className="w-full">{item.text}</span>
+                <span>{item.text}</span>
               </a>
             </DropdownMenu.Item>
           );
@@ -51,7 +51,7 @@ const MenuDropdown: React.FC<Props> = ({ menuItems }) => {
             <DropdownMenu.Item {...itemProps} key={item.key} asChild>
               <Link {...item.linkOptions}>
                 {item.icon}
-                <span className="w-full">{item.text}</span>
+                <span>{item.text}</span>
               </Link>
             </DropdownMenu.Item>
           );
@@ -62,7 +62,7 @@ const MenuDropdown: React.FC<Props> = ({ menuItems }) => {
             <DropdownMenu.Sub key={item.key}>
               <DropdownMenu.SubTrigger {...itemProps}>
                 {item.icon}
-                <span className="w-full">{item.text}</span>
+                <span>{item.text}</span>
               </DropdownMenu.SubTrigger>
               <DropdownMenu.SubContent>
                 <MenuDropdown menuItems={item.children} />

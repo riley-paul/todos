@@ -1,13 +1,13 @@
+import { IconButton } from "@radix-ui/themes";
 import React from "react";
 import { zListName, type ListSelect } from "@/lib/types";
 import {
   Edit2Icon,
+  EllipsisIcon,
   ExternalLinkIcon,
   Link2Icon,
   ListXIcon,
   LogOutIcon,
-  PinIcon,
-  PinOffIcon,
   Share2Icon,
   SquareMinusIcon,
   TrashIcon,
@@ -23,11 +23,10 @@ import ListShareDialog from "./list-share-dialog";
 
 type Props = {
   list: ListSelect;
-  trigger: React.ReactNode;
 };
 
-const ListMenu: React.FC<Props> = ({ list, trigger }) => {
-  const { id, name, otherUsers, isPinned } = list;
+const ListMenu: React.FC<Props> = ({ list }) => {
+  const { id, name, otherUsers } = list;
   const {
     deleteList,
     leaveList,
@@ -106,10 +105,6 @@ const ListMenu: React.FC<Props> = ({ list, trigger }) => {
     window.open(link, "_blank");
   };
 
-  const handleTogglePin = () => {
-    updateList.mutate({ id, data: { isPinned: !isPinned } });
-  };
-
   const menuItems: MenuItem[] = [
     {
       type: "item",
@@ -124,17 +119,6 @@ const ListMenu: React.FC<Props> = ({ list, trigger }) => {
       text: "Share",
       icon: <Share2Icon className="size-4 opacity-70" />,
       onClick: () => setShareDialogOpen(true),
-    },
-    {
-      type: "item",
-      key: "pin",
-      text: isPinned ? "Unpin" : "Pin",
-      icon: isPinned ? (
-        <PinOffIcon className="size-4 opacity-70" />
-      ) : (
-        <PinIcon className="size-4 opacity-70" />
-      ),
-      onClick: handleTogglePin,
     },
     {
       type: "separator",
@@ -199,7 +183,11 @@ const ListMenu: React.FC<Props> = ({ list, trigger }) => {
         isOpen={shareDialogOpen}
         onOpenChange={setShareDialogOpen}
       />
-      <ResponsiveMenu menuItems={menuItems}>{trigger}</ResponsiveMenu>
+      <ResponsiveMenu menuItems={menuItems}>
+        <IconButton size="1" variant="ghost">
+          <EllipsisIcon className="size-3 opacity-90" />
+        </IconButton>
+      </ResponsiveMenu>
     </>
   );
 };
