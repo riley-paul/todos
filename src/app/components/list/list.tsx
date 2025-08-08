@@ -1,20 +1,15 @@
 import { goToList } from "@/lib/client/links";
 import { cn } from "@/lib/client/utils";
-import { Badge, IconButton, Text } from "@radix-ui/themes";
-import { Link } from "@tanstack/react-router";
+import { Badge, Text } from "@radix-ui/themes";
+import { Link, useLinkProps } from "@tanstack/react-router";
 import React from "react";
 import ListMenu from "./list-menu";
 import UserBubbleGroup from "../ui/user-bubble-group";
 import type { ListSelect, SelectedList, UserSelect } from "@/lib/types";
-import { EllipsisIcon, PinIcon } from "lucide-react";
-import useIsLinkActive from "@/app/hooks/use-is-link-active";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { qUser } from "@/lib/client/queries";
 
 type BaseListProps = React.PropsWithChildren<{
   id: SelectedList;
   name: string;
-  isPinned?: boolean;
   count?: number;
   otherUsers?: UserSelect[];
   className?: string;
@@ -24,15 +19,12 @@ export const BaseList: React.FC<BaseListProps> = ({
   id,
   name,
   count = 0,
-  isPinned,
   otherUsers,
   children,
   className,
 }) => {
-  const isActive = useIsLinkActive(goToList(id));
-  const {
-    data: { settingHideUnpinned },
-  } = useSuspenseQuery(qUser);
+  const linkProps = useLinkProps(goToList(id)) as any;
+  const isActive = linkProps["data-status"] === "active";
 
   return (
     <Badge
@@ -49,11 +41,8 @@ export const BaseList: React.FC<BaseListProps> = ({
         <Text truncate className="max-w-[70vw]">
           {name}
         </Text>
-        <Text className="font-mono opacity-70">{count}</Text>
+        <Text className="font-mono text-accentA-12">{count}</Text>
         {otherUsers && <UserBubbleGroup users={otherUsers} numAvatars={3} />}
-        {isPinned && !settingHideUnpinned && (
-          <PinIcon className="size-4 text-amber-9" />
-        )}
       </Link>
       {children}
     </Badge>
@@ -61,7 +50,7 @@ export const BaseList: React.FC<BaseListProps> = ({
 };
 
 export const List: React.FC<{ list: ListSelect }> = ({ list }) => {
-  const { id, name, otherUsers, todoCount, isPending, isPinned } = list;
+  const { id, name, otherUsers, todoCount, isPending } = list;
 
   return (
     <BaseList
@@ -69,19 +58,9 @@ export const List: React.FC<{ list: ListSelect }> = ({ list }) => {
       name={name}
       count={todoCount}
       otherUsers={otherUsers}
-      isPinned={isPinned}
       className={cn(isPending && "opacity-50")}
     >
-      {!isPending && (
-        <ListMenu
-          trigger={
-            <IconButton size="1" variant="ghost">
-              <EllipsisIcon className="size-3 opacity-90" />
-            </IconButton>
-          }
-          list={list}
-        />
-      )}
+      {!isPending && <ListMenu list={list} />}
     </BaseList>
   );
 };
