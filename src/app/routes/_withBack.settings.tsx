@@ -1,12 +1,6 @@
 import useMutations from "@/app/hooks/use-mutations";
 import { qUser } from "@/lib/client/queries";
-import {
-  Card,
-  Heading,
-  SegmentedControl,
-  Switch,
-  Text,
-} from "@radix-ui/themes";
+import { Card, SegmentedControl, Switch, Text } from "@radix-ui/themes";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import type React from "react";
@@ -42,10 +36,6 @@ function RouteComponent() {
 
   return (
     <article className="grid gap-4">
-      <Heading as="h1" size="4">
-        Settings
-      </Heading>
-
       <Card className="grid gap-5 p-4">
         <Setting label="Group completed todos">
           <Switch

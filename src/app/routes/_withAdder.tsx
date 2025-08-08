@@ -1,6 +1,6 @@
 import Lists from "@/app/components/list/lists";
 import TodoAdder from "@/app/components/todo-adder";
-import { qLists } from "@/lib/client/queries";
+import { qLists, qTodos } from "@/lib/client/queries";
 import { createFileRoute, Outlet, useParams } from "@tanstack/react-router";
 import z from "zod";
 import AppLayout from "../components/app-layout";
@@ -10,6 +10,8 @@ export const Route = createFileRoute("/_withAdder")({
   component: RouteComponent,
   loader: ({ context: { queryClient } }) => {
     queryClient.ensureQueryData(qLists);
+    queryClient.ensureQueryData(qTodos("all"));
+    queryClient.ensureQueryData(qTodos(null));
   },
   validateSearch: z
     .object({ highlightedTodoId: z.string().optional() })

@@ -8,14 +8,14 @@ import { goToList } from "@/lib/client/links";
 import UserBubbleGroup from "../ui/user-bubble-group";
 import { useParams } from "@tanstack/react-router";
 import ListMenu from "./list-menu";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { qLists } from "@/lib/client/queries";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { qLists, qTodos } from "@/lib/client/queries";
 
-const ListMenuItemContent: React.FC<{ list: ListSelect }> = ({
+const ListMenuItemContent: React.FC<{ list: Partial<ListSelect> }> = ({
   list: { id, name, otherUsers, isPinned, todoCount },
 }) => {
   const { listId: currentListId } = useParams({ strict: false });
-  const isActive = currentListId === id;
+  const isActive = currentListId === id || (id === "inbox" && !currentListId);
 
   return (
     <div className="flex w-full flex-1 items-center justify-between gap-6">
@@ -39,6 +39,9 @@ const ListMenuItemContent: React.FC<{ list: ListSelect }> = ({
 
 const ListsMenu: React.FC = () => {
   const { data: lists } = useSuspenseQuery(qLists);
+  const { data: inboxTodos = [] } = useQuery(qTodos(null));
+  const { data: allTodos = [] } = useQuery(qTodos("all"));
+
   const { listId: currentListId } = useParams({ strict: false });
 
   const indexOfLastPinned = lists.findIndex(({ isPinned }) => !isPinned);
@@ -54,6 +57,30 @@ const ListsMenu: React.FC = () => {
     });
   }
 
+  const additionalItems: MenuItem[] = [
+    {
+      type: "link",
+      key: "inbox",
+      text: (
+        <ListMenuItemContent
+          list={{ id: "inbox", name: "Inbox", todoCount: inboxTodos.length }}
+        />
+      ),
+      linkOptions: goToList(null),
+    },
+    {
+      type: "link",
+      key: "all",
+      text: (
+        <ListMenuItemContent
+          list={{ id: "all", name: "All", todoCount: allTodos.length }}
+        />
+      ),
+      linkOptions: goToList("all"),
+    },
+    { type: "separator" },
+  ];
+
   const getListName = (listId: SelectedList | undefined) => {
     if (!listId) return "Inbox";
     if (listId === "all") return "All";
@@ -64,7 +91,7 @@ const ListsMenu: React.FC = () => {
 
   return (
     <div className="flex items-center gap-3">
-      <ResponsiveMenu menuItems={listMenuItems}>
+      <ResponsiveMenu menuItems={[...additionalItems, ...listMenuItems]}>
         <Button variant="ghost" size="2" color="gray">
           <span>{getListName(currentListId)}</span>
           <ChevronDownIcon className="size-4 opacity-90" />
