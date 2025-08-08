@@ -51,6 +51,7 @@ export const UserSession = sqliteTable(
 export const List = sqliteTable("list", {
   id,
   name: text().notNull(),
+  isPinned: integer({ mode: "boolean" }).default(false).notNull(),
   ...timeStamps,
 });
 
@@ -58,7 +59,7 @@ export const ListUser = sqliteTable("listUser", {
   id,
   userId,
   listId,
-  isPending: integer({ mode: "boolean" }).notNull().default(true),
+  isPending: integer({ mode: "boolean" }).default(true).notNull(),
 });
 
 export const Todo = sqliteTable(
@@ -67,9 +68,9 @@ export const Todo = sqliteTable(
     id,
     userId,
     listId: text().references(() => List.id, { onDelete: "cascade" }),
-    sortOrder: integer().notNull().default(0),
+    sortOrder: integer().default(0).notNull(),
     text: text().notNull(),
-    isCompleted: integer({ mode: "boolean" }).notNull().default(false),
+    isCompleted: integer({ mode: "boolean" }).default(false).notNull(),
     ...timeStamps,
   },
   (table) => [
