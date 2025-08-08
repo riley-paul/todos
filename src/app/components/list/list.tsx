@@ -6,10 +6,12 @@ import React from "react";
 import ListMenu from "./list-menu";
 import UserBubbleGroup from "../ui/user-bubble-group";
 import type { ListSelect, SelectedList, UserSelect } from "@/lib/types";
+import { PinIcon } from "lucide-react";
 
 type BaseListProps = React.PropsWithChildren<{
   id: SelectedList;
   name: string;
+  isPinned?: boolean;
   count?: number;
   otherUsers?: UserSelect[];
   className?: string;
@@ -19,6 +21,7 @@ export const BaseList: React.FC<BaseListProps> = ({
   id,
   name,
   count = 0,
+  isPinned,
   otherUsers,
   children,
   className,
@@ -43,6 +46,7 @@ export const BaseList: React.FC<BaseListProps> = ({
         </Text>
         <Text className="font-mono text-accentA-12">{count}</Text>
         {otherUsers && <UserBubbleGroup users={otherUsers} numAvatars={3} />}
+        {isPinned && <PinIcon className="size-4 text-amber-9" />}
       </Link>
       {children}
     </Badge>
@@ -50,7 +54,7 @@ export const BaseList: React.FC<BaseListProps> = ({
 };
 
 export const List: React.FC<{ list: ListSelect }> = ({ list }) => {
-  const { id, name, otherUsers, todoCount, isPending } = list;
+  const { id, name, otherUsers, todoCount, isPending, isPinned } = list;
 
   return (
     <BaseList
@@ -58,6 +62,7 @@ export const List: React.FC<{ list: ListSelect }> = ({ list }) => {
       name={name}
       count={todoCount}
       otherUsers={otherUsers}
+      isPinned={isPinned}
       className={cn(isPending && "opacity-50")}
     >
       {!isPending && <ListMenu list={list} />}
