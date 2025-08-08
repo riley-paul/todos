@@ -14,7 +14,7 @@ type Props = {
 const ListMenuItemContent: React.FC<{ list: ListSelect }> = ({
   list: { name, otherUsers, isPinned, todoCount },
 }) => (
-  <div className="flex w-full flex-1 items-center justify-between gap-2">
+  <div className="flex w-full flex-1 items-center justify-between gap-6">
     <section className="flex items-center gap-2">
       <Text truncate className="max-w-[70vw]">
         {name}
@@ -37,10 +37,7 @@ const ListsMenu: React.FC<Props> = ({ lists }) => {
   }));
 
   return (
-    <ResponsiveMenu
-      menuItems={listMenuItems}
-      dropdownProps={{ className: "min-w-40" }}
-    >
+    <ResponsiveMenu menuItems={listMenuItems}>
       <IconButton variant="soft" size="1" className="m-0 size-[26px] p-0">
         <EllipsisIcon className="size-4" />
       </IconButton>
