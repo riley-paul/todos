@@ -16,6 +16,7 @@ export const zUserSelectWithSettings = createSelectSchema(User).pick({
   email: true,
   avatarUrl: true,
   settingGroupCompleted: true,
+  settingHideUnpinned: true,
 });
 export const zUserInsert = createInsertSchema(User);
 export type UserSelect = z.infer<typeof zUserSelect>;

@@ -33,6 +33,7 @@ export const User = sqliteTable("user", {
   githubUsername: text().unique(),
 
   settingGroupCompleted: integer({ mode: "boolean" }).notNull().default(true),
+  settingHideUnpinned: integer({ mode: "boolean" }).notNull().default(false),
 
   ...timeStamps,
 });

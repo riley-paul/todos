@@ -109,7 +109,6 @@ const ListMenu: React.FC<Props> = ({ list }) => {
 
   const handleTogglePin = () => {
     updateList.mutate({ id, data: { isPinned: !isPinned } });
-    toast.success(`List ${isPinned ? "unpinned" : "pinned"} successfully`);
   };
 
   const menuItems: MenuItem[] = [
