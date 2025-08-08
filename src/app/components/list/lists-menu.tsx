@@ -1,12 +1,13 @@
 import type { ListSelect, SelectedList } from "@/lib/types";
 import React from "react";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
-import { Button, Text } from "@radix-ui/themes";
-import { ChevronDownIcon, PinIcon } from "lucide-react";
+import { Button, IconButton, Text } from "@radix-ui/themes";
+import { ChevronDownIcon, EllipsisIcon, PinIcon } from "lucide-react";
 import type { MenuItem } from "../ui/menu/types";
 import { goToList } from "@/lib/client/links";
 import UserBubbleGroup from "../ui/user-bubble-group";
 import { useParams } from "@tanstack/react-router";
+import ListMenu from "./list-menu";
 
 type Props = {
   lists: ListSelect[];
@@ -60,13 +61,27 @@ const ListsMenu: React.FC<Props> = ({ lists }) => {
     return lists.find((list) => list.id === listId)?.name || "Unknown List";
   };
 
+  const currentList = lists.find((list) => list.id === currentListId);
+
   return (
-    <ResponsiveMenu menuItems={listMenuItems}>
-      <Button variant="ghost" size="2">
-        <span>{getListName(currentListId)}</span>
-        <ChevronDownIcon className="size-4 opacity-90" />
-      </Button>
-    </ResponsiveMenu>
+    <div className="flex items-center gap-3">
+      <ResponsiveMenu menuItems={listMenuItems}>
+        <Button variant="ghost" size="2">
+          <span>{getListName(currentListId)}</span>
+          <ChevronDownIcon className="size-4 opacity-90" />
+        </Button>
+      </ResponsiveMenu>
+      {currentList && (
+        <ListMenu
+          trigger={
+            <IconButton size="2" variant="ghost">
+              <EllipsisIcon className="size-4 opacity-90" />
+            </IconButton>
+          }
+          list={currentList}
+        />
+      )}
+    </div>
   );
 };
 

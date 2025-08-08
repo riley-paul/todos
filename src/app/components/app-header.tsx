@@ -1,4 +1,4 @@
-import { Heading } from "@radix-ui/themes";
+import { Text } from "@radix-ui/themes";
 import { Link } from "@tanstack/react-router";
 import { CircleCheckBigIcon } from "lucide-react";
 import React from "react";
@@ -16,16 +16,14 @@ const AppHeader: React.FC = () => {
       <div className="container2">
         <article className="flex items-center justify-between px-3 py-3">
           <section className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
+            <Link to="/">
               <CircleCheckBigIcon className="size-6 text-accent-10" />
-              <Heading asChild size="6" weight="bold">
-                <Link to="/">Todos</Link>
-              </Heading>
-            </div>
-            <ConnectionState />
+            </Link>
+            <Text>/</Text>
             <ListsMenu lists={lists} />
           </section>
           <section className="flex items-center gap-4">
+            <ConnectionState />
             <AppSearch />
             <UserMenu />
           </section>

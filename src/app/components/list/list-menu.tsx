@@ -1,9 +1,7 @@
-import { IconButton } from "@radix-ui/themes";
 import React from "react";
 import { zListName, type ListSelect } from "@/lib/types";
 import {
   Edit2Icon,
-  EllipsisIcon,
   ExternalLinkIcon,
   Link2Icon,
   ListXIcon,
@@ -25,9 +23,10 @@ import ListShareDialog from "./list-share-dialog";
 
 type Props = {
   list: ListSelect;
+  trigger: React.ReactNode;
 };
 
-const ListMenu: React.FC<Props> = ({ list }) => {
+const ListMenu: React.FC<Props> = ({ list, trigger }) => {
   const { id, name, otherUsers, isPinned } = list;
   const {
     deleteList,
@@ -200,11 +199,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         isOpen={shareDialogOpen}
         onOpenChange={setShareDialogOpen}
       />
-      <ResponsiveMenu menuItems={menuItems}>
-        <IconButton size="1" variant="ghost">
-          <EllipsisIcon className="size-3 opacity-90" />
-        </IconButton>
-      </ResponsiveMenu>
+      <ResponsiveMenu menuItems={menuItems}>{trigger}</ResponsiveMenu>
     </>
   );
 };

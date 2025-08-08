@@ -1,12 +1,12 @@
 import { goToList } from "@/lib/client/links";
 import { cn } from "@/lib/client/utils";
-import { Badge, Text } from "@radix-ui/themes";
+import { Badge, IconButton, Text } from "@radix-ui/themes";
 import { Link } from "@tanstack/react-router";
 import React from "react";
 import ListMenu from "./list-menu";
 import UserBubbleGroup from "../ui/user-bubble-group";
 import type { ListSelect, SelectedList, UserSelect } from "@/lib/types";
-import { PinIcon } from "lucide-react";
+import { EllipsisIcon, PinIcon } from "lucide-react";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { qUser } from "@/lib/client/queries";
@@ -72,7 +72,16 @@ export const List: React.FC<{ list: ListSelect }> = ({ list }) => {
       isPinned={isPinned}
       className={cn(isPending && "opacity-50")}
     >
-      {!isPending && <ListMenu list={list} />}
+      {!isPending && (
+        <ListMenu
+          trigger={
+            <IconButton size="1" variant="ghost">
+              <EllipsisIcon className="size-3 opacity-90" />
+            </IconButton>
+          }
+          list={list}
+        />
+      )}
     </BaseList>
   );
 };
