@@ -13,9 +13,6 @@ export const Route = createFileRoute("/_withBack/settings")({
     const user = await context.queryClient.ensureQueryData(qUser);
     return { user };
   },
-  beforeLoad: () => {
-    return { title: "Settings" };
-  },
 });
 
 type SettingProps = React.PropsWithChildren<{
