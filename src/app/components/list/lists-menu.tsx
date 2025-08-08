@@ -1,46 +1,71 @@
-import type { ListSelect } from "@/lib/types";
+import type { ListSelect, SelectedList } from "@/lib/types";
 import React from "react";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
-import { IconButton, Text } from "@radix-ui/themes";
-import { EllipsisIcon, PinIcon } from "lucide-react";
+import { Button, Text } from "@radix-ui/themes";
+import { ChevronDownIcon, PinIcon } from "lucide-react";
 import type { MenuItem } from "../ui/menu/types";
 import { goToList } from "@/lib/client/links";
 import UserBubbleGroup from "../ui/user-bubble-group";
+import { useParams } from "@tanstack/react-router";
 
 type Props = {
   lists: ListSelect[];
 };
 
 const ListMenuItemContent: React.FC<{ list: ListSelect }> = ({
-  list: { name, otherUsers, isPinned, todoCount },
-}) => (
-  <div className="flex w-full flex-1 items-center justify-between gap-6">
-    <section className="flex items-center gap-2">
-      <Text truncate className="max-w-[70vw]">
-        {name}
-      </Text>
-      <Text className="font-mono opacity-70">{todoCount}</Text>
-    </section>
-    <section className="flex items-center gap-2">
-      {otherUsers && <UserBubbleGroup users={otherUsers} numAvatars={3} />}
-      {isPinned && <PinIcon className="size-4 text-amber-9" />}
-    </section>
-  </div>
-);
+  list: { id, name, otherUsers, isPinned, todoCount },
+}) => {
+  const { listId: currentListId } = useParams({ strict: false });
+  const isActive = currentListId === id;
+
+  return (
+    <div className="flex w-full flex-1 items-center justify-between gap-6">
+      <section className="flex items-center gap-2">
+        <Text
+          truncate
+          className="max-w-[70vw]"
+          weight={isActive ? "bold" : "regular"}
+        >
+          {name}
+        </Text>
+        <Text className="font-mono opacity-70">{todoCount}</Text>
+      </section>
+      <section className="flex items-center gap-2">
+        {otherUsers && <UserBubbleGroup users={otherUsers} numAvatars={3} />}
+        {isPinned && <PinIcon className="size-4 text-amber-9" />}
+      </section>
+    </div>
+  );
+};
 
 const ListsMenu: React.FC<Props> = ({ lists }) => {
+  const { listId: currentListId } = useParams({ strict: false });
+
+  const indexOfLastPinned = lists.findIndex(({ isPinned }) => !isPinned);
   const listMenuItems: MenuItem[] = lists.map((list) => ({
     type: "link",
     key: list.id,
     text: <ListMenuItemContent list={list} />,
     linkOptions: goToList(list.id),
   }));
+  if (indexOfLastPinned > 0) {
+    listMenuItems.splice(indexOfLastPinned, 0, {
+      type: "separator",
+    });
+  }
+
+  const getListName = (listId: SelectedList | undefined) => {
+    if (!listId) return "Inbox";
+    if (listId === "all") return "All";
+    return lists.find((list) => list.id === listId)?.name || "Unknown List";
+  };
 
   return (
     <ResponsiveMenu menuItems={listMenuItems}>
-      <IconButton variant="soft" size="1" className="m-0 size-[26px] p-0">
-        <EllipsisIcon className="size-4" />
-      </IconButton>
+      <Button variant="ghost" size="2">
+        <span>{getListName(currentListId)}</span>
+        <ChevronDownIcon className="size-4 opacity-90" />
+      </Button>
     </ResponsiveMenu>
   );
 };

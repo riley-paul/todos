@@ -10,7 +10,6 @@ import { PlusIcon } from "lucide-react";
 import List, { BaseList } from "./list";
 import { zListName, type TodoSelect } from "@/lib/types";
 import { useParams } from "@tanstack/react-router";
-import ListsMenu from "./lists-menu";
 
 const getTodoLength = (todos: TodoSelect[]) =>
   todos.filter(({ isCompleted }) => !isCompleted).length;
@@ -68,7 +67,6 @@ const Lists: React.FC = () => {
           .map((list) => (
             <List key={list.id} list={list} />
           ))}
-        {settingHideUnpinned && <ListsMenu lists={lists} />}
         <IconButton
           onClick={handleCreateList}
           variant="ghost"
