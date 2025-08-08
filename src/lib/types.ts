@@ -16,6 +16,7 @@ export const zUserSelectWithSettings = createSelectSchema(User).pick({
   email: true,
   avatarUrl: true,
   settingGroupCompleted: true,
+  settingHideUnpinned: true,
 });
 export const zUserInsert = createInsertSchema(User);
 export type UserSelect = z.infer<typeof zUserSelect>;
@@ -66,6 +67,7 @@ export const zListSelect = createSelectSchema(List)
   .pick({
     id: true,
     name: true,
+    isPinned: true,
   })
   .extend({
     todoCount: z.number(),
@@ -79,7 +81,7 @@ export const zListSelectShallow = createSelectSchema(List)
   })
   .extend({ isPending: z.boolean().optional() });
 export const zListInsert = createInsertSchema(List)
-  .pick({ name: true })
+  .pick({ name: true, isPinned: true })
   .extend({ name: zListName });
 export type ListSelect = z.infer<typeof zListSelect>;
 export type ListSelectShallow = z.infer<typeof zListSelectShallow>;

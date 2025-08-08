@@ -1,11 +1,20 @@
-import { linkOptions } from "@tanstack/react-router";
+import { linkOptions, type LinkOptions } from "@tanstack/react-router";
+import type { SelectedList } from "../types";
 
 export const goToList = (
-  listId: string | null | undefined,
+  listId: SelectedList | undefined,
   highlightTodo?: string,
-) =>
-  linkOptions({
-    to: listId ? "/todos/$listId" : "/",
-    params: { listId },
+): LinkOptions => {
+  if (listId) {
+    return linkOptions({
+      to: "/todos/$listId",
+      params: { listId },
+      search: highlightTodo ? { highlightedTodoId: highlightTodo } : undefined,
+    });
+  }
+
+  return linkOptions({
+    to: "/",
     search: highlightTodo ? { highlightedTodoId: highlightTodo } : undefined,
   });
+};
