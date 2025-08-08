@@ -106,7 +106,7 @@ const Content: React.FC<ContentProps> = ({
   const { createList, createTodo } = useMutations();
 
   return (
-    <Command className={cn("flex flex-col overflow-hidden", className)}>
+    <Command loop className={cn("flex flex-col overflow-hidden", className)}>
       <Command.Input
         asChild
         value={value}
@@ -120,7 +120,7 @@ const Content: React.FC<ContentProps> = ({
         </TextField.Root>
       </Command.Input>
       <Separator size="4" />
-      <ScrollArea className="flex-1 overflow-auto">
+      <ScrollArea className="flex-1 overflow-y-auto">
         <Command.List className="p-2 pr-3">
           <Command.Empty>No results found.</Command.Empty>
           <Command.Group>
