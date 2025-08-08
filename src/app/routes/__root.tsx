@@ -4,7 +4,6 @@ import type { UserSelect } from "@/lib/types";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { useChannel } from "ably/react";
-import AppHeader from "../components/app-header";
 
 type RouterContext = {
   queryClient: QueryClient;
@@ -31,10 +30,7 @@ function Component() {
 
   return (
     <>
-      <AppHeader />
-      <div className="container2 pb-24 pt-6">
-        <Outlet />
-      </div>
+      <Outlet />
       <AlertSystem />
     </>
   );

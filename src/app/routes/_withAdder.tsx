@@ -3,6 +3,8 @@ import TodoAdder from "@/app/components/todo-adder";
 import { qLists } from "@/lib/client/queries";
 import { createFileRoute, Outlet, useParams } from "@tanstack/react-router";
 import z from "zod";
+import AppLayout from "../components/app-layout";
+import ListsMenu from "../components/list/lists-menu";
 
 export const Route = createFileRoute("/_withAdder")({
   component: RouteComponent,
@@ -17,10 +19,12 @@ export const Route = createFileRoute("/_withAdder")({
 function RouteComponent() {
   const { listId } = useParams({ strict: false });
   return (
-    <main className="grid gap-4">
-      <TodoAdder listId={listId ?? null} />
-      <Lists />
-      <Outlet />
-    </main>
+    <AppLayout breadcrumb={<ListsMenu />}>
+      <main className="grid gap-4">
+        <TodoAdder listId={listId ?? null} />
+        <Lists />
+        <Outlet />
+      </main>
+    </AppLayout>
   );
 }

@@ -8,10 +8,8 @@ import { goToList } from "@/lib/client/links";
 import UserBubbleGroup from "../ui/user-bubble-group";
 import { useParams } from "@tanstack/react-router";
 import ListMenu from "./list-menu";
-
-type Props = {
-  lists: ListSelect[];
-};
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { qLists } from "@/lib/client/queries";
 
 const ListMenuItemContent: React.FC<{ list: ListSelect }> = ({
   list: { id, name, otherUsers, isPinned, todoCount },
@@ -39,7 +37,8 @@ const ListMenuItemContent: React.FC<{ list: ListSelect }> = ({
   );
 };
 
-const ListsMenu: React.FC<Props> = ({ lists }) => {
+const ListsMenu: React.FC = () => {
+  const { data: lists } = useSuspenseQuery(qLists);
   const { listId: currentListId } = useParams({ strict: false });
 
   const indexOfLastPinned = lists.findIndex(({ isPinned }) => !isPinned);
@@ -66,7 +65,7 @@ const ListsMenu: React.FC<Props> = ({ lists }) => {
   return (
     <div className="flex items-center gap-3">
       <ResponsiveMenu menuItems={listMenuItems}>
-        <Button variant="ghost" size="2">
+        <Button variant="ghost" size="2" color="gray">
           <span>{getListName(currentListId)}</span>
           <ChevronDownIcon className="size-4 opacity-90" />
         </Button>
@@ -74,7 +73,7 @@ const ListsMenu: React.FC<Props> = ({ lists }) => {
       {currentList && (
         <ListMenu
           trigger={
-            <IconButton size="2" variant="ghost">
+            <IconButton size="2" variant="ghost" color="gray">
               <EllipsisIcon className="size-4 opacity-90" />
             </IconButton>
           }
