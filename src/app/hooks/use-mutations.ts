@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ActionInputError, actions, isActionError } from "astro:actions";
-import { qList, qLists, qTodos, qUser } from "@/lib/client/queries";
+import { qLists, qTodos, qUser } from "@/lib/client/queries";
 import type { SelectedList, TodoSelect } from "@/lib/types";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { goToList } from "@/lib/client/links";
@@ -181,15 +181,6 @@ export default function useMutations() {
 
   const updateList = useMutation({
     mutationFn: actions.lists.update.orThrow,
-    onSuccess: (data) => {
-      queryClient.setQueryData(qLists.queryKey, (prev) => {
-        if (!prev) return prev;
-        return prev.map((list) =>
-          list.id === data.id ? { ...list, ...data } : list,
-        );
-      });
-      queryClient.setQueryData(qList(data.id).queryKey, data);
-    },
   });
 
   const createList = useMutation({

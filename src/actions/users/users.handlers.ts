@@ -22,7 +22,6 @@ const getMe: ActionHandler<
       email: User.email,
       avatarUrl: User.avatarUrl,
       settingGroupCompleted: User.settingGroupCompleted,
-      settingHideUnpinned: User.settingHideUnpinned,
     })
     .from(User)
     .where(eq(User.id, user.id));
@@ -64,7 +63,7 @@ const get: ActionHandler<typeof userInputs.get, UserSelect[]> = async (
 const updateUserSettings: ActionHandler<
   typeof userInputs.updateUserSettings,
   UserSelectWithSettings
-> = async (data, c) => {
+> = async ({ settingGroupCompleted }, c) => {
   const db = createDb(c.locals.runtime.env);
   const user = c.locals.user;
   if (!user) {
@@ -72,7 +71,7 @@ const updateUserSettings: ActionHandler<
   }
   const [updatedUser] = await db
     .update(User)
-    .set(data)
+    .set({ settingGroupCompleted })
     .where(eq(User.id, user.id))
     .returning({
       id: User.id,
@@ -80,7 +79,6 @@ const updateUserSettings: ActionHandler<
       email: User.email,
       avatarUrl: User.avatarUrl,
       settingGroupCompleted: User.settingGroupCompleted,
-      settingHideUnpinned: User.settingHideUnpinned,
     });
 
   if (!updatedUser) throw actionErrors.NOT_FOUND;

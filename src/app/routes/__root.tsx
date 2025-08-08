@@ -1,9 +1,18 @@
 import AlertSystem from "@/app/components/alert-system/alert-system";
-import { qLists, qUser } from "@/lib/client/queries";
+import AppSearch from "@/app/components/app-search";
+import ConnectionState from "@/app/components/connection-state";
+import UserMenu from "@/app/components/user-menu";
+import { qUser } from "@/lib/client/queries";
 import type { UserSelect } from "@/lib/types";
+import { Heading } from "@radix-ui/themes";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
-import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import {
+  createRootRouteWithContext,
+  Link,
+  Outlet,
+} from "@tanstack/react-router";
 import { useChannel } from "ably/react";
+import { CircleCheckBigIcon } from "lucide-react";
 
 type RouterContext = {
   queryClient: QueryClient;
@@ -13,9 +22,8 @@ type RouterContext = {
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: Component,
   loader: async ({ context }) => {
-    const lists = context.queryClient.ensureQueryData(qLists);
     const user = await context.queryClient.ensureQueryData(qUser);
-    return { user, lists };
+    return { user };
   },
 });
 
@@ -30,7 +38,28 @@ function Component() {
 
   return (
     <>
-      <Outlet />
+      <header className="sticky top-0 z-50 border-b bg-panel-translucent backdrop-blur">
+        <div className="container2">
+          <div className="flex items-center justify-between px-3 py-3">
+            <div className="flex items-center gap-2">
+              <CircleCheckBigIcon className="size-6 text-accent-10" />
+              <Heading asChild size="6" weight="bold">
+                <Link to="/">Todos</Link>
+              </Heading>
+              <div className="ml-2">
+                <ConnectionState />
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <AppSearch />
+              <UserMenu />
+            </div>
+          </div>
+        </div>
+      </header>
+      <div className="container2 pb-24 pt-6">
+        <Outlet />
+      </div>
       <AlertSystem />
     </>
   );
