@@ -5,28 +5,12 @@ import * as Ably from "ably";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
 import RadixProvider from "@/app/components/radix-provider";
-import {
-  MutationCache,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
-import { handleMutationError } from "@/app/hooks/use-mutations";
+import { QueryClientProvider } from "@tanstack/react-query";
 import CustomToaster from "@/app/components/ui/custom-toaster";
 import { Spinner } from "@radix-ui/themes";
 import ErrorPage from "@/app/components/error-page";
 import { qUser } from "@/lib/client/queries";
-
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
-  mutationCache: new MutationCache({
-    onSuccess: () => {
-      queryClient.invalidateQueries();
-    },
-    onError: (error) => {
-      handleMutationError(error);
-    },
-  }),
-});
+import { queryClient } from "./query-client";
 
 const currentUser = await queryClient.ensureQueryData(qUser);
 
