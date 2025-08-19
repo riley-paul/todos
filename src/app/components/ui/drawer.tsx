@@ -5,6 +5,7 @@ import { Drawer as DrawerPrimitive } from "vaul";
 
 import { cn } from "@/lib/client/utils";
 import RadixProvider from "../radix-provider";
+import { ScrollArea } from "@radix-ui/themes";
 
 function DrawerRoot({
   ...props
@@ -66,7 +67,7 @@ function DrawerContent({
         <DrawerPrimitive.Content
           data-slot="drawer-content"
           className={cn(
-            "group/drawer-content fixed z-50 flex h-auto flex-col bg-panel-solid p-3 py-6",
+            "group/drawer-content fixed z-50 bg-panel-solid",
             "data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80vh] data-[vaul-drawer-direction=top]:rounded-b-4 data-[vaul-drawer-direction=top]:border-b",
             "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80vh] data-[vaul-drawer-direction=bottom]:rounded-t-4 data-[vaul-drawer-direction=bottom]:border-t",
             "data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:sm:max-w-sm",
@@ -75,8 +76,10 @@ function DrawerContent({
           )}
           {...props}
         >
-          <DrawerPrimitive.Handle className="absolute -top-3" />
-          {children}
+          <DrawerPrimitive.Handle className="absolute top-3" />
+          <ScrollArea className="max-h-[calc(80vh-0.5rem)]">
+            <div className="grid px-3 py-6">{children}</div>
+          </ScrollArea>
         </DrawerPrimitive.Content>
       </RadixProvider>
     </DrawerPortal>
