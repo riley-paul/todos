@@ -6,7 +6,7 @@ import type { SelectedList, TodoSelect } from "@/lib/types";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { goToList } from "@/lib/client/links";
 
-type TodosUpdater = (todos: TodoSelect[] | undefined) => TodoSelect[];
+type Updater<T> = (data: T | undefined) => T;
 
 export const handleMutationError = (error: Error) => {
   console.error(error);
@@ -37,7 +37,7 @@ export default function useMutations() {
 
   const modifyTodoCache = async (
     listId: SelectedList,
-    updater: TodosUpdater,
+    updater: Updater<TodoSelect[]>,
   ) => {
     const queryKey = qTodos(listId).queryKey;
     await queryClient.cancelQueries({ queryKey });
@@ -52,7 +52,7 @@ export default function useMutations() {
   const updateTodo = useMutation({
     mutationFn: actions.todos.update.orThrow,
     onMutate: async ({ id, data }) => {
-      const updater: TodosUpdater = (todos = []) =>
+      const updater: Updater<TodoSelect[]> = (todos = []) =>
         todos.map((todo) => (todo.id === id ? { ...todo, ...data } : todo));
 
       const resetters = await Promise.all([
@@ -71,7 +71,7 @@ export default function useMutations() {
   const deleteTodo = useMutation({
     mutationFn: actions.todos.remove.orThrow,
     onMutate: async ({ id }) => {
-      const updater: TodosUpdater = (todos = []) =>
+      const updater: Updater<TodoSelect[]> = (todos = []) =>
         todos.filter((todo) => todo.id !== id);
 
       const resetters = await Promise.all([
@@ -93,7 +93,7 @@ export default function useMutations() {
   const deleteCompletedTodos = useMutation({
     mutationFn: actions.todos.removeCompleted.orThrow,
     onMutate: async ({ listId }) => {
-      const updater: TodosUpdater = (todos = []) =>
+      const updater: Updater<TodoSelect[]> = (todos = []) =>
         todos.filter((todo) => !todo.isCompleted);
       const resetters = await Promise.all([modifyTodoCache(listId, updater)]);
       return { resetters };
@@ -110,7 +110,7 @@ export default function useMutations() {
   const uncheckCompletedTodos = useMutation({
     mutationFn: actions.todos.uncheckCompleted.orThrow,
     onMutate: async ({ listId }) => {
-      const updater: TodosUpdater = (todos = []) =>
+      const updater: Updater<TodoSelect[]> = (todos = []) =>
         todos.map((todo) => ({ ...todo, isCompleted: false }));
       const resetters = await Promise.all([modifyTodoCache(listId, updater)]);
       return { resetters };

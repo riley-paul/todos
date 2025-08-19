@@ -1,4 +1,4 @@
-import { type ActionHandler } from "astro:actions";
+import { type ActionAPIContext, type ActionHandler } from "astro:actions";
 import type { ListSelect, ListSelectShallow } from "@/lib/types";
 import {
   ensureListMember,
@@ -10,6 +10,30 @@ import { List, ListUser, Todo, User } from "@/db/schema";
 import { and, asc, count, desc, eq, not } from "drizzle-orm";
 import actionErrors from "../errors";
 import type listInputs from "./lists.inputs";
+
+const getShallowList = async (
+  c: ActionAPIContext,
+  listId: string,
+): Promise<ListSelectShallow> => {
+  if (listId === "all") {
+    return { id: "all", name: "All", isPending: false, isPinned: false };
+  }
+
+  const db = createDb(c.locals.runtime.env);
+  const userId = ensureAuthorized(c).id;
+  const [list] = await db
+    .select({
+      id: List.id,
+      name: List.name,
+      isPending: ListUser.isPending,
+      isPinned: List.isPinned,
+    })
+    .from(List)
+    .innerJoin(ListUser, eq(ListUser.listId, List.id))
+    .where(and(eq(ListUser.userId, userId), eq(List.id, listId)));
+  if (!list) throw actionErrors.NOT_FOUND;
+  return list;
+};
 
 const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
   _,
@@ -68,25 +92,7 @@ const get: ActionHandler<typeof listInputs.get, ListSelectShallow> = async (
   { id },
   c,
 ) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
-
-  if (id === "all") {
-    return { id: "all", name: "All" };
-  }
-
-  const [list] = await db
-    .select({
-      id: List.id,
-      name: List.name,
-      isPending: ListUser.isPending,
-    })
-    .from(List)
-    .innerJoin(ListUser, eq(ListUser.listId, List.id))
-    .where(and(eq(ListUser.userId, userId), eq(List.id, id)));
-  if (!list) throw actionErrors.NOT_FOUND;
-
-  return list;
+  return getShallowList(c, id);
 };
 
 const update: ActionHandler<
@@ -102,11 +108,11 @@ const update: ActionHandler<
     .update(List)
     .set(data)
     .where(eq(List.id, listId))
-    .returning({ id: List.id, name: List.name });
+    .returning({ id: List.id, name: List.name, isPinned: List.isPinned });
 
   if (!list) throw actionErrors.NOT_FOUND;
   await invalidateListUsers(c, listId);
-  return list;
+  return getShallowList(c, listId);
 };
 
 const create: ActionHandler<
@@ -119,7 +125,7 @@ const create: ActionHandler<
   const [list] = await db
     .insert(List)
     .values({ name })
-    .returning({ id: List.id, name: List.name });
+    .returning({ id: List.id });
 
   await db.insert(ListUser).values({
     listId: list.id,
@@ -128,7 +134,7 @@ const create: ActionHandler<
   });
 
   await invalidateListUsers(c, list.id);
-  return list;
+  return getShallowList(c, list.id);
 };
 
 const remove: ActionHandler<typeof listInputs.remove, null> = async (

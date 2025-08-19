@@ -78,8 +78,9 @@ export const zListSelectShallow = createSelectSchema(List)
   .pick({
     id: true,
     name: true,
+    isPinned: true,
   })
-  .extend({ isPending: z.boolean().optional() });
+  .extend({ isPending: z.boolean() });
 export const zListInsert = createInsertSchema(List)
   .pick({ name: true, isPinned: true })
   .extend({ name: zListName });
