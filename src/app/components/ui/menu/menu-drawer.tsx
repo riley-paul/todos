@@ -11,7 +11,7 @@ type Props = {
 
 const getButtonProps = (item: BaseMenuItem): ButtonProps => ({
   disabled: item.disabled,
-  color: item.color,
+  color: item.color || "gray",
   variant: "ghost",
   radius: "large",
   className: "m-0 justify-start py-2 px-2 gap-0.5",
@@ -38,7 +38,7 @@ const MenuDrawer: React.FC<Props> = ({ menuItems }) => {
             <Drawer.Close key={item.key} asChild>
               <Button {...buttonProps} onClick={item.onClick}>
                 {item.icon}
-                <span className="ml-2">{item.text}</span>
+                <span className="ml-2 w-full text-left">{item.text}</span>
               </Button>
             </Drawer.Close>
           );
@@ -50,7 +50,7 @@ const MenuDrawer: React.FC<Props> = ({ menuItems }) => {
               <Button {...buttonProps} asChild>
                 <a {...item.anchorOptions}>
                   {item.icon}
-                  <span className="ml-2">{item.text}</span>
+                  <span className="ml-2 w-full text-left">{item.text}</span>
                 </a>
               </Button>
             </Drawer.Close>
@@ -63,7 +63,7 @@ const MenuDrawer: React.FC<Props> = ({ menuItems }) => {
               <Button {...buttonProps} asChild>
                 <Link {...item.linkOptions}>
                   {item.icon}
-                  <span className="ml-2">{item.text}</span>
+                  <span className="ml-2 w-full text-left">{item.text}</span>
                 </Link>
               </Button>
             </Drawer.Close>
@@ -76,7 +76,7 @@ const MenuDrawer: React.FC<Props> = ({ menuItems }) => {
               <Drawer.Trigger asChild>
                 <Button {...buttonProps}>
                   {item.icon}
-                  <span className="ml-2">{item.text}</span>
+                  <span className="ml-2 w-full text-left">{item.text}</span>
                   <ChevronRightIcon className="ml-auto size-4 opacity-70" />
                 </Button>
               </Drawer.Trigger>

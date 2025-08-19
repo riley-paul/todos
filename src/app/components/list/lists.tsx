@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { qLists, qTodos } from "@/lib/client/queries";
+import { qLists, qTodos, qUser } from "@/lib/client/queries";
 import { Flex, IconButton, Separator } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { alertSystemAtom } from "../alert-system/alert-system.store";
@@ -9,6 +9,7 @@ import useMutations from "@/app/hooks/use-mutations";
 import { PlusIcon } from "lucide-react";
 import List, { BaseList } from "./list";
 import { zListName, type TodoSelect } from "@/lib/types";
+import { useParams } from "@tanstack/react-router";
 
 const getTodoLength = (todos: TodoSelect[]) =>
   todos.filter(({ isCompleted }) => !isCompleted).length;
@@ -16,6 +17,12 @@ const getTodoLength = (todos: TodoSelect[]) =>
 const Lists: React.FC = () => {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const { createList } = useMutations();
+
+  const { listId: currentListId } = useParams({ strict: false });
+
+  const {
+    data: { settingHideUnpinned },
+  } = useSuspenseQuery(qUser);
 
   const { data: lists } = useSuspenseQuery(qLists);
   const { data: inboxTodos = [] } = useQuery(qTodos(null));
@@ -51,9 +58,15 @@ const Lists: React.FC = () => {
         <Flex align="center">
           <Separator orientation="vertical" size="1" />
         </Flex>
-        {lists.map((list) => (
-          <List key={list.id} list={list} />
-        ))}
+        {lists
+          .filter(({ isPinned, id }) => {
+            if (!settingHideUnpinned) return true;
+            if (id === currentListId) return true;
+            return isPinned;
+          })
+          .map((list) => (
+            <List key={list.id} list={list} />
+          ))}
         <IconButton
           onClick={handleCreateList}
           variant="ghost"
