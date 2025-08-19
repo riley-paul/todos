@@ -11,7 +11,7 @@ type Props = {
 
 const getButtonProps = (item: BaseMenuItem): ButtonProps => ({
   disabled: item.disabled,
-  color: item.color,
+  color: item.color || "gray",
   variant: "ghost",
   radius: "large",
   className: "m-0 justify-start py-2 px-2 gap-0.5",
