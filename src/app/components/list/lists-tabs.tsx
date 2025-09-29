@@ -73,7 +73,7 @@ const ScrollButton: React.FC<{
   return (
     <button
       className={cn(
-        "absolute z-20 flex h-[calc(100%-2px)] w-8 items-center justify-center",
+        "absolute z-20 flex h-[calc(100%-2px)] w-6 items-center justify-center",
         "transition-opacity ease-in",
         {
           "right-0 bg-gradient-to-l": direction === "right",
@@ -88,9 +88,7 @@ const ScrollButton: React.FC<{
   );
 };
 
-const ListsTabs: React.FC<{ mainRef: React.RefObject<HTMLDivElement> }> = ({
-  mainRef,
-}) => {
+const ListsTabs: React.FC = () => {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const navigate = useNavigate();
   const { createList } = useMutations();
@@ -193,42 +191,39 @@ const ListsTabs: React.FC<{ mainRef: React.RefObject<HTMLDivElement> }> = ({
 
   const touchStartX = useRef<number | null>(null);
 
-  useEventListener(
-    "touchstart",
-    (event) => {
-      touchStartX.current = event.touches[0].clientX;
-      console.log("touch started");
-    },
-    mainRef,
-  );
+  useEventListener("touchstart", (event) => {
+    if (getIsTyping()) return;
+    if ((event.target as HTMLElement).closest("#tabs-container")) return;
 
-  useEventListener(
-    "touchend",
-    (event) => {
-      if (getIsTyping()) return;
-      if (touchStartX.current == null) return;
-      const endX = event.changedTouches[0].clientX;
-      const deltaX = endX - touchStartX.current;
+    touchStartX.current = event.touches[0].clientX;
+    console.log("touch started");
+  });
 
-      const SWIPE_THRESHOLD = 50; // px
+  useEventListener("touchend", (event) => {
+    if (getIsTyping()) return;
+    if (touchStartX.current == null) return;
+    if ((event.target as HTMLElement).closest("#tabs-container")) return;
 
-      if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
-        // Build the same map used for arrow keys
+    const endX = event.changedTouches[0].clientX;
+    const deltaX = endX - touchStartX.current;
 
-        if (deltaX < 0) {
-          moveThroughLists("right");
-        } else {
-          moveThroughLists("left");
-        }
+    const SWIPE_THRESHOLD = 50; // px
+
+    if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
+      // Build the same map used for arrow keys
+
+      if (deltaX < 0) {
+        moveThroughLists("right");
+      } else {
+        moveThroughLists("left");
       }
+    }
 
-      touchStartX.current = null;
-    },
-    mainRef,
-  );
+    touchStartX.current = null;
+  });
 
   return (
-    <div className="relative w-full">
+    <div id="tabs-container" className="relative w-full">
       <div
         ref={listRef}
         onScroll={checkScroll}

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { Link } from "@tanstack/react-router";
 import { CircleCheckBigIcon } from "lucide-react";
 import { Heading } from "@radix-ui/themes";
@@ -11,7 +11,6 @@ type Props = React.PropsWithChildren<{
 }>;
 
 const AppLayout: React.FC<Props> = ({ children, breadcrumb }) => {
-  const mainRef = useRef<HTMLDivElement>(null);
   return (
     <>
       <header className="sticky top-0 z-50 border-b bg-panel-translucent backdrop-blur">
@@ -32,9 +31,7 @@ const AppLayout: React.FC<Props> = ({ children, breadcrumb }) => {
         </div>
         {breadcrumb}
       </header>
-      <div ref={mainRef} className="container2 pb-24 pt-6">
-        {children}
-      </div>
+      <div className="container2 pb-24 pt-6">{children}</div>
     </>
   );
 };
