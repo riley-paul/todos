@@ -24,11 +24,21 @@
   }
 
   .container2 {
-    @apply mx-auto w-full max-w-screen-sm px-2 md:px-8;
+    @apply mx-auto w-full max-w-screen-sm px-2;
   }
 
   body {
     overscroll-behavior: none;
     overflow-x: hidden;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE & Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
   }
 }
