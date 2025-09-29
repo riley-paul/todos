@@ -52,7 +52,7 @@ const Lists: React.FC = () => {
 
   return (
     <>
-      <div className="flex flex-wrap gap-rx-2 px-rx-3">
+      <div className="flex flex-wrap gap-rx-2">
         <BaseList id={null} name="Inbox" count={inboxCount} />
         {lists.length > 0 && <BaseList id="all" name="All" count={allCount} />}
         <Flex align="center">

@@ -24,7 +24,7 @@
   }
 
   .container2 {
-    @apply mx-auto w-full max-w-screen-sm px-2;
+    @apply mx-auto w-full max-w-screen-sm px-2 md:px-8;
   }
 
   body {

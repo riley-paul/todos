@@ -3,14 +3,15 @@ import { cn } from "@/lib/client/utils";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Todo from "./todo";
-import { Button, Card, Text } from "@radix-ui/themes";
-import type { SelectedList, TodoSelect } from "@/lib/types";
-import { qList, qTodos, qUser } from "@/lib/client/queries";
+import { Button, Card, Heading, Text } from "@radix-ui/themes";
+import type { ListSelectShallow, SelectedList, TodoSelect } from "@/lib/types";
+import { qTodos, qUser } from "@/lib/client/queries";
 import { ChevronRightIcon } from "lucide-react";
 import DeleteCompletedTodosButton from "./footer-buttons/delete-completed-todos-button";
 import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
 import emptyTodoImg from "@/assets/undraw_no-data_ig65.svg";
+import Illustration from "../illustration";
 
 const CompletedTodosActions: React.FC<{ listId: SelectedList }> = ({
   listId,
@@ -60,7 +61,12 @@ const CompletedTodosGroup: React.FC<{
 
 const produceTodo = (todo: TodoSelect) => <Todo key={todo.id} todo={todo} />;
 
-const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
+type Props = {
+  listId: SelectedList;
+  list: ListSelectShallow;
+};
+
+const Todos: React.FC<Props> = ({ listId, list: { name } }) => {
   const { data: todos } = useSuspenseQuery(qTodos(listId));
   const { data: user } = useSuspenseQuery(qUser);
 
@@ -69,11 +75,16 @@ const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
 
   if (todos.length === 0) {
     return (
-      <Card className="flex w-full flex-col items-center justify-center gap-8 py-12">
-        <Text size="2" color="gray" align="center">
-          No todos found
-        </Text>
-        <img src={emptyTodoImg.src} className="w-[150px]" />
+      <Card size="2" className="grid gap-4">
+        <Heading as="h2" size="4">
+          {name}
+        </Heading>
+        <div className="flex w-full flex-col items-center justify-center gap-6 py-12">
+          <Illustration src={emptyTodoImg.src} />
+          <Text size="2" color="gray" align="center">
+            No todos found
+          </Text>
+        </div>
       </Card>
     );
   }
@@ -81,14 +92,22 @@ const Todos: React.FC<{ listId: SelectedList }> = ({ listId }) => {
   if (user.settingGroupCompleted) {
     return (
       <>
-        <Card className="grid gap-1">{notCompletedTodos.map(produceTodo)}</Card>
+        <Card size="2" className="grid gap-4">
+          <Heading as="h2" size="4">
+            {name}
+          </Heading>
+          <div className="grid gap-1">{notCompletedTodos.map(produceTodo)}</div>
+        </Card>
         <CompletedTodosGroup completedTodos={completedTodos} listId={listId} />
       </>
     );
   }
 
   return (
-    <Card className="grid gap-4">
+    <Card size="2" className="grid gap-4">
+      <Heading as="h2" size="4">
+        {name}
+      </Heading>
       <div className="grid gap-1">{todos.map(produceTodo)}</div>
       <CompletedTodosActions listId={listId} />
     </Card>

@@ -1,6 +1,6 @@
 import Todos from "@/app/components/todo/todos";
 import useMutations from "@/app/hooks/use-mutations";
-import { qList } from "@/lib/client/queries";
+import { qList, qTodos } from "@/lib/client/queries";
 import { Button, Text } from "@radix-ui/themes";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -8,10 +8,11 @@ import { useDocumentTitle } from "usehooks-ts";
 
 export const Route = createFileRoute("/_withAdder/todos/$listId")({
   component: RouteComponent,
-  loader: async ({ context: { queryClient }, params: { listId } }) => {
-    const list = await queryClient.ensureQueryData(qList(listId));
-    return { list };
-  },
+  loader: ({ context: { queryClient }, params: { listId } }) =>
+    Promise.all([
+      queryClient.ensureQueryData(qTodos(listId)),
+      queryClient.ensureQueryData(qList(listId)),
+    ]),
 });
 
 function RouteComponent() {
@@ -55,5 +56,5 @@ function RouteComponent() {
     );
   }
 
-  return <Todos listId={listId} />;
+  return <Todos listId={listId} list={list} />;
 }

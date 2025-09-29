@@ -16,7 +16,7 @@ const AppLayout: React.FC<Props> = ({ breadcrumb, children }) => {
     <>
       <header className="sticky top-0 z-50 border-b bg-panel-translucent backdrop-blur">
         <div className="container2">
-          <article className="flex items-center justify-between px-3 py-3">
+          <article className="flex items-center justify-between py-3">
             <section className="flex items-center gap-4">
               <Link to="/">
                 <CircleCheckBigIcon className="size-6 text-accent-10" />

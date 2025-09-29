@@ -13,8 +13,12 @@ import type listInputs from "./lists.inputs";
 
 const getShallowList = async (
   c: ActionAPIContext,
-  listId: string,
+  listId: string | null,
 ): Promise<ListSelectShallow> => {
+  if (listId === null) {
+    return { id: "inbox", name: "Inbox", isPending: false, isPinned: false };
+  }
+
   if (listId === "all") {
     return { id: "all", name: "All", isPending: false, isPinned: false };
   }

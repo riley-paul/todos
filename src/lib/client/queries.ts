@@ -30,7 +30,7 @@ export const qLists = queryOptions({
       .sort((a, b) => Number(b.isPinned) - Number(a.isPinned)),
 });
 
-export const qList = (listId: string) =>
+export const qList = (listId: string | null) =>
   queryOptions({
     queryKey: ["list", listId],
     queryFn: () => actions.lists.get.orThrow({ id: listId }),
