@@ -135,7 +135,9 @@ const get: ActionHandler<typeof listInputs.get, ListSelect> = async (
   { id },
   c,
 ) => {
-  return getList(c, id);
+  const list = await getList(c, id);
+  if (!list) throw actionErrors.NOT_FOUND;
+  return list;
 };
 
 const update: ActionHandler<typeof listInputs.update, ListSelect> = async (
