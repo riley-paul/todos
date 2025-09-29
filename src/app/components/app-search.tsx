@@ -2,7 +2,6 @@ import React from "react";
 
 import {
   Badge,
-  Dialog,
   IconButton,
   Kbd,
   ScrollArea,
@@ -13,6 +12,7 @@ import {
   Tooltip,
   VisuallyHidden,
 } from "@radix-ui/themes";
+import * as Dialog from "@radix-ui/react-dialog";
 import { useEventListener } from "usehooks-ts";
 import { useQuery } from "@tanstack/react-query";
 import { qLists, qTodos } from "@/lib/client/queries";
@@ -22,10 +22,9 @@ import { cn } from "@/lib/client/utils";
 import { useNavigate } from "@tanstack/react-router";
 import useMutations from "@/app/hooks/use-mutations";
 import { goToList } from "@/lib/client/links";
-import { PlusIcon, SearchIcon } from "lucide-react";
+import { PlusIcon, SearchIcon, XIcon } from "lucide-react";
 import { Command } from "cmdk";
-import Drawer from "./ui/drawer";
-import { useIsMobile } from "@/app/hooks/use-is-mobile";
+import RadixProvider from "./radix-provider";
 
 type SearchItemProps = React.PropsWithChildren<{
   value?: string;
@@ -69,35 +68,11 @@ const SearchGroupHeading: React.FC<React.PropsWithChildren> = ({
   );
 };
 
-const Trigger: React.FC<{ open: () => void }> = ({ open }) => {
-  return (
-    <Tooltip
-      content={
-        <>
-          Search <Kbd>⌘ + K</Kbd>
-        </>
-      }
-      side="bottom"
-      align="center"
-    >
-      <IconButton variant="soft" radius="full" onClick={open}>
-        <SearchIcon className="size-4" />
-      </IconButton>
-    </Tooltip>
-  );
-};
-
 type ContentProps = {
   handleClose: () => void;
-  className?: string;
-  textFieldProps?: TextField.RootProps;
 };
 
-const Content: React.FC<ContentProps> = ({
-  handleClose,
-  className,
-  textFieldProps,
-}) => {
+const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
   const { data: lists = [] } = useQuery(qLists);
   const { data: todos = [] } = useQuery(qTodos("all"));
 
@@ -106,22 +81,34 @@ const Content: React.FC<ContentProps> = ({
   const { createList, createTodo } = useMutations();
 
   return (
-    <Command loop className={cn("flex flex-col overflow-hidden", className)}>
+    <Command loop className="flex h-full flex-col overflow-hidden">
       <Command.Input
         asChild
         value={value}
         onValueChange={setValue}
         placeholder="Type a command or search..."
       >
-        <TextField.Root autoFocus {...textFieldProps}>
+        <TextField.Root
+          autoFocus
+          variant="soft"
+          style={{ borderRadius: 0 }}
+          className="h-auto bg-gray-1 px-2 py-3 outline-none"
+        >
           <TextField.Slot side="left">
             <SearchIcon className="size-4 text-accent-10" />
+          </TextField.Slot>
+          <TextField.Slot side="right">
+            <Dialog.Close asChild>
+              <IconButton radius="full" variant="soft" size="2" color="gray">
+                <XIcon className="size-4" />
+              </IconButton>
+            </Dialog.Close>
           </TextField.Slot>
         </TextField.Root>
       </Command.Input>
       <Separator size="4" />
-      <ScrollArea className="flex-1 overflow-y-auto">
-        <Command.List className="p-2 pr-3">
+      <ScrollArea>
+        <Command.List className="flex-1 overflow-y-auto p-2 pr-3">
           <Command.Empty>No results found.</Command.Empty>
           <Command.Group>
             <SearchGroupHeading>Lists</SearchGroupHeading>
@@ -202,9 +189,61 @@ const Content: React.FC<ContentProps> = ({
   );
 };
 
+type DialogProps = React.PropsWithChildren<{
+  isOpen?: boolean;
+  setIsOpen?: (open: boolean) => void;
+}>;
+
+const SearchDialog: React.FC<DialogProps> = ({
+  children,
+  isOpen,
+  setIsOpen,
+}) => {
+  return (
+    <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
+      <Tooltip
+        content={
+          <>
+            Search <Kbd>⌘ + K</Kbd>
+          </>
+        }
+        side="bottom"
+        align="center"
+      >
+        <Dialog.Trigger asChild>
+          <IconButton variant="soft" radius="full">
+            <SearchIcon className="size-4" />
+          </IconButton>
+        </Dialog.Trigger>
+      </Tooltip>
+      <Dialog.Portal>
+        <RadixProvider>
+          <Dialog.Overlay className="fixed inset-0 bg-panel backdrop-blur" />
+          <Dialog.Content
+            className={cn(
+              "data-[state=open]:animate-in data-[state=closed]:animate-out fade-in fade-out",
+              "fixed inset-1 mx-auto max-w-screen-sm overflow-hidden bg-panel-solid outline-none",
+              "sm:my-auto sm:h-[500px]",
+              "rounded-3 shadow-3",
+            )}
+          >
+            <VisuallyHidden>
+              <Dialog.Title>Search</Dialog.Title>
+              <Dialog.Description>
+                Search for lists or todos. Use the arrow keys to navigate
+                results.
+              </Dialog.Description>
+            </VisuallyHidden>
+            {children}
+          </Dialog.Content>
+        </RadixProvider>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+};
+
 const AppSearch: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const isMobile = useIsMobile();
 
   useEventListener("keydown", (event) => {
     if (event.key === "k" && event.metaKey) {
@@ -213,47 +252,10 @@ const AppSearch: React.FC = () => {
     }
   });
 
-  if (isMobile) {
-    return (
-      <Drawer.Root open={isOpen} onOpenChange={setIsOpen}>
-        <Trigger open={() => setIsOpen(true)} />
-        <Drawer.Content className="h-5/6 px-0">
-          <VisuallyHidden>
-            <Drawer.Title>Search</Drawer.Title>
-            <Drawer.Description>
-              Search for lists or todos. Use the arrow keys to navigate results.
-            </Drawer.Description>
-          </VisuallyHidden>
-          <Content
-            handleClose={() => setIsOpen(false)}
-            textFieldProps={{ className: "m-3" }}
-          />
-        </Drawer.Content>
-      </Drawer.Root>
-    );
-  }
-
   return (
-    <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Trigger open={() => setIsOpen(true)} />
-      <Dialog.Content size="1" className="overflow-hidden p-0">
-        <VisuallyHidden>
-          <Dialog.Title>Search</Dialog.Title>
-          <Dialog.Description>
-            Search for lists or todos. Use the arrow keys to navigate results.
-          </Dialog.Description>
-        </VisuallyHidden>
-        <Content
-          className="max-h-[500px]"
-          handleClose={() => setIsOpen(false)}
-          textFieldProps={{
-            variant: "soft",
-            style: { borderRadius: 0 },
-            className: "h-auto bg-gray-1 px-2 py-3 outline-none",
-          }}
-        />
-      </Dialog.Content>
-    </Dialog.Root>
+    <SearchDialog isOpen={isOpen} setIsOpen={setIsOpen}>
+      <SearchContent handleClose={() => setIsOpen(false)} />
+    </SearchDialog>
   );
 };
 

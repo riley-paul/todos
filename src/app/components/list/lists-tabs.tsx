@@ -192,7 +192,6 @@ const ListsTabs: React.FC = () => {
     if ((event.target as HTMLElement).closest("#tabs-container")) return;
 
     touchStartX.current = event.touches[0].clientX;
-    console.log("touch started");
   });
 
   useEventListener("touchend", (event) => {
