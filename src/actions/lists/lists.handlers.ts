@@ -28,7 +28,12 @@ async function getList(c: ActionAPIContext, listId?: SelectedList) {
     const [{ todoCount }] = await db
       .select({ todoCount: count() })
       .from(Todo)
-      .where(filterTodos({ listId: null, userId, userLists: [] }));
+      .where(
+        and(
+          filterTodos({ listId: null, userId, userLists: [] }),
+          eq(Todo.isCompleted, false),
+        ),
+      );
 
     return {
       id: "inbox",
@@ -50,7 +55,12 @@ async function getList(c: ActionAPIContext, listId?: SelectedList) {
     const [{ todoCount }] = await db
       .select({ todoCount: count() })
       .from(Todo)
-      .where(filterTodos({ listId: "all", userId, userLists }));
+      .where(
+        and(
+          filterTodos({ listId: "all", userId, userLists }),
+          eq(Todo.isCompleted, false),
+        ),
+      );
 
     return {
       id: "all",
