@@ -2,6 +2,7 @@ import React from "react";
 
 import {
   Badge,
+  Dialog,
   IconButton,
   ScrollArea,
   Separator,
@@ -10,7 +11,6 @@ import {
   TextField,
   VisuallyHidden,
 } from "@radix-ui/themes";
-import * as Dialog from "@radix-ui/react-dialog";
 import { useEventListener } from "usehooks-ts";
 import { useQuery } from "@tanstack/react-query";
 import { qLists, qTodos } from "@/lib/client/queries";
@@ -22,7 +22,6 @@ import useMutations from "@/app/hooks/use-mutations";
 import { goToList } from "@/lib/client/links";
 import { PlusIcon, SearchIcon, XIcon } from "lucide-react";
 import { Command } from "cmdk";
-import RadixProvider from "./radix-provider";
 
 type SearchItemProps = React.PropsWithChildren<{
   value?: string;
@@ -96,7 +95,7 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
             <SearchIcon className="text-accent-10 size-4" />
           </TextField.Slot>
           <TextField.Slot side="right">
-            <Dialog.Close asChild>
+            <Dialog.Close>
               <IconButton radius="full" variant="soft" size="2" color="gray">
                 <XIcon className="size-4" />
               </IconButton>
@@ -199,40 +198,24 @@ const SearchDialog: React.FC<DialogProps> = ({
 }) => {
   return (
     <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Dialog.Trigger asChild>
+      <Dialog.Trigger>
         <IconButton variant="soft" radius="full">
           <SearchIcon className="size-4" />
         </IconButton>
       </Dialog.Trigger>
-      <Dialog.Portal>
-        <RadixProvider>
-          <Dialog.Overlay
-            className={cn(
-              "data-[state=open]:animate-in data-[state=closed]:animate-out",
-              "data-[state=open]:fade-in data-[state=closed]:fade-out",
-              "bg-panel fixed inset-0 backdrop-blur duration-300",
-            )}
-          />
-          <Dialog.Content
-            className={cn(
-              "data-[state=open]:animate-in data-[state=closed]:animate-out",
-              "data-[state=open]:fade-in data-[state=closed]:fade-out",
-              "data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95",
-              "bg-panel-solid fixed inset-1 mx-auto max-w-screen-sm overflow-hidden duration-300 outline-none",
-              "rounded-3 shadow-3 sm:my-auto sm:h-[500px]",
-            )}
-          >
-            <VisuallyHidden>
-              <Dialog.Title>Search</Dialog.Title>
-              <Dialog.Description>
-                Search for lists or todos. Use the arrow keys to navigate
-                results.
-              </Dialog.Description>
-            </VisuallyHidden>
-            {children}
-          </Dialog.Content>
-        </RadixProvider>
-      </Dialog.Portal>
+      <Dialog.Content
+        className={cn(
+          "fixed inset-2 m-0 mx-auto w-auto max-w-screen-sm overflow-hidden p-0 sm:my-auto sm:h-[500px]",
+        )}
+      >
+        <VisuallyHidden>
+          <Dialog.Title>Search</Dialog.Title>
+          <Dialog.Description>
+            Search for lists or todos. Use the arrow keys to navigate results.
+          </Dialog.Description>
+        </VisuallyHidden>
+        {children}
+      </Dialog.Content>
     </Dialog.Root>
   );
 };
