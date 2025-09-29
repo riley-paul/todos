@@ -1,7 +1,7 @@
 import React from "react";
 import { useEventListener } from "usehooks-ts";
 import useMutations from "@/app/hooks/use-mutations";
-import { Button, Spinner, Text, TextArea } from "@radix-ui/themes";
+import { Button, Spinner, TextArea } from "@radix-ui/themes";
 import { resizeTextArea } from "@/lib/client/utils";
 import { flushSync } from "react-dom";
 import type { SelectedList } from "@/lib/types";
@@ -80,11 +80,6 @@ const TodoAdder: React.FC<{ listId: SelectedList }> = ({ listId }) => {
                 }
               }}
             />
-            {error && (
-              <Text size="1" color="red" ml="1">
-                {error?.message}
-              </Text>
-            )}
           </div>
         )}
       />
