@@ -8,15 +8,10 @@ import { toast } from "sonner";
 import useMutations from "@/app/hooks/use-mutations";
 import { zListName, type TodoSelect } from "@/lib/types";
 import { Link, useParams, type LinkOptions } from "@tanstack/react-router";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  CircleChevronLeftIcon,
-  CircleChevronRightIcon,
-  PlusIcon,
-} from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
 import { cn } from "@/lib/client/utils";
+import { useAppearance } from "@/app/hooks/use-theme";
 
 const getTodoLength = (todos: TodoSelect[]) =>
   todos.filter(({ isCompleted }) => !isCompleted).length;
@@ -61,6 +56,8 @@ const ScrollButton: React.FC<{
   direction: "left" | "right";
   listRef: React.RefObject<HTMLDivElement>;
 }> = ({ show, listRef, direction }) => {
+  const theme = useAppearance();
+
   const handleClick = () => {
     const scrollAmount = direction === "left" ? -150 : 150;
     listRef.current?.scrollBy({ left: scrollAmount, behavior: "smooth" });
@@ -69,23 +66,18 @@ const ScrollButton: React.FC<{
   return (
     <button
       className={cn(
-        "absolute z-20 flex h-[calc(100%-2px)] w-8 items-center justify-center from-[#142324] from-20%",
+        "absolute z-20 flex h-[calc(100%-2px)] w-8 items-center justify-center",
         "transition-opacity ease-in",
         {
           "right-0 bg-gradient-to-l": direction === "right",
           "left-0 bg-gradient-to-r": direction === "left",
           "pointer-events-none opacity-0": !show,
+          "from-[#142324]": theme === "dark",
+          "from-[#feffff]": theme === "light",
         },
       )}
       onClick={handleClick}
-    >
-      {direction === "right" && (
-        <CircleChevronRightIcon className="size-4 opacity-70" />
-      )}
-      {direction === "left" && (
-        <CircleChevronLeftIcon className="size-4 opacity-70" />
-      )}
-    </button>
+    ></button>
   );
 };
 
