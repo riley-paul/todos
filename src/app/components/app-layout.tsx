@@ -5,9 +5,12 @@ import { Heading } from "@radix-ui/themes";
 import ConnectionState from "./connection-state";
 import AppSearch from "./app-search";
 import UserMenu from "./user-menu";
-import ListsTabs from "./list/lists-tabs";
 
-const AppLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
+type Props = React.PropsWithChildren<{
+  breadcrumb: React.ReactNode;
+}>;
+
+const AppLayout: React.FC<Props> = ({ children, breadcrumb }) => {
   const mainRef = useRef<HTMLDivElement>(null);
   return (
     <>
@@ -27,9 +30,7 @@ const AppLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
             </section>
           </article>
         </div>
-        <div className="container2 -mb-px px-0">
-          <ListsTabs mainRef={mainRef} />
-        </div>
+        {breadcrumb}
       </header>
       <div ref={mainRef} className="container2 pb-24 pt-6">
         {children}

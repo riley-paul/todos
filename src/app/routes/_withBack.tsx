@@ -20,12 +20,14 @@ function RouteComponent() {
   return (
     <AppLayout
       breadcrumb={
-        <Text size="2" color="gray">
-          {slugToTitle(slug)}
-        </Text>
+        <div className="container2 h-8">
+          <Text size="2" weight="medium">
+            {slugToTitle(slug)}
+          </Text>
+        </div>
       }
     >
-      <main className="grid gap-4 px-3">
+      <main className="grid gap-4">
         <div>
           <Button
             onClick={() => router.history.back()}

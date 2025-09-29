@@ -3,7 +3,8 @@ import { qLists, qTodos } from "@/lib/client/queries";
 import { createFileRoute, Outlet, useParams } from "@tanstack/react-router";
 import z from "zod";
 import AppLayout from "../components/app-layout";
-import ListsMenu from "../components/list/lists-menu";
+import ListsTabs from "../components/list/lists-tabs";
+import { useRef } from "react";
 
 export const Route = createFileRoute("/_withAdder")({
   component: RouteComponent,
@@ -19,9 +20,16 @@ export const Route = createFileRoute("/_withAdder")({
 
 function RouteComponent() {
   const { listId } = useParams({ strict: false });
+  const mainRef = useRef<HTMLDivElement>(null);
   return (
-    <AppLayout breadcrumb={<ListsMenu />}>
-      <main className="grid gap-4">
+    <AppLayout
+      breadcrumb={
+        <div className="container2 -mb-px px-0">
+          <ListsTabs mainRef={mainRef} />
+        </div>
+      }
+    >
+      <main ref={mainRef} className="grid gap-4">
         <TodoAdder listId={listId ?? null} />
         <Outlet />
       </main>

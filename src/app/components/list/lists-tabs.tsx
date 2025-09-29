@@ -44,7 +44,7 @@ const ListTab: React.FC<{
 
   return (
     <Link {...linkOptions}>
-      <Tabs.Trigger ref={ref} value={value}>
+      <Tabs.Trigger ref={ref} value={value} className="h-8">
         <span className="flex items-center gap-1">
           {name}
           {!isActive && (
