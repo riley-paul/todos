@@ -4,13 +4,13 @@ import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 import react from "@astrojs/react";
-import tailwind from "@astrojs/tailwind";
 import cloudflare from "@astrojs/cloudflare";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://astro.build/config
 export default defineConfig({
   prefetch: true,
-  integrations: [react(), tailwind({ applyBaseStyles: false })],
+  integrations: [react()],
   vite: {
     build: { minify: false },
     plugins: [
@@ -33,6 +33,7 @@ export default defineConfig({
           display: "minimal-ui",
         },
       }),
+      tailwindcss(),
     ],
   },
   output: "server",

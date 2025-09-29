@@ -218,7 +218,12 @@ const SearchDialog: React.FC<DialogProps> = ({
       </Tooltip>
       <Dialog.Portal>
         <RadixProvider>
-          <Dialog.Overlay className="fixed inset-0 bg-panel backdrop-blur" />
+          <Dialog.Overlay
+            className={cn(
+              "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+              "fixed inset-0 bg-panel backdrop-blur",
+            )}
+          />
           <Dialog.Content
             className={cn(
               "data-[state=open]:animate-in data-[state=closed]:animate-out fade-in fade-out",
