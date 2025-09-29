@@ -3,13 +3,11 @@ import React from "react";
 import {
   Badge,
   IconButton,
-  Kbd,
   ScrollArea,
   Separator,
   Strong,
   Text,
   TextField,
-  Tooltip,
   VisuallyHidden,
 } from "@radix-ui/themes";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -41,7 +39,7 @@ const SearchItem: React.FC<SearchItemProps> = ({
       value={value}
       onSelect={onSelect}
       className={cn(
-        "flex cursor-default select-none items-center gap-2 rounded-2 px-3 py-2 text-2 transition-colors data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent-4 data-[disabled=true]:opacity-50",
+        "rounded-2 text-2 data-[selected=true]:bg-accent-4 flex cursor-default items-center gap-2 px-3 py-2 transition-colors select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50",
         "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50",
         "data-[selected=true]:bg-accent-4",
       )}
@@ -60,7 +58,7 @@ const SearchGroupHeading: React.FC<React.PropsWithChildren> = ({
         size="1"
         weight="bold"
         color="gray"
-        className="select-none uppercase"
+        className="uppercase select-none"
       >
         {children}
       </Text>
@@ -92,10 +90,10 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
           autoFocus
           variant="soft"
           style={{ borderRadius: 0 }}
-          className="h-auto bg-gray-1 px-2 py-3 outline-none"
+          className="bg-gray-1 h-auto px-2 py-3 outline-none"
         >
           <TextField.Slot side="left">
-            <SearchIcon className="size-4 text-accent-10" />
+            <SearchIcon className="text-accent-10 size-4" />
           </TextField.Slot>
           <TextField.Slot side="right">
             <Dialog.Close asChild>
@@ -118,7 +116,7 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
                   createList.mutate({ name: value }, { onSuccess: handleClose })
                 }
               >
-                <PlusIcon className="size-4 text-accent-10" />
+                <PlusIcon className="text-accent-10 size-4" />
                 Create new list <Strong>"{value}"</Strong>
               </SearchItem>
             )}
@@ -132,7 +130,7 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
                 }}
               >
                 <span>{list.name}</span>
-                <Text className="font-mono text-accentA-12">
+                <Text className="text-accentA-12 font-mono">
                   {list.todoCount}
                 </Text>
                 <div className="ml-auto">
@@ -155,7 +153,7 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
                   )
                 }
               >
-                <PlusIcon className="size-4 text-accent-10" />
+                <PlusIcon className="text-accent-10 size-4" />
                 Create new todo <Strong>"{value}"</Strong>
               </SearchItem>
             )}
@@ -201,35 +199,27 @@ const SearchDialog: React.FC<DialogProps> = ({
 }) => {
   return (
     <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Tooltip
-        content={
-          <>
-            Search <Kbd>⌘ + K</Kbd>
-          </>
-        }
-        side="bottom"
-        align="center"
-      >
-        <Dialog.Trigger asChild>
-          <IconButton variant="soft" radius="full">
-            <SearchIcon className="size-4" />
-          </IconButton>
-        </Dialog.Trigger>
-      </Tooltip>
+      <Dialog.Trigger asChild>
+        <IconButton variant="soft" radius="full">
+          <SearchIcon className="size-4" />
+        </IconButton>
+      </Dialog.Trigger>
       <Dialog.Portal>
         <RadixProvider>
           <Dialog.Overlay
             className={cn(
-              "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-              "fixed inset-0 bg-panel backdrop-blur",
+              "data-[state=open]:animate-in data-[state=closed]:animate-out",
+              "data-[state=open]:fade-in data-[state=closed]:fade-out",
+              "bg-panel fixed inset-0 backdrop-blur duration-300",
             )}
           />
           <Dialog.Content
             className={cn(
-              "data-[state=open]:animate-in data-[state=closed]:animate-out fade-in fade-out",
-              "fixed inset-1 mx-auto max-w-screen-sm overflow-hidden bg-panel-solid outline-none",
-              "sm:my-auto sm:h-[500px]",
-              "rounded-3 shadow-3",
+              "data-[state=open]:animate-in data-[state=closed]:animate-out",
+              "data-[state=open]:fade-in data-[state=closed]:fade-out",
+              "data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95",
+              "bg-panel-solid fixed inset-1 mx-auto max-w-screen-sm overflow-hidden duration-300 outline-none",
+              "rounded-3 shadow-3 sm:my-auto sm:h-[500px]",
             )}
           >
             <VisuallyHidden>
