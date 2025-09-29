@@ -7,11 +7,18 @@ import { alertSystemAtom } from "../alert-system/alert-system.store";
 import { toast } from "sonner";
 import useMutations from "@/app/hooks/use-mutations";
 import { zListName, type TodoSelect } from "@/lib/types";
-import { Link, useParams, type LinkOptions } from "@tanstack/react-router";
+import {
+  Link,
+  linkOptions,
+  useNavigate,
+  useParams,
+  type LinkOptions,
+} from "@tanstack/react-router";
 import { PlusIcon } from "lucide-react";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
-import { cn } from "@/lib/client/utils";
+import { cn, getIsTyping } from "@/lib/client/utils";
 import { useAppearance } from "@/app/hooks/use-theme";
+import { useEventListener } from "usehooks-ts";
 
 const getTodoLength = (todos: TodoSelect[]) =>
   todos.filter(({ isCompleted }) => !isCompleted).length;
@@ -83,6 +90,7 @@ const ScrollButton: React.FC<{
 
 const ListsTabs: React.FC = () => {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
+  const navigate = useNavigate();
   const { createList } = useMutations();
 
   const listRef = useRef<HTMLDivElement>(null);
@@ -137,6 +145,39 @@ const ListsTabs: React.FC = () => {
       },
     });
   };
+
+  useEventListener("keydown", (event) => {
+    if (getIsTyping()) return;
+    const linkOptionMap: Map<string, LinkOptions> = new Map();
+
+    linkOptionMap.set("inbox", linkOptions({ to: "/" }));
+    linkOptionMap.set(
+      "all",
+      linkOptions({ to: "/todos/$listId", params: { listId: "all" } }),
+    );
+    lists.forEach((list) => {
+      linkOptionMap.set(
+        list.id,
+        linkOptions({ to: "/todos/$listId", params: { listId: list.id } }),
+      );
+    });
+
+    const linkKeys = Array.from(linkOptionMap.keys());
+    const currentIndex = linkKeys.indexOf(listId);
+    if (event.key === "ArrowRight") {
+      const nextIndex = (currentIndex + 1) % linkKeys.length;
+      const nextLinkOptions = linkOptionMap.get(linkKeys[nextIndex]);
+      if (nextLinkOptions) navigate(nextLinkOptions);
+      return;
+    }
+
+    if (event.key === "ArrowLeft") {
+      const prevIndex = (currentIndex - 1 + linkKeys.length) % linkKeys.length;
+      const prevLinkOptions = linkOptionMap.get(linkKeys[prevIndex]);
+      if (prevLinkOptions) navigate(prevLinkOptions);
+      return;
+    }
+  });
 
   return (
     <div className="relative w-full">

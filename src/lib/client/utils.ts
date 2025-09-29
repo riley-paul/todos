@@ -43,3 +43,9 @@ export const slugToTitle = (slug: string) => {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 };
+
+export const getIsTyping = () =>
+  document.activeElement?.tagName === "INPUT" ||
+  document.activeElement?.tagName === "TEXTAREA" ||
+  // @ts-expect-error
+  document.activeElement?.isContentEditable;
