@@ -10,10 +10,11 @@ import {
   Heading,
   IconButton,
   Text,
+  Tooltip,
 } from "@radix-ui/themes";
 import type { ListSelect, SelectedList, TodoSelect } from "@/lib/types";
 import { qTodos, qUser } from "@/lib/client/queries";
-import { ChevronRightIcon, MoreHorizontalIcon } from "lucide-react";
+import { ChevronRightIcon, MoreHorizontalIcon, PinIcon } from "lucide-react";
 import DeleteCompletedTodosButton from "./footer-buttons/delete-completed-todos-button";
 import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
@@ -21,6 +22,7 @@ import emptyTodoImg from "@/assets/undraw_no-data_ig65.svg";
 import Illustration from "../illustration";
 import ListMenu from "../list/list-menu";
 import UserBubbleGroup from "../ui/user-bubble-group";
+import useMutations from "@/app/hooks/use-mutations";
 
 const CompletedTodosActions: React.FC<{ listId: SelectedList }> = ({
   listId,
@@ -72,6 +74,12 @@ const CompletedTodosGroup: React.FC<{
 const TodosContainer: React.FC<
   React.PropsWithChildren<{ list: ListSelect }>
 > = ({ children, list }) => {
+  const { updateList } = useMutations();
+
+  const handleTogglePin = () => {
+    updateList.mutate({ id: list.id, data: { isPinned: !list.isPinned } });
+  };
+
   return (
     <Card size="2" className="grid gap-4">
       <header className="flex items-center justify-between gap-4">
@@ -82,7 +90,16 @@ const TodosContainer: React.FC<
           {list.otherUsers && (
             <UserBubbleGroup users={list.otherUsers} numAvatars={3} />
           )}
+
           <Badge color="gray">{list.todoCount}</Badge>
+
+          <Tooltip content={list.isPinned ? "Unpin List" : "Pin List"}>
+            <IconButton variant="ghost" color="gray" onClick={handleTogglePin}>
+              <PinIcon
+                className={cn("size-4", list.isPinned && "text-amber-9")}
+              />
+            </IconButton>
+          </Tooltip>
 
           <ListMenu
             list={list}
