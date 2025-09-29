@@ -1,15 +1,22 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { qLists, qTodos, qUser } from "@/lib/client/queries";
-import { IconButton, Tabs, Text } from "@radix-ui/themes";
+import { Tabs, Text } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { alertSystemAtom } from "../alert-system/alert-system.store";
 import { toast } from "sonner";
 import useMutations from "@/app/hooks/use-mutations";
 import { zListName, type TodoSelect } from "@/lib/types";
 import { Link, useParams, type LinkOptions } from "@tanstack/react-router";
-import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  CircleChevronLeftIcon,
+  CircleChevronRightIcon,
+  PlusIcon,
+} from "lucide-react";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
+import { cn } from "@/lib/client/utils";
 
 const getTodoLength = (todos: TodoSelect[]) =>
   todos.filter(({ isCompleted }) => !isCompleted).length;
@@ -46,6 +53,39 @@ const ListTab: React.FC<{
         </span>
       </Tabs.Trigger>
     </Link>
+  );
+};
+
+const ScrollButton: React.FC<{
+  show?: boolean;
+  direction: "left" | "right";
+  listRef: React.RefObject<HTMLDivElement>;
+}> = ({ show, listRef, direction }) => {
+  const handleClick = () => {
+    const scrollAmount = direction === "left" ? -150 : 150;
+    listRef.current?.scrollBy({ left: scrollAmount, behavior: "smooth" });
+  };
+
+  return (
+    <button
+      className={cn(
+        "absolute z-20 flex h-[calc(100%-2px)] w-8 items-center justify-center from-[#142324] from-20%",
+        "transition-opacity ease-in",
+        {
+          "right-0 bg-gradient-to-l": direction === "right",
+          "left-0 bg-gradient-to-r": direction === "left",
+          "pointer-events-none opacity-0": !show,
+        },
+      )}
+      onClick={handleClick}
+    >
+      {direction === "right" && (
+        <CircleChevronRightIcon className="size-4 opacity-70" />
+      )}
+      {direction === "left" && (
+        <CircleChevronLeftIcon className="size-4 opacity-70" />
+      )}
+    </button>
   );
 };
 
@@ -111,22 +151,10 @@ const ListsTabs: React.FC = () => {
       <div
         ref={listRef}
         onScroll={checkScroll}
-        className="scrollbar-hide flex overflow-auto"
+        className="scrollbar-hide flex items-center overflow-auto"
       >
-        {showLeft && (
-          <IconButton
-            size="1"
-            radius="full"
-            variant="solid"
-            color="gray"
-            className="absolute left-0 z-20"
-            onClick={() =>
-              listRef.current?.scrollBy({ left: -150, behavior: "smooth" })
-            }
-          >
-            <ChevronLeftIcon className="size-4" />
-          </IconButton>
-        )}
+        <ScrollButton direction="left" show={showLeft} listRef={listRef} />
+
         <Tabs.Root value={listId}>
           <Tabs.List size="1">
             <ListTab
@@ -166,20 +194,8 @@ const ListsTabs: React.FC = () => {
             </Tabs.Trigger>
           </Tabs.List>
         </Tabs.Root>
-        {showRight && (
-          <IconButton
-            size="1"
-            radius="full"
-            variant="solid"
-            color="gray"
-            className="absolute right-0 z-20"
-            onClick={() =>
-              listRef.current?.scrollBy({ left: 150, behavior: "smooth" })
-            }
-          >
-            <ChevronRightIcon className="size-4" />
-          </IconButton>
-        )}
+
+        <ScrollButton direction="right" show={showRight} listRef={listRef} />
       </div>
     </div>
   );

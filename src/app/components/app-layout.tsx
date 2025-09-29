@@ -26,7 +26,7 @@ const AppLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
             </section>
           </article>
         </div>
-        <div className="container2 -mb-px">
+        <div className="container2 -mb-px px-0">
           <ListsTabs />
         </div>
       </header>
