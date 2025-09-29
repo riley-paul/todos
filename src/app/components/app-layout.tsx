@@ -1,31 +1,27 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { CircleCheckBigIcon } from "lucide-react";
-import { Text } from "@radix-ui/themes";
+import { Heading } from "@radix-ui/themes";
 import ConnectionState from "./connection-state";
 import AppSearch from "./app-search";
 import UserMenu from "./user-menu";
 
 type Props = React.PropsWithChildren<{
-  breadcrumb?: React.ReactNode;
+  breadcrumb: React.ReactNode;
 }>;
 
-const AppLayout: React.FC<Props> = ({ breadcrumb, children }) => {
+const AppLayout: React.FC<Props> = ({ children, breadcrumb }) => {
+  const mainRef = useRef<HTMLDivElement>(null);
   return (
     <>
       <header className="sticky top-0 z-50 border-b bg-panel-translucent backdrop-blur">
         <div className="container2">
-          <article className="flex items-center justify-between px-3 py-3">
+          <article className="flex items-center justify-between py-3">
             <section className="flex items-center gap-4">
-              <Link to="/">
+              <Link to="/" className="flex items-center gap-2">
                 <CircleCheckBigIcon className="size-6 text-accent-10" />
+                <Heading size="4">Todos</Heading>
               </Link>
-              {breadcrumb && (
-                <>
-                  <Text>/</Text>
-                  {breadcrumb}
-                </>
-              )}
             </section>
             <section className="flex items-center gap-4">
               <ConnectionState />
@@ -34,8 +30,11 @@ const AppLayout: React.FC<Props> = ({ breadcrumb, children }) => {
             </section>
           </article>
         </div>
+        {breadcrumb}
       </header>
-      <div className="container2 pb-24 pt-6">{children}</div>
+      <div ref={mainRef} className="container2 pb-24 pt-6">
+        {children}
+      </div>
     </>
   );
 };

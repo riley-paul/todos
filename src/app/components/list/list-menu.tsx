@@ -199,7 +199,9 @@ const ListMenu: React.FC<Props> = ({ list, trigger }) => {
         isOpen={shareDialogOpen}
         onOpenChange={setShareDialogOpen}
       />
-      <ResponsiveMenu menuItems={menuItems}>{trigger}</ResponsiveMenu>
+      <ResponsiveMenu menuItems={menuItems} dropdownProps={{ align: "end" }}>
+        {trigger}
+      </ResponsiveMenu>
     </>
   );
 };

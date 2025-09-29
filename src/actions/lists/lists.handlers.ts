@@ -1,9 +1,10 @@
 import { type ActionAPIContext, type ActionHandler } from "astro:actions";
-import type { ListSelect, ListSelectShallow } from "@/lib/types";
+import type { ListSelect, SelectedList } from "@/lib/types";
 import {
   ensureListMember,
   invalidateListUsers,
   ensureAuthorized,
+  filterTodos,
 } from "../helpers";
 import { createDb } from "@/db";
 import { List, ListUser, Todo, User } from "@/db/schema";
@@ -11,37 +12,67 @@ import { and, asc, count, desc, eq, not } from "drizzle-orm";
 import actionErrors from "../errors";
 import type listInputs from "./lists.inputs";
 
-const getShallowList = async (
+async function getList(
   c: ActionAPIContext,
-  listId: string,
-): Promise<ListSelectShallow> => {
-  if (listId === "all") {
-    return { id: "all", name: "All", isPending: false, isPinned: false };
+  listId: undefined,
+): Promise<ListSelect[]>;
+async function getList(
+  c: ActionAPIContext,
+  listId: SelectedList,
+): Promise<ListSelect>;
+async function getList(c: ActionAPIContext, listId?: SelectedList) {
+  const db = createDb(c.locals.runtime.env);
+  const userId = ensureAuthorized(c).id;
+
+  if (listId === null) {
+    const [{ todoCount }] = await db
+      .select({ todoCount: count() })
+      .from(Todo)
+      .where(
+        and(
+          filterTodos({ listId: null, userId, userLists: [] }),
+          eq(Todo.isCompleted, false),
+        ),
+      );
+
+    return {
+      id: "inbox",
+      name: "Inbox",
+      isPending: false,
+      isPinned: false,
+      otherUsers: [],
+      todoCount,
+    };
   }
 
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
-  const [list] = await db
-    .select({
-      id: List.id,
-      name: List.name,
-      isPending: ListUser.isPending,
-      isPinned: List.isPinned,
-    })
-    .from(List)
-    .innerJoin(ListUser, eq(ListUser.listId, List.id))
-    .where(and(eq(ListUser.userId, userId), eq(List.id, listId)));
-  if (!list) throw actionErrors.NOT_FOUND;
-  return list;
-};
+  if (listId === "all") {
+    const userLists = await db
+      .select({ listId: ListUser.listId })
+      .from(ListUser)
+      .where(and(eq(ListUser.userId, userId), eq(ListUser.isPending, false)))
+      .then((data) => data.map(({ listId }) => listId));
 
-const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
-  _,
-  c,
-) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
-  return db
+    const [{ todoCount }] = await db
+      .select({ todoCount: count() })
+      .from(Todo)
+      .where(
+        and(
+          filterTodos({ listId: "all", userId, userLists }),
+          eq(Todo.isCompleted, false),
+        ),
+      );
+
+    return {
+      id: "all",
+      name: "All",
+      isPending: false,
+      isPinned: false,
+      otherUsers: [],
+      todoCount,
+    };
+  }
+
+  const lists = await db
     .selectDistinct({
       id: List.id,
       name: List.name,
@@ -51,7 +82,12 @@ const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
     .from(List)
     .innerJoin(ListUser, eq(ListUser.listId, List.id))
     .orderBy(desc(List.isPinned), asc(List.name))
-    .where(and(eq(ListUser.userId, userId)))
+    .where(
+      and(
+        eq(ListUser.userId, userId),
+        listId ? eq(List.id, listId) : undefined,
+      ),
+    )
     .then((lists) =>
       Promise.all(
         lists.map(async (list) => {
@@ -86,19 +122,29 @@ const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
         }),
       ),
     );
+
+  const [list] = lists;
+  return listId ? list : lists;
+}
+
+const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
+  _,
+  c,
+) => {
+  return getList(c, undefined);
 };
 
-const get: ActionHandler<typeof listInputs.get, ListSelectShallow> = async (
+const get: ActionHandler<typeof listInputs.get, ListSelect> = async (
   { id },
   c,
 ) => {
-  return getShallowList(c, id);
+  return getList(c, id);
 };
 
-const update: ActionHandler<
-  typeof listInputs.update,
-  ListSelectShallow
-> = async ({ id: listId, data }, c) => {
+const update: ActionHandler<typeof listInputs.update, ListSelect> = async (
+  { id: listId, data },
+  c,
+) => {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 
@@ -112,13 +158,13 @@ const update: ActionHandler<
 
   if (!list) throw actionErrors.NOT_FOUND;
   await invalidateListUsers(c, listId);
-  return getShallowList(c, listId);
+  return getList(c, listId);
 };
 
-const create: ActionHandler<
-  typeof listInputs.create,
-  ListSelectShallow
-> = async ({ name }, c) => {
+const create: ActionHandler<typeof listInputs.create, ListSelect> = async (
+  { name },
+  c,
+) => {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 
@@ -134,7 +180,7 @@ const create: ActionHandler<
   });
 
   await invalidateListUsers(c, list.id);
-  return getShallowList(c, list.id);
+  return getList(c, list.id);
 };
 
 const remove: ActionHandler<typeof listInputs.remove, null> = async (

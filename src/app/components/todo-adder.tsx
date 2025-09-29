@@ -53,7 +53,7 @@ const TodoAdder: React.FC<{ listId: SelectedList }> = ({ listId }) => {
   });
 
   return (
-    <form onSubmit={onSubmit} className="flex gap-2 px-3">
+    <form onSubmit={onSubmit} className="flex gap-2">
       <Controller
         control={control}
         name="text"
@@ -91,7 +91,7 @@ const TodoAdder: React.FC<{ listId: SelectedList }> = ({ listId }) => {
 
       <input type="submit" hidden />
 
-      <Button size="3" type="submit" variant="soft" className="px-3 sm:px-5">
+      <Button size="3" type="submit" variant="surface" className="px-3 sm:px-5">
         <Spinner loading={createTodo.isPending}>
           <PlusIcon className="size-5" />
         </Spinner>
