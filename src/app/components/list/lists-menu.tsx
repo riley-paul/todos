@@ -2,7 +2,7 @@ import type { ListSelect, SelectedList } from "@/lib/types";
 import React from "react";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
 import { Button, IconButton, Text } from "@radix-ui/themes";
-import { ChevronDownIcon, EllipsisIcon, PinIcon } from "lucide-react";
+import { ChevronDownIcon, EllipsisIcon } from "lucide-react";
 import type { MenuItem } from "../ui/menu/types";
 import { goToList } from "@/lib/client/links";
 import UserBubbleGroup from "../ui/user-bubble-group";
@@ -12,7 +12,7 @@ import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { qLists, qTodos } from "@/lib/client/queries";
 
 const ListMenuItemContent: React.FC<{ list: Partial<ListSelect> }> = ({
-  list: { id, name, otherUsers, isPinned, todoCount },
+  list: { id, name, otherUsers, todoCount },
 }) => {
   const { listId: currentListId } = useParams({ strict: false });
   const isActive = currentListId === id || (id === "inbox" && !currentListId);
@@ -31,7 +31,6 @@ const ListMenuItemContent: React.FC<{ list: Partial<ListSelect> }> = ({
       </section>
       <section className="flex items-center gap-2">
         {otherUsers && <UserBubbleGroup users={otherUsers} numAvatars={3} />}
-        {isPinned && <PinIcon className="size-4 text-amber-9" />}
       </section>
     </div>
   );
@@ -44,18 +43,12 @@ const ListsMenu: React.FC = () => {
 
   const { listId: currentListId } = useParams({ strict: false });
 
-  const indexOfLastPinned = lists.findIndex(({ isPinned }) => !isPinned);
   const listMenuItems: MenuItem[] = lists.map((list) => ({
     type: "link",
     key: list.id,
     text: <ListMenuItemContent list={list} />,
     linkOptions: goToList(list.id),
   }));
-  if (indexOfLastPinned > 0) {
-    listMenuItems.splice(indexOfLastPinned, 0, {
-      type: "separator",
-    });
-  }
 
   const additionalItems: MenuItem[] = [
     {

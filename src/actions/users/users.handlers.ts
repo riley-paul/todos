@@ -22,7 +22,6 @@ const getMe: ActionHandler<
       email: User.email,
       avatarUrl: User.avatarUrl,
       settingGroupCompleted: User.settingGroupCompleted,
-      settingHideUnpinned: User.settingHideUnpinned,
     })
     .from(User)
     .where(eq(User.id, user.id));
@@ -80,7 +79,6 @@ const updateUserSettings: ActionHandler<
       email: User.email,
       avatarUrl: User.avatarUrl,
       settingGroupCompleted: User.settingGroupCompleted,
-      settingHideUnpinned: User.settingHideUnpinned,
     });
 
   if (!updatedUser) throw actionErrors.NOT_FOUND;

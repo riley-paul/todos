@@ -6,10 +6,8 @@ import React from "react";
 import ListMenu from "./list-menu";
 import UserBubbleGroup from "../ui/user-bubble-group";
 import type { ListSelect, SelectedList, UserSelect } from "@/lib/types";
-import { EllipsisIcon, PinIcon } from "lucide-react";
+import { EllipsisIcon } from "lucide-react";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { qUser } from "@/lib/client/queries";
 
 type BaseListProps = React.PropsWithChildren<{
   id: SelectedList;
@@ -24,15 +22,11 @@ export const BaseList: React.FC<BaseListProps> = ({
   id,
   name,
   count = 0,
-  isPinned,
   otherUsers,
   children,
   className,
 }) => {
   const isActive = useIsLinkActive(goToList(id));
-  const {
-    data: { settingHideUnpinned },
-  } = useSuspenseQuery(qUser);
 
   return (
     <Badge
@@ -51,9 +45,6 @@ export const BaseList: React.FC<BaseListProps> = ({
         </Text>
         <Text className="font-mono opacity-70">{count}</Text>
         {otherUsers && <UserBubbleGroup users={otherUsers} numAvatars={3} />}
-        {isPinned && !settingHideUnpinned && (
-          <PinIcon className="size-4 text-amber-9" />
-        )}
       </Link>
       {children}
     </Badge>
@@ -61,7 +52,7 @@ export const BaseList: React.FC<BaseListProps> = ({
 };
 
 export const List: React.FC<{ list: ListSelect }> = ({ list }) => {
-  const { id, name, otherUsers, todoCount, isPending, isPinned } = list;
+  const { id, name, otherUsers, todoCount, isPending } = list;
 
   return (
     <BaseList
@@ -69,7 +60,6 @@ export const List: React.FC<{ list: ListSelect }> = ({ list }) => {
       name={name}
       count={todoCount}
       otherUsers={otherUsers}
-      isPinned={isPinned}
       className={cn(isPending && "opacity-50")}
     >
       {!isPending && (

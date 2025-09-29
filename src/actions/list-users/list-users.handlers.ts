@@ -25,7 +25,6 @@ const getListUser = async (
       list: {
         id: List.id,
         name: List.name,
-        isPinned: List.isPinned,
         isPending: ListUser.isPending,
       },
       user: {
@@ -156,7 +155,6 @@ const getAllForList: ActionHandler<
         id: List.id,
         name: List.name,
         isPending: ListUser.isPending,
-        isPinned: List.isPinned,
       },
       user: {
         id: User.id,

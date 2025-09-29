@@ -57,7 +57,7 @@ const TodoAdder: React.FC<{ listId: SelectedList }> = ({ listId }) => {
       <Controller
         control={control}
         name="text"
-        render={({ field, fieldState: { error } }) => (
+        render={({ field }) => (
           <div className="grid flex-1 gap-1">
             <TextArea
               size="3"

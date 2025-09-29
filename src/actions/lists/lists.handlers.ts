@@ -8,7 +8,7 @@ import {
 } from "../helpers";
 import { createDb } from "@/db";
 import { List, ListUser, Todo, User } from "@/db/schema";
-import { and, asc, count, desc, eq, not } from "drizzle-orm";
+import { and, asc, count, eq, not } from "drizzle-orm";
 import actionErrors from "../errors";
 import type listInputs from "./lists.inputs";
 
@@ -39,7 +39,6 @@ async function getList(c: ActionAPIContext, listId?: SelectedList) {
       id: "inbox",
       name: "Inbox",
       isPending: false,
-      isPinned: false,
       otherUsers: [],
       todoCount,
     };
@@ -66,7 +65,6 @@ async function getList(c: ActionAPIContext, listId?: SelectedList) {
       id: "all",
       name: "All",
       isPending: false,
-      isPinned: false,
       otherUsers: [],
       todoCount,
     };
@@ -76,12 +74,11 @@ async function getList(c: ActionAPIContext, listId?: SelectedList) {
     .selectDistinct({
       id: List.id,
       name: List.name,
-      isPinned: List.isPinned,
       isPending: ListUser.isPending,
     })
     .from(List)
     .innerJoin(ListUser, eq(ListUser.listId, List.id))
-    .orderBy(desc(List.isPinned), asc(List.name))
+    .orderBy(asc(List.name))
     .where(
       and(
         eq(ListUser.userId, userId),
@@ -154,7 +151,7 @@ const update: ActionHandler<typeof listInputs.update, ListSelect> = async (
     .update(List)
     .set(data)
     .where(eq(List.id, listId))
-    .returning({ id: List.id, name: List.name, isPinned: List.isPinned });
+    .returning({ id: List.id, name: List.name });
 
   if (!list) throw actionErrors.NOT_FOUND;
   await invalidateListUsers(c, listId);

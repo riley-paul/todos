@@ -42,14 +42,6 @@ function RouteComponent() {
             }}
           />
         </Setting>
-        <Setting label="Hide unpinned lists">
-          <Switch
-            checked={user.settingHideUnpinned}
-            onCheckedChange={(settingHideUnpinned) => {
-              updateUserSettings.mutate({ settingHideUnpinned });
-            }}
-          />
-        </Setting>
         <Setting label="Dark mode">
           <SegmentedControl.Root
             size="1"

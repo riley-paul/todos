@@ -6,8 +6,6 @@ import {
   Link2Icon,
   ListXIcon,
   LogOutIcon,
-  PinIcon,
-  PinOffIcon,
   Share2Icon,
   SquareMinusIcon,
   TrashIcon,
@@ -27,7 +25,7 @@ type Props = {
 };
 
 const ListMenu: React.FC<Props> = ({ list, trigger }) => {
-  const { id, name, otherUsers, isPinned } = list;
+  const { id, name, otherUsers } = list;
   const {
     deleteList,
     leaveList,
@@ -106,10 +104,6 @@ const ListMenu: React.FC<Props> = ({ list, trigger }) => {
     window.open(link, "_blank");
   };
 
-  const handleTogglePin = () => {
-    updateList.mutate({ id, data: { isPinned: !isPinned } });
-  };
-
   const menuItems: MenuItem[] = [
     {
       type: "item",
@@ -124,17 +118,6 @@ const ListMenu: React.FC<Props> = ({ list, trigger }) => {
       text: "Share",
       icon: <Share2Icon className="size-4 opacity-70" />,
       onClick: () => setShareDialogOpen(true),
-    },
-    {
-      type: "item",
-      key: "pin",
-      text: isPinned ? "Unpin" : "Pin",
-      icon: isPinned ? (
-        <PinOffIcon className="size-4 opacity-70" />
-      ) : (
-        <PinIcon className="size-4 opacity-70" />
-      ),
-      onClick: handleTogglePin,
     },
     {
       type: "separator",

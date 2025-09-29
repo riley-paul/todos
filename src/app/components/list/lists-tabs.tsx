@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { qLists, qTodos, qUser } from "@/lib/client/queries";
+import { qLists, qTodos } from "@/lib/client/queries";
 import { Tabs, Text } from "@radix-ui/themes";
 import { useAtom } from "jotai";
 import { alertSystemAtom } from "../alert-system/alert-system.store";
@@ -115,10 +115,6 @@ const ListsTabs: React.FC = () => {
   }, []);
 
   const { listId = "inbox" } = useParams({ strict: false });
-
-  const {
-    data: { settingHideUnpinned },
-  } = useSuspenseQuery(qUser);
 
   const { data: lists } = useSuspenseQuery(qLists);
   const { data: inboxTodos = [] } = useQuery(qTodos(null));
@@ -246,24 +242,18 @@ const ListsTabs: React.FC = () => {
               linkOptions={{ to: "/todos/$listId", params: { listId: "all" } }}
             />
 
-            {lists
-              .filter(({ isPinned, id }) => {
-                if (!settingHideUnpinned) return true;
-                if (id === listId) return true;
-                return isPinned;
-              })
-              .map((list) => (
-                <ListTab
-                  key={list.id}
-                  name={list.name}
-                  value={list.id}
-                  todoCount={list.todoCount}
-                  linkOptions={{
-                    to: "/todos/$listId",
-                    params: { listId: list.id },
-                  }}
-                />
-              ))}
+            {lists.map((list) => (
+              <ListTab
+                key={list.id}
+                name={list.name}
+                value={list.id}
+                todoCount={list.todoCount}
+                linkOptions={{
+                  to: "/todos/$listId",
+                  params: { listId: list.id },
+                }}
+              />
+            ))}
             <Tabs.Trigger value="" onClick={handleCreateList}>
               <PlusIcon className="mr-1 size-3 text-accent-10" />
               New List

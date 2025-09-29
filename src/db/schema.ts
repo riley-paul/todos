@@ -33,7 +33,6 @@ export const User = sqliteTable("user", {
   githubUsername: text().unique(),
 
   settingGroupCompleted: integer({ mode: "boolean" }).notNull().default(true),
-  settingHideUnpinned: integer({ mode: "boolean" }).notNull().default(false),
 
   ...timeStamps,
 });
@@ -52,7 +51,6 @@ export const UserSession = sqliteTable(
 export const List = sqliteTable("list", {
   id,
   name: text().notNull(),
-  isPinned: integer({ mode: "boolean" }).default(false).notNull(),
   ...timeStamps,
 });
 
