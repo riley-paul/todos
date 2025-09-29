@@ -28,13 +28,19 @@ const TodosContainer: React.FC<
 
           <Badge color="gray">{list.todoCount}</Badge>
 
-          <Tooltip content={list.isPinned ? "Unpin List" : "Pin List"}>
-            <IconButton variant="ghost" color="gray" onClick={handleTogglePin}>
-              <PinIcon
-                className={cn("size-4", list.isPinned && "text-amber-9")}
-              />
-            </IconButton>
-          </Tooltip>
+          {list.id !== "inbox" && list.id !== "all" && (
+            <Tooltip content={list.isPinned ? "Unpin List" : "Pin List"}>
+              <IconButton
+                variant="ghost"
+                color="gray"
+                onClick={handleTogglePin}
+              >
+                <PinIcon
+                  className={cn("size-4", list.isPinned && "text-amber-9")}
+                />
+              </IconButton>
+            </Tooltip>
+          )}
 
           <ListMenu
             list={list}
