@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { CircleCheckBigIcon } from "lucide-react";
 import { Heading } from "@radix-ui/themes";
@@ -8,6 +8,7 @@ import UserMenu from "./user-menu";
 import ListsTabs from "./list/lists-tabs";
 
 const AppLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const mainRef = useRef<HTMLDivElement>(null);
   return (
     <>
       <header className="sticky top-0 z-50 border-b bg-panel-translucent backdrop-blur">
@@ -27,10 +28,12 @@ const AppLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
           </article>
         </div>
         <div className="container2 -mb-px px-0">
-          <ListsTabs />
+          <ListsTabs mainRef={mainRef} />
         </div>
       </header>
-      <div className="container2 pb-24 pt-6">{children}</div>
+      <div ref={mainRef} className="container2 pb-24 pt-6">
+        {children}
+      </div>
     </>
   );
 };

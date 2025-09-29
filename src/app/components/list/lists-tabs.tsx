@@ -88,7 +88,9 @@ const ScrollButton: React.FC<{
   );
 };
 
-const ListsTabs: React.FC = () => {
+const ListsTabs: React.FC<{ mainRef: React.RefObject<HTMLDivElement> }> = ({
+  mainRef,
+}) => {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const navigate = useNavigate();
   const { createList } = useMutations();
@@ -146,8 +148,7 @@ const ListsTabs: React.FC = () => {
     });
   };
 
-  useEventListener("keydown", (event) => {
-    if (getIsTyping()) return;
+  const moveThroughLists = (direction: "left" | "right") => {
     const linkOptionMap: Map<string, LinkOptions> = new Map();
 
     linkOptionMap.set("inbox", linkOptions({ to: "/" }));
@@ -164,20 +165,67 @@ const ListsTabs: React.FC = () => {
 
     const linkKeys = Array.from(linkOptionMap.keys());
     const currentIndex = linkKeys.indexOf(listId);
-    if (event.key === "ArrowRight") {
+
+    if (direction === "right") {
       const nextIndex = (currentIndex + 1) % linkKeys.length;
       const nextLinkOptions = linkOptionMap.get(linkKeys[nextIndex]);
       if (nextLinkOptions) navigate(nextLinkOptions);
-      return;
     }
 
-    if (event.key === "ArrowLeft") {
+    if (direction === "left") {
       const prevIndex = (currentIndex - 1 + linkKeys.length) % linkKeys.length;
       const prevLinkOptions = linkOptionMap.get(linkKeys[prevIndex]);
       if (prevLinkOptions) navigate(prevLinkOptions);
+    }
+  };
+
+  useEventListener("keydown", (event) => {
+    if (getIsTyping()) return;
+    if (event.key === "ArrowRight") {
+      moveThroughLists("right");
+      return;
+    }
+    if (event.key === "ArrowLeft") {
+      moveThroughLists("left");
       return;
     }
   });
+
+  const touchStartX = useRef<number | null>(null);
+
+  useEventListener(
+    "touchstart",
+    (event) => {
+      touchStartX.current = event.touches[0].clientX;
+      console.log("touch started");
+    },
+    mainRef,
+  );
+
+  useEventListener(
+    "touchend",
+    (event) => {
+      if (getIsTyping()) return;
+      if (touchStartX.current == null) return;
+      const endX = event.changedTouches[0].clientX;
+      const deltaX = endX - touchStartX.current;
+
+      const SWIPE_THRESHOLD = 50; // px
+
+      if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
+        // Build the same map used for arrow keys
+
+        if (deltaX < 0) {
+          moveThroughLists("right");
+        } else {
+          moveThroughLists("left");
+        }
+      }
+
+      touchStartX.current = null;
+    },
+    mainRef,
+  );
 
   return (
     <div className="relative w-full">
