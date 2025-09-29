@@ -1,5 +1,5 @@
 import { type ActionAPIContext, type ActionHandler } from "astro:actions";
-import type { ListSelect, ListSelectShallow, SelectedList } from "@/lib/types";
+import type { ListSelect, SelectedList } from "@/lib/types";
 import {
   ensureListMember,
   invalidateListUsers,
@@ -11,34 +11,6 @@ import { List, ListUser, Todo, User } from "@/db/schema";
 import { and, asc, count, desc, eq, not } from "drizzle-orm";
 import actionErrors from "../errors";
 import type listInputs from "./lists.inputs";
-
-const getShallowList = async (
-  c: ActionAPIContext,
-  listId: string | null,
-): Promise<ListSelectShallow> => {
-  if (listId === null) {
-    return { id: "inbox", name: "Inbox", isPending: false, isPinned: false };
-  }
-
-  if (listId === "all") {
-    return { id: "all", name: "All", isPending: false, isPinned: false };
-  }
-
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
-  const [list] = await db
-    .select({
-      id: List.id,
-      name: List.name,
-      isPending: ListUser.isPending,
-      isPinned: List.isPinned,
-    })
-    .from(List)
-    .innerJoin(ListUser, eq(ListUser.listId, List.id))
-    .where(and(eq(ListUser.userId, userId), eq(List.id, listId)));
-  if (!list) throw actionErrors.NOT_FOUND;
-  return list;
-};
 
 async function getList(
   c: ActionAPIContext,
@@ -159,10 +131,10 @@ const get: ActionHandler<typeof listInputs.get, ListSelect> = async (
   return getList(c, id);
 };
 
-const update: ActionHandler<
-  typeof listInputs.update,
-  ListSelectShallow
-> = async ({ id: listId, data }, c) => {
+const update: ActionHandler<typeof listInputs.update, ListSelect> = async (
+  { id: listId, data },
+  c,
+) => {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 
@@ -176,13 +148,13 @@ const update: ActionHandler<
 
   if (!list) throw actionErrors.NOT_FOUND;
   await invalidateListUsers(c, listId);
-  return getShallowList(c, listId);
+  return getList(c, listId);
 };
 
-const create: ActionHandler<
-  typeof listInputs.create,
-  ListSelectShallow
-> = async ({ name }, c) => {
+const create: ActionHandler<typeof listInputs.create, ListSelect> = async (
+  { name },
+  c,
+) => {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 
@@ -198,7 +170,7 @@ const create: ActionHandler<
   });
 
   await invalidateListUsers(c, list.id);
-  return getShallowList(c, list.id);
+  return getList(c, list.id);
 };
 
 const remove: ActionHandler<typeof listInputs.remove, null> = async (

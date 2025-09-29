@@ -3,20 +3,24 @@ import { cn } from "@/lib/client/utils";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Todo from "./todo";
-import { Button, Card, Heading, IconButton, Text } from "@radix-ui/themes";
+import {
+  Badge,
+  Button,
+  Card,
+  Heading,
+  IconButton,
+  Text,
+} from "@radix-ui/themes";
 import type { ListSelect, SelectedList, TodoSelect } from "@/lib/types";
 import { qTodos, qUser } from "@/lib/client/queries";
-import {
-  ChevronRightIcon,
-  MoreHorizontalIcon,
-  MoreVerticalIcon,
-} from "lucide-react";
+import { ChevronRightIcon, MoreHorizontalIcon } from "lucide-react";
 import DeleteCompletedTodosButton from "./footer-buttons/delete-completed-todos-button";
 import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
 import emptyTodoImg from "@/assets/undraw_no-data_ig65.svg";
 import Illustration from "../illustration";
 import ListMenu from "../list/list-menu";
+import UserBubbleGroup from "../ui/user-bubble-group";
 
 const CompletedTodosActions: React.FC<{ listId: SelectedList }> = ({
   listId,
@@ -36,12 +40,13 @@ const CompletedTodosGroup: React.FC<{
   if (completedTodos.length === 0) return null;
 
   return (
-    <section className="grid gap-3">
-      <header className="flex items-center justify-between gap-2 px-2">
+    <Card className="grid gap-3">
+      <header className="flex items-center justify-between gap-2">
         <Button
           size="1"
-          className="flex h-5 gap-2 px-3 py-1"
+          className="flex gap-2"
           variant="ghost"
+          color="gray"
           onClick={() => setShowCompleted((v) => !v)}
         >
           <span>Completed</span>
@@ -60,7 +65,7 @@ const CompletedTodosGroup: React.FC<{
       {showCompleted && (
         <div className="grid gap-1">{completedTodos.map(produceTodo)}</div>
       )}
-    </section>
+    </Card>
   );
 };
 
@@ -73,15 +78,21 @@ const TodosContainer: React.FC<
         <Heading as="h2" size="4">
           {list.name}
         </Heading>
-        <Text className="font-mono opacity-70">{list.todoCount}</Text>
-        <ListMenu
-          list={list}
-          trigger={
-            <IconButton size="2" variant="ghost" className="!m-0">
-              <MoreHorizontalIcon className="size-4" />
-            </IconButton>
-          }
-        />
+        <section className="flex items-center gap-2">
+          {list.otherUsers && (
+            <UserBubbleGroup users={list.otherUsers} numAvatars={3} />
+          )}
+          <Badge color="gray">{list.todoCount}</Badge>
+
+          <ListMenu
+            list={list}
+            trigger={
+              <IconButton size="2" variant="soft" className="!m-0">
+                <MoreHorizontalIcon className="size-4" />
+              </IconButton>
+            }
+          />
+        </section>
       </header>
       {children}
     </Card>

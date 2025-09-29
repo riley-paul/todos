@@ -1,4 +1,3 @@
-import Lists from "@/app/components/list/lists";
 import TodoAdder from "@/app/components/todo-adder";
 import { qLists, qTodos } from "@/lib/client/queries";
 import { createFileRoute, Outlet, useParams } from "@tanstack/react-router";
@@ -24,7 +23,6 @@ function RouteComponent() {
     <AppLayout breadcrumb={<ListsMenu />}>
       <main className="grid gap-4">
         <TodoAdder listId={listId ?? null} />
-        <Lists />
         <Outlet />
       </main>
     </AppLayout>
