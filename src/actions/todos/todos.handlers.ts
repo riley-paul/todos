@@ -1,12 +1,13 @@
 import { type ActionAPIContext, type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
 import { User, Todo, List, ListUser } from "@/db/schema";
-import { eq, and, desc, inArray, or, isNull } from "drizzle-orm";
+import { eq, and, desc, inArray, or } from "drizzle-orm";
 import type { TodoSelect, TodoSelectShallow } from "@/lib/types";
 import {
   ensureAuthorized,
   invalidateListUsers,
   ensureListMember,
+  filterTodos,
 } from "../helpers";
 
 import type todoInputs from "./todos.inputs";
@@ -45,17 +46,6 @@ const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
           .then((data) => data.map(({ listId }) => listId))
       : [];
 
-  const filterTodos = () => {
-    switch (listId) {
-      case null:
-        return and(eq(Todo.userId, userId), isNull(Todo.listId));
-      case "all":
-        return or(inArray(Todo.listId, userLists), eq(Todo.userId, userId));
-      default:
-        return eq(Todo.listId, listId);
-    }
-  };
-
   const todos: TodoSelect[] = await db
     .selectDistinct({
       id: Todo.id,
@@ -75,7 +65,13 @@ const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
     .from(Todo)
     .leftJoin(List, eq(List.id, Todo.listId))
     .innerJoin(User, eq(User.id, Todo.userId))
-    .where(filterTodos())
+    .where(
+      filterTodos({
+        listId,
+        userLists,
+        userId,
+      }),
+    )
     .orderBy(desc(Todo.createdAt))
     .then((data) =>
       data.map((todo) => ({ ...todo, isAuthor: todo.author.id === userId })),
