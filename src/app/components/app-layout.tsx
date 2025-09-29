@@ -5,6 +5,7 @@ import { Text } from "@radix-ui/themes";
 import ConnectionState from "./connection-state";
 import AppSearch from "./app-search";
 import UserMenu from "./user-menu";
+import ListsTabs from "./list/lists-tabs";
 
 type Props = React.PropsWithChildren<{
   breadcrumb?: React.ReactNode;
@@ -33,6 +34,9 @@ const AppLayout: React.FC<Props> = ({ breadcrumb, children }) => {
               <UserMenu />
             </section>
           </article>
+        </div>
+        <div className="container2 -mb-px">
+          <ListsTabs />
         </div>
       </header>
       <div className="container2 pb-24 pt-6">{children}</div>
