@@ -44,7 +44,7 @@ const ListTab: React.FC<{
 
   return (
     <Link {...linkOptions}>
-      <Tabs.Trigger ref={ref} value={value} className="h-8">
+      <Tabs.Trigger ref={ref} value={value} className="h-10">
         <span className="flex items-center gap-1">
           {name}
           {!isActive && (
@@ -222,7 +222,7 @@ const ListsTabs: React.FC = () => {
       <div
         ref={listRef}
         onScroll={checkScroll}
-        className="scrollbar-hide flex items-center overflow-auto"
+        className="scrollbar-hide flex h-full items-center overflow-auto"
       >
         <ScrollButton direction="left" show={showLeft} listRef={listRef} />
 
@@ -254,7 +254,7 @@ const ListsTabs: React.FC = () => {
               />
             ))}
             <Tabs.Trigger value="" onClick={handleCreateList}>
-              <PlusIcon className="mr-1 size-3 text-accent-10" />
+              <PlusIcon className="text-accent-10 mr-1 size-3" />
               New List
             </Tabs.Trigger>
           </Tabs.List>
