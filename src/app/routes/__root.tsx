@@ -1,7 +1,11 @@
 import AlertSystem from "@/app/components/alert-system/alert-system";
 import { qLists, qUser } from "@/lib/client/queries";
 import type { UserSelect } from "@/lib/types";
-import { useQueryClient, type QueryClient } from "@tanstack/react-query";
+import {
+  useQueryClient,
+  useSuspenseQuery,
+  type QueryClient,
+} from "@tanstack/react-query";
 import {
   createRootRouteWithContext,
   Link,
@@ -13,6 +17,7 @@ import React from "react";
 import { CircleCheckBigIcon } from "lucide-react";
 import { Heading, Separator } from "@radix-ui/themes";
 import UserMenu from "../components/user-menu";
+import ListChips from "../components/list/list-chips";
 
 type RouterContext = {
   queryClient: QueryClient;
@@ -37,6 +42,8 @@ function Component() {
     queryClient.invalidateQueries();
   });
 
+  const { data: lists } = useSuspenseQuery(qLists);
+
   return (
     <React.Fragment>
       <header className="bg-background sticky top-0 z-10 flex h-18 flex-col justify-center">
@@ -56,7 +63,7 @@ function Component() {
         </div>
       </header>
       <main className="container2 grid gap-6 py-6">
-        {/*<ListChips lists={lists} />*/}
+        <ListChips lists={lists} />
         <Outlet />
       </main>
       <AlertSystem />

@@ -8,13 +8,14 @@ const AlertSystemContentDelete: React.FC<DeleteAlertProps> = ({
 }) => {
   return (
     <>
-      <footer className="mt-4 flex justify-end gap-3">
+      <footer className="flex flex-col justify-end gap-3 sm:flex-row">
         <Dialog.Close>
-          <Button variant="soft" color="gray">
+          <Button size="3" variant="soft" color="gray">
             Cancel
           </Button>
         </Dialog.Close>
         <Button
+          size="3"
           onClick={handleDelete}
           color="red"
           children="Delete"

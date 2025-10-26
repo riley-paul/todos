@@ -1,6 +1,6 @@
 import { DropdownMenu } from "@radix-ui/themes";
 import React from "react";
-import type { BaseMenuItem, MenuItem } from "./types";
+import type { BaseMenuItem, MenuItem } from "./menu.types";
 import { Link } from "@tanstack/react-router";
 
 type Props = {

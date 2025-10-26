@@ -22,12 +22,12 @@ const AlertSystemContentInput: React.FC<InputAlertProps> = ({
 
   return (
     <>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} className="grid gap-6">
         <Controller
           name="value"
           control={form.control}
           render={({ field, fieldState: { error } }) => (
-            <div className="mt-6">
+            <div>
               <TextField.Root
                 {...field}
                 size="3"
@@ -42,13 +42,15 @@ const AlertSystemContentInput: React.FC<InputAlertProps> = ({
             </div>
           )}
         />
-        <footer className="mt-4 flex justify-end gap-3">
+        <footer className="flex flex-col justify-end gap-3 sm:flex-row">
           <Dialog.Close>
-            <Button variant="soft" color="gray">
+            <Button size="3" variant="soft" color="gray">
               Cancel
             </Button>
           </Dialog.Close>
-          <Button type="submit">Submit</Button>
+          <Button size="3" type="submit">
+            Submit
+          </Button>
         </footer>
       </form>
     </>

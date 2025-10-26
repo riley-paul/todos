@@ -1,5 +1,6 @@
-import { cn } from "@/lib/client/utils";
 import { cva, type VariantProps } from "class-variance-authority";
+
+import { cn } from "@/lib/client/utils";
 
 function Root({ className, ...props }: React.ComponentProps<"div">) {
   return (

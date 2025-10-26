@@ -1,11 +1,11 @@
 import { useIsMobile } from "@/app/hooks/use-is-mobile";
-import { DropdownMenu } from "@radix-ui/themes";
+import { Dialog, DropdownMenu } from "@radix-ui/themes";
 import React from "react";
-import Drawer from "../drawer";
-import type { MenuItem } from "./types";
+import type { MenuItem } from "./menu.types";
 import MenuDrawer from "./menu-drawer";
 import MenuDropdown from "./menu-dropdown";
 import { cn } from "@/lib/client/utils";
+import MenuDrawerContent from "./menu-drawer-content";
 
 type Props = React.PropsWithChildren<{
   menuItems: MenuItem[];
@@ -21,12 +21,12 @@ const ResponsiveMenu: React.FC<Props> = ({
 
   if (isMobile) {
     return (
-      <Drawer.Root>
-        <Drawer.Trigger asChild>{children}</Drawer.Trigger>
-        <Drawer.Content>
+      <Dialog.Root>
+        <Dialog.Trigger>{children}</Dialog.Trigger>
+        <MenuDrawerContent>
           <MenuDrawer menuItems={menuItems} />
-        </Drawer.Content>
-      </Drawer.Root>
+        </MenuDrawerContent>
+      </Dialog.Root>
     );
   }
 

@@ -1,9 +1,9 @@
 import React from "react";
-import type { BaseMenuItem, MenuItem } from "./types";
-import { Button, Separator, type ButtonProps } from "@radix-ui/themes";
+import type { BaseMenuItem, MenuItem } from "./menu.types";
+import { Button, Dialog, Separator, type ButtonProps } from "@radix-ui/themes";
 import { ChevronRightIcon } from "lucide-react";
-import Drawer from "../drawer";
 import { Link } from "@tanstack/react-router";
+import MenuDrawerContent from "./menu-drawer-content";
 
 type Props = {
   menuItems: MenuItem[];
@@ -14,10 +14,11 @@ const getButtonProps = (item: BaseMenuItem): ButtonProps => ({
   color: item.color || "gray",
   variant: "ghost",
   radius: "large",
-  className: "m-0 justify-start py-2 px-2 gap-0.5",
+  size: "3",
+  className: "-mx-3 my-0 justify-start py-2 px-3 gap-0.5 rounded-3",
 });
 
-const MenuDrawer: React.FC<Props> = ({ menuItems }) => {
+const MenuDialog: React.FC<Props> = ({ menuItems }) => {
   return menuItems
     .filter(({ hide }) => !hide)
     .map((item, index) => {
@@ -26,68 +27,64 @@ const MenuDrawer: React.FC<Props> = ({ menuItems }) => {
           return item.component;
         case "separator":
           return (
-            <Separator
-              key={`sep-${index}`}
-              size="4"
-              className="mx-2 my-1 w-auto"
-            />
+            <Separator key={`sep-${index}`} size="4" className="my-2 w-auto" />
           );
         case "item": {
           const buttonProps = getButtonProps(item);
           return (
-            <Drawer.Close key={item.key} asChild>
+            <Dialog.Close key={item.key}>
               <Button {...buttonProps} onClick={item.onClick}>
                 {item.icon}
                 <span className="ml-2 w-full text-left">{item.text}</span>
               </Button>
-            </Drawer.Close>
+            </Dialog.Close>
           );
         }
         case "anchor": {
           const buttonProps = getButtonProps(item);
           return (
-            <Drawer.Close key={item.key} asChild>
+            <Dialog.Close key={item.key}>
               <Button {...buttonProps} asChild>
                 <a {...item.anchorOptions}>
                   {item.icon}
                   <span className="ml-2 w-full text-left">{item.text}</span>
                 </a>
               </Button>
-            </Drawer.Close>
+            </Dialog.Close>
           );
         }
         case "link": {
           const buttonProps = getButtonProps(item);
           return (
-            <Drawer.Close key={item.key} asChild>
+            <Dialog.Close key={item.key}>
               <Button {...buttonProps} asChild>
                 <Link {...item.linkOptions}>
                   {item.icon}
                   <span className="ml-2 w-full text-left">{item.text}</span>
                 </Link>
               </Button>
-            </Drawer.Close>
+            </Dialog.Close>
           );
         }
         case "parent": {
           const buttonProps = getButtonProps(item);
           return (
-            <Drawer.NestedRoot key={item.key}>
-              <Drawer.Trigger asChild>
+            <Dialog.Root key={item.key}>
+              <Dialog.Trigger>
                 <Button {...buttonProps}>
                   {item.icon}
                   <span className="ml-2 w-full text-left">{item.text}</span>
                   <ChevronRightIcon className="ml-auto size-4 opacity-70" />
                 </Button>
-              </Drawer.Trigger>
-              <Drawer.Content>
-                <MenuDrawer menuItems={item.children} />
-              </Drawer.Content>
-            </Drawer.NestedRoot>
+              </Dialog.Trigger>
+              <MenuDrawerContent>
+                <MenuDialog menuItems={item.children} />
+              </MenuDrawerContent>
+            </Dialog.Root>
           );
         }
       }
     });
 };
 
-export default MenuDrawer;
+export default MenuDialog;

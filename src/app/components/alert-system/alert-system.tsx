@@ -5,7 +5,8 @@ import { alertSystemAtom } from "./alert-system.store";
 import AlertSystemContentDelete from "./alert-system.delete";
 import AlertSystemContentError from "./alert-system.error";
 import AlertSystemContentInput from "./alert-system.input";
-import ResponsiveDialog from "../ui/responsive-dialog";
+import { Dialog } from "@radix-ui/themes";
+import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 
 const AlertContent: React.FC<AlertProps> = (props) => {
   switch (props.type) {
@@ -23,14 +24,24 @@ const AlertContent: React.FC<AlertProps> = (props) => {
 const AlertSystem: React.FC = () => {
   const [state, dispatch] = useAtom(alertSystemAtom);
   return (
-    <ResponsiveDialog
-      title={state.data?.title}
-      description={state.data?.message}
+    <Dialog.Root
       open={state.isOpen}
       onOpenChange={(open) => open || dispatch({ type: "close" })}
     >
-      {state.data && <AlertContent {...state.data} />}
-    </ResponsiveDialog>
+      <ResponsiveDialogContent fullHeightDrawer={state.data?.type === "input"}>
+        {state.data && (
+          <React.Fragment>
+            <header>
+              <Dialog.Title>{state.data.title}</Dialog.Title>
+              <Dialog.Description color="gray">
+                {state.data.message}
+              </Dialog.Description>
+            </header>
+            <AlertContent {...state.data} />
+          </React.Fragment>
+        )}
+      </ResponsiveDialogContent>
+    </Dialog.Root>
   );
 };
 
