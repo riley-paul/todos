@@ -30,7 +30,7 @@ export default defineConfig({
           description: "A simple todo list app",
           background_color: "#061419",
           theme_color: "#061419",
-          display: "minimal-ui",
+          display: "standalone",
         },
       }),
       tailwindcss(),

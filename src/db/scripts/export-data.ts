@@ -46,7 +46,13 @@ const exportData = async () => {
                     .where(
                       and(eq(Todo.userId, user.id), eq(Todo.listId, list.id)),
                     );
-                  return { ...list, createdBy: user.id, order: 0, todos };
+                  return {
+                    ...list,
+                    users: [],
+                    createdBy: user.id,
+                    order: 0,
+                    todos,
+                  };
                 }),
               ),
             );
@@ -57,6 +63,7 @@ const exportData = async () => {
             createdAt: new Date().toString(),
             createdBy: user.id,
             order: 0,
+            users: [],
             todos: await db
               .select({
                 id: Todo.id,
