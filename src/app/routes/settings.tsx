@@ -1,9 +1,15 @@
 import useMutations from "@/app/hooks/use-mutations";
 import { qUser } from "@/lib/client/queries";
-import { Card, SegmentedControl, Switch, Text } from "@radix-ui/themes";
+import {
+  Card,
+  Heading,
+  SegmentedControl,
+  Switch,
+  Text,
+} from "@radix-ui/themes";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import type React from "react";
+import React from "react";
 import { useAtom } from "jotai";
 import { themeAtom } from "../hooks/use-theme";
 
@@ -32,28 +38,33 @@ function RouteComponent() {
   const [theme, setTheme] = useAtom(themeAtom);
 
   return (
-    <article className="grid gap-4">
-      <Card className="grid gap-5 p-4">
-        <Setting label="Group completed todos">
-          <Switch
-            checked={user.settingGroupCompleted}
-            onCheckedChange={(settingGroupCompleted) => {
-              updateUserSettings.mutate({ settingGroupCompleted });
-            }}
-          />
-        </Setting>
-        <Setting label="Dark mode">
-          <SegmentedControl.Root
-            size="1"
-            value={theme}
-            onValueChange={(value) => setTheme(value as any)}
-          >
-            <SegmentedControl.Item value="system">System</SegmentedControl.Item>
-            <SegmentedControl.Item value="dark">Dark</SegmentedControl.Item>
-            <SegmentedControl.Item value="light">Light</SegmentedControl.Item>
-          </SegmentedControl.Root>
-        </Setting>
-      </Card>
-    </article>
+    <React.Fragment>
+      <Heading>Settings</Heading>
+      <article className="grid gap-4">
+        <Card className="grid gap-5 p-4">
+          <Setting label="Group completed todos">
+            <Switch
+              checked={user.settingGroupCompleted}
+              onCheckedChange={(settingGroupCompleted) => {
+                updateUserSettings.mutate({ settingGroupCompleted });
+              }}
+            />
+          </Setting>
+          <Setting label="Dark mode">
+            <SegmentedControl.Root
+              size="1"
+              value={theme}
+              onValueChange={(value) => setTheme(value as any)}
+            >
+              <SegmentedControl.Item value="system">
+                System
+              </SegmentedControl.Item>
+              <SegmentedControl.Item value="dark">Dark</SegmentedControl.Item>
+              <SegmentedControl.Item value="light">Light</SegmentedControl.Item>
+            </SegmentedControl.Root>
+          </Setting>
+        </Card>
+      </article>
+    </React.Fragment>
   );
 }

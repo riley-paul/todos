@@ -15,7 +15,7 @@ import NoTodosScreen from "../screens/no-todos";
 const CompletedTodosActions: React.FC<{ listId: SelectedList }> = ({
   listId,
 }) => (
-  <div className="flex items-center justify-end gap-4 px-3 py-1">
+  <div className="flex items-center justify-end gap-4">
     <UncheckAllTodosButton listId={listId} />
     <DeleteCompletedTodosButton listId={listId} />
   </div>
@@ -30,7 +30,7 @@ const CompletedTodosGroup: React.FC<{
   if (completedTodos.length === 0) return null;
 
   return (
-    <Card className="grid gap-3">
+    <Card className="grid gap-3 px-5">
       <header className="flex items-center justify-between gap-2">
         <Button
           size="1"
