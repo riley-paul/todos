@@ -167,3 +167,5 @@ test.db
 
 .wrangler
 .dev.vars
+
+data-export.json

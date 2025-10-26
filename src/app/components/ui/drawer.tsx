@@ -76,7 +76,7 @@ function DrawerContent({
           )}
           {...props}
         >
-          <DrawerPrimitive.Handle className="absolute top-3" />
+          <DrawerPrimitive.Handle className="absolute top-3 left-0 right-0" />
           <ScrollArea className="max-h-[calc(80vh-0.5rem)]">
             <div className="grid px-3 py-6">{children}</div>
           </ScrollArea>

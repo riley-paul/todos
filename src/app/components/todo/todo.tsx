@@ -168,7 +168,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
               <Link {...goToList(todo.list.id)}>{todo.list.name}</Link>
             </Badge>
           )}
-          {!todo.isAuthor && <UserBubble user={todo.author} size="md" />}
+          {!todo.isAuthor && <UserBubble user={todo.author} size="sm" />}
           <TodoMenu todoId={todo.id} />
         </>
       )}
