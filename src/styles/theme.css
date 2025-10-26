@@ -300,5 +300,5 @@
 .dark,
 .dark-theme,
 :is(.dark, .dark-theme) :where(.radix-themes:not(.light, .light-theme)) {
-  --color-background: #0a1d1e;
+  --color-background: oklch(18.7% 0.025 202.1);
 }

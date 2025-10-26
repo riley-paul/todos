@@ -8,9 +8,11 @@ import React from "react";
 import { useDocumentTitle } from "usehooks-ts";
 import ListHeader from "../components/list/list-header";
 import TodoAdder from "../components/todo-adder";
+import { z } from "astro:schema";
 
 export const Route = createFileRoute("/todos/$listId")({
   component: RouteComponent,
+  validateSearch: z.object({ highlightedTodoId: z.string().optional() }),
   loader: ({ context: { queryClient }, params: { listId } }) =>
     Promise.all([
       queryClient.ensureQueryData(qTodos(listId)),

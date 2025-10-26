@@ -121,7 +121,8 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
       ref={ref}
       className={cn(
         (isHighlighted || isEditing) && "bg-accent-2",
-        "sm:hover:bg-accent-2 -mx-4 flex min-h-11 items-center gap-2 px-4 py-1 transition-colors ease-out",
+        "sm:hover:bg-accent-2",
+        "rounded-3 flex min-h-11 items-center gap-2 px-3 -mx-3 py-1 transition-colors ease-in",
       )}
     >
       {isEditing ? (

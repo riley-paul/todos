@@ -10,8 +10,6 @@ import { ChevronRightIcon } from "lucide-react";
 import DeleteCompletedTodosButton from "./footer-buttons/delete-completed-todos-button";
 import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
-import emptyTodoImg from "@/assets/undraw_empty_4zx0.svg";
-import Illustration from "../illustration";
 import NoTodosScreen from "../screens/no-todos";
 
 const CompletedTodosActions: React.FC<{ listId: SelectedList }> = ({
