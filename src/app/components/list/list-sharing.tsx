@@ -68,7 +68,7 @@ type ListShareProps = {
   isOnlyUser?: boolean;
 };
 
-const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
+const ListShare: React.FC<ListShareProps> = ({ listShare }) => {
   // const handleRemoveUser = useRemoveUserAlert({ listId, userId });
   // const handleCancelInvite = useCancelInviteAlert({ listId, userId });
 
