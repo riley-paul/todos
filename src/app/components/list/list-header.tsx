@@ -2,7 +2,7 @@ import type { ListSelect } from "@/lib/types";
 import { Heading } from "@radix-ui/themes";
 import React from "react";
 import ListMenu from "./list-menu";
-// import ListSharing from "./list-sharing";
+import ListSharing from "./list-sharing";
 import { cn } from "@/lib/client/utils";
 
 type Props = { list: ListSelect };
@@ -20,7 +20,7 @@ const ListHeader: React.FC<Props> = ({ list }) => {
       </Heading>
       <section className="flex items-center gap-4">
         <ListMenu list={list} />
-        {/*<ListSharing list={list} />*/}
+        <ListSharing list={list} />
       </section>
     </header>
   );
