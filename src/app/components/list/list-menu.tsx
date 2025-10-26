@@ -6,7 +6,7 @@ import {
   Link2Icon,
   ListXIcon,
   LogOutIcon,
-  Share2Icon,
+  MoreHorizontalIcon,
   SquareMinusIcon,
   TrashIcon,
 } from "lucide-react";
@@ -16,15 +16,14 @@ import { useAtom } from "jotai";
 import { toast } from "sonner";
 import { useCopyToClipboard } from "usehooks-ts";
 import { alertSystemAtom } from "../alert-system/alert-system.store";
-import type { MenuItem } from "../ui/menu/types";
-import ListShareDialog from "./list-share-dialog";
+import type { MenuItem } from "../ui/menu/menu.types";
+import { IconButton } from "@radix-ui/themes";
 
 type Props = {
   list: ListSelect;
-  trigger: React.ReactNode;
 };
 
-const ListMenu: React.FC<Props> = ({ list, trigger }) => {
+const ListMenu: React.FC<Props> = ({ list }) => {
   const { id, name, otherUsers } = list;
   const {
     deleteList,
@@ -36,7 +35,6 @@ const ListMenu: React.FC<Props> = ({ list, trigger }) => {
 
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const [, copyToClipboard] = useCopyToClipboard();
-  const [shareDialogOpen, setShareDialogOpen] = React.useState(false);
 
   const isOnlyUser = otherUsers.length === 0;
 
@@ -113,13 +111,6 @@ const ListMenu: React.FC<Props> = ({ list, trigger }) => {
       onClick: handleRenameList,
     },
     {
-      type: "item",
-      key: "share",
-      text: "Share",
-      icon: <Share2Icon className="size-4 opacity-70" />,
-      onClick: () => setShareDialogOpen(true),
-    },
-    {
       type: "separator",
     },
     {
@@ -176,16 +167,14 @@ const ListMenu: React.FC<Props> = ({ list, trigger }) => {
   ];
 
   return (
-    <>
-      <ListShareDialog
-        list={list}
-        isOpen={shareDialogOpen}
-        onOpenChange={setShareDialogOpen}
-      />
-      <ResponsiveMenu menuItems={menuItems} dropdownProps={{ align: "end" }}>
-        {trigger}
-      </ResponsiveMenu>
-    </>
+    <ResponsiveMenu
+      menuItems={menuItems}
+      dropdownProps={{ align: "start", side: "bottom" }}
+    >
+      <IconButton variant="ghost" radius="full">
+        <MoreHorizontalIcon className="size-4" />
+      </IconButton>
+    </ResponsiveMenu>
   );
 };
 

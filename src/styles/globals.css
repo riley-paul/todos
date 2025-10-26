@@ -1,15 +1,21 @@
 @import "tailwindcss" important;
 @import "tw-animate-css";
 
+@custom-variant dark (&:is(.dark *));
+
 @theme {
+  --breakpoint-sm: 512px;
   --color-*: initial;
   --shadow-*: initial;
+  --font-size-*: initial;
 }
 
 @import "radix-themes-tw";
 
 .radix-themes {
-  --default-font-family: "Rubik Variable", sans-serif;
+  --default-font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   --cursor-button: pointer;
   --cursor-checkbox: pointer;
   --cursor-disabled: default;
@@ -21,27 +27,32 @@
   --cursor-switch: pointer;
 }
 
-@layer base {
-  * {
-    @apply border-gray-6;
-  }
+body {
+  @apply m-0 overflow-x-hidden;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-  .container2 {
-    @apply mx-auto w-full max-w-screen-sm px-2;
-  }
-
-  body {
-    overscroll-behavior: none;
-    overflow-x: hidden;
-  }
+code {
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 @layer utilities {
-  .scrollbar-hide {
-    -ms-overflow-style: none; /* IE & Edge */
-    scrollbar-width: none; /* Firefox */
+  .container2 {
+    @apply mx-auto w-full max-w-3xl px-4;
   }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
+
+  /*.rt-reset {
+    transition: background-color ease-in 150ms !important;
+  }*/
+}
+
+@layer base {
+  * {
+    @apply border-gray-6;
   }
 }
