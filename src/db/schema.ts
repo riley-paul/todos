@@ -66,7 +66,7 @@ export const Todo = sqliteTable(
   {
     id,
     userId,
-    listId: text().references(() => List.id, { onDelete: "cascade" }),
+    listId,
     sortOrder: integer().default(0).notNull(),
     text: text().notNull(),
     isCompleted: integer({ mode: "boolean" }).default(false).notNull(),

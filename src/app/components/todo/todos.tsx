@@ -78,10 +78,10 @@ const Todos: React.FC<Props> = ({ list }) => {
 
   if (user.settingGroupCompleted) {
     return (
-      <>
+      <React.Fragment>
         <div className="grid gap-1">{notCompletedTodos.map(produceTodo)}</div>
         <CompletedTodosGroup completedTodos={completedTodos} listId={list.id} />
-      </>
+      </React.Fragment>
     );
   }
 
