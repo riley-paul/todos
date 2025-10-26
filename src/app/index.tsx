@@ -11,10 +11,12 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { handleMutationError } from "@/app/hooks/use-mutations";
-import CustomToaster from "@/app/components/ui/custom-toaster";
-import { Spinner } from "@radix-ui/themes";
-import ErrorPage from "@/app/components/error-page";
 import { qUser } from "@/lib/client/queries";
+import LoadingScreen from "./components/screens/loading";
+import NotFoundScreen from "./components/screens/not-found";
+import ErrorScreen from "./components/screens/error";
+import CustomToaster from "./components/ui/custom-toaster";
+import AlertSystem from "./components/alert-system/alert-system";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -35,12 +37,9 @@ const router = createRouter({
   context: { queryClient, currentUser },
   defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
-  defaultPendingComponent: () => (
-    <section className="flex h-full items-center justify-center gap-2 py-32">
-      <Spinner size="3" />
-    </section>
-  ),
-  defaultErrorComponent: ({ error }) => <ErrorPage error={error} goHome />,
+  defaultPendingComponent: LoadingScreen,
+  defaultNotFoundComponent: NotFoundScreen,
+  defaultErrorComponent: ErrorScreen,
 });
 
 const realtimeClient = new Ably.Realtime({ authUrl: "/ably-auth" });
@@ -59,6 +58,7 @@ export default () => (
         <RadixProvider>
           <RouterProvider router={router} />
           <CustomToaster />
+          <AlertSystem />
         </RadixProvider>
       </QueryClientProvider>
     </ChannelProvider>

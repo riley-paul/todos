@@ -1,4 +1,3 @@
-import AlertSystem from "@/app/components/alert-system/alert-system";
 import { qLists, qUser } from "@/lib/client/queries";
 import type { UserSelect } from "@/lib/types";
 import {
@@ -66,7 +65,6 @@ function Component() {
         <ListChips lists={lists} />
         <Outlet />
       </main>
-      <AlertSystem />
       {import.meta.env.DEV && (
         <TanStackRouterDevtools position="bottom-right" />
       )}

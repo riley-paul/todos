@@ -148,13 +148,20 @@ export default function useMutations() {
     onError: (__, _, context) => {
       context?.resetters.forEach((reset) => reset());
     },
-    onSuccess: (_, { data: { listId } }) => {
+    onSuccess: (_, { id, data: { listId } }) => {
       const lists = queryClient.getQueryData(qLists.queryKey);
       const nextList = lists?.find((list) => list.id === listId);
-      toast.success(`Todo moved to ${nextList?.name ?? "Unknown"}`, {
+      if (!nextList) return;
+
+      toast.success(`Todo moved to ${nextList.name}`, {
         action: {
-          label: "Go to list",
-          onClick: () => navigate(goToList(listId)),
+          label: "View",
+          onClick: () =>
+            navigate({
+              to: "/todos/$listId",
+              params: { listId: nextList.id },
+              search: { highlightedTodoId: id },
+            }),
         },
       });
     },
