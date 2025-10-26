@@ -6,7 +6,7 @@ import { LogOutIcon, Settings2Icon, TrashIcon } from "lucide-react";
 import { useAtom } from "jotai";
 import { alertSystemAtom } from "./alert-system/alert-system.store";
 import { linkOptions } from "@tanstack/react-router";
-import type { MenuItem } from "./ui/menu/types";
+import type { MenuItem } from "./ui/menu/menu.types";
 import ResponsiveMenu from "./ui/menu/responsive-menu";
 import type { UserSelect } from "@/lib/types";
 
