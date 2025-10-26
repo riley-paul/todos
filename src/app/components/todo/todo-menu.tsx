@@ -11,7 +11,7 @@ import { qLists } from "@/lib/client/queries";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { useAtom } from "jotai";
-import type { MenuItem } from "../ui/menu/types";
+import type { MenuItem } from "../ui/menu/menu.types";
 import { editingTodoIdAtom } from "./todos.store";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
 
@@ -23,7 +23,7 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
 
   const [_, setEditingTodoId] = useAtom(editingTodoIdAtom);
 
-  const handleMove = (targetListId: string | null) => {
+  const handleMove = (targetListId: string) => {
     moveTodo.mutate({ id: todoId, data: { listId: targetListId } });
   };
 
@@ -35,24 +35,15 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
     setEditingTodoId(todoId);
   };
 
-  const moveMenuItems: MenuItem[] = [
-    {
+  const moveMenuItems: MenuItem[] = lists.map(
+    (list): MenuItem => ({
       type: "item",
-      key: "move-inbox",
-      text: "Inbox",
-      onClick: () => handleMove(null),
-      hide: !listId,
-    },
-    ...lists.map(
-      (list): MenuItem => ({
-        type: "item",
-        key: `move-${list.id}`,
-        text: list.name,
-        onClick: () => handleMove(list.id),
-        hide: list.id === listId,
-      }),
-    ),
-  ];
+      key: `move-${list.id}`,
+      text: list.name,
+      onClick: () => handleMove(list.id),
+      hide: list.id === listId,
+    }),
+  );
 
   const menuItems: MenuItem[] = [
     {

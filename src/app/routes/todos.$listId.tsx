@@ -4,7 +4,10 @@ import { qList, qTodos } from "@/lib/client/queries";
 import { Button, Text } from "@radix-ui/themes";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import React from "react";
 import { useDocumentTitle } from "usehooks-ts";
+import ListHeader from "../components/list/list-header";
+import TodoAdder from "../components/todo-adder";
 
 export const Route = createFileRoute("/todos/$listId")({
   component: RouteComponent,
@@ -56,5 +59,11 @@ function RouteComponent() {
     );
   }
 
-  return <Todos listId={listId} list={list} />;
+  return (
+    <React.Fragment>
+      <ListHeader list={list} />
+      <TodoAdder listId={listId} />
+      <Todos list={list} />
+    </React.Fragment>
+  );
 }

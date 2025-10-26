@@ -12,7 +12,7 @@ import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
 import emptyTodoImg from "@/assets/undraw_empty_4zx0.svg";
 import Illustration from "../illustration";
-import TodosContainer from "./todos-container";
+import NoTodosScreen from "../screens/no-todos";
 
 const CompletedTodosActions: React.FC<{ listId: SelectedList }> = ({
   listId,
@@ -42,7 +42,7 @@ const CompletedTodosGroup: React.FC<{
           onClick={() => setShowCompleted((v) => !v)}
         >
           <span>Completed</span>
-          <Text className="font-mono text-accentA-12">
+          <Text className="text-accentA-12 font-mono">
             {completedTodos.length}
           </Text>
           <ChevronRightIcon
@@ -64,46 +64,34 @@ const CompletedTodosGroup: React.FC<{
 const produceTodo = (todo: TodoSelect) => <Todo key={todo.id} todo={todo} />;
 
 type Props = {
-  listId: SelectedList;
   list: ListSelect;
 };
 
-const Todos: React.FC<Props> = ({ listId, list }) => {
-  const { data: todos } = useSuspenseQuery(qTodos(listId));
+const Todos: React.FC<Props> = ({ list }) => {
+  const { data: todos } = useSuspenseQuery(qTodos(list.id));
   const { data: user } = useSuspenseQuery(qUser);
 
   const completedTodos = todos.filter(({ isCompleted }) => isCompleted);
   const notCompletedTodos = todos.filter(({ isCompleted }) => !isCompleted);
 
   if (todos.length === 0) {
-    return (
-      <TodosContainer list={list}>
-        <div className="flex w-full flex-col items-center justify-center gap-6 py-12">
-          <Illustration src={emptyTodoImg.src} />
-          <Text size="2" color="gray" align="center">
-            No todos found
-          </Text>
-        </div>
-      </TodosContainer>
-    );
+    return <NoTodosScreen />;
   }
 
   if (user.settingGroupCompleted) {
     return (
       <>
-        <TodosContainer list={list}>
-          <div className="grid gap-1">{notCompletedTodos.map(produceTodo)}</div>
-        </TodosContainer>
-        <CompletedTodosGroup completedTodos={completedTodos} listId={listId} />
+        <div className="grid gap-1">{notCompletedTodos.map(produceTodo)}</div>
+        <CompletedTodosGroup completedTodos={completedTodos} listId={list.id} />
       </>
     );
   }
 
   return (
-    <TodosContainer list={list}>
+    <React.Fragment>
       <div className="grid gap-1">{todos.map(produceTodo)}</div>
-      <CompletedTodosActions listId={listId} />
-    </TodosContainer>
+      <CompletedTodosActions listId={list.id} />
+    </React.Fragment>
   );
 };
 
