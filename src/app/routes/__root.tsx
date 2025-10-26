@@ -17,6 +17,7 @@ import { CircleCheckBigIcon } from "lucide-react";
 import { Heading, Separator } from "@radix-ui/themes";
 import UserMenu from "../components/user-menu";
 import ListChips from "../components/list/list-chips";
+import ConnectionState from "../components/connection-state";
 
 type RouterContext = {
   queryClient: QueryClient;
@@ -54,6 +55,7 @@ function Component() {
           <section className="flex items-center gap-3">
             {/*<Invites />*/}
             {/*<SearchLink />*/}
+            <ConnectionState />
             <UserMenu user={currentUser} />
           </section>
         </div>

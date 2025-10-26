@@ -4,7 +4,7 @@ import * as Ably from "ably";
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
-import RadixProvider from "@/app/components/radix-provider";
+import RadixProvider from "@/app/components/ui/radix-provider";
 import {
   MutationCache,
   QueryClient,
