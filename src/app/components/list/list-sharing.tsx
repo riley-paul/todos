@@ -6,8 +6,6 @@ import {
   Button,
   Dialog,
   IconButton,
-  Separator,
-  Skeleton,
   Text,
   type ButtonProps,
 } from "@radix-ui/themes";
