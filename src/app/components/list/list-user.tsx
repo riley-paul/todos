@@ -36,7 +36,7 @@ const ListUser: React.FC<Props> = ({ listUser }) => {
   return (
     <div className="flex items-center gap-3 px-3 py-2 transition-colors hover:bg-gray-4">
       <div className="relative">
-        <UserBubble user={listUser.user} size="md" />
+        <UserBubble user={listUser.user} avatarProps={{ size: "2" }} />
         {listUser.isPending && (
           <Tooltip side="left" content="Pending Invitation">
             <div className="shadow absolute -right-0.5 -top-0.5 size-3 rounded-full bg-yellow-9" />

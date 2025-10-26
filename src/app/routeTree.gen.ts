@@ -9,142 +9,86 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WithBackRouteImport } from './routes/_withBack'
-import { Route as WithAdderRouteImport } from './routes/_withAdder'
-import { Route as WithAdderIndexRouteImport } from './routes/_withAdder.index'
-import { Route as WithBackSettingsRouteImport } from './routes/_withBack.settings'
-import { Route as WithAdderTodosListIdRouteImport } from './routes/_withAdder.todos.$listId'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as TodosListIdRouteImport } from './routes/todos.$listId'
 
-const WithBackRoute = WithBackRouteImport.update({
-  id: '/_withBack',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const WithAdderRoute = WithAdderRouteImport.update({
-  id: '/_withAdder',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const WithAdderIndexRoute = WithAdderIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => WithAdderRoute,
-} as any)
-const WithBackSettingsRoute = WithBackSettingsRouteImport.update({
+const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
-  getParentRoute: () => WithBackRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-const WithAdderTodosListIdRoute = WithAdderTodosListIdRouteImport.update({
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TodosListIdRoute = TodosListIdRouteImport.update({
   id: '/todos/$listId',
   path: '/todos/$listId',
-  getParentRoute: () => WithAdderRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/settings': typeof WithBackSettingsRoute
-  '/': typeof WithAdderIndexRoute
-  '/todos/$listId': typeof WithAdderTodosListIdRoute
+  '/': typeof IndexRoute
+  '/settings': typeof SettingsRoute
+  '/todos/$listId': typeof TodosListIdRoute
 }
 export interface FileRoutesByTo {
-  '/settings': typeof WithBackSettingsRoute
-  '/': typeof WithAdderIndexRoute
-  '/todos/$listId': typeof WithAdderTodosListIdRoute
+  '/': typeof IndexRoute
+  '/settings': typeof SettingsRoute
+  '/todos/$listId': typeof TodosListIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_withAdder': typeof WithAdderRouteWithChildren
-  '/_withBack': typeof WithBackRouteWithChildren
-  '/_withBack/settings': typeof WithBackSettingsRoute
-  '/_withAdder/': typeof WithAdderIndexRoute
-  '/_withAdder/todos/$listId': typeof WithAdderTodosListIdRoute
+  '/': typeof IndexRoute
+  '/settings': typeof SettingsRoute
+  '/todos/$listId': typeof TodosListIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/settings' | '/' | '/todos/$listId'
+  fullPaths: '/' | '/settings' | '/todos/$listId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/settings' | '/' | '/todos/$listId'
-  id:
-    | '__root__'
-    | '/_withAdder'
-    | '/_withBack'
-    | '/_withBack/settings'
-    | '/_withAdder/'
-    | '/_withAdder/todos/$listId'
+  to: '/' | '/settings' | '/todos/$listId'
+  id: '__root__' | '/' | '/settings' | '/todos/$listId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  WithAdderRoute: typeof WithAdderRouteWithChildren
-  WithBackRoute: typeof WithBackRouteWithChildren
+  IndexRoute: typeof IndexRoute
+  SettingsRoute: typeof SettingsRoute
+  TodosListIdRoute: typeof TodosListIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_withBack': {
-      id: '/_withBack'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof WithBackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_withAdder': {
-      id: '/_withAdder'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof WithAdderRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_withAdder/': {
-      id: '/_withAdder/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof WithAdderIndexRouteImport
-      parentRoute: typeof WithAdderRoute
-    }
-    '/_withBack/settings': {
-      id: '/_withBack/settings'
+    '/settings': {
+      id: '/settings'
       path: '/settings'
       fullPath: '/settings'
-      preLoaderRoute: typeof WithBackSettingsRouteImport
-      parentRoute: typeof WithBackRoute
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_withAdder/todos/$listId': {
-      id: '/_withAdder/todos/$listId'
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/todos/$listId': {
+      id: '/todos/$listId'
       path: '/todos/$listId'
       fullPath: '/todos/$listId'
-      preLoaderRoute: typeof WithAdderTodosListIdRouteImport
-      parentRoute: typeof WithAdderRoute
+      preLoaderRoute: typeof TodosListIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
 
-interface WithAdderRouteChildren {
-  WithAdderIndexRoute: typeof WithAdderIndexRoute
-  WithAdderTodosListIdRoute: typeof WithAdderTodosListIdRoute
-}
-
-const WithAdderRouteChildren: WithAdderRouteChildren = {
-  WithAdderIndexRoute: WithAdderIndexRoute,
-  WithAdderTodosListIdRoute: WithAdderTodosListIdRoute,
-}
-
-const WithAdderRouteWithChildren = WithAdderRoute._addFileChildren(
-  WithAdderRouteChildren,
-)
-
-interface WithBackRouteChildren {
-  WithBackSettingsRoute: typeof WithBackSettingsRoute
-}
-
-const WithBackRouteChildren: WithBackRouteChildren = {
-  WithBackSettingsRoute: WithBackSettingsRoute,
-}
-
-const WithBackRouteWithChildren = WithBackRoute._addFileChildren(
-  WithBackRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
-  WithAdderRoute: WithAdderRouteWithChildren,
-  WithBackRoute: WithBackRouteWithChildren,
+  IndexRoute: IndexRoute,
+  SettingsRoute: SettingsRoute,
+  TodosListIdRoute: TodosListIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

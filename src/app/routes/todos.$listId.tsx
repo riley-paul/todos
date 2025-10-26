@@ -6,7 +6,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useDocumentTitle } from "usehooks-ts";
 
-export const Route = createFileRoute("/_withAdder/todos/$listId")({
+export const Route = createFileRoute("/todos/$listId")({
   component: RouteComponent,
   loader: ({ context: { queryClient }, params: { listId } }) =>
     Promise.all([

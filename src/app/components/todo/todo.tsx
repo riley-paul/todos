@@ -96,7 +96,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
 
   const ref = React.useRef<HTMLDivElement>(null);
 
-  const { highlightedTodoId } = useSearch({ from: "/_withAdder" }) || {};
+  const { highlightedTodoId } = useSearch({ strict: false });
   const isHighlighted = highlightedTodoId === todo.id;
 
   useOnClickOutside(ref, () => {
@@ -121,7 +121,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
       ref={ref}
       className={cn(
         (isHighlighted || isEditing) && "bg-accent-2",
-        "-mx-4 flex min-h-11 items-center gap-2 px-4 py-1 transition-colors ease-out sm:hover:bg-accent-2",
+        "sm:hover:bg-accent-2 -mx-4 flex min-h-11 items-center gap-2 px-4 py-1 transition-colors ease-out",
       )}
     >
       {isEditing ? (
@@ -154,7 +154,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
             flexGrow="1"
             align="center"
             onClick={() => setEditingTodoId(todo.id)}
-            className="min-w-0 whitespace-normal break-words"
+            className="min-w-0 break-words whitespace-normal"
           >
             <Text
               size="2"
@@ -168,7 +168,9 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
               <Link {...goToList(todo.list.id)}>{todo.list.name}</Link>
             </Badge>
           )}
-          {!todo.isAuthor && <UserBubble user={todo.author} size="sm" />}
+          {!todo.isAuthor && (
+            <UserBubble user={todo.author} avatarProps={{ size: "1" }} />
+          )}
           <TodoMenu todoId={todo.id} />
         </>
       )}

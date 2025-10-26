@@ -2,8 +2,17 @@ import AlertSystem from "@/app/components/alert-system/alert-system";
 import { qLists, qUser } from "@/lib/client/queries";
 import type { UserSelect } from "@/lib/types";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
-import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import {
+  createRootRouteWithContext,
+  Link,
+  Outlet,
+} from "@tanstack/react-router";
 import { useChannel } from "ably/react";
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import React from "react";
+import { CircleCheckBigIcon } from "lucide-react";
+import { Heading, Separator } from "@radix-ui/themes";
+import UserMenu from "../components/user-menu";
 
 type RouterContext = {
   queryClient: QueryClient;
@@ -29,9 +38,31 @@ function Component() {
   });
 
   return (
-    <>
-      <Outlet />
+    <React.Fragment>
+      <header className="bg-background sticky top-0 z-10 flex h-18 flex-col justify-center">
+        <div className="container2 flex flex-1 items-center justify-between">
+          <Link to="/" className="flex items-center gap-2">
+            <CircleCheckBigIcon className="text-accent-10 size-6" />
+            <Heading size="4">Todos</Heading>
+          </Link>
+          <section className="flex items-center gap-3">
+            {/*<Invites />*/}
+            {/*<SearchLink />*/}
+            <UserMenu user={currentUser} />
+          </section>
+        </div>
+        <div className="container2 px-2">
+          <Separator size="4" />
+        </div>
+      </header>
+      <main className="container2 grid gap-6 py-6">
+        {/*<ListChips lists={lists} />*/}
+        <Outlet />
+      </main>
       <AlertSystem />
-    </>
+      {import.meta.env.DEV && (
+        <TanStackRouterDevtools position="bottom-right" />
+      )}
+    </React.Fragment>
   );
 }

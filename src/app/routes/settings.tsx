@@ -7,7 +7,7 @@ import type React from "react";
 import { useAtom } from "jotai";
 import { themeAtom } from "../hooks/use-theme";
 
-export const Route = createFileRoute("/_withBack/settings")({
+export const Route = createFileRoute("/settings")({
   component: RouteComponent,
   loader: async ({ context }) => {
     const user = await context.queryClient.ensureQueryData(qUser);

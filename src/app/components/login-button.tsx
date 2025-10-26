@@ -5,6 +5,7 @@ type ProviderDetails = {
   name: string;
   icon: React.ReactNode;
   url: string;
+  className: string;
 };
 
 const providers: Record<string, ProviderDetails> = {
@@ -37,6 +38,7 @@ const providers: Record<string, ProviderDetails> = {
       </svg>
     ), // Replace with actual icon
     url: "/login/google",
+    className: "bg-white border border-gray-300",
   },
   github: {
     name: "GitHub",
@@ -54,6 +56,7 @@ const providers: Record<string, ProviderDetails> = {
       </svg>
     ), // Replace with actual icon
     url: "/login/github",
+    className: "border border-gray-800 bg-gray-950 text-white",
   },
 };
 
@@ -62,9 +65,9 @@ type Props = {
 };
 
 const LoginButton: React.FC<Props> = ({ provider }) => {
-  const { name, icon, url } = providers[provider];
+  const { name, icon, url, className } = providers[provider];
   return (
-    <Button asChild size="2" variant="soft">
+    <Button asChild size="2" variant="soft" className={className}>
       <a href={url}>
         <span className="size-4">{icon}</span>
         <span>Login with {name}</span>

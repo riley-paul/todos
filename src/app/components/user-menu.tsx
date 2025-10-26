@@ -1,23 +1,16 @@
 import React from "react";
 
-import LoginButton from "./login-button";
-import { useQuery } from "@tanstack/react-query";
-import { qUser } from "@/lib/client/queries";
-import { Avatar, Spinner, Text, Tooltip } from "@radix-ui/themes";
+import { Avatar, IconButton, Text } from "@radix-ui/themes";
 import useMutations from "@/app/hooks/use-mutations";
-import {
-  LogOutIcon,
-  Settings2Icon,
-  TrashIcon,
-  TriangleAlert,
-} from "lucide-react";
+import { LogOutIcon, Settings2Icon, TrashIcon } from "lucide-react";
 import { useAtom } from "jotai";
 import { alertSystemAtom } from "./alert-system/alert-system.store";
 import { linkOptions } from "@tanstack/react-router";
 import type { MenuItem } from "./ui/menu/types";
 import ResponsiveMenu from "./ui/menu/responsive-menu";
+import type { UserSelect } from "@/lib/types";
 
-const UserMenu: React.FC = () => {
+const UserMenu: React.FC<{ user: UserSelect }> = ({ user }) => {
   const { deleteUser } = useMutations();
   const [, dispatchAlert] = useAtom(alertSystemAtom);
 
@@ -37,39 +30,6 @@ const UserMenu: React.FC = () => {
     });
   };
 
-  const userQuery = useQuery(qUser);
-
-  if (userQuery.isLoading) {
-    return <Avatar size="3" radius="full" src="" fallback={<Spinner />} />;
-  }
-
-  if (userQuery.isError) {
-    return (
-      <Tooltip content="Error loading user data" side="left">
-        <div>
-          <Avatar
-            size="3"
-            radius="full"
-            src=""
-            color="red"
-            fallback={<TriangleAlert className="size-4" />}
-          />
-        </div>
-      </Tooltip>
-    );
-  }
-
-  const user = userQuery.data;
-
-  if (!user) {
-    return (
-      <span className="flex gap-1">
-        <LoginButton provider="github" />
-        <LoginButton provider="google" />
-      </span>
-    );
-  }
-
   const fallback = user.name
     .split(" ")
     .map((n) => n[0])
@@ -87,7 +47,7 @@ const UserMenu: React.FC = () => {
             fallback={fallback}
             radius="full"
           />
-          <div className="leading-0.5 grid flex-1">
+          <div className="grid flex-1 leading-0.5">
             <Text weight="medium" truncate>
               {user.name}
             </Text>
@@ -129,7 +89,7 @@ const UserMenu: React.FC = () => {
       menuItems={menuItems}
       dropdownProps={{ className: "min-w-48", align: "end" }}
     >
-      <button>
+      <IconButton size="1" variant="ghost" radius="full">
         <Avatar
           size="3"
           radius="full"
@@ -137,7 +97,7 @@ const UserMenu: React.FC = () => {
           fallback={fallback}
           className="cursor-pointer"
         />
-      </button>
+      </IconButton>
     </ResponsiveMenu>
   );
 };

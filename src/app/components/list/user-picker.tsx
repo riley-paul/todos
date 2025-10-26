@@ -44,7 +44,7 @@ const UserPicker: React.FC<Props> = ({
   if (selectedUser) {
     return (
       <Badge size="3" variant="surface" className="h-full">
-        <UserBubble user={selectedUser} size="sm" />
+        <UserBubble user={selectedUser} avatarProps={{ size: "1" }} />
         <span className="flex-1">{selectedUser.name}</span>
         <IconButton
           variant="ghost"
@@ -76,7 +76,7 @@ const UserPicker: React.FC<Props> = ({
             onBlur={() => setIsFocused(false)}
           >
             <TextField.Slot side="left">
-              <SearchIcon className="size-4 text-accent-10" />
+              <SearchIcon className="text-accent-10 size-4" />
             </TextField.Slot>
             {Boolean(search) && (
               <TextField.Slot side="right">
@@ -96,7 +96,7 @@ const UserPicker: React.FC<Props> = ({
         </Command.Input>
 
         {showMenu && Boolean(search) && (
-          <Command.List className="border-1 absolute z-30 mt-2 max-h-52 w-full overflow-y-auto rounded-2 border bg-gray-1 shadow-3">
+          <Command.List className="rounded-2 bg-gray-1 absolute z-30 mt-2 max-h-52 w-full overflow-y-auto border">
             <Spinner loading={isLoading}>
               <Command.Empty>
                 <div className="flex items-center justify-center p-6">
@@ -111,9 +111,9 @@ const UserPicker: React.FC<Props> = ({
                   value={user.id}
                   onSelect={setSelectedUserId}
                   disabled={isUserDisabled?.(user)}
-                  className="flex cursor-default select-none items-center gap-2 px-3 py-2 transition-colors data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent-2 data-[disabled=true]:opacity-50"
+                  className="data-[selected=true]:bg-accent-2 flex cursor-default items-center gap-2 px-3 py-2 transition-colors select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50"
                 >
-                  <UserBubble user={user} size="md" />
+                  <UserBubble user={user} avatarProps={{ size: "2" }} />
                   <div className="flex flex-col">
                     <Text size="2" weight="medium">
                       {user.name}
