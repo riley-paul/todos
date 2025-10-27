@@ -18,6 +18,7 @@ import { useCopyToClipboard } from "usehooks-ts";
 import { alertSystemAtom } from "../alert-system/alert-system.store";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
+import useAlerts from "@/app/hooks/use-alerts";
 
 type Props = {
   list: ListSelect;
@@ -27,7 +28,6 @@ const ListMenu: React.FC<Props> = ({ list }) => {
   const { id, name, otherUsers } = list;
   const {
     deleteList,
-    leaveList,
     updateList,
     uncheckCompletedTodos,
     deleteCompletedTodos,
@@ -72,24 +72,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
     });
   };
 
-  const handleLeaveList = () => {
-    dispatchAlert({
-      type: "open",
-      data: {
-        type: "delete",
-        title: "Leave List",
-        message: `Are you sure you want to leave this list? This action cannot be undone. You will have to be re-invited to access it again.`,
-        handleDelete: () => {
-          leaveList.mutate({ listId: id });
-          dispatchAlert({ type: "close" });
-        },
-        confirmButtonProps: {
-          children: "Leave",
-          color: "amber",
-        },
-      },
-    });
-  };
+  const { handleRemoveSelf } = useAlerts();
 
   const handleCopyLink = () => {
     const link = `${window.location.origin}/todos/${id}`;
@@ -153,7 +136,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       text: "Leave",
       icon: <LogOutIcon className="size-4 opacity-70" />,
       color: "amber",
-      onClick: handleLeaveList,
+      onClick: () => handleRemoveSelf({ listId: id }),
       hide: isOnlyUser,
     },
     {

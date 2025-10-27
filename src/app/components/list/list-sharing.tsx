@@ -6,6 +6,7 @@ import {
   Button,
   Dialog,
   IconButton,
+  Separator,
   Text,
   type ButtonProps,
 } from "@radix-ui/themes";
@@ -15,8 +16,9 @@ import UserBubble from "../ui/user-bubble";
 import UserSearch from "./user-search";
 import { toast } from "sonner";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
-import { qListShares } from "@/app/lib/queries";
+import { qListShares, qUser } from "@/app/lib/queries";
 import useMutations from "@/app/hooks/use-mutations";
+import useAlerts from "@/app/hooks/use-alerts";
 
 type UserInviterProps = {
   list: ListSelect;
@@ -27,7 +29,7 @@ const UserInviter: React.FC<UserInviterProps> = ({ list, isUserDisabled }) => {
   const [search, setSearch] = React.useState("");
   const [selectedUserId, setSelectedUserId] = React.useState<string>("");
 
-  const { joinList } = useMutations();
+  const { createListJoin } = useMutations();
 
   return (
     <div className="grid grid-cols-[1fr_auto] items-center gap-2">
@@ -42,7 +44,7 @@ const UserInviter: React.FC<UserInviterProps> = ({ list, isUserDisabled }) => {
         size="3"
         disabled={!selectedUserId}
         onClick={() =>
-          joinList.mutate(
+          createListJoin.mutate(
             { listId: list.id, userId: selectedUserId },
             {
               onSuccess: () => {
@@ -66,32 +68,41 @@ type ListShareProps = {
   isOnlyUser?: boolean;
 };
 
-const ListShare: React.FC<ListShareProps> = ({ listShare }) => {
-  // const handleRemoveUser = useRemoveUserAlert({ listId, userId });
-  // const handleCancelInvite = useCancelInviteAlert({ listId, userId });
+const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
+  const { data: currentUser } = useQuery(qUser);
+  const { handleCancelInvite, handleRemoveSelf, handleRemoveUser } =
+    useAlerts();
 
   const getActionProps = (): ButtonProps => {
     if (listShare.isPending) {
       return {
-        color: "red",
+        color: "amber",
         children: "Cancel",
-        // onClick: handleCancelInvite,
+        onClick: () =>
+          handleCancelInvite({
+            listId: listShare.listId,
+            userId: listShare.userId,
+          }),
       };
     }
 
-    // if (userId === uid) {
-    //   return {
-    //     color: "amber",
-    //     disabled: isOnlyUser,
-    //     children: "Leave",
-    //     onClick: handleRemoveUser,
-    //   };
-    // }
+    if (listShare.userId === currentUser?.id) {
+      return {
+        color: "red",
+        disabled: isOnlyUser,
+        children: "Leave",
+        onClick: () => handleRemoveSelf({ listId: listShare.listId }),
+      };
+    }
 
     return {
       color: "red",
       children: "Remove",
-      // onClick: handleRemoveUser
+      onClick: () =>
+        handleRemoveUser({
+          listId: listShare.listId,
+          userId: listShare.userId,
+        }),
     };
   };
 
@@ -116,6 +127,9 @@ const ListShare: React.FC<ListShareProps> = ({ listShare }) => {
 const ListSharing: React.FC<{ list: ListSelect }> = ({ list }) => {
   const { data: listShares = [] } = useQuery(qListShares(list.id));
   const existingUserIds = new Set(listShares.map(({ userId }) => userId));
+
+  const pendingListShares = listShares.filter(({ isPending }) => isPending);
+  const nonPendingListShares = listShares.filter(({ isPending }) => !isPending);
 
   return (
     <Dialog.Root>
@@ -142,12 +156,18 @@ const ListSharing: React.FC<{ list: ListSelect }> = ({ list }) => {
           isUserDisabled={(userId) => existingUserIds.has(userId)}
         />
         <article className="-mx-6 flex h-full flex-col gap-1 overflow-x-hidden overflow-y-auto px-6">
-          {listShares.map((listShare) => (
+          {nonPendingListShares.map((listShare) => (
             <ListShare
               key={listShare.id}
               listShare={listShare}
-              isOnlyUser={listShares.length === 1}
+              isOnlyUser={nonPendingListShares.length === 1}
             />
+          ))}
+          {pendingListShares.length > 0 && (
+            <Separator size="4" className="my-2" />
+          )}
+          {pendingListShares.map((listShare) => (
+            <ListShare key={listShare.id} listShare={listShare} />
           ))}
         </article>
       </ResponsiveDialogContent>

@@ -2,10 +2,10 @@ import React from "react";
 import Empty from "../ui/empty";
 import { Button } from "@radix-ui/themes";
 import { CircleQuestionMarkIcon, ListPlusIcon } from "lucide-react";
-import useCreateListAlert from "@/app/hooks/alerts/use-create-list-alert";
+import useAlerts from "@/app/hooks/use-alerts";
 
 const NoListsScreen: React.FC = () => {
-  const handleCreateList = useCreateListAlert();
+  const { handleCreateList } = useAlerts();
 
   return (
     <Empty.Root>

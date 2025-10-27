@@ -20,7 +20,7 @@ const ListHeader: React.FC<Props> = ({ list }) => {
       </Heading>
       <section className="flex items-center gap-4">
         <ListMenu list={list} />
-        <ListSharing list={list} />
+        <ListSharing key={list.id} list={list} />
       </section>
     </header>
   );

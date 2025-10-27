@@ -206,7 +206,7 @@ export default function useMutations() {
     },
   });
 
-  const joinList = useMutation({
+  const createListJoin = useMutation({
     mutationFn: actions.listUsers.create.orThrow,
   });
 
@@ -234,17 +234,21 @@ export default function useMutations() {
     },
   });
 
-  const leaveList = useMutation({
+  const removeUserFromList = useMutation({
     mutationFn: actions.listUsers.remove.orThrow,
-    onSuccess: (_, { userId, listId }) => {
+    onSuccess: (_, { listId }) => {
+      const lists = queryClient.getQueryData(qLists.queryKey);
+      const list = lists?.find((l) => l.id === listId);
+      toast.success(`User removed from ${list?.name ?? "the list"}`);
+    },
+  });
+
+  const removeSelfFromList = useMutation({
+    mutationFn: actions.listUsers.remove.orThrow,
+    onSuccess: (_, { listId }) => {
       navigate({ to: "/" });
       const lists = queryClient.getQueryData(qLists.queryKey);
       const list = lists?.find((l) => l.id === listId);
-
-      if (userId) {
-        toast.success(`User removed from "${list?.name ?? "the list"}"`);
-        return;
-      }
       toast.success(`You left "${list?.name ?? "the list"}"`);
     },
   });
@@ -258,11 +262,14 @@ export default function useMutations() {
     moveTodo,
     deleteUser,
     updateUserSettings,
+
     updateList,
     createList,
     deleteList,
-    leaveList,
-    joinList,
+
+    createListJoin,
     acceptListJoin,
+    removeSelfFromList,
+    removeUserFromList,
   };
 }

@@ -24,7 +24,7 @@ function RouteComponent() {
   const { listId } = Route.useParams();
   const { data: list } = useSuspenseQuery(qList(listId));
 
-  const { acceptListJoin, leaveList } = useMutations();
+  const { acceptListJoin, removeSelfFromList } = useMutations();
 
   useDocumentTitle(list.name);
 
@@ -44,7 +44,7 @@ function RouteComponent() {
             variant="soft"
             color="red"
             size="2"
-            onClick={() => leaveList.mutate({ listId })}
+            onClick={() => removeSelfFromList.mutate({ listId })}
           >
             No
           </Button>

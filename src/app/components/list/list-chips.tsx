@@ -1,10 +1,10 @@
+import useAlerts from "@/app/hooks/use-alerts";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
 import { type ListSelect } from "@/lib/types";
 import { Badge, IconButton } from "@radix-ui/themes";
 import { Link, linkOptions } from "@tanstack/react-router";
 import { ListPlusIcon } from "lucide-react";
 import React from "react";
-import useCreateListAlert from "@/app/hooks/alerts/use-create-list-alert";
 // import ListReorder from "./list-reorder";
 
 const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
@@ -25,7 +25,7 @@ const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
 };
 
 const ListChips: React.FC<{ lists: ListSelect[] }> = ({ lists }) => {
-  const handleCreateList = useCreateListAlert();
+  const { handleCreateList } = useAlerts();
 
   if (lists.length === 0) return null;
 
