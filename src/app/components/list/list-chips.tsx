@@ -15,7 +15,12 @@ const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
 
   const isActive = useIsLinkActive(link);
   return (
-    <Badge variant={isActive ? "solid" : "soft"} size="3" asChild>
+    <Badge
+      color={list.isPending ? "gray" : undefined}
+      variant={isActive ? "solid" : "soft"}
+      size="3"
+      asChild
+    >
       <Link {...link}>
         <span>{list.name}</span>
         <span className="font-mono opacity-70">{list.todoCount}</span>
