@@ -1,6 +1,6 @@
 import { defineAction } from "astro:actions";
-import listInputs from "./lists.inputs";
-import listHandlers from "./lists.handlers";
+import * as listInputs from "./lists.inputs";
+import * as listHandlers from "./lists.handlers";
 
 export const getAll = defineAction({
   input: listInputs.getAll,
@@ -25,4 +25,9 @@ export const create = defineAction({
 export const remove = defineAction({
   input: listInputs.remove,
   handler: listHandlers.remove,
+});
+
+export const updateSortShow = defineAction({
+  input: listInputs.updateSortShow,
+  handler: listHandlers.updateSortShow,
 });

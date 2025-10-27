@@ -33,8 +33,8 @@ import { cn } from "@/app/lib/utils";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 import useMutations from "@/app/hooks/use-mutations";
 import { Link } from "@tanstack/react-router";
+import { LIST_SEPARATOR_ID } from "@/lib/constants";
 
-const SEPARATOR_ID = "separator-hidden-lists";
 type SortableObjectData =
   | {
       type: "list";
@@ -45,6 +45,33 @@ type SortableObjectData =
       type: "separator";
       id: string;
     };
+
+const getSortableObjectList = (lists: ListSelect[]): SortableObjectData[] => {
+  const listToSortableObj = (list: ListSelect): SortableObjectData => ({
+    type: "list",
+    id: list.id,
+    list,
+  });
+
+  const separator: SortableObjectData = {
+    type: "separator",
+    id: LIST_SEPARATOR_ID,
+  };
+
+  if (lists.length === 0) return [];
+  if (lists.every(({ show }) => show)) {
+    return [...lists.map(listToSortableObj), separator];
+  }
+  if (lists.every(({ show }) => !show)) {
+    return [separator, ...lists.map(listToSortableObj)];
+  }
+
+  return [
+    ...lists.filter(({ show }) => show).map(listToSortableObj),
+    separator,
+    ...lists.filter(({ show }) => !show).map(listToSortableObj),
+  ];
+};
 
 type SortableItemProps = SortableObjectData & {
   isDragging?: boolean;
@@ -129,43 +156,13 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
   }
 };
 
-type ListReorderContentProps = {
-  lists: ListSelect[];
-  hiddenIdx: number | null;
-};
+type ListReorderContentProps = { lists: ListSelect[] };
 
-const ListReorderContent: React.FC<ListReorderContentProps> = ({
-  lists,
-  hiddenIdx,
-}) => {
+const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [localObjs, setLocalObjs] = useState(getSortableObjectList(lists));
 
-  const [localLists, setLocalLists] = useState(lists);
-  const [localHiddenIdx, setLocalHiddenIdx] = useState(hiddenIdx);
-
-  useEffect(() => setLocalLists(lists), [lists]);
-  useEffect(() => setLocalHiddenIdx(hiddenIdx), [hiddenIdx]);
-
-  const sortableObjects: SortableObjectData[] = localLists
-    .map(
-      (list): SortableObjectData => ({
-        type: "list",
-        id: list.id,
-        list,
-      }),
-    )
-    .toSpliced(
-      localHiddenIdx !== null ? localHiddenIdx : localLists.length,
-      0,
-      {
-        type: "separator",
-        id: SEPARATOR_ID,
-      },
-    );
-
-  useEffect(() => {
-    console.log(sortableObjects);
-  }, [sortableObjects]);
+  useEffect(() => setLocalObjs(getSortableObjectList(lists)), [lists]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -175,7 +172,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({
     }),
   );
 
-  const { updateUserSettings } = useMutations();
+  const { updateListSortShow } = useMutations();
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
@@ -185,32 +182,18 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({
     setActiveId(null);
     const { active, over } = event;
     if (over && active.id !== over.id) {
-      const ids = sortableObjects.map(({ id }) => id);
-
+      const ids = localObjs.map(({ id }) => id);
       const oldIndex = ids.indexOf(active.id as string);
       const newIndex = ids.indexOf(over.id as string);
 
       const newOrder = arrayMove(ids, oldIndex, newIndex);
 
-      const listOrder: Record<string, number> = Object.fromEntries(
-        newOrder.map((id, idx) => [id, idx]),
-      );
-      const hiddenIdx =
-        newOrder.indexOf(SEPARATOR_ID) === ids.length - 1
-          ? null
-          : newOrder.indexOf(SEPARATOR_ID);
-
-      setLocalLists((prev) => arrayMove(prev, oldIndex, newIndex));
-      setLocalHiddenIdx(hiddenIdx);
-
-      return updateUserSettings.mutate({
-        settingListOrder: listOrder,
-        settingListHiddenIndex: hiddenIdx,
-      });
+      setLocalObjs((prev) => arrayMove(prev, oldIndex, newIndex));
+      return updateListSortShow.mutate({ listIds: newOrder });
     }
   };
 
-  const activeObj = sortableObjects.find(({ id }) => id === activeId);
+  const activeObj = localObjs.find(({ id }) => id === activeId);
 
   return (
     <DndContext
@@ -219,12 +202,9 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext
-        items={sortableObjects}
-        strategy={verticalListSortingStrategy}
-      >
+      <SortableContext items={localObjs} strategy={verticalListSortingStrategy}>
         <div className="flex flex-col gap-1">
-          {sortableObjects.map((obj) => (
+          {localObjs.map((obj) => (
             <SortableItem
               key={obj.id}
               isDragging={obj.id === activeId}
@@ -243,10 +223,9 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({
 
 type ListReorderProps = {
   lists: ListSelect[];
-  hiddenIdx: number | null;
 };
 
-const ListReorder: React.FC<ListReorderProps> = ({ lists, hiddenIdx }) => {
+const ListReorder: React.FC<ListReorderProps> = ({ lists }) => {
   return (
     <Dialog.Root>
       <Dialog.Trigger>
@@ -262,7 +241,7 @@ const ListReorder: React.FC<ListReorderProps> = ({ lists, hiddenIdx }) => {
           </Dialog.Description>
         </VisuallyHidden>
         <article className="-mx-6 flex h-full flex-col gap-1 overflow-x-hidden overflow-y-auto px-6">
-          <ListReorderContent lists={lists} hiddenIdx={hiddenIdx} />
+          <ListReorderContent lists={lists} />
         </article>
         <footer className="flex justify-end">
           <Dialog.Close>

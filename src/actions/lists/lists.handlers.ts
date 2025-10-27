@@ -7,9 +7,10 @@ import {
 } from "../helpers";
 import { createDb } from "@/db";
 import { List, ListUser, Todo, User } from "@/db/schema";
-import { and, asc, count, eq, not } from "drizzle-orm";
+import { and, asc, count, desc, eq, not } from "drizzle-orm";
 import actionErrors from "../errors";
-import type listInputs from "./lists.inputs";
+import * as listInputs from "./lists.inputs";
+import { LIST_SEPARATOR_ID } from "@/lib/constants";
 
 async function getList(
   c: ActionAPIContext,
@@ -23,15 +24,17 @@ async function getList(c: ActionAPIContext, listId?: string | undefined) {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 
-  const lists = await db
+  const lists: ListSelect[] = await db
     .selectDistinct({
       id: List.id,
       name: List.name,
       isPending: ListUser.isPending,
+      show: ListUser.show,
+      order: ListUser.order,
     })
     .from(List)
     .innerJoin(ListUser, eq(ListUser.listId, List.id))
-    .orderBy(asc(List.createdAt))
+    .orderBy(desc(ListUser.show), asc(ListUser.order), asc(List.createdAt))
     .where(
       and(
         eq(ListUser.userId, userId),
@@ -77,26 +80,26 @@ async function getList(c: ActionAPIContext, listId?: string | undefined) {
   return listId ? list : lists;
 }
 
-const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
-  _,
-  c,
-) => {
+export const getAll: ActionHandler<
+  typeof listInputs.getAll,
+  ListSelect[]
+> = async (_, c) => {
   return getList(c, undefined);
 };
 
-const get: ActionHandler<typeof listInputs.get, ListSelect | null> = async (
-  { id },
-  c,
-) => {
+export const get: ActionHandler<
+  typeof listInputs.get,
+  ListSelect | null
+> = async ({ id }, c) => {
   const list = await getList(c, id);
   if (!list) return null;
   return list;
 };
 
-const update: ActionHandler<typeof listInputs.update, ListSelect> = async (
-  { id: listId, data },
-  c,
-) => {
+export const update: ActionHandler<
+  typeof listInputs.update,
+  ListSelect
+> = async ({ id: listId, data }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 
@@ -113,10 +116,10 @@ const update: ActionHandler<typeof listInputs.update, ListSelect> = async (
   return getList(c, listId);
 };
 
-const create: ActionHandler<typeof listInputs.create, ListSelect> = async (
-  { name },
-  c,
-) => {
+export const create: ActionHandler<
+  typeof listInputs.create,
+  ListSelect
+> = async ({ name }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 
@@ -135,7 +138,7 @@ const create: ActionHandler<typeof listInputs.create, ListSelect> = async (
   return getList(c, list.id);
 };
 
-const remove: ActionHandler<typeof listInputs.remove, null> = async (
+export const remove: ActionHandler<typeof listInputs.remove, null> = async (
   { id: listId },
   c,
 ) => {
@@ -151,5 +154,22 @@ const remove: ActionHandler<typeof listInputs.remove, null> = async (
   return null;
 };
 
-const listHandlers = { getAll, get, update, create, remove };
-export default listHandlers;
+export const updateSortShow: ActionHandler<
+  typeof listInputs.updateSortShow,
+  ListSelect[]
+> = async ({ listIds }, c) => {
+  const db = createDb(c.locals.runtime.env);
+  const userId = ensureAuthorized(c).id;
+
+  const separatorIdx = listIds.indexOf(LIST_SEPARATOR_ID);
+  await Promise.all(
+    listIds.map((listId, idx) =>
+      db
+        .update(ListUser)
+        .set({ order: idx, show: separatorIdx === -1 || idx < separatorIdx })
+        .where(and(eq(ListUser.userId, userId), eq(ListUser.listId, listId))),
+    ),
+  );
+
+  return getList(c, undefined);
+};
