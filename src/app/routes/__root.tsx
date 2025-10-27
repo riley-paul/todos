@@ -18,6 +18,7 @@ import { Heading, Separator } from "@radix-ui/themes";
 import UserMenu from "../components/user-menu";
 import ListChips from "../components/list/list-chips";
 import ConnectionState from "../components/connection-state";
+import AppSearch from "../components/app-search";
 
 type RouterContext = {
   queryClient: QueryClient;
@@ -56,6 +57,7 @@ function Component() {
             {/*<Invites />*/}
             {/*<SearchLink />*/}
             <ConnectionState />
+            <AppSearch />
             <UserMenu user={currentUser} />
           </section>
         </div>
