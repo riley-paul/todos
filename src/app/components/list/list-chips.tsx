@@ -41,15 +41,15 @@ const ListChips: React.FC = () => {
 
   if (lists.length === 0) return null;
 
-  const sortedLists = sortByOrder(lists, settingListOrder);
-  const filteredLists = filterByHiddenIdx(sortedLists, settingListHiddenIndex);
+  // const sortedLists = sortByOrder(lists, settingListOrder);
+  // const filteredLists = filterByHiddenIdx(sortedLists, settingListHiddenIndex);
 
   return (
     <div className="flex flex-wrap gap-2">
-      {filteredLists.map((list) => (
+      {lists.map((list) => (
         <ListChip key={list.id} list={list} />
       ))}
-      <ListReorder lists={sortedLists} hiddenIdx={settingListHiddenIndex} />
+      <ListReorder lists={lists} hiddenIdx={settingListHiddenIndex} />
       <IconButton
         size="1"
         className="size-7"
