@@ -1,4 +1,3 @@
-import type { ListOrder } from "@/lib/types";
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 const id = text("id")
@@ -34,11 +33,6 @@ export const User = sqliteTable("user", {
   githubUsername: text().unique(),
 
   settingGroupCompleted: integer({ mode: "boolean" }).notNull().default(true),
-  settingListOrder: text({ mode: "json" })
-    .$type<ListOrder>()
-    .notNull()
-    .default({}),
-  settingListHiddenIndex: integer(),
 
   ...timeStamps,
 });

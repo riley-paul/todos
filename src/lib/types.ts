@@ -6,8 +6,6 @@ export const zListName = z.string().trim().min(1).max(256);
 
 export const zSettings = createSelectSchema(User).pick({
   settingGroupCompleted: true,
-  settingListOrder: true,
-  settingListHiddenIndex: true,
 });
 
 export const zUserSelect = createSelectSchema(User).pick({

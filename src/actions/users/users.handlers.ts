@@ -13,8 +13,6 @@ const USER_FIELDS = {
   email: User.email,
   avatarUrl: User.avatarUrl,
   settingGroupCompleted: User.settingGroupCompleted,
-  settingListOrder: User.settingListOrder,
-  settingListHiddenIndex: User.settingListHiddenIndex,
 } as const;
 
 const getMe: ActionHandler<
