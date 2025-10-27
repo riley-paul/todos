@@ -47,9 +47,11 @@ const ListChips: React.FC = () => {
 
   return (
     <div className="flex flex-wrap gap-2">
-      {lists.map((list) => (
-        <ListChip key={list.id} list={list} />
-      ))}
+      {lists
+        .filter(({ show }) => show)
+        .map((list) => (
+          <ListChip key={list.id} list={list} />
+        ))}
       <ListReorder lists={lists} />
       <IconButton
         size="1"
