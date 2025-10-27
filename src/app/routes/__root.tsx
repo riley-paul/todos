@@ -1,4 +1,4 @@
-import { qLists, qUser } from "@/lib/client/queries";
+import { qLists, qUser } from "@/app/lib/queries";
 import type { UserSelect } from "@/lib/types";
 import {
   useQueryClient,

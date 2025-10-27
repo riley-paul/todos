@@ -12,7 +12,7 @@ import {
 import { SearchIcon, XIcon } from "lucide-react";
 import UserBubble from "../ui/user-bubble";
 import { useDebounceValue } from "usehooks-ts";
-import { qUsers } from "@/lib/client/queries";
+import { qUsers } from "@/app/lib/queries";
 
 type Props = {
   search: string;

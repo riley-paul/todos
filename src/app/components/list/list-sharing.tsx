@@ -15,7 +15,7 @@ import UserBubble from "../ui/user-bubble";
 import UserSearch from "./user-search";
 import { toast } from "sonner";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
-import { qListShares } from "@/lib/client/queries";
+import { qListShares } from "@/app/lib/queries";
 import useMutations from "@/app/hooks/use-mutations";
 
 type UserInviterProps = {

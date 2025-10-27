@@ -1,4 +1,4 @@
-import { cn } from "@/lib/client/utils";
+import { cn } from "@/app/lib/utils";
 import { Tooltip } from "@radix-ui/themes";
 import { useAbly, useConnectionStateListener } from "ably/react";
 import { useState } from "react";

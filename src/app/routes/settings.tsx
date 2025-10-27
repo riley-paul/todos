@@ -1,5 +1,5 @@
 import useMutations from "@/app/hooks/use-mutations";
-import { qUser } from "@/lib/client/queries";
+import { qUser } from "@/app/lib/queries";
 import {
   Card,
   Heading,

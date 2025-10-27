@@ -1,11 +1,11 @@
 import React from "react";
-import { cn } from "@/lib/client/utils";
+import { cn } from "@/app/lib/utils";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Todo from "./todo";
 import { Button, Card, Text } from "@radix-ui/themes";
 import type { ListSelect, TodoSelect } from "@/lib/types";
-import { qTodos, qUser } from "@/lib/client/queries";
+import { qTodos, qUser } from "@/app/lib/queries";
 import { ChevronRightIcon } from "lucide-react";
 import DeleteCompletedTodosButton from "./footer-buttons/delete-completed-todos-button";
 import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";

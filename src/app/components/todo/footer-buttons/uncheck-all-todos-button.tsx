@@ -1,5 +1,5 @@
 import useMutations from "@/app/hooks/use-mutations";
-import { qTodos } from "@/lib/client/queries";
+import { qTodos } from "@/app/lib/queries";
 import { Button } from "@radix-ui/themes";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { SquareMinusIcon } from "lucide-react";

@@ -2,12 +2,12 @@ import React from "react";
 import { useEventListener } from "usehooks-ts";
 import useMutations from "@/app/hooks/use-mutations";
 import { Button, Spinner, TextArea } from "@radix-ui/themes";
-import { resizeTextArea } from "@/lib/client/utils";
+import { resizeTextArea } from "@/app/lib/utils";
 import { flushSync } from "react-dom";
 import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { mergeRefs } from "@/lib/client/utils";
+import { mergeRefs } from "@/app/lib/utils";
 import { PlusIcon } from "lucide-react";
 
 const schema = z.object({

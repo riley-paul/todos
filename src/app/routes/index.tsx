@@ -1,4 +1,4 @@
-import { qLists } from "@/lib/client/queries";
+import { qLists } from "@/app/lib/queries";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import NoListsScreen from "../components/screens/no-lists";
 

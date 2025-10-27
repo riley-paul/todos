@@ -13,10 +13,10 @@ import {
 } from "@radix-ui/themes";
 import { useEventListener } from "usehooks-ts";
 import { useQuery } from "@tanstack/react-query";
-import { qLists, qTodos } from "@/lib/client/queries";
+import { qLists, qTodos } from "@/app/lib/queries";
 import UserBubbleGroup from "./ui/user-bubble-group";
 import TextWithLinks from "./ui/text-with-links";
-import { cn } from "@/lib/client/utils";
+import { cn } from "@/app/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
 import useMutations from "@/app/hooks/use-mutations";
 import { PlusIcon, SearchIcon, XIcon } from "lucide-react";

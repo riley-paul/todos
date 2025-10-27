@@ -1,6 +1,6 @@
 import Todos from "@/app/components/todo/todos";
 import useMutations from "@/app/hooks/use-mutations";
-import { qList, qTodos } from "@/lib/client/queries";
+import { qList, qTodos } from "@/app/lib/queries";
 import { Button, Text } from "@radix-ui/themes";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";

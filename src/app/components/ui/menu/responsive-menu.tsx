@@ -4,7 +4,7 @@ import React from "react";
 import type { MenuItem } from "./menu.types";
 import MenuDrawer from "./menu-drawer";
 import MenuDropdown from "./menu-dropdown";
-import { cn } from "@/lib/client/utils";
+import { cn } from "@/app/lib/utils";
 import MenuDrawerContent from "./menu-drawer-content";
 
 type Props = React.PropsWithChildren<{

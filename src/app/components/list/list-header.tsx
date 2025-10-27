@@ -3,7 +3,7 @@ import { Heading } from "@radix-ui/themes";
 import React from "react";
 import ListMenu from "./list-menu";
 import ListSharing from "./list-sharing";
-import { cn } from "@/lib/client/utils";
+import { cn } from "@/app/lib/utils";
 
 type Props = { list: ListSelect };
 

@@ -11,7 +11,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { handleMutationError } from "@/app/hooks/use-mutations";
-import { qUser } from "@/lib/client/queries";
+import { qUser } from "@/app/lib/queries";
 import LoadingScreen from "./components/screens/loading";
 import NotFoundScreen from "./components/screens/not-found";
 import ErrorScreen from "./components/screens/error";

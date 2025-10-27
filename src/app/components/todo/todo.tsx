@@ -12,8 +12,8 @@ import {
   Text,
   TextArea,
 } from "@radix-ui/themes";
-import { cn } from "@/lib/client/utils";
-import { focusInputAtEnd, resizeTextArea } from "@/lib/client/utils";
+import { cn } from "@/app/lib/utils";
+import { focusInputAtEnd, resizeTextArea } from "@/app/lib/utils";
 import TextWithLinks from "../ui/text-with-links";
 import TodoMenu from "./todo-menu";
 import {

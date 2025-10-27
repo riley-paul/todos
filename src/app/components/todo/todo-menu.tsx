@@ -7,7 +7,7 @@ import {
   EllipsisIcon,
 } from "lucide-react";
 import useMutations from "@/app/hooks/use-mutations";
-import { qLists } from "@/lib/client/queries";
+import { qLists } from "@/app/lib/queries";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { useAtom } from "jotai";

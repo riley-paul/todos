@@ -2,7 +2,7 @@ import { useIsMobile } from "@/app/hooks/use-is-mobile";
 import { Dialog, IconButton, Theme } from "@radix-ui/themes";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import React from "react";
-import { cn } from "@/lib/client/utils";
+import { cn } from "@/app/lib/utils";
 import { XIcon } from "lucide-react";
 
 type Props = Dialog.ContentProps & {

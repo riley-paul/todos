@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ActionInputError, actions, isActionError } from "astro:actions";
-import { qList, qLists, qTodos, qUser } from "@/lib/client/queries";
+import { qList, qLists, qTodos, qUser } from "@/app/lib/queries";
 import type { TodoSelect } from "@/lib/types";
 import { useNavigate, useParams } from "@tanstack/react-router";
 
