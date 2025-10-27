@@ -60,3 +60,10 @@ export const sortByOrder = <T extends { id: string }>(
     return orderA - orderB;
   });
 };
+
+export const filterByHiddenIdx = <T extends { id: string }>(
+  items: T[],
+  hiddenIndex: number | null,
+) => {
+  return items.slice(undefined, hiddenIndex ?? undefined);
+};

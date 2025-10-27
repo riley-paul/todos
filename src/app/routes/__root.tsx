@@ -1,10 +1,6 @@
 import { qLists, qUser } from "@/app/lib/queries";
 import type { UserSelect } from "@/lib/types";
-import {
-  useQueryClient,
-  useSuspenseQuery,
-  type QueryClient,
-} from "@tanstack/react-query";
+import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import {
   createRootRouteWithContext,
   Link,
@@ -28,9 +24,9 @@ type RouterContext = {
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: Component,
   loader: async ({ context }) => {
-    const lists = context.queryClient.ensureQueryData(qLists);
+    context.queryClient.ensureQueryData(qLists);
     const user = await context.queryClient.ensureQueryData(qUser);
-    return { user, lists };
+    return { user };
   },
 });
 
@@ -42,8 +38,6 @@ function Component() {
     console.log("Invalidating...");
     queryClient.invalidateQueries();
   });
-
-  const { data: lists } = useSuspenseQuery(qLists);
 
   return (
     <React.Fragment>
@@ -66,7 +60,7 @@ function Component() {
         </div>
       </header>
       <main className="container2 grid gap-6 py-6">
-        <ListChips lists={lists} />
+        <ListChips />
         <Outlet />
       </main>
       {import.meta.env.DEV && (

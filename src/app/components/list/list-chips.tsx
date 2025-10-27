@@ -1,7 +1,7 @@
 import useAlerts from "@/app/hooks/use-alerts";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
-import { qUser } from "@/app/lib/queries";
-import { sortByOrder } from "@/app/lib/utils";
+import { qLists, qUser } from "@/app/lib/queries";
+import { filterByHiddenIdx, sortByOrder } from "@/app/lib/utils";
 import { type ListSelect } from "@/lib/types";
 import { Badge, IconButton } from "@radix-ui/themes";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -32,22 +32,24 @@ const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
   );
 };
 
-const ListChips: React.FC<{ lists: ListSelect[] }> = ({ lists }) => {
+const ListChips: React.FC = () => {
   const { handleCreateList } = useAlerts();
+  const { data: lists } = useSuspenseQuery(qLists);
   const {
-    data: { settingListOrder },
+    data: { settingListOrder, settingListHiddenIndex },
   } = useSuspenseQuery(qUser);
 
   if (lists.length === 0) return null;
 
   const sortedLists = sortByOrder(lists, settingListOrder);
+  const filteredLists = filterByHiddenIdx(sortedLists, settingListHiddenIndex);
 
   return (
     <div className="flex flex-wrap gap-2">
-      {sortedLists.map((list) => (
+      {filteredLists.map((list) => (
         <ListChip key={list.id} list={list} />
       ))}
-      <ListReorder lists={sortedLists} />
+      <ListReorder lists={sortedLists} hiddenIdx={settingListHiddenIndex} />
       <IconButton
         size="1"
         className="size-7"

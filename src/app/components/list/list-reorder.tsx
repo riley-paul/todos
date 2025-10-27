@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -24,23 +24,35 @@ import {
   Button,
   Dialog,
   IconButton,
+  Separator,
   Text,
   VisuallyHidden,
 } from "@radix-ui/themes";
-import { ArrowUpDownIcon, GripVerticalIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpDownIcon, GripVerticalIcon } from "lucide-react";
 import { cn } from "@/app/lib/utils";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 import useMutations from "@/app/hooks/use-mutations";
 import { Link } from "@tanstack/react-router";
 
-type SortableItemProps = {
+type SortableObjectData =
+  | {
+      type: "list";
+      id: string;
+      list: ListSelect;
+    }
+  | {
+      type: "separator";
+      id: string;
+    };
+
+type SortableListProps = {
   id: string;
   list: ListSelect;
   isDragging?: boolean;
   isOverlay?: boolean;
 };
 
-const SortableItem: React.FC<SortableItemProps> = ({
+const SortableList: React.FC<SortableListProps> = ({
   id,
   list,
   isDragging,
@@ -93,18 +105,62 @@ const SortableItem: React.FC<SortableItemProps> = ({
   );
 };
 
-const ListReorderContent: React.FC<{
-  lists: ListSelect[];
-}> = ({ lists }) => {
-  const [activeId, setActiveId] = React.useState<string | null>(null);
-  const [localLists, setLocalLists] = React.useState(lists);
+type SortableSeparatorProps = {};
 
-  React.useEffect(() => setLocalLists(lists), [lists]);
+const SortableSeparator: React.FC<SortableSeparatorProps> = () => {
+  return (
+    <article className="rounded-3 sm:hover:bg-accent-3 -mx-3 flex items-center gap-2 px-3 py-1">
+      <section className="flex items-center gap-1">
+        <ArrowDownIcon className="size-3 opacity-70" />
+        <Text size="1" className="uppercase" weight="bold" color="gray">
+          Hidden
+        </Text>
+      </section>
+      <Separator orientation="horizontal" size="4" className="h-[2px]" />
+    </article>
+  );
+};
+
+type ListReorderContentProps = {
+  lists: ListSelect[];
+  hiddenIdx: number | null;
+};
+
+const ListReorderContent: React.FC<ListReorderContentProps> = ({
+  lists,
+  hiddenIdx,
+}) => {
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  const [localLists, setLocalLists] = useState(lists);
+  const [localHiddenIdx, setLocalHiddenIdx] = useState(hiddenIdx);
+
+  useEffect(() => setLocalLists(lists), [lists]);
+  useEffect(() => setLocalHiddenIdx(hiddenIdx), [hiddenIdx]);
+
+  const sortableObjects: SortableObjectData[] = localLists
+    .map(
+      (list): SortableObjectData => ({
+        type: "list",
+        id: list.id,
+        list,
+      }),
+    )
+    .toSpliced(
+      localHiddenIdx !== null ? localHiddenIdx : localLists.length,
+      0,
+      {
+        type: "separator",
+        id: "separator",
+      },
+    );
+
+  useEffect(() => {
+    console.log(sortableObjects);
+  }, [sortableObjects]);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 5 },
-    }),
+    useSensor(PointerSensor),
     useSensor(TouchSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
@@ -145,29 +201,41 @@ const ListReorderContent: React.FC<{
     >
       <SortableContext items={lists} strategy={verticalListSortingStrategy}>
         <div className="flex flex-col gap-1">
-          {localLists.map((list) => (
-            <SortableItem
-              key={list.id}
-              id={list.id}
-              list={list}
-              isDragging={list.id === activeId}
-            />
-          ))}
+          {sortableObjects.map((obj) => {
+            switch (obj.type) {
+              case "list":
+                return (
+                  <SortableList
+                    key={obj.id}
+                    id={obj.id}
+                    list={obj.list}
+                    isDragging={obj.id === activeId}
+                  />
+                );
+              case "separator":
+                return <SortableSeparator key={obj.id} />;
+            }
+          })}
         </div>
       </SortableContext>
 
       <DragOverlay>
         {activeList ? (
-          <SortableItem id={activeList.id} list={activeList} isOverlay />
+          <SortableList id={activeList.id} list={activeList} isOverlay />
         ) : null}
       </DragOverlay>
     </DndContext>
   );
 };
 
-const ListReorder: React.FC<{ lists: ListSelect[] }> = ({ lists }) => {
+type ListReorderProps = {
+  lists: ListSelect[];
+  hiddenIdx: number | null;
+};
+
+const ListReorder: React.FC<ListReorderProps> = ({ lists, hiddenIdx }) => {
   return (
-    <Dialog.Root>
+    <Dialog.Root open>
       <Dialog.Trigger>
         <IconButton className="size-7" size="1" variant="soft">
           <ArrowUpDownIcon className="size-4" />
@@ -181,7 +249,7 @@ const ListReorder: React.FC<{ lists: ListSelect[] }> = ({ lists }) => {
           </Dialog.Description>
         </VisuallyHidden>
         <article className="-mx-6 flex h-full flex-col gap-1 overflow-x-hidden overflow-y-auto px-6">
-          <ListReorderContent lists={lists} />
+          <ListReorderContent lists={lists} hiddenIdx={hiddenIdx} />
         </article>
         <footer className="flex justify-end">
           <Dialog.Close>
