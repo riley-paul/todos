@@ -7,7 +7,7 @@ import {
 } from "../helpers";
 import { createDb } from "@/db";
 import { List, ListUser, Todo, User } from "@/db/schema";
-import { and, asc, count, eq, not } from "drizzle-orm";
+import { and, asc, count, desc, eq, not } from "drizzle-orm";
 import actionErrors from "../errors";
 import * as listInputs from "./lists.inputs";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
@@ -34,7 +34,7 @@ async function getList(c: ActionAPIContext, listId?: string | undefined) {
     })
     .from(List)
     .innerJoin(ListUser, eq(ListUser.listId, List.id))
-    .orderBy(asc(ListUser.order), asc(ListUser.show), asc(List.createdAt))
+    .orderBy(desc(ListUser.show), asc(ListUser.order), asc(List.createdAt))
     .where(
       and(
         eq(ListUser.userId, userId),

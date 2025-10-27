@@ -47,27 +47,30 @@ type SortableObjectData =
     };
 
 const getSortableObjectList = (lists: ListSelect[]): SortableObjectData[] => {
-  const lastShownListIdx = lists
-    .map((list, idx) => (list.show ? idx : -1))
-    .filter((idx) => idx !== -1)
-    .pop();
+  const listToSortableObj = (list: ListSelect): SortableObjectData => ({
+    type: "list",
+    id: list.id,
+    list,
+  });
 
-  return lists
-    .map(
-      (list): SortableObjectData => ({
-        type: "list",
-        id: list.id,
-        list,
-      }),
-    )
-    .toSpliced(
-      lastShownListIdx !== undefined ? lastShownListIdx + 1 : lists.length,
-      0,
-      {
-        type: "separator",
-        id: LIST_SEPARATOR_ID,
-      },
-    );
+  const separator: SortableObjectData = {
+    type: "separator",
+    id: LIST_SEPARATOR_ID,
+  };
+
+  if (lists.length === 0) return [];
+  if (lists.every(({ show }) => show)) {
+    return [...lists.map(listToSortableObj), separator];
+  }
+  if (lists.every(({ show }) => !show)) {
+    return [separator, ...lists.map(listToSortableObj)];
+  }
+
+  return [
+    ...lists.filter(({ show }) => show).map(listToSortableObj),
+    separator,
+    ...lists.filter(({ show }) => !show).map(listToSortableObj),
+  ];
 };
 
 type SortableItemProps = SortableObjectData & {
@@ -157,18 +160,9 @@ type ListReorderContentProps = { lists: ListSelect[] };
 
 const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [localObjs, setLocalObjs] = useState(getSortableObjectList(lists));
 
-  // const [localLists, setLocalLists] = useState(lists);
-  // const [localHiddenIdx, setLocalHiddenIdx] = useState(hiddenIdx);
-
-  // useEffect(() => setLocalLists(lists), [lists]);
-  // useEffect(() => setLocalHiddenIdx(hiddenIdx), [hiddenIdx]);
-
-  const sortableObjects = getSortableObjectList(lists);
-
-  useEffect(() => {
-    console.log("sortableObjects", sortableObjects);
-  }, [sortableObjects]);
+  useEffect(() => setLocalObjs(getSortableObjectList(lists)), [lists]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -188,19 +182,18 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
     setActiveId(null);
     const { active, over } = event;
     if (over && active.id !== over.id) {
-      const ids = sortableObjects.map(({ id }) => id);
+      const ids = localObjs.map(({ id }) => id);
       const oldIndex = ids.indexOf(active.id as string);
       const newIndex = ids.indexOf(over.id as string);
 
       const newOrder = arrayMove(ids, oldIndex, newIndex);
 
-      // setLocalLists((prev) => arrayMove(prev, oldIndex, newIndex));
-
+      setLocalObjs((prev) => arrayMove(prev, oldIndex, newIndex));
       return updateListSortShow.mutate({ listIds: newOrder });
     }
   };
 
-  const activeObj = sortableObjects.find(({ id }) => id === activeId);
+  const activeObj = localObjs.find(({ id }) => id === activeId);
 
   return (
     <DndContext
@@ -209,12 +202,9 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext
-        items={sortableObjects}
-        strategy={verticalListSortingStrategy}
-      >
+      <SortableContext items={localObjs} strategy={verticalListSortingStrategy}>
         <div className="flex flex-col gap-1">
-          {sortableObjects.map((obj) => (
+          {localObjs.map((obj) => (
             <SortableItem
               key={obj.id}
               isDragging={obj.id === activeId}
