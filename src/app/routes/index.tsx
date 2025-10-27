@@ -4,7 +4,7 @@ import NoListsScreen from "../components/screens/no-lists";
 import { sortByOrder } from "../lib/utils";
 
 export const Route = createFileRoute("/")({
-  component: RouteComponent,
+  component: NoListsScreen,
   loader: async ({ context: { queryClient } }) => {
     const lists = await queryClient.ensureQueryData(qLists);
 
@@ -20,7 +20,3 @@ export const Route = createFileRoute("/")({
     return { lists };
   },
 });
-
-function RouteComponent() {
-  return <NoListsScreen />;
-}
