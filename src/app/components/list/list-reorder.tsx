@@ -34,6 +34,7 @@ import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 import useMutations from "@/app/hooks/use-mutations";
 import { Link } from "@tanstack/react-router";
 
+const SEPARATOR_ID = "separator-hidden-lists";
 type SortableObjectData =
   | {
       type: "list";
@@ -105,15 +106,24 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
 
     case "separator": {
       return (
-        <article className="rounded-3 sm:hover:bg-accent-3 -mx-3 flex items-center gap-2 px-3 py-1">
-          <section className="flex items-center gap-1">
-            <ArrowDownIcon className="size-3 opacity-70" />
-            <Text size="1" className="uppercase" weight="bold" color="gray">
-              Hidden
-            </Text>
-          </section>
-          <Separator orientation="horizontal" size="4" className="h-[2px]" />
-        </article>
+        <div ref={setNodeRef} style={style}>
+          <article
+            {...attributes}
+            {...listeners}
+            className={cn(
+              "rounded-3 sm:hover:bg-accent-3 -mx-3 flex cursor-grab items-center gap-2 px-3 py-1",
+              isOverlay && "bg-accent-3 cursor-grabbing",
+            )}
+          >
+            <section className="flex items-center gap-1">
+              <ArrowDownIcon className="size-3 opacity-70" />
+              <Text size="1" className="uppercase" weight="bold" color="gray">
+                Hidden
+              </Text>
+            </section>
+            <Separator orientation="horizontal" size="4" className="h-[2px]" />
+          </article>
+        </div>
       );
     }
   }
@@ -149,7 +159,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({
       0,
       {
         type: "separator",
-        id: "separator",
+        id: SEPARATOR_ID,
       },
     );
 
@@ -175,20 +185,32 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({
     setActiveId(null);
     const { active, over } = event;
     if (over && active.id !== over.id) {
-      const listIds = lists.map((list) => list.id);
-      const oldIndex = listIds.indexOf(active.id as string);
-      const newIndex = listIds.indexOf(over.id as string);
-      setLocalLists((prev) => arrayMove(prev, oldIndex, newIndex));
+      const ids = sortableObjects.map(({ id }) => id);
 
-      const newOrder = arrayMove(listIds, oldIndex, newIndex);
+      const oldIndex = ids.indexOf(active.id as string);
+      const newIndex = ids.indexOf(over.id as string);
+
+      const newOrder = arrayMove(ids, oldIndex, newIndex);
+
       const listOrder: Record<string, number> = Object.fromEntries(
         newOrder.map((id, idx) => [id, idx]),
       );
-      return updateUserSettings.mutate({ settingListOrder: listOrder });
+      const hiddenIdx =
+        newOrder.indexOf(SEPARATOR_ID) === ids.length - 1
+          ? null
+          : newOrder.indexOf(SEPARATOR_ID);
+
+      setLocalLists((prev) => arrayMove(prev, oldIndex, newIndex));
+      setLocalHiddenIdx(hiddenIdx);
+
+      return updateUserSettings.mutate({
+        settingListOrder: listOrder,
+        settingListHiddenIndex: hiddenIdx,
+      });
     }
   };
 
-  const activeList = lists.find((list) => list.id === activeId);
+  const activeObj = sortableObjects.find(({ id }) => id === activeId);
 
   return (
     <DndContext
@@ -197,7 +219,10 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext items={lists} strategy={verticalListSortingStrategy}>
+      <SortableContext
+        items={sortableObjects}
+        strategy={verticalListSortingStrategy}
+      >
         <div className="flex flex-col gap-1">
           {sortableObjects.map((obj) => (
             <SortableItem
@@ -210,9 +235,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({
       </SortableContext>
 
       <DragOverlay>
-        {activeList ? (
-          <SortableItem id={activeList.id} list={activeList} isOverlay />
-        ) : null}
+        {activeObj ? <SortableItem {...activeObj} isOverlay /> : null}
       </DragOverlay>
     </DndContext>
   );
@@ -225,7 +248,7 @@ type ListReorderProps = {
 
 const ListReorder: React.FC<ListReorderProps> = ({ lists, hiddenIdx }) => {
   return (
-    <Dialog.Root open>
+    <Dialog.Root>
       <Dialog.Trigger>
         <IconButton className="size-7" size="1" variant="soft">
           <ArrowUpDownIcon className="size-4" />

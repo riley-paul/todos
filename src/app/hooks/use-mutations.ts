@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { ActionInputError, actions, isActionError } from "astro:actions";
 import { qList, qLists, qTodos, qUser } from "@/app/lib/queries";
 import type { TodoSelect } from "@/lib/types";
-import { useNavigate, useParams } from "@tanstack/react-router";
+import { useNavigate, useParams, useRouter } from "@tanstack/react-router";
 
 type Updater<T> = (data: T | undefined) => T;
 
@@ -31,6 +31,7 @@ export const handleMutationError = (error: Error) => {
 
 export default function useMutations() {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const { listId } = useParams({ strict: false });
   const selectedList = listId ?? "";
@@ -191,6 +192,7 @@ export default function useMutations() {
   const updateList = useMutation({
     mutationFn: actions.lists.update.orThrow,
     onSuccess: (data) => {
+      router.invalidate();
       queryClient.setQueryData(qLists.queryKey, (prev) => {
         if (!prev) return prev;
         return prev.map((list) =>
@@ -204,6 +206,7 @@ export default function useMutations() {
   const createList = useMutation({
     mutationFn: actions.lists.create.orThrow,
     onSuccess: ({ id }, { name }) => {
+      router.invalidate();
       toast.success(`List "${name}" created`);
       navigate({ to: "/todos/$listId", params: { listId: id } });
     },
@@ -232,6 +235,7 @@ export default function useMutations() {
   const deleteList = useMutation({
     mutationFn: actions.lists.remove.orThrow,
     onSuccess: () => {
+      router.invalidate();
       navigate({ to: "/" });
       toast.success("List deleted");
     },
