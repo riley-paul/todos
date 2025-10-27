@@ -45,19 +45,14 @@ type SortableObjectData =
       id: string;
     };
 
-type SortableListProps = {
-  id: string;
-  list: ListSelect;
+type SortableItemProps = SortableObjectData & {
   isDragging?: boolean;
   isOverlay?: boolean;
 };
 
-const SortableList: React.FC<SortableListProps> = ({
-  id,
-  list,
-  isDragging,
-  isOverlay,
-}) => {
+const SortableItem: React.FC<SortableItemProps> = (props) => {
+  const { id, isDragging, isOverlay } = props;
+
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
@@ -68,57 +63,60 @@ const SortableList: React.FC<SortableListProps> = ({
     opacity: isDragging ? 0.5 : 1,
   };
 
-  return (
-    <div ref={setNodeRef} style={style}>
-      <article
-        className={cn(
-          "sm:hover:bg-accent-3 rounded-3 -mx-3 flex h-12 items-center gap-3 px-3 transition-colors ease-in",
-          isOverlay && "bg-accent-3",
-        )}
-      >
-        <IconButton
-          size="2"
-          variant="soft"
-          className={cn(
-            isOverlay ? "cursor-grabbing" : "cursor-grab",
-            "outline-none",
-          )}
-          {...attributes}
-          {...listeners}
-        >
-          <GripVerticalIcon className="size-5" />
-        </IconButton>
-        <Dialog.Close>
-          <Link
-            to="/todos/$listId"
-            params={{ listId: list.id }}
-            className="flex h-full flex-1 items-center"
-            preload={false}
+  switch (props.type) {
+    case "list": {
+      const { list } = props;
+      return (
+        <div ref={setNodeRef} style={style}>
+          <article
+            className={cn(
+              "sm:hover:bg-accent-3 rounded-3 -mx-3 flex h-12 items-center gap-3 px-3 transition-colors ease-in",
+              isOverlay && "bg-accent-3",
+            )}
           >
-            <Text truncate size="3" weight="medium">
-              {list.name}
+            <IconButton
+              size="2"
+              variant="soft"
+              className={cn(
+                isOverlay ? "cursor-grabbing" : "cursor-grab",
+                "outline-none",
+              )}
+              {...attributes}
+              {...listeners}
+            >
+              <GripVerticalIcon className="size-5" />
+            </IconButton>
+            <Dialog.Close>
+              <Link
+                to="/todos/$listId"
+                params={{ listId: list.id }}
+                className="flex h-full flex-1 items-center"
+                preload={false}
+              >
+                <Text truncate size="3" weight="medium">
+                  {list.name}
+                </Text>
+              </Link>
+            </Dialog.Close>
+          </article>
+        </div>
+      );
+    }
+
+    case "separator": {
+      return (
+        <article className="rounded-3 sm:hover:bg-accent-3 -mx-3 flex items-center gap-2 px-3 py-1">
+          <section className="flex items-center gap-1">
+            <ArrowDownIcon className="size-3 opacity-70" />
+            <Text size="1" className="uppercase" weight="bold" color="gray">
+              Hidden
             </Text>
-          </Link>
-        </Dialog.Close>
-      </article>
-    </div>
-  );
-};
-
-type SortableSeparatorProps = {};
-
-const SortableSeparator: React.FC<SortableSeparatorProps> = () => {
-  return (
-    <article className="rounded-3 sm:hover:bg-accent-3 -mx-3 flex items-center gap-2 px-3 py-1">
-      <section className="flex items-center gap-1">
-        <ArrowDownIcon className="size-3 opacity-70" />
-        <Text size="1" className="uppercase" weight="bold" color="gray">
-          Hidden
-        </Text>
-      </section>
-      <Separator orientation="horizontal" size="4" className="h-[2px]" />
-    </article>
-  );
+          </section>
+          <Separator orientation="horizontal" size="4" className="h-[2px]" />
+        </article>
+      );
+    }
+  }
 };
 
 type ListReorderContentProps = {
@@ -201,27 +199,19 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({
     >
       <SortableContext items={lists} strategy={verticalListSortingStrategy}>
         <div className="flex flex-col gap-1">
-          {sortableObjects.map((obj) => {
-            switch (obj.type) {
-              case "list":
-                return (
-                  <SortableList
-                    key={obj.id}
-                    id={obj.id}
-                    list={obj.list}
-                    isDragging={obj.id === activeId}
-                  />
-                );
-              case "separator":
-                return <SortableSeparator key={obj.id} />;
-            }
-          })}
+          {sortableObjects.map((obj) => (
+            <SortableItem
+              key={obj.id}
+              isDragging={obj.id === activeId}
+              {...obj}
+            />
+          ))}
         </div>
       </SortableContext>
 
       <DragOverlay>
         {activeList ? (
-          <SortableList id={activeList.id} list={activeList} isOverlay />
+          <SortableItem id={activeList.id} list={activeList} isOverlay />
         ) : null}
       </DragOverlay>
     </DndContext>
