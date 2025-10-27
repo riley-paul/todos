@@ -20,9 +20,6 @@ const LIST3_ID = crypto.randomUUID();
 const LIST1_LENGTH = 10;
 const LIST2_LENGTH = 5;
 const LIST3_LENGTH = 17;
-const INBOX_LENGTH = 3;
-
-const USER1_LENGTH = LIST1_LENGTH + LIST2_LENGTH + INBOX_LENGTH;
 
 const LIST_USER_ID = crypto.randomUUID();
 
@@ -71,11 +68,6 @@ beforeAll(async () => {
       listId: LIST2_ID,
       text: "Test Todo",
     })),
-    ...Array.from({ length: INBOX_LENGTH }, () => ({
-      userId: USER1_ID,
-      listId: null,
-      text: "Inbox todo",
-    })),
     ...Array.from({ length: LIST3_LENGTH }, () => ({
       userId: USER2_ID,
       listId: LIST3_ID,
@@ -105,40 +97,10 @@ describe("todo fetching", () => {
     expect(todos.length).toBe(LIST1_LENGTH);
   });
 
-  test("returns all todos in the inbox", async () => {
-    const todos = await todoHanders.get(
-      { listId: null },
-      mockApiContext(USER1_ID),
-    );
-    expect(Array.isArray(todos)).toBe(true);
-    expect(todos.length).toBe(INBOX_LENGTH);
-  });
-
-  test("returns todos from all lists in 'all'", async () => {
-    const todos = await todoHanders.get(
-      { listId: "all" },
-      mockApiContext(USER1_ID),
-    );
-    expect(todos.length).toBe(USER1_LENGTH);
-  });
-
   test("throws error when list does not exist", async () => {
     await expect(() =>
       todoHanders.get({ listId: "nonexistent" }, mockApiContext(USER1_ID)),
     ).rejects.toThrow(actionErrors.NOT_FOUND);
-  });
-
-  test("includes shared todos in 'all' when share accepted", async () => {
-    await db
-      .update(ListUser)
-      .set({ isPending: false })
-      .where(eq(ListUser.id, LIST_USER_ID));
-
-    const inboxTodos = await todoHanders.get(
-      { listId: "all" },
-      mockApiContext(USER1_ID),
-    );
-    expect(inboxTodos.length).toBe(USER1_LENGTH + LIST3_LENGTH);
   });
 });
 

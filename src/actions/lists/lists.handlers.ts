@@ -1,10 +1,9 @@
 import { type ActionAPIContext, type ActionHandler } from "astro:actions";
-import type { ListSelect, SelectedList } from "@/lib/types";
+import type { ListSelect } from "@/lib/types";
 import {
   ensureListMember,
   invalidateListUsers,
   ensureAuthorized,
-  filterTodos,
 } from "../helpers";
 import { createDb } from "@/db";
 import { List, ListUser, Todo, User } from "@/db/schema";
@@ -18,57 +17,11 @@ async function getList(
 ): Promise<ListSelect[]>;
 async function getList(
   c: ActionAPIContext,
-  listId: SelectedList,
+  listId: string,
 ): Promise<ListSelect>;
-async function getList(c: ActionAPIContext, listId?: SelectedList) {
+async function getList(c: ActionAPIContext, listId?: string | undefined) {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
-
-  if (listId === null) {
-    const [{ todoCount }] = await db
-      .select({ todoCount: count() })
-      .from(Todo)
-      .where(
-        and(
-          filterTodos({ listId: null, userId, userLists: [] }),
-          eq(Todo.isCompleted, false),
-        ),
-      );
-
-    return {
-      id: "inbox",
-      name: "Inbox",
-      isPending: false,
-      otherUsers: [],
-      todoCount,
-    };
-  }
-
-  if (listId === "all") {
-    const userLists = await db
-      .select({ listId: ListUser.listId })
-      .from(ListUser)
-      .where(and(eq(ListUser.userId, userId), eq(ListUser.isPending, false)))
-      .then((data) => data.map(({ listId }) => listId));
-
-    const [{ todoCount }] = await db
-      .select({ todoCount: count() })
-      .from(Todo)
-      .where(
-        and(
-          filterTodos({ listId: "all", userId, userLists }),
-          eq(Todo.isCompleted, false),
-        ),
-      );
-
-    return {
-      id: "all",
-      name: "All",
-      isPending: false,
-      otherUsers: [],
-      todoCount,
-    };
-  }
 
   const lists = await db
     .selectDistinct({

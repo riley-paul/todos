@@ -4,7 +4,6 @@ import useMutations from "@/app/hooks/use-mutations";
 import { Button, Spinner, TextArea } from "@radix-ui/themes";
 import { resizeTextArea } from "@/lib/client/utils";
 import { flushSync } from "react-dom";
-import type { SelectedList } from "@/lib/types";
 import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,7 +15,7 @@ const schema = z.object({
 });
 type Schema = z.infer<typeof schema>;
 
-const TodoAdder: React.FC<{ listId: SelectedList }> = ({ listId }) => {
+const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
   const { createTodo } = useMutations();
 
   const { control, handleSubmit, reset } = useForm<Schema>({

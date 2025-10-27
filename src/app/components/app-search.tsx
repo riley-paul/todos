@@ -19,7 +19,6 @@ import TextWithLinks from "./ui/text-with-links";
 import { cn } from "@/lib/client/utils";
 import { useNavigate } from "@tanstack/react-router";
 import useMutations from "@/app/hooks/use-mutations";
-import { goToList } from "@/lib/client/links";
 import { PlusIcon, SearchIcon, XIcon } from "lucide-react";
 import { Command } from "cmdk";
 
@@ -75,7 +74,7 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
 
   const [value, setValue] = React.useState("");
   const navigate = useNavigate();
-  const { createList, createTodo } = useMutations();
+  const { createList } = useMutations();
 
   return (
     <Command loop className="flex h-full flex-col overflow-hidden">
@@ -125,7 +124,10 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
                 value={list.name + list.id}
                 onSelect={() => {
                   handleClose();
-                  navigate(goToList(list.id));
+                  navigate({
+                    to: "/todos/$listId",
+                    params: { listId: list.id },
+                  });
                 }}
               >
                 <span>{list.name}</span>
@@ -143,7 +145,7 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
           </div>
           <Command.Group>
             <SearchGroupHeading>Todos</SearchGroupHeading>
-            {value && (
+            {/*{value && (
               <SearchItem
                 onSelect={() =>
                   createTodo.mutate(
@@ -155,7 +157,7 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
                 <PlusIcon className="text-accent-10 size-4" />
                 Create new todo <Strong>"{value}"</Strong>
               </SearchItem>
-            )}
+            )}*/}
             {todos.map((todo) => (
               <SearchItem
                 key={todo.id}
@@ -164,7 +166,11 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
                   .join("~")}
                 onSelect={() => {
                   handleClose();
-                  navigate(goToList(todo.list?.id, todo.id));
+                  navigate({
+                    to: "/todos/$listId",
+                    params: { listId: todo.list.id || "all" },
+                    search: { highlightedTodoId: todo.id },
+                  });
                 }}
               >
                 <span

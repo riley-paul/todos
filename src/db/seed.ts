@@ -86,15 +86,6 @@ export default async function seed() {
     }
   });
   console.log("✅ Seeded list data");
-
-  await db.insert(Todo).values(
-    Array.from({ length: 300 }).map(() => ({
-      userId: faker.helpers.arrayElement(userIds),
-      text: faker.lorem.sentence(),
-      isCompleted: faker.datatype.boolean(),
-    })),
-  );
-  console.log("✅ Seeded additional todos");
 }
 
 seed();

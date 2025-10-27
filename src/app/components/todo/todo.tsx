@@ -22,7 +22,6 @@ import {
   useParams,
   useSearch,
 } from "@tanstack/react-router";
-import { goToList } from "@/lib/client/links";
 import { useAtom } from "jotai";
 import { editingTodoIdAtom } from "./todos.store";
 import { SaveIcon } from "lucide-react";
@@ -122,7 +121,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
       className={cn(
         (isHighlighted || isEditing) && "bg-accent-3",
         "sm:hover:bg-accent-3",
-        "rounded-3 flex min-h-11 items-center gap-2 px-3 -mx-3 py-1 transition-colors ease-in",
+        "rounded-3 -mx-3 flex min-h-11 items-center gap-2 px-3 py-1 transition-colors ease-in",
       )}
     >
       {isEditing ? (
@@ -166,7 +165,9 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
           </Flex>
           {todo.list && todo.list.id !== listId && (
             <Badge asChild>
-              <Link {...goToList(todo.list.id)}>{todo.list.name}</Link>
+              <Link to="/todos/$listId" params={{ listId: todo.list.id }}>
+                {todo.list.name}
+              </Link>
             </Badge>
           )}
           {!todo.isAuthor && (

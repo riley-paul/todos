@@ -1,8 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import { actions } from "astro:actions";
-import type { SelectedList } from "../types";
 
-export const qTodos = (listId: SelectedList) =>
+export const qTodos = (listId: string) =>
   queryOptions({
     queryKey: ["todos", listId],
     queryFn: () => actions.todos.get.orThrow({ listId }),
@@ -27,7 +26,7 @@ export const qLists = queryOptions({
   select: (data) => data.sort((a, b) => a.name.localeCompare(b.name)),
 });
 
-export const qList = (listId: string | null) =>
+export const qList = (listId: string) =>
   queryOptions({
     queryKey: ["list", listId],
     queryFn: () => actions.lists.get.orThrow({ id: listId }),

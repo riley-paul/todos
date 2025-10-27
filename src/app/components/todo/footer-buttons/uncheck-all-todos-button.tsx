@@ -1,12 +1,11 @@
 import useMutations from "@/app/hooks/use-mutations";
 import { qTodos } from "@/lib/client/queries";
-import type { SelectedList } from "@/lib/types";
 import { Button } from "@radix-ui/themes";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { SquareMinusIcon } from "lucide-react";
 import React from "react";
 
-type Props = { listId: SelectedList };
+type Props = { listId: string };
 
 const UncheckAllTodosButton: React.FC<Props> = ({ listId }) => {
   const { uncheckCompletedTodos } = useMutations();

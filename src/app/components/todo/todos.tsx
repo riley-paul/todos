@@ -4,7 +4,7 @@ import { cn } from "@/lib/client/utils";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Todo from "./todo";
 import { Button, Card, Text } from "@radix-ui/themes";
-import type { ListSelect, SelectedList, TodoSelect } from "@/lib/types";
+import type { ListSelect, TodoSelect } from "@/lib/types";
 import { qTodos, qUser } from "@/lib/client/queries";
 import { ChevronRightIcon } from "lucide-react";
 import DeleteCompletedTodosButton from "./footer-buttons/delete-completed-todos-button";
@@ -12,7 +12,7 @@ import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
 import NoTodosScreen from "../screens/no-todos";
 
-const CompletedTodosActions: React.FC<{ listId: SelectedList }> = ({
+const CompletedTodosActions: React.FC<{ listId: string }> = ({
   listId,
 }) => (
   <div className="flex items-center justify-end gap-4">
@@ -23,7 +23,7 @@ const CompletedTodosActions: React.FC<{ listId: SelectedList }> = ({
 
 const CompletedTodosGroup: React.FC<{
   completedTodos: TodoSelect[];
-  listId: SelectedList;
+  listId: string;
 }> = ({ completedTodos, listId }) => {
   const [showCompleted, setShowCompleted] = React.useState(false);
 

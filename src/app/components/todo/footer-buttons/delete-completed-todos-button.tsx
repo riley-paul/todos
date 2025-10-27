@@ -1,11 +1,10 @@
 import useMutations from "@/app/hooks/use-mutations";
 import { qTodos } from "@/lib/client/queries";
-import type { SelectedList } from "@/lib/types";
 import { Button } from "@radix-ui/themes";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ListXIcon } from "lucide-react";
 
-type Props = { listId: SelectedList };
+type Props = { listId: string };
 
 const DeleteCompletedTodosButton: React.FC<Props> = ({ listId }) => {
   const { deleteCompletedTodos } = useMutations();

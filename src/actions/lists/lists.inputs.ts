@@ -3,7 +3,7 @@ import { z } from "zod";
 
 const listInputs = {
   getAll: z.any(),
-  get: z.object({ id: z.string().nullable() }),
+  get: z.object({ id: z.string() }),
   update: z.object({
     id: z.string(),
     data: zListInsert.partial(),

@@ -2,9 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ActionInputError, actions, isActionError } from "astro:actions";
 import { qList, qLists, qTodos, qUser } from "@/lib/client/queries";
-import type { SelectedList, TodoSelect } from "@/lib/types";
+import type { TodoSelect } from "@/lib/types";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { goToList } from "@/lib/client/links";
 
 type Updater<T> = (data: T | undefined) => T;
 
@@ -31,12 +30,12 @@ export default function useMutations() {
   const queryClient = useQueryClient();
 
   const { listId } = useParams({ strict: false });
-  const selectedList = listId ?? null;
+  const selectedList = listId ?? "";
 
   const navigate = useNavigate();
 
   const modifyTodoCache = async (
-    listId: SelectedList,
+    listId: string,
     updater: Updater<TodoSelect[]>,
   ) => {
     const queryKey = qTodos(listId).queryKey;
@@ -127,7 +126,7 @@ export default function useMutations() {
   const createTodo = useMutation({
     mutationFn: actions.todos.create.orThrow,
     onSuccess: ({ listId }) => {
-      navigate(goToList(listId));
+      navigate({ to: "/todos/$listId", params: { listId } });
     },
   });
 
@@ -203,7 +202,7 @@ export default function useMutations() {
     mutationFn: actions.lists.create.orThrow,
     onSuccess: ({ id }, { name }) => {
       toast.success(`List "${name}" created`);
-      navigate(goToList(id));
+      navigate({ to: "/todos/$listId", params: { listId: id } });
     },
   });
 
@@ -217,7 +216,11 @@ export default function useMutations() {
       toast.success(`You now have access to "${data.list.name}"`, {
         action: {
           label: "Go to list",
-          onClick: () => navigate(goToList(data.list.id)),
+          onClick: () =>
+            navigate({
+              to: "/todos/$listId",
+              params: { listId: data.list.id },
+            }),
         },
       });
     },

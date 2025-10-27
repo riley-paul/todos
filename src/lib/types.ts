@@ -37,7 +37,7 @@ export const zTodoSelect = createSelectSchema(Todo)
   .extend({
     author: zUserSelect,
     isAuthor: z.boolean().nullable(),
-    list: createSelectSchema(List).pick({ id: true, name: true }).nullable(),
+    list: createSelectSchema(List).pick({ id: true, name: true }),
   });
 export const zTodoSelectShallow = createSelectSchema(Todo).pick({
   id: true,
@@ -52,10 +52,6 @@ export const zTodoInsert = createInsertSchema(Todo)
     isCompleted: true,
   })
   .extend({
-    listId: createInsertSchema(Todo).shape.listId.transform((v) => {
-      if (v === "all") return null;
-      return v;
-    }),
     text: createInsertSchema(Todo).shape.text.trim().min(1),
   });
 export type TodoSelect = z.infer<typeof zTodoSelect>;
@@ -84,8 +80,6 @@ export const zListInsert = createInsertSchema(List)
 export type ListSelect = z.infer<typeof zListSelect>;
 export type ListSelectShallow = z.infer<typeof zListSelectShallow>;
 export type ListInsert = z.infer<typeof zListInsert>;
-
-export type SelectedList = string | "all" | null;
 
 export const zListUserInsert = createInsertSchema(ListUser);
 export const zListUserSelect = createSelectSchema(ListUser)

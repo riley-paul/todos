@@ -3,7 +3,6 @@ import { ListUser, Todo } from "@/db/schema";
 import { eq, and, not, isNull, inArray, or } from "drizzle-orm";
 import actionErrors from "./errors";
 import { createDb } from "@/db";
-import type { SelectedList } from "@/lib/types";
 import { Rest } from "ably";
 
 export const ensureAuthorized = (context: ActionAPIContext) => {
@@ -42,7 +41,7 @@ export const invalidateListUsers = async (
 };
 
 type EnsureListMemberArgs = {
-  listId: SelectedList;
+  listId: string;
   userId: string;
   checkPending?: boolean;
 };
@@ -62,7 +61,7 @@ export const ensureListMember = async (
 };
 
 type FilterTodosArgs = {
-  listId: SelectedList;
+  listId: string;
   userId: string;
   userLists: string[];
 };

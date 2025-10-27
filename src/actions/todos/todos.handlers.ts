@@ -1,7 +1,7 @@
-import { type ActionAPIContext, type ActionHandler } from "astro:actions";
+import { type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
 import { User, Todo, List, ListUser } from "@/db/schema";
-import { eq, and, desc, inArray, or } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import type { TodoSelect, TodoSelectShallow } from "@/lib/types";
 import {
   ensureAuthorized,
@@ -12,21 +12,6 @@ import {
 
 import type todoInputs from "./todos.inputs";
 import actionErrors from "../errors";
-
-const getAllUserTodos = async (context: ActionAPIContext, userId: string) => {
-  const db = createDb(context.locals.runtime.env);
-  return db
-    .select({ id: Todo.id })
-    .from(Todo)
-    .leftJoin(ListUser, eq(ListUser.listId, Todo.listId))
-    .where(
-      or(
-        and(eq(ListUser.userId, userId), eq(ListUser.isPending, false)),
-        eq(Todo.userId, userId),
-      ),
-    )
-    .then((ids) => ids.map(({ id }) => id));
-};
 
 const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
   { listId },
@@ -63,7 +48,7 @@ const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
       },
     })
     .from(Todo)
-    .leftJoin(List, eq(List.id, Todo.listId))
+    .innerJoin(List, eq(List.id, Todo.listId))
     .innerJoin(User, eq(User.id, Todo.userId))
     .where(
       filterTodos({
@@ -161,23 +146,7 @@ const removeCompleted: ActionHandler<
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 
-  // inbox
-  if (!listId) {
-    await db
-      .delete(Todo)
-      .where(and(eq(Todo.isCompleted, true), eq(Todo.userId, userId)));
-    return null;
-  }
-
-  // all
-  if (listId === "all") {
-    const allTodos = await getAllUserTodos(c, userId);
-    await db
-      .delete(Todo)
-      .where(and(eq(Todo.isCompleted, true), inArray(Todo.id, allTodos)));
-    // TODO: invalidate users sharing lists with the user
-    return null;
-  }
+  await ensureListMember(c, { listId, userId });
 
   await db
     .delete(Todo)
@@ -193,25 +162,7 @@ const uncheckCompleted: ActionHandler<
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 
-  // inbox
-  if (!listId) {
-    await db
-      .update(Todo)
-      .set({ isCompleted: false })
-      .where(eq(Todo.userId, userId));
-    // TODO: invalidate users sharing lists with the user
-    return null;
-  }
-
-  // all
-  if (listId === "all") {
-    const allTodos = await getAllUserTodos(c, userId);
-    await db
-      .update(Todo)
-      .set({ isCompleted: false })
-      .where(inArray(Todo.id, allTodos));
-    return null;
-  }
+  await ensureListMember(c, { listId, userId });
 
   await db
     .update(Todo)
