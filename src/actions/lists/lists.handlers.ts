@@ -31,7 +31,7 @@ async function getList(c: ActionAPIContext, listId?: string | undefined) {
     })
     .from(List)
     .innerJoin(ListUser, eq(ListUser.listId, List.id))
-    .orderBy(asc(List.name))
+    .orderBy(asc(List.createdAt))
     .where(
       and(
         eq(ListUser.userId, userId),

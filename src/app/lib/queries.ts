@@ -23,7 +23,6 @@ export const qUsers = (search: string) =>
 export const qLists = queryOptions({
   queryKey: ["lists"],
   queryFn: actions.lists.getAll.orThrow,
-  select: (data) => data.sort((a, b) => a.name.localeCompare(b.name)),
 });
 
 export const qList = (listId: string) =>
