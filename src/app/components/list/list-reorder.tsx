@@ -60,12 +60,12 @@ const SortableItem: React.FC<SortableItemProps> = ({
     <div ref={setNodeRef} style={style}>
       <article
         className={cn(
-          "sm:hover:bg-accent-3 rounded-3 -mx-3 flex h-9 items-center gap-2 px-3 transition-colors ease-in",
+          "sm:hover:bg-accent-3 rounded-3 -mx-3 flex h-12 items-center gap-3 px-3 transition-colors ease-in",
           isOverlay && "bg-accent-3",
         )}
       >
         <IconButton
-          size="1"
+          size="2"
           variant="soft"
           className={cn(
             isOverlay ? "cursor-grabbing" : "cursor-grab",
@@ -74,7 +74,7 @@ const SortableItem: React.FC<SortableItemProps> = ({
           {...attributes}
           {...listeners}
         >
-          <GripVerticalIcon className="size-4 opacity-70" />
+          <GripVerticalIcon className="size-5" />
         </IconButton>
         <Dialog.Close>
           <Link
@@ -83,7 +83,7 @@ const SortableItem: React.FC<SortableItemProps> = ({
             className="flex h-full flex-1 items-center"
             preload={false}
           >
-            <Text truncate size="2" weight="medium">
+            <Text truncate size="3" weight="medium">
               {list.name}
             </Text>
           </Link>
@@ -105,9 +105,7 @@ const ListReorderContent: React.FC<{
     useSensor(PointerSensor, {
       activationConstraint: { distance: 5 },
     }),
-    useSensor(TouchSensor, {
-      activationConstraint: { delay: 150, tolerance: 5 },
-    }),
+    useSensor(TouchSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
