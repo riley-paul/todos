@@ -84,12 +84,12 @@ const getAll: ActionHandler<typeof listInputs.getAll, ListSelect[]> = async (
   return getList(c, undefined);
 };
 
-const get: ActionHandler<typeof listInputs.get, ListSelect> = async (
+const get: ActionHandler<typeof listInputs.get, ListSelect | null> = async (
   { id },
   c,
 ) => {
   const list = await getList(c, id);
-  if (!list) throw actionErrors.NOT_FOUND;
+  if (!list) return null;
   return list;
 };
 

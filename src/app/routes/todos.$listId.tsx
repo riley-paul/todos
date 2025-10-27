@@ -1,7 +1,7 @@
 import Todos from "@/app/components/todo/todos";
 import { qList, qTodos } from "@/app/lib/queries";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import React from "react";
 import { useDocumentTitle } from "usehooks-ts";
 import ListHeader from "../components/list/list-header";
@@ -17,6 +17,7 @@ export const Route = createFileRoute("/todos/$listId")({
       queryClient.ensureQueryData(qTodos(listId)),
       queryClient.ensureQueryData(qList(listId)),
     ]);
+    if (!list) throw notFound();
     return { todos, list };
   },
 });
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/todos/$listId")({
 function RouteComponent() {
   const { listId } = Route.useParams();
   const { data: list } = useSuspenseQuery(qList(listId));
+  if (!list) throw notFound();
 
   useDocumentTitle(list.name);
 

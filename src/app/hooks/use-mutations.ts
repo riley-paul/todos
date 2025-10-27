@@ -11,19 +11,22 @@ export const handleMutationError = (error: Error) => {
   console.error(error);
 
   let status = 500;
+  let title = "Error";
   let description = error.message;
 
   if (isActionError(error)) {
+    title = error.name;
     status = error.status;
     description = error.message;
   }
 
   if (error instanceof ActionInputError) {
+    title = error.name;
     status = 400;
     description = error.issues.map((issue) => issue.message).join(", ");
   }
 
-  toast.error(`${status} Error`, { description });
+  toast.error(`${status} - ${title}`, { description });
 };
 
 export default function useMutations() {
