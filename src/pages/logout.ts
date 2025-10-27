@@ -1,7 +1,7 @@
 import {
   deleteSessionTokenCookie,
   invalidateSession,
-} from "@/lib/server/lucia";
+} from "@/lib/lucia";
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = (context) => {

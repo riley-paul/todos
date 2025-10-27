@@ -4,7 +4,7 @@ import {
   SESSION_COOKIE_NAME,
   setSessionTokenCookie,
   validateSessionToken,
-} from "./lib/server/lucia";
+} from "./lib/lucia";
 // import { parseEnv } from "./envs";
 
 // const validateEnv = defineMiddleware(async (context, next) => {

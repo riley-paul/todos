@@ -5,7 +5,7 @@ import {
 } from "@oslojs/encoding";
 import { sha256 } from "@oslojs/crypto/sha2";
 import { User, UserSession } from "@/db/schema";
-import type { UserSelect, UserSessionInfo } from "../types";
+import type { UserSelect, UserSessionInfo } from "./types";
 import type { APIContext } from "astro";
 import { createDb } from "@/db";
 

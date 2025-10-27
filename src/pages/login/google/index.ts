@@ -1,4 +1,4 @@
-import { createGoogle } from "@/lib/server/oauth";
+import { createGoogle } from "@/lib/oauth";
 import { generateCodeVerifier, generateState } from "arctic";
 
 import type { APIContext } from "astro";
