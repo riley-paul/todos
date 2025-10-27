@@ -26,7 +26,12 @@ import { cn } from "@/app/lib/utils";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 import useMutations from "@/app/hooks/use-mutations";
 
-const SortableContent: React.FC<{ list: ListSelect; isOverlay?: boolean }> = ({
+type SortableContentProps = {
+  list: ListSelect;
+  isOverlay?: boolean;
+};
+
+const SortableContent: React.FC<SortableContentProps> = ({
   list,
   isOverlay,
 }) => {
@@ -45,10 +50,13 @@ const SortableContent: React.FC<{ list: ListSelect; isOverlay?: boolean }> = ({
   );
 };
 
-const SortableItem: React.FC<{ id: string; list: ListSelect }> = ({
-  id,
-  list,
-}) => {
+type SortableItemProps = {
+  id: string;
+  list: ListSelect;
+  isDragging?: boolean;
+};
+
+const SortableItem: React.FC<SortableItemProps> = ({ id, list, isDragging }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
@@ -56,6 +64,7 @@ const SortableItem: React.FC<{ id: string; list: ListSelect }> = ({
     transform: CSS.Transform.toString(transform),
     transition,
     outline: "none",
+    opacity: isDragging ? 0.5 : 1,
   };
 
   return (
@@ -120,7 +129,12 @@ const ListReorderContent: React.FC<{
       <SortableContext items={lists} strategy={verticalListSortingStrategy}>
         <div className="flex flex-col gap-1">
           {localLists.map((list) => (
-            <SortableItem key={list.id} id={list.id} list={list} />
+            <SortableItem
+              key={list.id}
+              id={list.id}
+              list={list}
+              isDragging={list.id === activeId}
+            />
           ))}
         </div>
       </SortableContext>
