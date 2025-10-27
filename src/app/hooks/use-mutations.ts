@@ -260,6 +260,10 @@ export default function useMutations() {
     },
   });
 
+  const updateListSortShow = useMutation({
+    mutationFn: actions.lists.updateSortShow.orThrow,
+  });
+
   return {
     updateTodo,
     deleteTodo,
@@ -278,5 +282,7 @@ export default function useMutations() {
     acceptListJoin,
     removeSelfFromList,
     removeUserFromList,
+
+    updateListSortShow,
   };
 }

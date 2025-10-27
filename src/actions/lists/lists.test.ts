@@ -5,7 +5,7 @@ import { List, ListUser, User } from "@/db/schema";
 import { deleteAllData } from "@/db/scripts/delete-all-data";
 import { createDb } from "@/db";
 import env from "@/envs-runtime";
-import listHandlers from "./lists.handlers";
+import * as listHandlers from "./lists.handlers";
 import mockApiContext from "../__test__/mock-api-context";
 import actionErrors from "../errors";
 import { count, eq } from "drizzle-orm";

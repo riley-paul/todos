@@ -24,15 +24,17 @@ async function getList(c: ActionAPIContext, listId?: string | undefined) {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 
-  const lists = await db
+  const lists: ListSelect[] = await db
     .selectDistinct({
       id: List.id,
       name: List.name,
       isPending: ListUser.isPending,
+      show: ListUser.show,
+      order: ListUser.order,
     })
     .from(List)
     .innerJoin(ListUser, eq(ListUser.listId, List.id))
-    .orderBy(asc(ListUser.order), asc(List.createdAt))
+    .orderBy(asc(ListUser.order), asc(ListUser.show), asc(List.createdAt))
     .where(
       and(
         eq(ListUser.userId, userId),

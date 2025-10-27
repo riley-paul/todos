@@ -67,6 +67,8 @@ export const zListSelect = createSelectSchema(List)
     todoCount: z.number(),
     otherUsers: z.array(zUserSelect),
     isPending: z.boolean(),
+    show: z.boolean(),
+    order: z.number(),
   });
 export const zListSelectShallow = createSelectSchema(List)
   .pick({
