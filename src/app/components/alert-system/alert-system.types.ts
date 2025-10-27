@@ -1,5 +1,5 @@
 import type { ButtonProps } from "@radix-ui/themes";
-import type { ZodString } from "zod";
+import type { ZodString } from "astro/zod";
 
 export type DeleteAlertProps = {
   type: "delete";

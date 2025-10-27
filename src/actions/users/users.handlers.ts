@@ -7,6 +7,16 @@ import type { UserSelect, UserSelectWithSettings } from "@/lib/types";
 import type userInputs from "./users.inputs";
 import actionErrors from "../errors";
 
+const USER_FIELDS = {
+  id: User.id,
+  name: User.name,
+  email: User.email,
+  avatarUrl: User.avatarUrl,
+  settingGroupCompleted: User.settingGroupCompleted,
+  settingListOrder: User.settingListOrder,
+  settingListHiddenIndex: User.settingListHiddenIndex,
+} as const;
+
 const getMe: ActionHandler<
   typeof userInputs.getMe,
   UserSelectWithSettings
@@ -16,14 +26,7 @@ const getMe: ActionHandler<
   if (!user) throw actionErrors.UNAUTHORIZED;
 
   const [data] = await db
-    .select({
-      id: User.id,
-      name: User.name,
-      email: User.email,
-      avatarUrl: User.avatarUrl,
-      settingGroupCompleted: User.settingGroupCompleted,
-      settingListOrder: User.settingListOrder,
-    })
+    .select(USER_FIELDS)
     .from(User)
     .where(eq(User.id, user.id));
 
@@ -74,14 +77,7 @@ const updateUserSettings: ActionHandler<
     .update(User)
     .set(data)
     .where(eq(User.id, user.id))
-    .returning({
-      id: User.id,
-      name: User.name,
-      email: User.email,
-      avatarUrl: User.avatarUrl,
-      settingGroupCompleted: User.settingGroupCompleted,
-      settingListOrder: User.settingListOrder,
-    });
+    .returning(USER_FIELDS);
 
   if (!updatedUser) throw actionErrors.NOT_FOUND;
 

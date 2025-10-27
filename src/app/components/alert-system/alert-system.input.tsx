@@ -3,7 +3,7 @@ import type { InputAlertProps } from "./alert-system.types";
 import { Dialog, Button, Text, TextField } from "@radix-ui/themes";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { z } from "astro/zod";
 
 type Schema = { value: string };
 

@@ -38,6 +38,7 @@ export const User = sqliteTable("user", {
     .$type<ListOrder>()
     .notNull()
     .default({}),
+  settingListHiddenIndex: integer(),
 
   ...timeStamps,
 });

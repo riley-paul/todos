@@ -62,8 +62,7 @@
     "typescript": "^5.4.5",
     "usehooks-ts": "^3.1.0",
     "vite-plugin-pwa": "^0.20.5",
-    "vitest": "^3.0.8",
-    "zod": "^3.25.76"
+    "vitest": "^3.0.8"
   },
   "devDependencies": {
     "@tanstack/router-devtools": "^1.97.25",

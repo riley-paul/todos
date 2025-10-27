@@ -1,6 +1,6 @@
 import { GitHub, Google } from "arctic";
 import type { APIContext } from "astro";
-import { z } from "zod";
+import { z } from "astro/zod";
 
 export const createGithub = (context: APIContext) => {
   const { env } = context.locals.runtime;

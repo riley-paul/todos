@@ -1,5 +1,5 @@
 import { zListInsert, zListName } from "@/lib/types";
-import { z } from "zod";
+import { z } from "astro/zod";
 
 const listInputs = {
   getAll: z.any(),

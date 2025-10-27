@@ -1,5 +1,5 @@
 import { zTodoInsert } from "@/lib/types";
-import { z } from "zod";
+import { z } from "astro/zod";
 
 const todoInputs = {
   get: z.object({ listId: z.string() }),

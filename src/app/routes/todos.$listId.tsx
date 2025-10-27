@@ -6,7 +6,7 @@ import React from "react";
 import { useDocumentTitle } from "usehooks-ts";
 import ListHeader from "../components/list/list-header";
 import TodoAdder from "../components/todo-adder";
-import { z } from "astro:schema";
+import { z } from "astro/zod";
 import PendingListScreen from "../components/screens/pending-list";
 
 export const Route = createFileRoute("/todos/$listId")({
