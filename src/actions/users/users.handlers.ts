@@ -22,6 +22,7 @@ const getMe: ActionHandler<
       email: User.email,
       avatarUrl: User.avatarUrl,
       settingGroupCompleted: User.settingGroupCompleted,
+      settingListOrder: User.settingListOrder,
     })
     .from(User)
     .where(eq(User.id, user.id));
@@ -79,6 +80,7 @@ const updateUserSettings: ActionHandler<
       email: User.email,
       avatarUrl: User.avatarUrl,
       settingGroupCompleted: User.settingGroupCompleted,
+      settingListOrder: User.settingListOrder,
     });
 
   if (!updatedUser) throw actionErrors.NOT_FOUND;

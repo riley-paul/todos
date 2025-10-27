@@ -1,11 +1,14 @@
 import useAlerts from "@/app/hooks/use-alerts";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
+import { qUser } from "@/app/lib/queries";
+import { sortByOrder } from "@/app/lib/utils";
 import { type ListSelect } from "@/lib/types";
 import { Badge, IconButton } from "@radix-ui/themes";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, linkOptions } from "@tanstack/react-router";
 import { ListPlusIcon } from "lucide-react";
 import React from "react";
-// import ListReorder from "./list-reorder";
+import ListReorder from "./list-reorder";
 
 const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
   const link = linkOptions({
@@ -31,15 +34,20 @@ const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
 
 const ListChips: React.FC<{ lists: ListSelect[] }> = ({ lists }) => {
   const { handleCreateList } = useAlerts();
+  const {
+    data: { settingListOrder },
+  } = useSuspenseQuery(qUser);
 
   if (lists.length === 0) return null;
 
+  const sortedLists = sortByOrder(lists, settingListOrder);
+
   return (
     <div className="flex flex-wrap gap-2">
-      {lists.map((list) => (
+      {sortedLists.map((list) => (
         <ListChip key={list.id} list={list} />
       ))}
-      {/*<ListReorder lists={lists} />*/}
+      <ListReorder lists={sortedLists} />
       <IconButton
         size="1"
         className="size-7"

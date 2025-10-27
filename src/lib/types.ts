@@ -16,6 +16,7 @@ export const zUserSelectWithSettings = createSelectSchema(User).pick({
   email: true,
   avatarUrl: true,
   settingGroupCompleted: true,
+  settingListOrder: true,
 });
 export const zUserInsert = createInsertSchema(User);
 export type UserSelect = z.infer<typeof zUserSelect>;
@@ -95,3 +96,6 @@ export const zListUserSelect = createSelectSchema(ListUser)
   });
 export type ListUserInsert = z.infer<typeof zListUserInsert>;
 export type ListUserSelect = z.infer<typeof zListUserSelect>;
+
+export const zListOrder = z.record(z.string(), z.number());
+export type ListOrder = z.infer<typeof zListOrder>;

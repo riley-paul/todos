@@ -7,7 +7,7 @@ const userInputs = {
   updateUserSettings: z
     .object({
       settingGroupCompleted: z.boolean(),
-      settingHideUnpinned: z.boolean(),
+      settingListOrder: z.record(z.string(), z.number()),
     })
     .partial(),
 };

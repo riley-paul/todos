@@ -49,3 +49,14 @@ export const getIsTyping = () =>
   document.activeElement?.tagName === "TEXTAREA" ||
   // @ts-expect-error
   document.activeElement?.isContentEditable;
+
+export const sortByOrder = <T extends { id: string }>(
+  items: T[],
+  order: Record<string, number>,
+) => {
+  return items.slice().sort((a, b) => {
+    const orderA = order[a.id] ?? Number.MAX_SAFE_INTEGER;
+    const orderB = order[b.id] ?? Number.MAX_SAFE_INTEGER;
+    return orderA - orderB;
+  });
+};
