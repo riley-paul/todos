@@ -20,43 +20,32 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import type { ListSelect } from "@/lib/types";
-import { Button, Dialog, IconButton, VisuallyHidden } from "@radix-ui/themes";
+import {
+  Button,
+  Dialog,
+  IconButton,
+  Text,
+  VisuallyHidden,
+} from "@radix-ui/themes";
 import { ArrowUpDownIcon, GripVerticalIcon } from "lucide-react";
 import { cn } from "@/app/lib/utils";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 import useMutations from "@/app/hooks/use-mutations";
-
-type SortableContentProps = {
-  list: ListSelect;
-  isOverlay?: boolean;
-};
-
-const SortableContent: React.FC<SortableContentProps> = ({
-  list,
-  isOverlay,
-}) => {
-  return (
-    <article
-      className={cn(
-        "hover:bg-accent-3 rounded-3 -mx-3 flex cursor-grab items-center gap-2 px-3 py-1.5 transition-colors ease-in",
-        isOverlay && "bg-accent-3 cursor-grabbing",
-      )}
-    >
-      <section>
-        <GripVerticalIcon className="size-4 opacity-70" />
-      </section>
-      {list.name}
-    </article>
-  );
-};
+import { Link } from "@tanstack/react-router";
 
 type SortableItemProps = {
   id: string;
   list: ListSelect;
   isDragging?: boolean;
+  isOverlay?: boolean;
 };
 
-const SortableItem: React.FC<SortableItemProps> = ({ id, list, isDragging }) => {
+const SortableItem: React.FC<SortableItemProps> = ({
+  id,
+  list,
+  isDragging,
+  isOverlay,
+}) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
@@ -68,8 +57,38 @@ const SortableItem: React.FC<SortableItemProps> = ({ id, list, isDragging }) => 
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <SortableContent list={list} />
+    <div ref={setNodeRef} style={style}>
+      <article
+        className={cn(
+          "sm:hover:bg-accent-3 rounded-3 -mx-3 flex h-9 items-center gap-2 px-3 transition-colors ease-in",
+          isOverlay && "bg-accent-3",
+        )}
+      >
+        <IconButton
+          size="1"
+          variant="soft"
+          className={cn(
+            isOverlay ? "cursor-grabbing" : "cursor-grab",
+            "outline-none",
+          )}
+          {...attributes}
+          {...listeners}
+        >
+          <GripVerticalIcon className="size-4 opacity-70" />
+        </IconButton>
+        <Dialog.Close>
+          <Link
+            to="/todos/$listId"
+            params={{ listId: list.id }}
+            className="flex h-full flex-1 items-center"
+            preload={false}
+          >
+            <Text truncate size="2" weight="medium">
+              {list.name}
+            </Text>
+          </Link>
+        </Dialog.Close>
+      </article>
     </div>
   );
 };
@@ -140,7 +159,9 @@ const ListReorderContent: React.FC<{
       </SortableContext>
 
       <DragOverlay>
-        {activeList ? <SortableContent list={activeList} isOverlay /> : null}
+        {activeList ? (
+          <SortableItem id={activeList.id} list={activeList} isOverlay />
+        ) : null}
       </DragOverlay>
     </DndContext>
   );
