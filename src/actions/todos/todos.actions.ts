@@ -1,6 +1,6 @@
 import { defineAction } from "astro:actions";
-import todoInputs from "./todos.inputs";
-import todoHanders from "./todos.handlers";
+import * as todoInputs from "./todos.inputs";
+import * as todoHanders from "./todos.handlers";
 
 export const get = defineAction({
   input: todoInputs.get,

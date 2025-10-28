@@ -4,7 +4,7 @@ import { createDb } from "@/db";
 import { Todo, User, UserSession } from "@/db/schema";
 import { and, eq, like, not, or } from "drizzle-orm";
 import type { UserSelect, UserSelectWithSettings } from "@/lib/types";
-import type userInputs from "./users.inputs";
+import * as userInputs from "./users.inputs";
 import actionErrors from "../errors";
 
 const USER_FIELDS = {
@@ -15,7 +15,7 @@ const USER_FIELDS = {
   settingGroupCompleted: User.settingGroupCompleted,
 } as const;
 
-const getMe: ActionHandler<
+export const getMe: ActionHandler<
   typeof userInputs.getMe,
   UserSelectWithSettings
 > = async (_, c) => {
@@ -32,7 +32,10 @@ const getMe: ActionHandler<
   return data;
 };
 
-const remove: ActionHandler<typeof userInputs.remove, null> = async (_, c) => {
+export const remove: ActionHandler<typeof userInputs.remove, null> = async (
+  _,
+  c,
+) => {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
   await db.delete(UserSession).where(eq(UserSession.userId, userId));
@@ -43,7 +46,7 @@ const remove: ActionHandler<typeof userInputs.remove, null> = async (_, c) => {
   return null;
 };
 
-const get: ActionHandler<typeof userInputs.get, UserSelect[]> = async (
+export const get: ActionHandler<typeof userInputs.get, UserSelect[]> = async (
   { search },
   c,
 ) => {
@@ -62,7 +65,7 @@ const get: ActionHandler<typeof userInputs.get, UserSelect[]> = async (
     .limit(10);
 };
 
-const updateUserSettings: ActionHandler<
+export const updateUserSettings: ActionHandler<
   typeof userInputs.updateUserSettings,
   UserSelectWithSettings
 > = async (data, c) => {
@@ -81,11 +84,3 @@ const updateUserSettings: ActionHandler<
 
   return updatedUser;
 };
-
-const userHandlers = {
-  getMe,
-  remove,
-  get,
-  updateUserSettings,
-};
-export default userHandlers;

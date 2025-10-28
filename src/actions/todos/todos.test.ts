@@ -6,7 +6,7 @@ import { List, ListUser, Todo, User } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { deleteAllData } from "@/db/scripts/delete-all-data";
 import actionErrors from "../errors";
-import todoHanders from "./todos.handlers";
+import * as todoHanders from "./todos.handlers";
 import { createDb } from "@/db";
 import env from "@/envs-runtime";
 

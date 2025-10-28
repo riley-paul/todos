@@ -1,6 +1,6 @@
 import { defineAction } from "astro:actions";
-import userInputs from "./users.inputs";
-import userHandlers from "./users.handlers";
+import * as userInputs from "./users.inputs";
+import * as userHandlers from "./users.handlers";
 
 export const getMe = defineAction({
   input: userInputs.getMe,
