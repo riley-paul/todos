@@ -1,35 +1,38 @@
-import { type ActionHandler } from "astro:actions";
+import { type ActionAPIContext, type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
 import { User, Todo, List, ListUser } from "@/db/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, or, like } from "drizzle-orm";
 import type { TodoSelect, TodoSelectShallow } from "@/lib/types";
 import {
   ensureAuthorized,
   invalidateListUsers,
   ensureListMember,
-  filterTodos,
 } from "../helpers";
 
 import * as todoInputs from "./todos.inputs";
 import actionErrors from "../errors";
 
-export const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
-  { listId },
-  c,
-) => {
+const getTodos = async (
+  c: ActionAPIContext,
+  filters: Partial<{
+    todoId: string;
+    listId: string;
+    userId: string;
+    search: string;
+  }> = {},
+): Promise<TodoSelect[]> => {
   const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
+  const reqUserId = ensureAuthorized(c).id;
 
-  const userLists =
-    listId === "all"
-      ? await db
-          .select({ listId: ListUser.listId })
-          .from(ListUser)
-          .where(
-            and(eq(ListUser.userId, userId), eq(ListUser.isPending, false)),
-          )
-          .then((data) => data.map(({ listId }) => listId))
-      : [];
+  const { todoId, listId, userId, search } = filters;
+
+  const searchTerm = `%${search}%`;
+  const searchQuery = or(
+    like(Todo.text, searchTerm),
+    like(List.name, searchTerm),
+    like(User.name, searchTerm),
+    like(User.email, searchTerm),
+  );
 
   const todos: TodoSelect[] = await db
     .selectDistinct({
@@ -51,18 +54,25 @@ export const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
     .innerJoin(List, eq(List.id, Todo.listId))
     .innerJoin(User, eq(User.id, Todo.userId))
     .where(
-      filterTodos({
-        listId,
-        userLists,
-        userId,
-      }),
+      and(
+        todoId ? eq(Todo.id, todoId) : undefined,
+        listId ? eq(Todo.listId, listId) : undefined,
+        userId ? eq(Todo.userId, userId) : undefined,
+        search ? searchQuery : undefined,
+      ),
     )
     .orderBy(desc(Todo.createdAt))
     .then((data) =>
-      data.map((todo) => ({ ...todo, isAuthor: todo.author.id === userId })),
+      data.map((todo) => ({ ...todo, isAuthor: todo.author.id === reqUserId })),
     );
-
   return todos;
+};
+
+export const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
+  { listId },
+  c,
+) => {
+  return getTodos(c, { listId });
 };
 
 export const create: ActionHandler<

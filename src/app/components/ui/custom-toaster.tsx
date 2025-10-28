@@ -4,9 +4,11 @@ import React from "react";
 import { Toaster } from "sonner";
 import RadixProvider from "./radix-provider";
 import { CircleCheckIcon, TriangleAlertIcon, InfoIcon } from "lucide-react";
+import { useIsMobile } from "@/app/hooks/use-is-mobile";
 
 const CustomToaster: React.FC = () => {
   const appearance = useAppearance();
+  const isMobile = useIsMobile();
   return (
     <Portal>
       <RadixProvider>
@@ -15,7 +17,7 @@ const CustomToaster: React.FC = () => {
           toastOptions={{
             className: "bg-panel-solid border border-gray-6 rounded-4",
           }}
-          position={"bottom-center"}
+          position={isMobile ? "top-center" : "bottom-center"}
           icons={{
             loading: <Spinner />,
             success: <CircleCheckIcon className="text-green-10 size-4" />,

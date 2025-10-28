@@ -1,6 +1,6 @@
 import type { ActionAPIContext } from "astro/actions/runtime/utils.js";
-import { ListUser, Todo } from "@/db/schema";
-import { eq, and, not, isNull, inArray, or } from "drizzle-orm";
+import { ListUser } from "@/db/schema";
+import { eq, and, not } from "drizzle-orm";
 import actionErrors from "./errors";
 import { createDb } from "@/db";
 import { Rest } from "ably";
@@ -58,21 +58,4 @@ export const ensureListMember = async (
     .limit(1);
   if (!listUser) throw actionErrors.NO_PERMISSION;
   if (listUser.isPending && checkPending) throw actionErrors.LIST_PENDING;
-};
-
-type FilterTodosArgs = {
-  listId: string;
-  userId: string;
-  userLists: string[];
-};
-
-export const filterTodos = ({ listId, userLists, userId }: FilterTodosArgs) => {
-  switch (listId) {
-    case null:
-      return and(eq(Todo.userId, userId), isNull(Todo.listId));
-    case "all":
-      return or(inArray(Todo.listId, userLists), eq(Todo.userId, userId));
-    default:
-      return eq(Todo.listId, listId);
-  }
 };

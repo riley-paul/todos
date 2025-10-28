@@ -12,8 +12,7 @@ export default function useMutations() {
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  const { listId } = useParams({ strict: false });
-  const selectedList = listId ?? "";
+  const { listId: selectedList = "" } = useParams({ strict: false });
 
   const navigate = useNavigate();
 
@@ -108,8 +107,9 @@ export default function useMutations() {
 
   const createTodo = useMutation({
     mutationFn: actions.todos.create.orThrow,
-    onSuccess: ({ listId }) => {
-      navigate({ to: "/todos/$listId", params: { listId } });
+    onSuccess: (data) => {
+      const updater: Updater<TodoSelect[]> = (todos = []) => [data, ...todos];
+      modifyTodoCache(data.listId, updater);
     },
   });
 
@@ -186,7 +186,7 @@ export default function useMutations() {
     mutationFn: actions.lists.create.orThrow,
     onSuccess: ({ id }, { name }) => {
       router.invalidate();
-      toast.success(`List "${name}" created`);
+      toast.success(`${name} created`);
       navigate({ to: "/todos/$listId", params: { listId: id } });
     },
   });
@@ -197,25 +197,24 @@ export default function useMutations() {
 
   const acceptListJoin = useMutation({
     mutationFn: actions.listUsers.accept.orThrow,
-    onSuccess: (data) => {
-      toast.success(`You now have access to "${data.list.name}"`, {
-        action: {
-          label: "Go to list",
-          onClick: () =>
-            navigate({
-              to: "/todos/$listId",
-              params: { listId: data.list.id },
-            }),
-        },
+    onSuccess: ({ listId, list: { name } }) => {
+      router.invalidate();
+      const goToList = () => {
+        navigate({ to: "/todos/$listId", params: { listId } });
+      };
+      toast.success(`You now have access to ${name}`, {
+        action: { label: "Go to list", onClick: goToList },
       });
     },
   });
 
   const deleteList = useMutation({
     mutationFn: actions.lists.remove.orThrow,
+    onMutate: ({ id }) => {
+      if (id === selectedList) navigate({ to: "/" });
+    },
     onSuccess: () => {
       router.invalidate();
-      navigate({ to: "/" });
       toast.success("List deleted");
     },
   });
@@ -231,16 +230,21 @@ export default function useMutations() {
 
   const removeSelfFromList = useMutation({
     mutationFn: actions.listUsers.remove.orThrow,
+    onMutate: ({ listId }) => {
+      if (listId === selectedList) navigate({ to: "/" });
+    },
     onSuccess: (_, { listId }) => {
-      navigate({ to: "/" });
       const lists = queryClient.getQueryData(qLists.queryKey);
       const list = lists?.find((l) => l.id === listId);
-      toast.success(`You left "${list?.name ?? "the list"}"`);
+      toast.success(`You left ${list?.name ?? "the list"}`);
     },
   });
 
   const updateListSortShow = useMutation({
     mutationFn: actions.lists.updateSortShow.orThrow,
+    onSuccess: (newLists) => {
+      queryClient.setQueryData(qLists.queryKey, newLists);
+    },
   });
 
   return {
