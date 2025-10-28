@@ -157,7 +157,7 @@ const AppSearch: React.FC = () => {
   });
 
   return (
-    <Dialog.Root open={isOpen || true} onOpenChange={setIsOpen}>
+    <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
       <Dialog.Trigger>
         <IconButton variant="soft" radius="full">
           <SearchIcon className="size-4" />
