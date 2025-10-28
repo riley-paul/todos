@@ -1,11 +1,9 @@
-import Todos from "@/app/components/todo/todos";
-import { qList, qTodos } from "@/app/lib/queries";
+import { qList } from "@/app/lib/queries";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Navigate, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound, Outlet } from "@tanstack/react-router";
 import React from "react";
 import { useDocumentTitle } from "usehooks-ts";
 import ListHeader from "../components/list/list-header";
-import TodoAdder from "../components/todo-adder";
 import { z } from "astro/zod";
 import PendingListScreen from "../components/screens/pending-list";
 
@@ -13,29 +11,27 @@ export const Route = createFileRoute("/todos/$listId")({
   component: RouteComponent,
   validateSearch: z.object({ highlightedTodoId: z.string().optional() }),
   loader: async ({ context: { queryClient }, params: { listId } }) => {
-    const [todos, list] = await Promise.all([
-      queryClient.ensureQueryData(qTodos(listId)),
-      queryClient.ensureQueryData(qList(listId)),
-    ]);
+    const list = await queryClient.ensureQueryData(qList(listId));
     if (!list) throw notFound();
-    return { todos, list };
+    return { list };
   },
 });
 
 function RouteComponent() {
   const { listId } = Route.useParams();
-  const { data: list } = useSuspenseQuery(qList(listId));
+  const { list: loaderList } = Route.useLoaderData();
+  const { data: queryList } = useSuspenseQuery(qList(listId));
 
-  useDocumentTitle(list?.name ?? "Todos");
+  const list = queryList ?? loaderList;
 
-  if (!list) return <Navigate to="/" />;
+  useDocumentTitle(list.name ?? "Todos");
+
   if (list.isPending) return <PendingListScreen />;
 
   return (
     <React.Fragment>
       <ListHeader list={list} />
-      <TodoAdder listId={listId} />
-      <Todos list={list} />
+      <Outlet />
     </React.Fragment>
   );
 }
