@@ -5,6 +5,8 @@ export const getAll = z.any();
 
 export const get = z.object({ listId: z.string() });
 
+export const search = z.object({ search: z.string() });
+
 export const update = z.object({
   id: z.string(),
   data: zListInsert.partial(),

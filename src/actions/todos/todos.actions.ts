@@ -7,6 +7,11 @@ export const getAll = defineAction({
   handler: todoHanders.getAll,
 });
 
+export const search = defineAction({
+  input: todoInputs.search,
+  handler: todoHanders.search,
+});
+
 export const create = defineAction({
   input: todoInputs.create,
   handler: todoHanders.create,

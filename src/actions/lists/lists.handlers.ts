@@ -64,6 +64,7 @@ const getLists = async (
 
   const { listId, search } = filters;
 
+  if (search?.trim() === "") return [];
   const searchTerm = `%${search}%`;
   const searchQuery = or(like(List.name, searchTerm));
 
@@ -114,6 +115,13 @@ export const get: ActionHandler<
   const [list] = await getLists(c, { listId });
   if (!list) return null;
   return list;
+};
+
+export const search: ActionHandler<
+  typeof listInputs.search,
+  ListSelect[]
+> = async ({ search }, c) => {
+  return getLists(c, { search });
 };
 
 export const update: ActionHandler<

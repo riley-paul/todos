@@ -26,6 +26,7 @@ const getTodos = async (
 
   const { todoId, listId, userId, search } = filters;
 
+  if (search?.trim() === "") return [];
   const searchTerm = `%${search}%`;
   const searchQuery = or(
     like(Todo.text, searchTerm),
@@ -67,11 +68,18 @@ const getTodos = async (
   return todos;
 };
 
-export const getAll: ActionHandler<typeof todoInputs.getAll, TodoSelect[]> = async (
-  { listId },
-  c,
-) => {
+export const getAll: ActionHandler<
+  typeof todoInputs.getAll,
+  TodoSelect[]
+> = async ({ listId }, c) => {
   return getTodos(c, { listId });
+};
+
+export const search: ActionHandler<
+  typeof todoInputs.search,
+  TodoSelect[]
+> = async ({ search }, c) => {
+  return getTodos(c, { search });
 };
 
 export const create: ActionHandler<

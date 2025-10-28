@@ -7,6 +7,11 @@ export const getAll = defineAction({
   handler: listHandlers.getAll,
 });
 
+export const search = defineAction({
+  input: listInputs.search,
+  handler: listHandlers.search,
+});
+
 export const get = defineAction({
   input: listInputs.get,
   handler: listHandlers.get,
