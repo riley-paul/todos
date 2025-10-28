@@ -73,7 +73,6 @@ const UserSearch: React.FC<Props> = ({
               }}
             >
               <TextField.Root
-                size="3"
                 placeholder="Search users..."
                 onChange={() => setShowMenu(true)}
                 // onFocus={() => setShowMenu(true)}

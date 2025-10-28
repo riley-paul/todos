@@ -37,7 +37,6 @@ const UserInviter: React.FC<UserInviterProps> = ({ list, isUserDisabled }) => {
         isUserDisabled={isUserDisabled}
       />
       <Button
-        size="3"
         disabled={!selectedUserId}
         onClick={() =>
           createListJoin.mutate(

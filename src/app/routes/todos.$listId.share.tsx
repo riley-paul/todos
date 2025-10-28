@@ -28,7 +28,8 @@ function RouteComponent() {
             Share List
           </Heading>
           <Text size="2" color="gray">
-            Add other users to your list so they can add and delete todos
+            Add other users to your list so they can add and delete todos. Their
+            invite will be pending until they accept it.
           </Text>
         </section>
       </header>

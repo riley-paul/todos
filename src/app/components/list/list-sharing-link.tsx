@@ -5,6 +5,8 @@ import React from "react";
 import UserBubbleGroup from "../ui/user-bubble-group";
 import { Link, linkOptions } from "@tanstack/react-router";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
+import type { BaseButtonProps } from "@radix-ui/themes/components/_internal/base-button";
+import { cn } from "@/app/lib/utils";
 
 type Props = { list: ListSelect };
 
@@ -16,14 +18,15 @@ const ListSharingLink: React.FC<Props> = ({ list }) => {
 
   const isActive = useIsLinkActive(link);
 
+  const buttonProps: BaseButtonProps = {
+    asChild: true,
+    variant: "ghost",
+    className: cn(isActive && "bg-accent-4"),
+  };
+
   if (list.otherUsers.length === 0) {
     return (
-      <IconButton
-        asChild
-        radius="large"
-        variant={isActive ? "solid" : "ghost"}
-        className="-mx-2 h-auto px-2 py-1"
-      >
+      <IconButton {...buttonProps}>
         <Link {...link}>
           <Share2Icon className="size-4" />
         </Link>
@@ -31,12 +34,7 @@ const ListSharingLink: React.FC<Props> = ({ list }) => {
     );
   }
   return (
-    <Button
-      asChild
-      radius="large"
-      variant={isActive ? "solid" : "ghost"}
-      className="-mx-2 h-auto px-2 py-1"
-    >
+    <Button {...buttonProps}>
       <Link {...link}>
         <UserBubbleGroup users={list.otherUsers} numAvatars={3} />
       </Link>
