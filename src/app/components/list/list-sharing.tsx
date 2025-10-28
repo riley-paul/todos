@@ -1,13 +1,13 @@
 import type { ListSelect, ListUserSelect } from "@/lib/types";
 import React from "react";
+import { Button, Separator, Text, type ButtonProps } from "@radix-ui/themes";
 import {
-  Badge,
-  Button,
-  Separator,
-  Text,
-  type ButtonProps,
-} from "@radix-ui/themes";
-import { HourglassIcon, SendIcon } from "lucide-react";
+  ArrowDownIcon,
+  HourglassIcon,
+  LogOutIcon,
+  SendIcon,
+  XIcon,
+} from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import UserBubble from "../ui/user-bubble";
 import UserSearch from "./user-search";
@@ -73,7 +73,12 @@ const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
     if (listShare.isPending) {
       return {
         color: "amber",
-        children: "Cancel",
+        children: (
+          <React.Fragment>
+            <XIcon className="size-3" />
+            <span>Cancel</span>
+          </React.Fragment>
+        ),
         onClick: () =>
           handleCancelInvite({
             listId: listShare.listId,
@@ -84,16 +89,25 @@ const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
 
     if (listShare.userId === currentUser?.id) {
       return {
-        color: "red",
         disabled: isOnlyUser,
-        children: "Leave",
+        children: (
+          <React.Fragment>
+            <LogOutIcon className="size-3" />
+            <span>Leave</span>
+          </React.Fragment>
+        ),
         onClick: () => handleRemoveSelf({ listId: listShare.listId }),
       };
     }
 
     return {
       color: "red",
-      children: "Remove",
+      children: (
+        <React.Fragment>
+          <XIcon className="size-3" />
+          <span>Remove</span>
+        </React.Fragment>
+      ),
       onClick: () =>
         handleRemoveUser({
           listId: listShare.listId,
@@ -110,9 +124,7 @@ const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
       </Text>
       <section className="flex items-center gap-3">
         {listShare.isPending && (
-          <Badge size="1" className="size-6" variant="outline" color="amber">
-            <HourglassIcon className="size-3" />
-          </Badge>
+          <HourglassIcon className="text-amber-10 size-3" />
         )}
         <Button size="1" variant="soft" {...getActionProps()} />
       </section>
@@ -142,7 +154,20 @@ const ListSharing: React.FC<{ list: ListSelect }> = ({ list }) => {
           />
         ))}
         {pendingListShares.length > 0 && (
-          <Separator size="4" className="my-2" />
+          <div className="flex items-center gap-2 py-2">
+            <section className="flex items-center gap-1">
+              <ArrowDownIcon className="size-3 opacity-70" />
+              <Text
+                size="1"
+                color="gray"
+                weight="bold"
+                className="text-nowrap uppercase"
+              >
+                Pending Invites
+              </Text>
+            </section>
+            <Separator size="4" className="h-[2px]" />
+          </div>
         )}
         {pendingListShares.map((listShare) => (
           <ListShare key={listShare.id} listShare={listShare} />
