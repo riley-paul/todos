@@ -3,10 +3,16 @@ import { zListName } from "@/lib/types";
 import { useAtom } from "jotai";
 import { toast } from "sonner";
 import useMutations from "./use-mutations";
+import { z } from "astro/zod";
 
 export default function useAlerts() {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
-  const { createList, removeSelfFromList, removeUserFromList } = useMutations();
+  const {
+    createList,
+    removeSelfFromList,
+    removeUserFromList,
+    inviteUserToList,
+  } = useMutations();
 
   const handleCreateList = () => {
     dispatchAlert({
@@ -19,9 +25,15 @@ export default function useAlerts() {
         placeholder: "List name",
         schema: zListName,
         handleSubmit: (name: string) => {
-          createList.mutate({ name });
-          dispatchAlert({ type: "close" });
-          toast.success(`List "${name}" created`);
+          createList.mutate(
+            { name },
+            {
+              onSuccess: () => {
+                dispatchAlert({ type: "close" });
+                toast.success(`List "${name}" created`);
+              },
+            },
+          );
         },
       },
     });
@@ -36,9 +48,12 @@ export default function useAlerts() {
         message:
           "Are you sure you want to cancel this invitation? User will no longer be able to join this list.",
         handleDelete: () => {
-          removeUserFromList.mutate(data);
-          dispatchAlert({ type: "close" });
-          toast.success("Invitation cancelled");
+          removeUserFromList.mutate(data, {
+            onSuccess: () => {
+              dispatchAlert({ type: "close" });
+              toast.success("Invitation cancelled");
+            },
+          });
         },
         confirmButtonProps: {
           children: "Cancel",
@@ -57,9 +72,12 @@ export default function useAlerts() {
         message:
           "Are you sure you want to remove this user from the list? They will no longer have access to it.",
         handleDelete: () => {
-          removeUserFromList.mutate(data);
-          dispatchAlert({ type: "close" });
-          toast.success("User removed from list");
+          removeUserFromList.mutate(data, {
+            onSuccess: () => {
+              dispatchAlert({ type: "close" });
+              toast.success("User removed from list");
+            },
+          });
         },
         confirmButtonProps: { children: "Remove" },
       },
@@ -75,11 +93,40 @@ export default function useAlerts() {
         message:
           "Are you sure you want to leave this list? You will no longer have access to it.",
         handleDelete: () => {
-          removeSelfFromList.mutate(data);
-          dispatchAlert({ type: "close" });
-          toast.success("You have left the list");
+          removeSelfFromList.mutate(data, {
+            onSuccess: () => {
+              dispatchAlert({ type: "close" });
+              toast.success("You have left the list");
+            },
+          });
         },
         confirmButtonProps: { children: "Leave" },
+      },
+    });
+  };
+
+  const handleInviteUser = (data: { listId: string }) => {
+    const { listId } = data;
+    dispatchAlert({
+      type: "open",
+      data: {
+        type: "input",
+        title: "Invite User",
+        message: "Enter the email address of the user you want to invite",
+        value: "",
+        placeholder: "User email",
+        schema: z.string().email("Please enter a valid email address"),
+        handleSubmit: (email: string) => {
+          inviteUserToList.mutate(
+            { listId, email },
+            {
+              onSuccess: () => {
+                dispatchAlert({ type: "close" });
+                toast.success(`Invitation sent to "${email}"`);
+              },
+            },
+          );
+        },
       },
     });
   };
@@ -89,5 +136,6 @@ export default function useAlerts() {
     handleCancelInvite,
     handleRemoveSelf,
     handleRemoveUser,
+    handleInviteUser,
   };
 }

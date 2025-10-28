@@ -45,31 +45,31 @@ export const getListUser = async (
 export const create: ActionHandler<
   typeof listUserInputs.create,
   ListUserSelect
-> = async (input, c) => {
+> = async ({ email, listId }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 
-  const data = { userId, ...input };
-
   // only list members can add other users
-  await ensureListMember(c, { listId: data.listId, userId });
+  await ensureListMember(c, { listId, userId });
+
+  // check if user with email exists
+  const [user] = await db.select().from(User).where(eq(User.email, email));
+  if (!user) throw actionErrors.USER_NOT_FOUND;
 
   // check if the user is already a member of the list
   const [existingListUser] = await db
     .select()
     .from(ListUser)
-    .where(
-      and(eq(ListUser.listId, data.listId), eq(ListUser.userId, data.userId)),
-    );
+    .where(and(eq(ListUser.listId, listId), eq(ListUser.userId, user.id)));
   if (existingListUser) throw actionErrors.DUPLICATE;
 
   // insert the new list user
   const [{ listUserId }] = await db
     .insert(ListUser)
-    .values(data)
+    .values({ listId, userId: user.id })
     .returning({ listUserId: ListUser.id });
 
-  await invalidateListUsers(c, data.listId);
+  await invalidateListUsers(c, listId);
   return getListUser(c, { listUserId });
 };
 

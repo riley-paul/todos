@@ -67,9 +67,14 @@ const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
   return (
     <article className="sm:hover:bg-accent-3 rounded-3 -mx-3 flex items-center gap-3 px-3 py-2 sm:flex">
       <UserBubble avatarProps={{ size: "2" }} user={listShare.user} />
-      <Text size="3" weight="medium" truncate className="flex-1">
-        {listShare.user.name}
-      </Text>
+      <section className="grid flex-1">
+        <Text size="3" weight="medium">
+          {listShare.user.name}
+        </Text>
+        <Text size="2" color="gray">
+          {listShare.user.email}
+        </Text>
+      </section>
       <section className="flex items-center gap-3">
         {listShare.isPending && (
           <HourglassIcon className="text-amber-10 size-3" />

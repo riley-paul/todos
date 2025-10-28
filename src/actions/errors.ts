@@ -29,6 +29,10 @@ const actionErrors = {
     code: "BAD_REQUEST",
     message: "You cannot perform this action on a pending list",
   }),
+  USER_NOT_FOUND: new ActionError({
+    code: "NOT_FOUND",
+    message: "User not found",
+  }),
 };
 
 export default actionErrors;

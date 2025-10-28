@@ -2,7 +2,7 @@ import { z } from "astro/zod";
 
 export const create = z.object({
   listId: z.string(),
-  userId: z.string().optional(),
+  email: z.string(),
 });
 
 export const remove = z.object({

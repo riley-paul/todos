@@ -2,8 +2,8 @@ import type { ActionHandler } from "astro:actions";
 import { ensureAuthorized } from "../helpers";
 import { createDb } from "@/db";
 import { Todo, User, UserSession } from "@/db/schema";
-import { and, eq, like, not, or } from "drizzle-orm";
-import type { UserSelect, UserSelectWithSettings } from "@/lib/types";
+import { eq } from "drizzle-orm";
+import type { UserSelectWithSettings } from "@/lib/types";
 import * as userInputs from "./users.inputs";
 import actionErrors from "../errors";
 
@@ -44,25 +44,6 @@ export const remove: ActionHandler<typeof userInputs.remove, null> = async (
 
   // TODO: invalidate users sharing lists with the user
   return null;
-};
-
-export const get: ActionHandler<typeof userInputs.get, UserSelect[]> = async (
-  { search },
-  c,
-) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
-
-  return db
-    .select()
-    .from(User)
-    .where(
-      and(
-        or(like(User.name, `%${search}%`), like(User.email, `%${search}%`)),
-        not(eq(User.id, userId)),
-      ),
-    )
-    .limit(10);
 };
 
 export const updateUserSettings: ActionHandler<

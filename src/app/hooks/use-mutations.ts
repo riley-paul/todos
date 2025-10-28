@@ -181,7 +181,7 @@ export default function useMutations() {
     },
   });
 
-  const createListJoin = useMutation({
+  const inviteUserToList = useMutation({
     mutationFn: actions.listUsers.create.orThrow,
   });
 
@@ -254,7 +254,7 @@ export default function useMutations() {
     createList,
     deleteList,
 
-    createListJoin,
+    inviteUserToList,
     acceptListJoin,
     removeSelfFromList,
     removeUserFromList,

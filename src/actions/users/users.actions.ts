@@ -12,11 +12,6 @@ export const remove = defineAction({
   handler: userHandlers.remove,
 });
 
-export const get = defineAction({
-  input: userInputs.get,
-  handler: userHandlers.get,
-});
-
 export const updateUserSettings = defineAction({
   input: userInputs.updateUserSettings,
   handler: userHandlers.updateUserSettings,

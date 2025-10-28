@@ -1,12 +1,12 @@
 import { qListShares } from "@/app/lib/queries";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 import { z } from "astro/zod";
 import { Button, Heading, Text } from "@radix-ui/themes";
 import ListShares from "../components/list/list-shares";
-import { CheckIcon } from "lucide-react";
-import ListUserInviter from "../components/list/list-inviter";
+import { SendIcon } from "lucide-react";
+import useAlerts from "../hooks/use-alerts";
 
 export const Route = createFileRoute("/todos/$listId/share")({
   component: RouteComponent,
@@ -17,7 +17,7 @@ function RouteComponent() {
   const { listId } = Route.useParams();
   const { data: listShares } = useSuspenseQuery(qListShares(listId));
 
-  const existingUserIds = new Set(listShares.map(({ userId }) => userId));
+  const { handleInviteUser } = useAlerts();
 
   return (
     <React.Fragment>
@@ -30,22 +30,16 @@ function RouteComponent() {
           edit todos and share the list with others.
         </Text>
       </header>
-      <ListUserInviter
-        listId={listId}
-        isUserDisabled={(userId) => existingUserIds.has(userId)}
-      />
       <ListShares listShares={listShares} />
-      <footer className="flex justify-end gap-2">
+      <footer className="flex">
         <Button
           size="3"
-          variant="surface"
-          className="flex-1 sm:flex-0 sm:px-8"
-          asChild
+          variant="soft"
+          className="flex-1"
+          onClick={() => handleInviteUser({ listId })}
         >
-          <Link to="..">
-            <CheckIcon className="size-4" />
-            Done
-          </Link>
+          <SendIcon className="size-4" />
+          <span>Invite User</span>
         </Button>
       </footer>
     </React.Fragment>
