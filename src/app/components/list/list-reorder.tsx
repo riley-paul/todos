@@ -20,14 +20,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import type { ListSelect } from "@/lib/types";
-import {
-  Button,
-  Dialog,
-  IconButton,
-  Separator,
-  Text,
-  VisuallyHidden,
-} from "@radix-ui/themes";
+import { Button, Dialog, IconButton, Separator, Text } from "@radix-ui/themes";
 import { ArrowDownIcon, ArrowUpDownIcon, GripVerticalIcon } from "lucide-react";
 import { cn } from "@/app/lib/utils";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
@@ -234,12 +227,13 @@ const ListReorder: React.FC<ListReorderProps> = ({ lists }) => {
         </IconButton>
       </Dialog.Trigger>
       <ResponsiveDialogContent title="Reorder Lists">
-        <Dialog.Title trim="end">Reorder Lists</Dialog.Title>
-        <VisuallyHidden>
-          <Dialog.Description>
-            Drag and drop the lists to reorder them.
+        <header>
+          <Dialog.Title>Reorder Lists</Dialog.Title>
+          <Dialog.Description size="2" color="gray">
+            Drag and drop lists to reorder them. Move the separator around to
+            hide lists below it.
           </Dialog.Description>
-        </VisuallyHidden>
+        </header>
         <article className="-mx-6 flex h-full flex-col gap-1 overflow-x-hidden overflow-y-auto px-6">
           <ListReorderContent lists={lists} />
         </article>

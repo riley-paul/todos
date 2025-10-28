@@ -7,7 +7,7 @@ import {
 } from "../helpers";
 import { createDb } from "@/db";
 import { List, ListUser, Todo, User } from "@/db/schema";
-import { and, asc, count, desc, eq, not } from "drizzle-orm";
+import { and, asc, count, desc, eq, not, sql } from "drizzle-orm";
 import actionErrors from "../errors";
 import * as listInputs from "./lists.inputs";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
@@ -162,14 +162,33 @@ export const updateSortShow: ActionHandler<
   const userId = ensureAuthorized(c).id;
 
   const separatorIdx = listIds.indexOf(LIST_SEPARATOR_ID);
-  await Promise.all(
-    listIds.map((listId, idx) =>
-      db
-        .update(ListUser)
-        .set({ order: idx, show: separatorIdx === -1 || idx < separatorIdx })
-        .where(and(eq(ListUser.userId, userId), eq(ListUser.listId, listId))),
-    ),
+
+  if (listIds.length === 0) return getList(c, undefined);
+
+  // Build CASE WHEN expressions dynamically
+  const orderCase = sql.join(
+    listIds.map((listId, idx) => sql`WHEN ${listId} THEN ${idx}`),
+    sql` `,
   );
+
+  const showCase = sql.join(
+    listIds.map(
+      (listId, idx) =>
+        sql`WHEN ${listId} THEN ${
+          separatorIdx === -1 || idx < separatorIdx ? 1 : 0
+        }`,
+    ),
+    sql` `,
+  );
+
+  await db.run(sql`
+     UPDATE ${ListUser}
+     SET
+       "order" = CASE "listId" ${orderCase} END,
+       "show" = CASE "listId" ${showCase} END
+     WHERE "userId" = ${userId}
+       AND "listId" IN (${sql.join(listIds, sql`, `)});
+   `);
 
   return getList(c, undefined);
 };
