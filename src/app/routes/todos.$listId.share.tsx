@@ -3,9 +3,9 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 import { z } from "astro/zod";
-import { Button, Heading, Text } from "@radix-ui/themes";
+import { Avatar, Button, Heading, Text } from "@radix-ui/themes";
 import ListShares from "../components/list/list-shares";
-import { SendIcon } from "lucide-react";
+import { PlusIcon, SendIcon } from "lucide-react";
 import useAlerts from "../hooks/use-alerts";
 
 export const Route = createFileRoute("/todos/$listId/share")({
@@ -34,11 +34,16 @@ function RouteComponent() {
       <footer className="flex">
         <Button
           size="3"
-          variant="soft"
-          className="flex-1"
+          variant="ghost"
+          className="flex flex-1 justify-start gap-3 text-left"
           onClick={() => handleInviteUser({ listId })}
         >
-          <SendIcon className="size-4" />
+          <Avatar
+            src=""
+            fallback={<PlusIcon className="size-5" />}
+            size="2"
+            radius="full"
+          />
           <span>Invite User</span>
         </Button>
       </footer>
