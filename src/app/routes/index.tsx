@@ -5,7 +5,7 @@ import NoListsScreen from "../components/screens/no-lists";
 export const Route = createFileRoute("/")({
   component: NoListsScreen,
   loader: async ({ context: { queryClient } }) => {
-    const [firstList] = await queryClient.ensureQueryData(qLists());
+    const [firstList] = await queryClient.ensureQueryData(qLists);
     if (firstList) {
       throw redirect({
         to: "/todos/$listId",

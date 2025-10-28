@@ -4,7 +4,7 @@ import { actions } from "astro:actions";
 export const qTodos = (listId: string) =>
   queryOptions({
     queryKey: ["todos", listId],
-    queryFn: () => actions.todos.get.orThrow({ listId }),
+    queryFn: () => actions.todos.getAll.orThrow({ listId }),
   });
 
 export const qUser = queryOptions({
@@ -20,11 +20,10 @@ export const qUsers = (search: string) =>
     enabled: !!search,
   });
 
-export const qLists = (search?: string) =>
-  queryOptions({
-    queryKey: ["lists", search],
-    queryFn: () => actions.lists.getAll.orThrow({ search }),
-  });
+export const qLists = queryOptions({
+  queryKey: ["lists"],
+  queryFn: actions.lists.getAll.orThrow,
+});
 
 export const qList = (listId: string) =>
   queryOptions({

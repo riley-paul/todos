@@ -24,7 +24,7 @@ type RouterContext = {
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: Component,
   loader: async ({ context }) => {
-    context.queryClient.ensureQueryData(qLists());
+    context.queryClient.ensureQueryData(qLists);
     const user = await context.queryClient.ensureQueryData(qUser);
     return { user };
   },

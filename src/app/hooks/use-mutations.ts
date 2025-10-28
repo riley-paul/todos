@@ -117,7 +117,7 @@ export default function useMutations() {
       context?.resetter();
     },
     onSuccess: (_, { id, data: { listId } }) => {
-      const lists = queryClient.getQueryData(qLists().queryKey);
+      const lists = queryClient.getQueryData(qLists.queryKey);
       const nextList = lists?.find((list) => list.id === listId);
       if (!nextList) return;
 
@@ -162,7 +162,7 @@ export default function useMutations() {
     mutationFn: actions.lists.update.orThrow,
     onSuccess: (data) => {
       router.invalidate();
-      queryClient.setQueryData(qLists().queryKey, (prev) => {
+      queryClient.setQueryData(qLists.queryKey, (prev) => {
         if (!prev) return prev;
         return prev.map((list) =>
           list.id === data.id ? { ...list, ...data } : list,
@@ -212,7 +212,7 @@ export default function useMutations() {
   const removeUserFromList = useMutation({
     mutationFn: actions.listUsers.remove.orThrow,
     onSuccess: (_, { listId }) => {
-      const lists = queryClient.getQueryData(qLists().queryKey);
+      const lists = queryClient.getQueryData(qLists.queryKey);
       const list = lists?.find((l) => l.id === listId);
       toast.success(`User removed from ${list?.name ?? "the list"}`);
     },
@@ -225,7 +225,7 @@ export default function useMutations() {
     },
     onSuccess: (_, { listId }) => {
       router.invalidate();
-      const lists = queryClient.getQueryData(qLists().queryKey);
+      const lists = queryClient.getQueryData(qLists.queryKey);
       const list = lists?.find((l) => l.id === listId);
       toast.success(`You left ${list?.name ?? "the list"}`);
     },
@@ -235,7 +235,7 @@ export default function useMutations() {
     mutationFn: actions.lists.updateSortShow.orThrow,
     onSuccess: (newLists) => {
       router.invalidate();
-      queryClient.setQueryData(qLists().queryKey, newLists);
+      queryClient.setQueryData(qLists.queryKey, newLists);
     },
   });
 

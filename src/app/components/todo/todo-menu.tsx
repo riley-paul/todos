@@ -19,7 +19,7 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
   const { deleteTodo, moveTodo } = useMutations();
 
   const { listId } = useParams({ strict: false });
-  const { data: lists = [] } = useQuery(qLists());
+  const { data: lists = [] } = useQuery(qLists);
 
   const [_, setEditingTodoId] = useAtom(editingTodoIdAtom);
 
