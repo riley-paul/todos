@@ -26,7 +26,6 @@ const getTodos = async (
 
   const { todoId, listId, userId, search } = filters;
 
-  if (search?.trim() === "") return [];
   const searchTerm = `%${search}%`;
   const searchQuery = or(
     like(Todo.text, searchTerm),

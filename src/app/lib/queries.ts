@@ -11,7 +11,6 @@ export const qTodoSearch = (search: string) =>
   queryOptions({
     queryKey: ["todoSearch", search],
     queryFn: () => actions.todos.search.orThrow({ search }),
-    enabled: search.length > 0,
   });
 
 export const qUser = queryOptions({
@@ -24,7 +23,6 @@ export const qUsers = (search: string) =>
   queryOptions({
     queryKey: ["users", search],
     queryFn: () => actions.users.get.orThrow({ search }),
-    enabled: !!search,
   });
 
 export const qLists = queryOptions({
@@ -36,7 +34,6 @@ export const qListSearch = (search: string) =>
   queryOptions({
     queryKey: ["listSearch", search],
     queryFn: () => actions.lists.search.orThrow({ search }),
-    enabled: search.length > 0,
   });
 
 export const qList = (listId: string) =>

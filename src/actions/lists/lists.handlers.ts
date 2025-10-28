@@ -64,7 +64,6 @@ const getLists = async (
 
   const { listId, search } = filters;
 
-  if (search?.trim() === "") return [];
   const searchTerm = `%${search}%`;
   const searchQuery = or(like(List.name, searchTerm));
 
