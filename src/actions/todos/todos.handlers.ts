@@ -1,7 +1,7 @@
 import { type ActionAPIContext, type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
-import { User, Todo, List } from "@/db/schema";
-import { eq, and, desc, or, like } from "drizzle-orm";
+import { User, Todo, List, ListUser } from "@/db/schema";
+import { eq, and, desc, or, like, inArray } from "drizzle-orm";
 import type { TodoSelect } from "@/lib/types";
 import {
   ensureAuthorized,
@@ -25,6 +25,14 @@ const getTodos = async (
   const reqUserId = ensureAuthorized(c).id;
 
   const { todoId, listId, userId, search } = filters;
+
+  const userLists = await db
+    .select({ listId: ListUser.listId })
+    .from(ListUser)
+    .where(eq(ListUser.userId, reqUserId))
+    .then((rows) => rows.map(({ listId }) => listId));
+
+  console.log("userLists", userLists);
 
   const searchTerm = `%${search}%`;
   const searchQuery = or(
@@ -54,6 +62,7 @@ const getTodos = async (
     .innerJoin(User, eq(User.id, Todo.userId))
     .where(
       and(
+        inArray(Todo.listId, userLists),
         todoId ? eq(Todo.id, todoId) : undefined,
         listId ? eq(Todo.listId, listId) : undefined,
         userId ? eq(Todo.userId, userId) : undefined,
