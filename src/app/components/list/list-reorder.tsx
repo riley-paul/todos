@@ -21,12 +21,18 @@ import {
 } from "@dnd-kit/sortable";
 import type { ListSelect } from "@/lib/types";
 import { Button, Dialog, IconButton, Separator, Text } from "@radix-ui/themes";
-import { ArrowDownIcon, ArrowUpDownIcon, GripVerticalIcon } from "lucide-react";
+import {
+  ArrowDownIcon,
+  ArrowUpDownIcon,
+  ChevronsUpDownIcon,
+  HourglassIcon,
+} from "lucide-react";
 import { cn } from "@/app/lib/utils";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 import useMutations from "@/app/hooks/use-mutations";
 import { Link } from "@tanstack/react-router";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
+import UserBubbleGroup from "../ui/user-bubble-group";
 
 type SortableObjectData =
   | {
@@ -105,18 +111,31 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
               {...attributes}
               {...listeners}
             >
-              <GripVerticalIcon className="size-5" />
+              <ChevronsUpDownIcon className="size-5" />
             </IconButton>
             <Dialog.Close>
               <Link
                 to="/todos/$listId"
                 params={{ listId: list.id }}
-                className="flex h-full flex-1 items-center"
+                className={cn(
+                  "flex h-full flex-1 items-center gap-2",
+                  list.isPending && "opacity-50",
+                )}
                 preload={false}
               >
-                <Text truncate size="3" weight="medium">
-                  {list.name}
+                <Text
+                  truncate
+                  size="3"
+                  weight="medium"
+                  className="flex flex-1 gap-2"
+                >
+                  <span>{list.name}</span>
+                  <span className="font-mono opacity-70">{list.todoCount}</span>
                 </Text>
+                {list.isPending && (
+                  <HourglassIcon className="text-amber-10 size-4" />
+                )}
+                <UserBubbleGroup users={list.otherUsers} />
               </Link>
             </Dialog.Close>
           </article>
