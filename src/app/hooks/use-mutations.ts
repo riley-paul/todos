@@ -11,10 +11,11 @@ type Updater<T> = (data: T | undefined) => T;
 export default function useMutations() {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const navigate = useNavigate();
 
   const { listId: selectedList = "" } = useParams({ strict: false });
 
-  const navigate = useNavigate();
+  /* TODOS */
 
   const modifyTodoCache = async (
     listId: string,
@@ -30,22 +31,25 @@ export default function useMutations() {
     return reset;
   };
 
+  const createTodo = useMutation({
+    mutationFn: actions.todos.create.orThrow,
+    onSuccess: (data) => {
+      const updater: Updater<TodoSelect[]> = (todos = []) => [data, ...todos];
+      modifyTodoCache(data.list.id, updater);
+    },
+  });
+
   const updateTodo = useMutation({
     mutationFn: actions.todos.update.orThrow,
     onMutate: async ({ id, data }) => {
       const updater: Updater<TodoSelect[]> = (todos = []) =>
         todos.map((todo) => (todo.id === id ? { ...todo, ...data } : todo));
-
-      const resetters = await Promise.all([
-        modifyTodoCache(selectedList, updater),
-        modifyTodoCache("all", updater),
-      ]);
-
-      return { resetters };
+      const resetter = await modifyTodoCache(selectedList, updater);
+      return { resetter };
     },
     onError: (error, _, context) => {
       handleError(error);
-      context?.resetters.forEach((reset) => reset());
+      context?.resetter();
     },
   });
 
@@ -54,17 +58,12 @@ export default function useMutations() {
     onMutate: async ({ id }) => {
       const updater: Updater<TodoSelect[]> = (todos = []) =>
         todos.filter((todo) => todo.id !== id);
-
-      const resetters = await Promise.all([
-        modifyTodoCache(selectedList, updater),
-        modifyTodoCache("all", updater),
-      ]);
-
-      return { resetters };
+      const resetter = await modifyTodoCache(selectedList, updater);
+      return { resetter };
     },
     onError: (error, _, context) => {
       handleError(error);
-      context?.resetters.forEach((reset) => reset());
+      context?.resetter();
     },
     onSuccess: () => {
       toast.success("Todo deleted");
@@ -76,12 +75,12 @@ export default function useMutations() {
     onMutate: async ({ listId }) => {
       const updater: Updater<TodoSelect[]> = (todos = []) =>
         todos.filter((todo) => !todo.isCompleted);
-      const resetters = await Promise.all([modifyTodoCache(listId, updater)]);
-      return { resetters };
+      const resetter = await modifyTodoCache(listId, updater);
+      return { resetter };
     },
     onError: (error, _, context) => {
       handleError(error);
-      context?.resetters.forEach((reset) => reset());
+      context?.resetter();
     },
     onSuccess: () => {
       toast.success("Completed todos deleted");
@@ -93,42 +92,29 @@ export default function useMutations() {
     onMutate: async ({ listId }) => {
       const updater: Updater<TodoSelect[]> = (todos = []) =>
         todos.map((todo) => ({ ...todo, isCompleted: false }));
-      const resetters = await Promise.all([modifyTodoCache(listId, updater)]);
-      return { resetters };
+      const resetter = await modifyTodoCache(listId, updater);
+      return { resetter };
     },
     onError: (error, _, context) => {
       handleError(error);
-      context?.resetters.forEach((reset) => reset());
+      context?.resetter();
     },
     onSuccess: () => {
       toast.success("All completed todos unchecked");
     },
   });
 
-  const createTodo = useMutation({
-    mutationFn: actions.todos.create.orThrow,
-    onSuccess: (data) => {
-      const updater: Updater<TodoSelect[]> = (todos = []) => [data, ...todos];
-      modifyTodoCache(data.list.id, updater);
-    },
-  });
-
   const moveTodo = useMutation({
     mutationFn: actions.todos.update.orThrow,
     onMutate: async ({ id }) => {
-      const resetters = await Promise.all(
-        selectedList === "all"
-          ? []
-          : [
-              modifyTodoCache(selectedList, (todos = []) =>
-                todos.filter((todo) => todo.id !== id),
-              ),
-            ],
-      );
-      return { resetters };
+      const updater: Updater<TodoSelect[]> = (todos = []) =>
+        todos.filter((todo) => todo.id !== id);
+      const resetter = await modifyTodoCache(selectedList, updater);
+      return { resetter };
     },
-    onError: (__, _, context) => {
-      context?.resetters.forEach((reset) => reset());
+    onError: (error, _, context) => {
+      handleError(error);
+      context?.resetter();
     },
     onSuccess: (_, { id, data: { listId } }) => {
       const lists = queryClient.getQueryData(qLists.queryKey);
@@ -149,6 +135,8 @@ export default function useMutations() {
     },
   });
 
+  /* USERS */
+
   const deleteUser = useMutation({
     mutationFn: actions.users.remove.orThrow,
     onSuccess: () => {
@@ -167,6 +155,8 @@ export default function useMutations() {
       toast.success("Settings updated");
     },
   });
+
+  /* LISTS */
 
   const updateList = useMutation({
     mutationFn: actions.lists.update.orThrow,

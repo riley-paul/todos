@@ -49,7 +49,6 @@ export const ensureListMember = async (
   context: ActionAPIContext,
   { listId, userId, checkPending = true }: EnsureListMemberArgs,
 ) => {
-  if (listId === null || listId === "all") return;
   const db = createDb(context.locals.runtime.env);
   const [listUser] = await db
     .select({ id: ListUser.id, isPending: ListUser.isPending })
