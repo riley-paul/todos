@@ -109,7 +109,7 @@ export default function useMutations() {
     mutationFn: actions.todos.create.orThrow,
     onSuccess: (data) => {
       const updater: Updater<TodoSelect[]> = (todos = []) => [data, ...todos];
-      modifyTodoCache(data.listId, updater);
+      modifyTodoCache(data.list.id, updater);
     },
   });
 

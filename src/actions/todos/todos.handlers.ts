@@ -1,8 +1,8 @@
 import { type ActionAPIContext, type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
-import { User, Todo, List, ListUser } from "@/db/schema";
+import { User, Todo, List } from "@/db/schema";
 import { eq, and, desc, or, like } from "drizzle-orm";
-import type { TodoSelect, TodoSelectShallow } from "@/lib/types";
+import type { TodoSelect } from "@/lib/types";
 import {
   ensureAuthorized,
   invalidateListUsers,
@@ -45,6 +45,7 @@ const getTodos = async (
         email: User.email,
         avatarUrl: User.avatarUrl,
       },
+      listId: Todo.listId,
       list: {
         id: List.id,
         name: List.name,
@@ -77,29 +78,27 @@ export const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
 
 export const create: ActionHandler<
   typeof todoInputs.create,
-  TodoSelectShallow
+  TodoSelect
 > = async ({ data }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 
   const { listId } = data;
 
-  if (listId !== undefined) {
-    await ensureListMember(c, { listId, userId });
-  }
-
-  const [todo] = await db
+  await ensureListMember(c, { listId, userId });
+  const [{ id: todoId }] = await db
     .insert(Todo)
     .values({ ...data, userId })
     .returning();
+  await invalidateListUsers(c, listId);
 
-  if (listId) await invalidateListUsers(c, listId);
+  const [todo] = await getTodos(c, { todoId });
   return todo;
 };
 
 export const update: ActionHandler<
   typeof todoInputs.update,
-  TodoSelectShallow
+  TodoSelect
 > = async ({ id, data }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
@@ -123,10 +122,12 @@ export const update: ActionHandler<
     .where(and(eq(Todo.id, id)))
     .returning();
 
-  if (updated.listId) await invalidateListUsers(c, updated.listId);
-  if (currentTodo.listId !== updated.listId && currentTodo.listId)
+  await invalidateListUsers(c, updated.listId);
+  if (currentTodo.listId !== updated.listId)
     await invalidateListUsers(c, currentTodo.listId);
-  return updated;
+
+  const [todo] = await getTodos(c, { todoId: id });
+  return todo;
 };
 
 export const remove: ActionHandler<typeof todoInputs.remove, null> = async (
@@ -142,10 +143,12 @@ export const remove: ActionHandler<typeof todoInputs.remove, null> = async (
     .where(eq(Todo.id, id))
     .limit(1);
 
+  if (!currentTodo) throw actionErrors.NOT_FOUND;
+
   await ensureListMember(c, { listId: currentTodo.listId, userId });
 
   await db.delete(Todo).where(eq(Todo.id, id));
-  if (currentTodo.listId) await invalidateListUsers(c, currentTodo.listId);
+  await invalidateListUsers(c, currentTodo.listId);
   return null;
 };
 
