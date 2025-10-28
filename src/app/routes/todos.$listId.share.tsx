@@ -5,7 +5,7 @@ import React from "react";
 import { z } from "astro/zod";
 import { Avatar, Button, Heading, Text } from "@radix-ui/themes";
 import ListShares from "../components/list/list-shares";
-import { PlusIcon, SendIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import useAlerts from "../hooks/use-alerts";
 
 export const Route = createFileRoute("/todos/$listId/share")({
