@@ -1,11 +1,12 @@
-import { qList } from "@/app/lib/queries";
+import { qListShares } from "@/app/lib/queries";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import React from "react";
 import { z } from "astro/zod";
 import { Button, Heading, Text } from "@radix-ui/themes";
-import ListSharing from "../components/list/list-sharing";
+import ListShares from "../components/list/list-shares";
 import { CheckIcon } from "lucide-react";
+import ListUserInviter from "../components/list/list-inviter";
 
 export const Route = createFileRoute("/todos/$listId/share")({
   component: RouteComponent,
@@ -14,30 +15,34 @@ export const Route = createFileRoute("/todos/$listId/share")({
 
 function RouteComponent() {
   const { listId } = Route.useParams();
-  const { data: list } = useSuspenseQuery(qList(listId));
+  const { data: listShares } = useSuspenseQuery(qListShares(listId));
 
-  if (!list) return <Navigate to="/" />;
+  const existingUserIds = new Set(listShares.map(({ userId }) => userId));
 
   return (
     <React.Fragment>
       <header>
         <Heading as="h2" size="4">
-          Share List
+          Users
         </Heading>
         <Text size="2" color="gray">
-          Add other users to your list so they can add and delete todos. Their
-          invite will be pending until they accept it.
+          Manage users with access to this list. Users with access can view and
+          edit todos and share the list with others.
         </Text>
       </header>
-      <ListSharing list={list} />
+      <ListUserInviter
+        listId={listId}
+        isUserDisabled={(userId) => existingUserIds.has(userId)}
+      />
+      <ListShares listShares={listShares} />
       <footer className="flex justify-end gap-2">
         <Button
           size="3"
-          variant="soft"
-          className="flex-1 sm:flex-0 sm:px-6"
+          variant="surface"
+          className="flex-1 sm:flex-0 sm:px-8"
           asChild
         >
-          <Link to="/todos/$listId" params={{ listId: list.id }}>
+          <Link to="..">
             <CheckIcon className="size-4" />
             Done
           </Link>
