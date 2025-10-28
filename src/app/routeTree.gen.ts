@@ -13,6 +13,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TodosListIdRouteImport } from './routes/todos.$listId'
 import { Route as TodosListIdIndexRouteImport } from './routes/todos.$listId.index'
+import { Route as TodosListIdShareRouteImport } from './routes/todos.$listId.share'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -34,16 +35,23 @@ const TodosListIdIndexRoute = TodosListIdIndexRouteImport.update({
   path: '/',
   getParentRoute: () => TodosListIdRoute,
 } as any)
+const TodosListIdShareRoute = TodosListIdShareRouteImport.update({
+  id: '/share',
+  path: '/share',
+  getParentRoute: () => TodosListIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/settings': typeof SettingsRoute
   '/todos/$listId': typeof TodosListIdRouteWithChildren
+  '/todos/$listId/share': typeof TodosListIdShareRoute
   '/todos/$listId/': typeof TodosListIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/settings': typeof SettingsRoute
+  '/todos/$listId/share': typeof TodosListIdShareRoute
   '/todos/$listId': typeof TodosListIdIndexRoute
 }
 export interface FileRoutesById {
@@ -51,14 +59,26 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/settings': typeof SettingsRoute
   '/todos/$listId': typeof TodosListIdRouteWithChildren
+  '/todos/$listId/share': typeof TodosListIdShareRoute
   '/todos/$listId/': typeof TodosListIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/settings' | '/todos/$listId' | '/todos/$listId/'
+  fullPaths:
+    | '/'
+    | '/settings'
+    | '/todos/$listId'
+    | '/todos/$listId/share'
+    | '/todos/$listId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/settings' | '/todos/$listId'
-  id: '__root__' | '/' | '/settings' | '/todos/$listId' | '/todos/$listId/'
+  to: '/' | '/settings' | '/todos/$listId/share' | '/todos/$listId'
+  id:
+    | '__root__'
+    | '/'
+    | '/settings'
+    | '/todos/$listId'
+    | '/todos/$listId/share'
+    | '/todos/$listId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -97,14 +117,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TodosListIdIndexRouteImport
       parentRoute: typeof TodosListIdRoute
     }
+    '/todos/$listId/share': {
+      id: '/todos/$listId/share'
+      path: '/share'
+      fullPath: '/todos/$listId/share'
+      preLoaderRoute: typeof TodosListIdShareRouteImport
+      parentRoute: typeof TodosListIdRoute
+    }
   }
 }
 
 interface TodosListIdRouteChildren {
+  TodosListIdShareRoute: typeof TodosListIdShareRoute
   TodosListIdIndexRoute: typeof TodosListIdIndexRoute
 }
 
 const TodosListIdRouteChildren: TodosListIdRouteChildren = {
+  TodosListIdShareRoute: TodosListIdShareRoute,
   TodosListIdIndexRoute: TodosListIdIndexRoute,
 }
 

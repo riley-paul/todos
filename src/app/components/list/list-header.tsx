@@ -2,8 +2,9 @@ import type { ListSelect } from "@/lib/types";
 import { Heading } from "@radix-ui/themes";
 import React from "react";
 import ListMenu from "./list-menu";
-import ListSharing from "./list-sharing";
 import { cn } from "@/app/lib/utils";
+import ListSharingLink from "./list-sharing-link";
+import { Link } from "@tanstack/react-router";
 
 type Props = { list: ListSelect };
 
@@ -15,12 +16,14 @@ const ListHeader: React.FC<Props> = ({ list }) => {
         list.name.length > 18 && "flex-col sm:flex-row",
       )}
     >
-      <Heading as="h2" size="7">
-        {list.name}
-      </Heading>
+      <Link to="/todos/$listId" params={{ listId: list.id }}>
+        <Heading as="h2" size="7">
+          {list.name}
+        </Heading>
+      </Link>
       <section className="flex items-center gap-4">
         <ListMenu list={list} />
-        <ListSharing key={list.id} list={list} />
+        <ListSharingLink list={list} />
       </section>
     </header>
   );
