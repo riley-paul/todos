@@ -69,7 +69,7 @@ type ContentProps = {
 };
 
 const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
-  const { data: lists = [] } = useQuery(qLists);
+  const { data: lists = [] } = useQuery(qLists());
   const { data: todos = [] } = useQuery(qTodos("all"));
 
   const [value, setValue] = React.useState("");

@@ -3,8 +3,8 @@ import * as todoInputs from "./todos.inputs";
 import * as todoHanders from "./todos.handlers";
 
 export const get = defineAction({
-  input: todoInputs.get,
-  handler: todoHanders.get,
+  input: todoInputs.getAll,
+  handler: todoHanders.getAll,
 });
 
 export const create = defineAction({

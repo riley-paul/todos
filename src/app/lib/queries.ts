@@ -20,15 +20,16 @@ export const qUsers = (search: string) =>
     enabled: !!search,
   });
 
-export const qLists = queryOptions({
-  queryKey: ["lists"],
-  queryFn: actions.lists.getAll.orThrow,
-});
+export const qLists = (search?: string) =>
+  queryOptions({
+    queryKey: ["lists", search],
+    queryFn: () => actions.lists.getAll.orThrow({ search }),
+  });
 
 export const qList = (listId: string) =>
   queryOptions({
     queryKey: ["list", listId],
-    queryFn: () => actions.lists.get.orThrow({ id: listId }),
+    queryFn: () => actions.lists.get.orThrow({ listId }),
   });
 
 export const qListShares = (listId: string) =>

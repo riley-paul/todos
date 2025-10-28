@@ -30,8 +30,6 @@ const getTodos = async (
   const searchQuery = or(
     like(Todo.text, searchTerm),
     like(List.name, searchTerm),
-    like(User.name, searchTerm),
-    like(User.email, searchTerm),
   );
 
   const todos: TodoSelect[] = await db
@@ -69,7 +67,7 @@ const getTodos = async (
   return todos;
 };
 
-export const get: ActionHandler<typeof todoInputs.get, TodoSelect[]> = async (
+export const getAll: ActionHandler<typeof todoInputs.getAll, TodoSelect[]> = async (
   { listId },
   c,
 ) => {

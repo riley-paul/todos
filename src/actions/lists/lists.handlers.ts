@@ -1,5 +1,5 @@
 import { type ActionAPIContext, type ActionHandler } from "astro:actions";
-import type { ListSelect } from "@/lib/types";
+import type { ListSelect, UserSelect } from "@/lib/types";
 import {
   ensureListMember,
   invalidateListUsers,
@@ -7,22 +7,65 @@ import {
 } from "../helpers";
 import { createDb } from "@/db";
 import { List, ListUser, Todo, User } from "@/db/schema";
-import { and, asc, count, desc, eq, not, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, like, not, or, sql } from "drizzle-orm";
 import actionErrors from "../errors";
 import * as listInputs from "./lists.inputs";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 
-async function getList(
-  c: ActionAPIContext,
-  listId: undefined,
-): Promise<ListSelect[]>;
-async function getList(
+const getOtherListUsers = async (
   c: ActionAPIContext,
   listId: string,
-): Promise<ListSelect>;
-async function getList(c: ActionAPIContext, listId?: string | undefined) {
+): Promise<UserSelect[]> => {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
+
+  const otherUsers = await db
+    .selectDistinct({
+      id: User.id,
+      name: User.name,
+      email: User.email,
+      avatarUrl: User.avatarUrl,
+    })
+    .from(ListUser)
+    .innerJoin(User, eq(User.id, ListUser.userId))
+    .where(
+      and(
+        eq(ListUser.listId, listId),
+        eq(ListUser.isPending, false),
+        not(eq(ListUser.userId, userId)),
+      ),
+    );
+  return otherUsers;
+};
+
+const getListTodoCount = async (
+  c: ActionAPIContext,
+  listId: string,
+): Promise<number> => {
+  const db = createDb(c.locals.runtime.env);
+
+  const [{ count: todoCount }] = await db
+    .select({ count: count() })
+    .from(Todo)
+    .where(and(eq(Todo.listId, listId), eq(Todo.isCompleted, false)));
+
+  return todoCount;
+};
+
+const getLists = async (
+  c: ActionAPIContext,
+  filters: Partial<{
+    listId: string;
+    search: string;
+  }> = {},
+): Promise<ListSelect[]> => {
+  const db = createDb(c.locals.runtime.env);
+  const userId = ensureAuthorized(c).id;
+
+  const { listId, search } = filters;
+
+  const searchTerm = `%${search}%`;
+  const searchQuery = or(like(List.name, searchTerm));
 
   const lists: ListSelect[] = await db
     .selectDistinct({
@@ -39,59 +82,36 @@ async function getList(c: ActionAPIContext, listId?: string | undefined) {
       and(
         eq(ListUser.userId, userId),
         listId ? eq(List.id, listId) : undefined,
+        search ? searchQuery : undefined,
       ),
     )
     .then((lists) =>
       Promise.all(
         lists.map(async (list) => {
-          const otherUsers = await db
-            .selectDistinct({
-              id: User.id,
-              name: User.name,
-              email: User.email,
-              avatarUrl: User.avatarUrl,
-            })
-            .from(ListUser)
-            .innerJoin(User, eq(User.id, ListUser.userId))
-            .where(
-              and(
-                eq(ListUser.listId, list.id),
-                eq(ListUser.isPending, false),
-                not(eq(ListUser.userId, userId)),
-              ),
-            );
-
-          const todoCount = await db
-            .select({ count: count() })
-            .from(Todo)
-            .where(and(eq(Todo.listId, list.id), eq(Todo.isCompleted, false)))
-            .then(([{ count }]) => count);
-
-          return {
-            ...list,
-            todoCount,
-            otherUsers,
-          };
+          const [otherUsers, todoCount] = await Promise.all([
+            getOtherListUsers(c, list.id),
+            getListTodoCount(c, list.id),
+          ]);
+          return { ...list, todoCount, otherUsers };
         }),
       ),
     );
 
-  const [list] = lists;
-  return listId ? list : lists;
-}
+  return lists;
+};
 
 export const getAll: ActionHandler<
   typeof listInputs.getAll,
   ListSelect[]
 > = async (_, c) => {
-  return getList(c, undefined);
+  return getLists(c);
 };
 
 export const get: ActionHandler<
   typeof listInputs.get,
   ListSelect | null
-> = async ({ id }, c) => {
-  const list = await getList(c, id);
+> = async ({ listId }, c) => {
+  const [list] = await getLists(c, { listId });
   if (!list) return null;
   return list;
 };
@@ -112,8 +132,11 @@ export const update: ActionHandler<
     .returning({ id: List.id, name: List.name });
 
   if (!list) throw actionErrors.NOT_FOUND;
+
   await invalidateListUsers(c, listId);
-  return getList(c, listId);
+
+  const [updatedList] = await getLists(c, { listId });
+  return updatedList;
 };
 
 export const create: ActionHandler<
@@ -135,7 +158,9 @@ export const create: ActionHandler<
   });
 
   await invalidateListUsers(c, list.id);
-  return getList(c, list.id);
+
+  const [newList] = await getLists(c, { listId: list.id });
+  return newList;
 };
 
 export const remove: ActionHandler<typeof listInputs.remove, null> = async (
@@ -163,7 +188,7 @@ export const updateSortShow: ActionHandler<
 
   const separatorIdx = listIds.indexOf(LIST_SEPARATOR_ID);
 
-  if (listIds.length === 0) return getList(c, undefined);
+  if (listIds.length === 0) return getLists(c);
 
   // Build CASE WHEN expressions dynamically
   const orderCase = sql.join(
@@ -190,5 +215,5 @@ export const updateSortShow: ActionHandler<
        AND "listId" IN (${sql.join(listIds, sql`, `)});
    `);
 
-  return getList(c, undefined);
+  return getLists(c);
 };

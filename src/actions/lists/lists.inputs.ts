@@ -1,9 +1,9 @@
 import { zListInsert, zListName } from "@/lib/types";
 import { z } from "astro/zod";
 
-export const getAll = z.any();
+export const getAll = z.object({ search: z.string().optional() });
 
-export const get = z.object({ id: z.string() });
+export const get = z.object({ listId: z.string() });
 
 export const update = z.object({
   id: z.string(),

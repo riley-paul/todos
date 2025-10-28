@@ -41,7 +41,7 @@ const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
 
 const ListChips: React.FC = () => {
   const { handleCreateList } = useAlerts();
-  const { data: lists } = useSuspenseQuery(qLists);
+  const { data: lists } = useSuspenseQuery(qLists());
 
   if (lists.length === 0) return null;
 

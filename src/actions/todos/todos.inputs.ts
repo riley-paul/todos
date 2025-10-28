@@ -1,7 +1,7 @@
 import { zTodoInsert } from "@/lib/types";
 import { z } from "astro/zod";
 
-export const get = z.object({ listId: z.string() });
+export const getAll = z.object({ listId: z.string() });
 
 export const create = z.object({ data: zTodoInsert });
 

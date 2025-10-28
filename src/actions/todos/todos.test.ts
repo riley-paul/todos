@@ -89,7 +89,7 @@ afterAll(() => {
 
 describe("todo fetching", () => {
   test("returns all todos in a list", async () => {
-    const todos = await todoHanders.get(
+    const todos = await todoHanders.getAll(
       { listId: LIST1_ID },
       mockApiContext(USER1_ID),
     );
@@ -99,7 +99,7 @@ describe("todo fetching", () => {
 
   test("throws error when list does not exist", async () => {
     await expect(() =>
-      todoHanders.get({ listId: "nonexistent" }, mockApiContext(USER1_ID)),
+      todoHanders.getAll({ listId: "nonexistent" }, mockApiContext(USER1_ID)),
     ).rejects.toThrow(actionErrors.NOT_FOUND);
   });
 });
