@@ -1,33 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ActionInputError, actions, isActionError } from "astro:actions";
+import { actions } from "astro:actions";
 import { qList, qLists, qTodos, qUser } from "@/app/lib/queries";
 import type { TodoSelect } from "@/lib/types";
 import { useNavigate, useParams, useRouter } from "@tanstack/react-router";
+import { handleError } from "../lib/errors";
 
 type Updater<T> = (data: T | undefined) => T;
-
-export const handleMutationError = (error: Error) => {
-  console.error(error);
-
-  let status = 500;
-  let title = "Error";
-  let description = error.message;
-
-  if (isActionError(error)) {
-    title = error.name;
-    status = error.status;
-    description = error.message;
-  }
-
-  if (error instanceof ActionInputError) {
-    title = error.name;
-    status = 400;
-    description = error.issues.map((issue) => issue.message).join(", ");
-  }
-
-  toast.error(`${status} - ${title}`, { description });
-};
 
 export default function useMutations() {
   const queryClient = useQueryClient();
@@ -66,7 +45,7 @@ export default function useMutations() {
       return { resetters };
     },
     onError: (error, _, context) => {
-      handleMutationError(error);
+      handleError(error);
       context?.resetters.forEach((reset) => reset());
     },
   });
@@ -85,7 +64,7 @@ export default function useMutations() {
       return { resetters };
     },
     onError: (error, _, context) => {
-      handleMutationError(error);
+      handleError(error);
       context?.resetters.forEach((reset) => reset());
     },
     onSuccess: () => {
@@ -102,7 +81,7 @@ export default function useMutations() {
       return { resetters };
     },
     onError: (error, _, context) => {
-      handleMutationError(error);
+      handleError(error);
       context?.resetters.forEach((reset) => reset());
     },
     onSuccess: () => {
@@ -119,7 +98,7 @@ export default function useMutations() {
       return { resetters };
     },
     onError: (error, _, context) => {
-      handleMutationError(error);
+      handleError(error);
       context?.resetters.forEach((reset) => reset());
     },
     onSuccess: () => {

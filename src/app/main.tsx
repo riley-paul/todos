@@ -10,13 +10,13 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { handleMutationError } from "@/app/hooks/use-mutations";
 import { qUser } from "@/app/lib/queries";
 import LoadingScreen from "./components/screens/loading";
 import NotFoundScreen from "./components/screens/not-found";
 import ErrorScreen from "./components/screens/error";
 import CustomToaster from "./components/ui/custom-toaster";
 import AlertSystem from "./components/alert-system/alert-system";
+import { handleError } from "./lib/errors";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -25,7 +25,7 @@ const queryClient = new QueryClient({
       queryClient.invalidateQueries();
     },
     onError: (error) => {
-      handleMutationError(error);
+      handleError(error);
     },
   }),
 });
