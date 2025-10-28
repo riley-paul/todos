@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   Badge,
@@ -11,9 +11,9 @@ import {
   TextField,
   VisuallyHidden,
 } from "@radix-ui/themes";
-import { useEventListener } from "usehooks-ts";
+import { useDebounceValue, useEventListener } from "usehooks-ts";
 import { useQuery } from "@tanstack/react-query";
-import { qLists, qTodos } from "@/app/lib/queries";
+import { qLists, qListSearch, qTodos, qTodoSearch } from "@/app/lib/queries";
 import UserBubbleGroup from "./ui/user-bubble-group";
 import TextWithLinks from "./ui/text-with-links";
 import { cn } from "@/app/lib/utils";
@@ -21,6 +21,8 @@ import { useNavigate } from "@tanstack/react-router";
 import useMutations from "@/app/hooks/use-mutations";
 import { PlusIcon, SearchIcon, XIcon } from "lucide-react";
 import { Command } from "cmdk";
+import ResponsiveDialogContent from "./ui/responsive-dialog-content";
+import NoSearchResultsScreen from "./screens/no-search-results";
 
 type SearchItemProps = React.PropsWithChildren<{
   value?: string;
@@ -37,9 +39,9 @@ const SearchItem: React.FC<SearchItemProps> = ({
       value={value}
       onSelect={onSelect}
       className={cn(
-        "rounded-2 text-2 data-[selected=true]:bg-accent-4 flex cursor-default items-center gap-2 px-3 py-2 transition-colors select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50",
+        "rounded-3 text-2 flex cursor-default items-center gap-2 px-3 py-2 transition-colors select-none",
         "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50",
-        "data-[selected=true]:bg-accent-4",
+        "data-[selected=true]:bg-accent-3",
       )}
     >
       {children}
@@ -69,19 +71,28 @@ type ContentProps = {
 };
 
 const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
-  const { data: lists = [] } = useQuery(qLists);
-  const { data: todos = [] } = useQuery(qTodos("all"));
-
-  const [value, setValue] = React.useState("");
   const navigate = useNavigate();
   const { createList } = useMutations();
 
+  const [value, setValue] = useState("");
+  const [search, setSearch] = useDebounceValue(value, 200);
+
+  const { data: lists = [] } = useQuery(qListSearch(search));
+  const { data: todos = [] } = useQuery(qTodoSearch(search));
+
   return (
-    <Command loop className="flex h-full flex-col overflow-hidden">
+    <Command
+      loop
+      shouldFilter={false}
+      className="flex h-full flex-col overflow-hidden"
+    >
       <Command.Input
         asChild
         value={value}
-        onValueChange={setValue}
+        onValueChange={(v) => {
+          setValue(v);
+          setSearch(v);
+        }}
         placeholder="Type a command or search..."
       >
         <TextField.Root
@@ -96,7 +107,7 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
           <TextField.Slot side="right">
             <Dialog.Close>
               <IconButton radius="full" variant="soft" size="2" color="gray">
-                <XIcon className="size-4" />
+                <XIcon className="size-5" />
               </IconButton>
             </Dialog.Close>
           </TextField.Slot>
@@ -104,11 +115,12 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
       </Command.Input>
       <Separator size="4" />
       <ScrollArea>
-        <Command.List className="flex-1 overflow-y-auto p-2 pr-3">
-          <Command.Empty>No results found.</Command.Empty>
-          <Command.Group>
-            <SearchGroupHeading>Lists</SearchGroupHeading>
-            {value && (
+        <Command.List className="flex-1 overflow-y-auto p-2 px-3">
+          <Command.Empty>
+            <NoSearchResultsScreen />
+          </Command.Empty>
+          <Command.Group heading="Lists">
+            {/*{value && (
               <SearchItem
                 onSelect={() =>
                   createList.mutate({ name: value }, { onSuccess: handleClose })
@@ -117,7 +129,7 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
                 <PlusIcon className="text-accent-10 size-4" />
                 Create new list <Strong>"{value}"</Strong>
               </SearchItem>
-            )}
+            )}*/}
             {lists.map((list) => (
               <SearchItem
                 key={list.id}
@@ -140,11 +152,8 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
               </SearchItem>
             ))}
           </Command.Group>
-          <div className="px-3 py-3">
-            <Separator size="4" />
-          </div>
-          <Command.Group>
-            <SearchGroupHeading>Todos</SearchGroupHeading>
+          <Command.Separator />
+          <Command.Group heading="Todos">
             {/*{value && (
               <SearchItem
                 onSelect={() =>
@@ -161,14 +170,12 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
             {todos.map((todo) => (
               <SearchItem
                 key={todo.id}
-                value={[todo.text, todo.id, todo.list?.id]
-                  .filter(Boolean)
-                  .join("~")}
+                value={todo.id}
                 onSelect={() => {
                   handleClose();
                   navigate({
                     to: "/todos/$listId",
-                    params: { listId: todo.list.id || "all" },
+                    params: { listId: todo.listId },
                     search: { highlightedTodoId: todo.id },
                   });
                 }}
@@ -192,16 +199,16 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
   );
 };
 
-type DialogProps = React.PropsWithChildren<{
-  isOpen?: boolean;
-  setIsOpen?: (open: boolean) => void;
-}>;
+const AppSearch: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
 
-const SearchDialog: React.FC<DialogProps> = ({
-  children,
-  isOpen,
-  setIsOpen,
-}) => {
+  useEventListener("keydown", (e) => {
+    if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      setIsOpen(true);
+    }
+  });
+
   return (
     <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
       <Dialog.Trigger>
@@ -209,10 +216,10 @@ const SearchDialog: React.FC<DialogProps> = ({
           <SearchIcon className="size-4" />
         </IconButton>
       </Dialog.Trigger>
-      <Dialog.Content
-        className={cn(
-          "fixed inset-2 m-0 mx-auto w-auto max-w-screen-sm overflow-hidden p-0 sm:my-auto sm:h-[500px]",
-        )}
+      <ResponsiveDialogContent
+        fullHeightDrawer
+        hideCloseButton
+        className="px-0 pt-0"
       >
         <VisuallyHidden>
           <Dialog.Title>Search</Dialog.Title>
@@ -220,26 +227,9 @@ const SearchDialog: React.FC<DialogProps> = ({
             Search for lists or todos. Use the arrow keys to navigate results.
           </Dialog.Description>
         </VisuallyHidden>
-        {children}
-      </Dialog.Content>
+        <SearchContent handleClose={() => setIsOpen(false)} />
+      </ResponsiveDialogContent>
     </Dialog.Root>
-  );
-};
-
-const AppSearch: React.FC = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-
-  useEventListener("keydown", (event) => {
-    if (event.key === "k" && event.metaKey) {
-      event.preventDefault();
-      setIsOpen(true);
-    }
-  });
-
-  return (
-    <SearchDialog isOpen={isOpen} setIsOpen={setIsOpen}>
-      <SearchContent handleClose={() => setIsOpen(false)} />
-    </SearchDialog>
   );
 };
 
