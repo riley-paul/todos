@@ -146,13 +146,6 @@
   }
 }
 
-:root,
-.light,
-.light-theme,
-.radix-themes {
-  --color-background: #faffff;
-}
-
 .dark,
 .dark-theme {
   --teal-1: #061618;
@@ -295,10 +288,4 @@
       --gray-track: oklch(53.3% 0.0242 203.1);
     }
   }
-}
-
-.dark,
-.dark-theme,
-:is(.dark, .dark-theme) :where(.radix-themes:not(.light, .light-theme)) {
-  --color-background: oklch(18.7% 0.025 202.1);
 }

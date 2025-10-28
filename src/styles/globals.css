@@ -3,7 +3,26 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme {
+:root {
+  --background-light: #faffff;
+  --background-dark: oklch(18.7% 0.025 202.1);
+  --background: var(--background-light);
+
+  &[data-theme="dark"] {
+    --background: var(--background-dark);
+  }
+
+  &[data-theme="system"] {
+    @media (prefers-color-scheme: dark) {
+      --background: var(--background-dark);
+    }
+    @media (prefers-color-scheme: light) {
+      --background: var(--background-light);
+    }
+  }
+}
+
+@theme inline {
   --breakpoint-sm: 512px;
   --color-*: initial;
   --shadow-*: initial;
@@ -28,7 +47,7 @@
 }
 
 body {
-  @apply m-0 overflow-x-hidden;
+  background-color: var(--background);
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
     "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;

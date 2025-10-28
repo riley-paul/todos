@@ -41,7 +41,7 @@ function Component() {
 
   return (
     <React.Fragment>
-      <header className="bg-background sticky top-0 z-10 flex h-18 flex-col justify-center">
+      <header className="sticky top-0 z-10 flex h-18 flex-col justify-center bg-[var(--background)]">
         <div className="container2 flex flex-1 items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <CircleCheckBigIcon className="text-accent-10 size-6" />

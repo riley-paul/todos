@@ -3,6 +3,23 @@ import App from "@/app/main";
 import RootLayout from "@/pages/_root-layout.astro";
 ---
 
+<script>
+  import { themeAtom } from "@/app/hooks/use-theme";
+  import { getDefaultStore } from "jotai";
+
+  const store = getDefaultStore();
+
+  const theme = store.get(themeAtom);
+  document.documentElement.setAttribute("data-theme", theme);
+  console.log("Theme is:", theme);
+
+  store.sub(themeAtom, () => {
+    const newTheme = store.get(themeAtom);
+    document.documentElement.setAttribute("data-theme", newTheme);
+    console.log("Theme changed to:", newTheme);
+  });
+</script>
+
 <RootLayout>
   <App client:only="react" />
 </RootLayout>

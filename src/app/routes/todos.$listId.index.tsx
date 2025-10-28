@@ -1,9 +1,9 @@
 import Todos from "@/app/components/todo/todos";
+import TodoAdder from "@/app/components/todo-adder";
 import { qList, qTodos } from "@/app/lib/queries";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Navigate, notFound } from "@tanstack/react-router";
 import React from "react";
-import TodoAdder from "../components/todo-adder";
 import { z } from "astro/zod";
 
 export const Route = createFileRoute("/todos/$listId/")({
