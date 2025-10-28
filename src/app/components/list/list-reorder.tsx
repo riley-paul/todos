@@ -20,7 +20,14 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import type { ListSelect } from "@/lib/types";
-import { Button, Dialog, IconButton, Separator, Text } from "@radix-ui/themes";
+import {
+  Badge,
+  Button,
+  Dialog,
+  IconButton,
+  Separator,
+  Text,
+} from "@radix-ui/themes";
 import {
   ArrowDownIcon,
   ArrowUpDownIcon,
@@ -133,7 +140,14 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
                   <span className="font-mono opacity-70">{list.todoCount}</span>
                 </Text>
                 {list.isPending && (
-                  <HourglassIcon className="text-amber-10 size-4" />
+                  <Badge
+                    size="1"
+                    className="size-6"
+                    variant="outline"
+                    color="amber"
+                  >
+                    <HourglassIcon className="size-3" />
+                  </Badge>
                 )}
                 <UserBubbleGroup users={list.otherUsers} />
               </Link>
