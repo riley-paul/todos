@@ -1,6 +1,6 @@
 import { defineAction } from "astro:actions";
-import listUserInputs from "./list-users.inputs";
-import listShareHandlers from "./list-users.handlers";
+import * as listUserInputs from "./list-users.inputs";
+import * as listShareHandlers from "./list-users.handlers";
 
 export const create = defineAction({
   input: listUserInputs.create,

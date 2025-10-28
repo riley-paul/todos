@@ -1,13 +1,15 @@
 import { z } from "astro/zod";
 
-const listUserInputs = {
-  create: z.object({
-    listId: z.string(),
-    userId: z.string().optional(),
-  }),
-  remove: z.object({ listId: z.string(), userId: z.string().optional() }),
-  accept: z.object({ listId: z.string() }),
-  getAllForList: z.object({ listId: z.string() }),
-};
+export const create = z.object({
+  listId: z.string(),
+  userId: z.string().optional(),
+});
 
-export default listUserInputs;
+export const remove = z.object({
+  listId: z.string(),
+  userId: z.string().optional(),
+});
+
+export const accept = z.object({ listId: z.string() });
+
+export const getAllForList = z.object({ listId: z.string() });

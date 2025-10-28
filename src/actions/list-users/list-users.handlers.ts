@@ -8,10 +8,10 @@ import {
   ensureAuthorized,
 } from "../helpers";
 import actionErrors from "../errors";
-import type listUserInputs from "./list-users.inputs";
+import * as listUserInputs from "./list-users.inputs";
 import type { ListUserSelect } from "@/lib/types";
 
-const getListUser = async (
+export const getListUser = async (
   context: ActionAPIContext,
   { listUserId }: { listUserId: string },
 ): Promise<ListUserSelect> => {
@@ -42,7 +42,7 @@ const getListUser = async (
   return listUser;
 };
 
-const create: ActionHandler<
+export const create: ActionHandler<
   typeof listUserInputs.create,
   ListUserSelect
 > = async (input, c) => {
@@ -73,7 +73,7 @@ const create: ActionHandler<
   return getListUser(c, { listUserId });
 };
 
-const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
+export const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
   input,
   c,
 ) => {
@@ -99,7 +99,7 @@ const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
   return null;
 };
 
-const accept: ActionHandler<
+export const accept: ActionHandler<
   typeof listUserInputs.accept,
   ListUserSelect
 > = async ({ listId }, c) => {
@@ -136,7 +136,7 @@ const accept: ActionHandler<
   return getListUser(c, { listUserId: updated.id });
 };
 
-const getAllForList: ActionHandler<
+export const getAllForList: ActionHandler<
   typeof listUserInputs.getAllForList,
   ListUserSelect[]
 > = async ({ listId }, c) => {
@@ -168,11 +168,3 @@ const getAllForList: ActionHandler<
     .innerJoin(User, eq(User.id, ListUser.userId))
     .where(eq(ListUser.listId, listId));
 };
-
-const listShareHandlers = {
-  create,
-  remove,
-  accept,
-  getAllForList,
-};
-export default listShareHandlers;
