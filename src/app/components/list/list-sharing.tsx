@@ -1,21 +1,17 @@
 import type { ListSelect, ListUserSelect } from "@/lib/types";
 import React from "react";
-import UserBubbleGroup from "../ui/user-bubble-group";
 import {
   Badge,
   Button,
-  Dialog,
-  IconButton,
   Separator,
   Text,
   type ButtonProps,
 } from "@radix-ui/themes";
-import { HourglassIcon, SendIcon, Share2Icon } from "lucide-react";
+import { HourglassIcon, SendIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import UserBubble from "../ui/user-bubble";
 import UserSearch from "./user-search";
 import { toast } from "sonner";
-import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 import { qListShares, qUser } from "@/app/lib/queries";
 import useMutations from "@/app/hooks/use-mutations";
 import useAlerts from "@/app/hooks/use-alerts";
@@ -107,7 +103,7 @@ const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
   };
 
   return (
-    <article className="hover:bg-accent-3 rounded-3 -mx-3 flex items-center gap-3 px-3 py-2 sm:flex">
+    <article className="sm:hover:bg-accent-3 rounded-3 -mx-3 flex items-center gap-3 px-3 py-2 sm:flex">
       <UserBubble avatarProps={{ size: "2" }} user={listShare.user} />
       <Text size="3" weight="medium" truncate className="flex-1">
         {listShare.user.name}
@@ -132,46 +128,27 @@ const ListSharing: React.FC<{ list: ListSelect }> = ({ list }) => {
   const nonPendingListShares = listShares.filter(({ isPending }) => !isPending);
 
   return (
-    <Dialog.Root>
-      <Dialog.Trigger>
-        {list.otherUsers.length === 0 ? (
-          <IconButton variant="ghost">
-            <Share2Icon className="size-4" />
-          </IconButton>
-        ) : (
-          <Button variant="ghost">
-            <UserBubbleGroup users={list.otherUsers} numAvatars={3} />
-          </Button>
+    <React.Fragment>
+      <UserInviter
+        list={list}
+        isUserDisabled={(userId) => existingUserIds.has(userId)}
+      />
+      <article className="-mx-6 flex h-full flex-col gap-1 overflow-x-hidden overflow-y-auto px-6">
+        {nonPendingListShares.map((listShare) => (
+          <ListShare
+            key={listShare.id}
+            listShare={listShare}
+            isOnlyUser={nonPendingListShares.length === 1}
+          />
+        ))}
+        {pendingListShares.length > 0 && (
+          <Separator size="4" className="my-2" />
         )}
-      </Dialog.Trigger>
-      <ResponsiveDialogContent fullHeightDrawer>
-        <header>
-          <Dialog.Title>Share List</Dialog.Title>
-          <Dialog.Description size="2" color="gray">
-            Add other users to your list so they can add and delete todos
-          </Dialog.Description>
-        </header>
-        <UserInviter
-          list={list}
-          isUserDisabled={(userId) => existingUserIds.has(userId)}
-        />
-        <article className="-mx-6 flex h-full flex-col gap-1 overflow-x-hidden overflow-y-auto px-6">
-          {nonPendingListShares.map((listShare) => (
-            <ListShare
-              key={listShare.id}
-              listShare={listShare}
-              isOnlyUser={nonPendingListShares.length === 1}
-            />
-          ))}
-          {pendingListShares.length > 0 && (
-            <Separator size="4" className="my-2" />
-          )}
-          {pendingListShares.map((listShare) => (
-            <ListShare key={listShare.id} listShare={listShare} />
-          ))}
-        </article>
-      </ResponsiveDialogContent>
-    </Dialog.Root>
+        {pendingListShares.map((listShare) => (
+          <ListShare key={listShare.id} listShare={listShare} />
+        ))}
+      </article>
+    </React.Fragment>
   );
 };
 

@@ -20,8 +20,9 @@ const ListSharingLink: React.FC<Props> = ({ list }) => {
     return (
       <IconButton
         asChild
+        radius="large"
         variant={isActive ? "solid" : "ghost"}
-        className="-mx-2 h-auto py-1 px-2"
+        className="-mx-2 h-auto px-2 py-1"
       >
         <Link {...link}>
           <Share2Icon className="size-4" />
@@ -32,8 +33,9 @@ const ListSharingLink: React.FC<Props> = ({ list }) => {
   return (
     <Button
       asChild
+      radius="large"
       variant={isActive ? "solid" : "ghost"}
-      className="-mx-2 h-auto py-1 px-2"
+      className="-mx-2 h-auto px-2 py-1"
     >
       <Link {...link}>
         <UserBubbleGroup users={list.otherUsers} numAvatars={3} />
