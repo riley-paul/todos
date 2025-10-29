@@ -32,8 +32,6 @@ const getTodos = async (
     .where(eq(ListUser.userId, reqUserId))
     .then((rows) => rows.map(({ listId }) => listId));
 
-  console.log("userLists", userLists);
-
   const searchTerm = `%${search}%`;
   const searchQuery = or(
     like(Todo.text, searchTerm),
