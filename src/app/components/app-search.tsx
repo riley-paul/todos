@@ -27,24 +27,47 @@ type ContentProps = {
 };
 
 const itemClassNames = cn(
-  "rounded-3 text-2 flex cursor-pointer items-center gap-2 px-3 -mx-3 py-2 transition-colors select-none",
+  "rounded-3 text-2 flex cursor-pointer items-center gap-2 px-3 -mx-3 py-1.5 transition-colors select-none",
   "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50",
   "data-[selected=true]:bg-accent-3",
 );
 
 const groupClassNames = cn(
-  "[&_[cmdk-group-heading]]:opacity-70 [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:text-1 [&_[cmdk-group-heading]]:font-medium",
-  "flex flex-col gap-3",
+  "[&_[cmdk-group-heading]]:opacity-70 [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:text-1 [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:flex [&_[cmdk-group-heading]]:items-center [&_[cmdk-group-heading]]:gap-2",
+  "[&_[cmdk-group-heading]::after]:content-[''] [&_[cmdk-group-heading]::after]:block [&_[cmdk-group-heading]::after]:h-px [&_[cmdk-group-heading]::after]:bg-gray-7 [&_[cmdk-group-heading]::after]:w-full",
+  "flex flex-col gap-2",
 );
 
 const listClassNames = cn(
-  "[&_[cmdk-list-sizer]]:flex [&_[cmdk-list-sizer]]:flex-col [&_[cmdk-list-sizer]]:gap-4",
+  "[&_[cmdk-list-sizer]]:flex [&_[cmdk-list-sizer]]:flex-col [&_[cmdk-list-sizer]]:gap-3",
 );
 
-const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
-  const navigate = useNavigate();
+const CommandInput: React.FC = () => (
+  <Command.Input asChild placeholder="Search...">
+    <TextField.Root
+      size="3"
+      variant="soft"
+      style={{ borderRadius: 0 }}
+      className="bg-gray-1 h-14 px-3 outline-none"
+    >
+      <TextField.Slot side="left">
+        <SearchIcon className="text-accent-10 size-4" />
+      </TextField.Slot>
+      <TextField.Slot side="right">
+        <Dialog.Close>
+          <IconButton radius="full" variant="ghost" size="2" color="gray">
+            <XIcon className="size-5" />
+          </IconButton>
+        </Dialog.Close>
+      </TextField.Slot>
+    </TextField.Root>
+  </Command.Input>
+);
 
-  const [value, setValue] = useState("");
+const CommandList: React.FC<{ handleClose: () => void }> = ({
+  handleClose,
+}) => {
+  const navigate = useNavigate();
 
   const { data: lists = [], isLoading: listsLoading } = useQuery(
     qListSearch(""),
@@ -53,96 +76,70 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
     qTodoSearch(""),
   );
 
+  if (listsLoading || todosLoading) {
+    return <LoadingScreen />;
+  }
+
+  return (
+    <Command.List className={cn("flex-1 overflow-y-auto p-6", listClassNames)}>
+      <Command.Group heading="Lists" className={groupClassNames}>
+        {lists.map((list) => (
+          <Command.Item
+            key={list.id}
+            value={[list.name, list.id].join("-")}
+            className={itemClassNames}
+            onSelect={() => {
+              handleClose();
+              navigate({
+                to: "/todos/$listId",
+                params: { listId: list.id },
+              });
+            }}
+          >
+            <span>{list.name}</span>
+            <Text className="font-mono opacity-70">{list.todoCount}</Text>
+            <div className="ml-auto">
+              <UserBubbleGroup users={list.otherUsers} />
+            </div>
+          </Command.Item>
+        ))}
+      </Command.Group>
+      <Command.Separator />
+      <Command.Group heading="Todos" className={groupClassNames}>
+        {todos.map((todo) => (
+          <Command.Item
+            key={todo.id}
+            value={[todo.id, todo.text].join("-")}
+            className={itemClassNames}
+            onSelect={() => {
+              handleClose();
+              navigate({
+                to: "/todos/$listId",
+                params: { listId: todo.listId },
+                search: { highlightedTodoId: todo.id },
+              });
+            }}
+          >
+            <span
+              className={cn(todo.isCompleted && "text-gray-10 line-through")}
+            >
+              <TextWithLinks text={todo.text} />
+            </span>
+            {todo.list && <Badge className="ml-auto">{todo.list.name}</Badge>}
+          </Command.Item>
+        ))}
+      </Command.Group>
+    </Command.List>
+  );
+};
+
+const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
   return (
     <Command loop className="flex h-full flex-col overflow-hidden">
-      <Command.Input
-        asChild
-        value={value}
-        onValueChange={setValue}
-        placeholder="Type a command or search..."
-      >
-        <TextField.Root
-          autoFocus
-          variant="soft"
-          style={{ borderRadius: 0 }}
-          className="bg-gray-1 h-auto px-2 py-3 outline-none"
-        >
-          <TextField.Slot side="left">
-            <SearchIcon className="text-accent-10 size-4" />
-          </TextField.Slot>
-          <TextField.Slot side="right">
-            <Dialog.Close>
-              <IconButton radius="full" variant="soft" size="2" color="gray">
-                <XIcon className="size-5" />
-              </IconButton>
-            </Dialog.Close>
-          </TextField.Slot>
-        </TextField.Root>
-      </Command.Input>
+      <CommandInput />
       <Separator size="4" />
       <ScrollArea>
-        <Command.List
-          className={cn("flex-1 overflow-y-auto p-6", listClassNames)}
-        >
-          {(listsLoading || todosLoading) && (
-            <Command.Loading>
-              <LoadingScreen />
-            </Command.Loading>
-          )}
-          <Command.Group heading="Lists" className={groupClassNames}>
-            {lists.map((list) => (
-              <Command.Item
-                key={list.id}
-                value={[list.name, list.id].join("-")}
-                className={itemClassNames}
-                onSelect={() => {
-                  handleClose();
-                  navigate({
-                    to: "/todos/$listId",
-                    params: { listId: list.id },
-                  });
-                }}
-              >
-                <span>{list.name}</span>
-                <Text className="text-accentA-12 font-mono">
-                  {list.todoCount}
-                </Text>
-                <div className="ml-auto">
-                  <UserBubbleGroup users={list.otherUsers} />
-                </div>
-              </Command.Item>
-            ))}
-          </Command.Group>
-          <Command.Separator />
-          <Command.Group heading="Todos" className={groupClassNames}>
-            {todos.map((todo) => (
-              <Command.Item
-                key={todo.id}
-                value={[todo.id, todo.text].join("-")}
-                className={itemClassNames}
-                onSelect={() => {
-                  handleClose();
-                  navigate({
-                    to: "/todos/$listId",
-                    params: { listId: todo.listId },
-                    search: { highlightedTodoId: todo.id },
-                  });
-                }}
-              >
-                <span
-                  className={cn(
-                    todo.isCompleted && "text-gray-10 line-through",
-                  )}
-                >
-                  <TextWithLinks text={todo.text} />
-                </span>
-                {todo.list && (
-                  <Badge className="ml-auto">{todo.list.name}</Badge>
-                )}
-              </Command.Item>
-            ))}
-          </Command.Group>
-        </Command.List>
+        <CommandList handleClose={handleClose} />
       </ScrollArea>
     </Command>
   );

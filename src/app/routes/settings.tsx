@@ -39,7 +39,7 @@ function RouteComponent() {
 
   return (
     <React.Fragment>
-      <Heading>Settings</Heading>
+      <Heading size="7">Settings</Heading>
       <article className="grid gap-4">
         <Card className="grid gap-5 p-4">
           <Setting label="Group completed todos">

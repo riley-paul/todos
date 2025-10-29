@@ -1,7 +1,7 @@
 import React from "react";
 import Empty from "../ui/empty";
 import { Button } from "@radix-ui/themes";
-import { CircleQuestionMarkIcon, ListPlusIcon } from "lucide-react";
+import { ListPlusIcon, ListXIcon } from "lucide-react";
 import useAlerts from "@/app/hooks/use-alerts";
 
 const NoListsScreen: React.FC = () => {
@@ -11,7 +11,7 @@ const NoListsScreen: React.FC = () => {
     <Empty.Root>
       <Empty.Header>
         <Empty.Media variant="icon">
-          <CircleQuestionMarkIcon />
+          <ListXIcon />
         </Empty.Media>
         <Empty.Title>No lists created</Empty.Title>
         <Empty.Description>
