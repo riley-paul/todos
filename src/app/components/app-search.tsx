@@ -20,7 +20,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { SearchIcon, XIcon } from "lucide-react";
 import { Command } from "cmdk";
 import ResponsiveDialogContent from "./ui/responsive-dialog-content";
-import NoSearchResultsScreen from "./screens/no-search-results";
+import LoadingScreen from "./screens/loading";
 
 type ContentProps = {
   handleClose: () => void;
@@ -46,8 +46,12 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
 
   const [value, setValue] = useState("");
 
-  const { data: lists = [] } = useQuery(qListSearch(""));
-  const { data: todos = [] } = useQuery(qTodoSearch(""));
+  const { data: lists = [], isLoading: listsLoading } = useQuery(
+    qListSearch(""),
+  );
+  const { data: todos = [], isLoading: todosLoading } = useQuery(
+    qTodoSearch(""),
+  );
 
   return (
     <Command loop className="flex h-full flex-col overflow-hidden">
@@ -80,9 +84,11 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
         <Command.List
           className={cn("flex-1 overflow-y-auto p-6", listClassNames)}
         >
-          <Command.Empty>
-            <NoSearchResultsScreen />
-          </Command.Empty>
+          {(listsLoading || todosLoading) && (
+            <Command.Loading>
+              <LoadingScreen />
+            </Command.Loading>
+          )}
           <Command.Group heading="Lists" className={groupClassNames}>
             {lists.map((list) => (
               <Command.Item
