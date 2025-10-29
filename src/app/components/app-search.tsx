@@ -1,33 +1,31 @@
 import React, { useState } from "react";
 
 import {
-  Badge,
   Dialog,
   IconButton,
   ScrollArea,
   Separator,
-  Text,
   TextField,
   VisuallyHidden,
 } from "@radix-ui/themes";
 import { useEventListener } from "usehooks-ts";
 import { useQuery } from "@tanstack/react-query";
 import { qListSearch, qTodoSearch } from "@/app/lib/queries";
-import UserBubbleGroup from "./ui/user-bubble-group";
-import TextWithLinks from "./ui/text-with-links";
 import { cn } from "@/app/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
 import { SearchIcon, XIcon } from "lucide-react";
 import { Command } from "cmdk";
 import ResponsiveDialogContent from "./ui/responsive-dialog-content";
 import LoadingScreen from "./screens/loading";
+import ListRow from "./list/list-row";
+import TodoRow from "./todo/todo-row";
 
 type ContentProps = {
   handleClose: () => void;
 };
 
 const itemClassNames = cn(
-  "rounded-3 text-2 flex cursor-pointer items-center gap-2 px-3 -mx-3 py-1.5 transition-colors select-none",
+  "rounded-3 flex cursor-pointer items-center gap-2 px-3 -mx-3 py-2 transition-colors select-none",
   "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50",
   "data-[selected=true]:bg-accent-3",
 );
@@ -96,11 +94,7 @@ const CommandList: React.FC<{ handleClose: () => void }> = ({
               });
             }}
           >
-            <span>{list.name}</span>
-            <Text className="font-mono opacity-70">{list.todoCount}</Text>
-            <div className="ml-auto">
-              <UserBubbleGroup users={list.otherUsers} />
-            </div>
+            <ListRow list={list} />
           </Command.Item>
         ))}
       </Command.Group>
@@ -120,12 +114,7 @@ const CommandList: React.FC<{ handleClose: () => void }> = ({
               });
             }}
           >
-            <span
-              className={cn(todo.isCompleted && "text-gray-10 line-through")}
-            >
-              <TextWithLinks text={todo.text} />
-            </span>
-            {todo.list && <Badge className="ml-auto">{todo.list.name}</Badge>}
+            <TodoRow todo={todo} />
           </Command.Item>
         ))}
       </Command.Group>

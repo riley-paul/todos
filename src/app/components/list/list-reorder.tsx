@@ -20,26 +20,18 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import type { ListSelect } from "@/lib/types";
-import {
-  Badge,
-  Button,
-  Dialog,
-  IconButton,
-  Separator,
-  Text,
-} from "@radix-ui/themes";
+import { Button, Dialog, IconButton, Separator, Text } from "@radix-ui/themes";
 import {
   ArrowDownIcon,
   ArrowUpDownIcon,
   ChevronsUpDownIcon,
-  HourglassIcon,
 } from "lucide-react";
 import { cn } from "@/app/lib/utils";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 import useMutations from "@/app/hooks/use-mutations";
 import { Link } from "@tanstack/react-router";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
-import UserBubbleGroup from "../ui/user-bubble-group";
+import ListRow from "./list-row";
 
 type SortableObjectData =
   | {
@@ -130,26 +122,7 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
                 )}
                 preload={false}
               >
-                <Text
-                  truncate
-                  size="3"
-                  weight="medium"
-                  className="flex flex-1 gap-2"
-                >
-                  <span>{list.name}</span>
-                  <span className="font-mono opacity-70">{list.todoCount}</span>
-                </Text>
-                {list.isPending && (
-                  <Badge
-                    size="1"
-                    className="size-6"
-                    variant="outline"
-                    color="amber"
-                  >
-                    <HourglassIcon className="size-3" />
-                  </Badge>
-                )}
-                <UserBubbleGroup users={list.otherUsers} />
+                <ListRow list={list} />
               </Link>
             </Dialog.Close>
           </article>
