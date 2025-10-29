@@ -87,11 +87,7 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
             {lists.map((list) => (
               <Command.Item
                 key={list.id}
-                value={[
-                  list.name,
-                  list.id,
-                  ...list.otherUsers.map(({ name }) => name),
-                ].join("-")}
+                value={[list.name, list.id].join("-")}
                 className={itemClassNames}
                 onSelect={() => {
                   handleClose();
@@ -116,7 +112,7 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
             {todos.map((todo) => (
               <Command.Item
                 key={todo.id}
-                value={[todo.id, todo.text, todo.author.name].join("-")}
+                value={[todo.id, todo.text].join("-")}
                 className={itemClassNames}
                 onSelect={() => {
                   handleClose();
@@ -166,6 +162,7 @@ const AppSearch: React.FC = () => {
       <ResponsiveDialogContent
         fullHeightDrawer
         hideCloseButton
+        desktopDrawer
         className="px-0 pt-0"
       >
         <VisuallyHidden>
