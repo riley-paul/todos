@@ -63,8 +63,12 @@ const ResponsiveDialogContent = React.forwardRef<HTMLDivElement, Props>(
         <Theme asChild>
           <DialogPrimitive.Overlay className={overlayClassName}>
             <DialogPrimitive.Content
-              {...contentProps}
               ref={forwardedRef}
+              {...contentProps}
+              onCloseAutoFocus={(e) => {
+                e.preventDefault();
+                contentProps.onCloseAutoFocus?.(e);
+              }}
               className={cn(
                 "bg-panel-solid z-50 flex flex-col gap-6 overflow-hidden border p-6",
                 "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-200 data-[state=open]:duration-200",
