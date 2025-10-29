@@ -259,7 +259,7 @@ const ListReorder: React.FC<ListReorderProps> = ({ lists }) => {
           <ArrowUpDownIcon className="size-4" />
         </IconButton>
       </Dialog.Trigger>
-      <ResponsiveDialogContent title="Reorder Lists">
+      <ResponsiveDialogContent title="Reorder Lists" desktopDrawer>
         <header>
           <Dialog.Title>Reorder Lists</Dialog.Title>
           <Dialog.Description size="2" color="gray">
@@ -270,13 +270,11 @@ const ListReorder: React.FC<ListReorderProps> = ({ lists }) => {
         <article className="-mx-6 flex h-full flex-col gap-1 overflow-x-hidden overflow-y-auto px-6">
           <ListReorderContent lists={lists} />
         </article>
-        <footer className="flex justify-end">
-          <Dialog.Close>
-            <Button size="3" variant="soft" className="flex-1 sm:flex-0">
-              Done
-            </Button>
-          </Dialog.Close>
-        </footer>
+        <Dialog.Close>
+          <Button size="3" variant="soft" className="w-full">
+            Done
+          </Button>
+        </Dialog.Close>
       </ResponsiveDialogContent>
     </Dialog.Root>
   );
