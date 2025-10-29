@@ -3,8 +3,8 @@ import { Heading } from "@radix-ui/themes";
 import React from "react";
 import ListMenu from "./list-menu";
 import { cn } from "@/app/lib/utils";
-import ListSharingLink from "./list-sharing-link";
 import { Link } from "@tanstack/react-router";
+import ListSharing from "./list-sharing";
 
 type Props = { list: ListSelect };
 
@@ -23,7 +23,7 @@ const ListHeader: React.FC<Props> = ({ list }) => {
       </Link>
       <section className="flex items-center gap-4">
         <ListMenu list={list} />
-        <ListSharingLink list={list} />
+        <ListSharing list={list} />
       </section>
     </header>
   );

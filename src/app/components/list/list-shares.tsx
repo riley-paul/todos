@@ -4,8 +4,9 @@ import { Button, Separator, Text, type ButtonProps } from "@radix-ui/themes";
 import { ArrowDownIcon, HourglassIcon, LogOutIcon, XIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import UserBubble from "../ui/user-bubble";
-import { qUser } from "@/app/lib/queries";
+import { qListShares, qUser } from "@/app/lib/queries";
 import useAlerts from "@/app/hooks/use-alerts";
+import LoadingScreen from "../screens/loading";
 
 type ListShareProps = {
   listShare: ListUserSelect;
@@ -85,14 +86,16 @@ const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
   );
 };
 
-const ListShares: React.FC<{ listShares: ListUserSelect[] }> = ({
-  listShares,
-}) => {
+const ListShares: React.FC<{ listId: string }> = ({ listId }) => {
+  const { data: listShares, isLoading } = useQuery(qListShares(listId));
+
+  if (isLoading || listShares === undefined) return <LoadingScreen />;
+
   const pendingListShares = listShares.filter(({ isPending }) => isPending);
   const nonPendingListShares = listShares.filter(({ isPending }) => !isPending);
 
   return (
-    <article className="-mx-6 flex h-full flex-col gap-1 overflow-x-hidden overflow-y-auto px-6">
+    <article className="-mx-6 flex flex-col gap-1 overflow-x-hidden overflow-y-auto px-6">
       {nonPendingListShares.map((listShare) => (
         <ListShare
           key={listShare.id}

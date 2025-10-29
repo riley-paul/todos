@@ -46,7 +46,8 @@ const ResponsiveDialogContent = React.forwardRef<HTMLDivElement, Props>(
 
       if (desktopDrawer) {
         return cn(
-          "fixed top-0 right-0 h-full w-full max-w-sm border-l shadow-lg",
+          "fixed top-0 right-0 h-full w-full max-w-md shadow-lg",
+          "border-0 border-l",
           "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
         );
       }

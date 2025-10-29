@@ -4,7 +4,7 @@ import { Spinner } from "@radix-ui/themes";
 
 const LoadingScreen: React.FC = () => {
   return (
-    <Empty.Root className="fixed inset-0">
+    <Empty.Root className="absolute inset-0">
       <Empty.Media>
         <Spinner size="3" />
       </Empty.Media>
