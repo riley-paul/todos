@@ -1,10 +1,10 @@
 import React from "react";
 import Empty from "../ui/empty";
-import { Button, Text } from "@radix-ui/themes";
+import { Button, Card, Heading } from "@radix-ui/themes";
 import { CheckIcon, HourglassIcon, XIcon } from "lucide-react";
 import useMutations from "@/app/hooks/use-mutations";
 import { getRouteApi } from "@tanstack/react-router";
-import UserBubble from "../ui/user-bubble";
+import UserRow from "../ui/user/user-row";
 
 const route = getRouteApi("/todos/$listId");
 
@@ -30,13 +30,8 @@ const PendingListScreen: React.FC = () => {
         </Empty.Description>
       </Empty.Header>
       <Empty.Content>
-        <div className="flex items-center gap-2">
-          <Button
-            color="red"
-            variant="soft"
-            className="h-9"
-            onClick={handleDeclineJoin}
-          >
+        <div className="grid w-full max-w-2xs grid-cols-2 gap-2">
+          <Button variant="soft" className="h-9" onClick={handleDeclineJoin}>
             <XIcon className="size-4" />
             Decline
           </Button>
@@ -46,14 +41,14 @@ const PendingListScreen: React.FC = () => {
           </Button>
         </div>
       </Empty.Content>
-      <div className="grid max-w-sm gap-4 pt-6">
+      <Card size="2" className="grid w-full max-w-sm gap-4">
+        <Heading as="h4" size="1" color="gray" className="uppercase">
+          List Users
+        </Heading>
         {list.otherUsers.map((user) => (
-          <div key={user.id} className="flex items-center gap-2">
-            <UserBubble user={user} avatarProps={{ size: "1" }} />
-            <Text weight="medium">{user.name}</Text>
-          </div>
+          <UserRow key={user.id} user={user} />
         ))}
-      </div>
+      </Card>
     </Empty.Root>
   );
 };

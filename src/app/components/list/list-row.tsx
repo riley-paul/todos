@@ -2,7 +2,7 @@ import type { ListSelect } from "@/lib/types";
 import { Text } from "@radix-ui/themes";
 import { HourglassIcon } from "lucide-react";
 import React from "react";
-import UserBubbleGroup from "../ui/user-bubble-group";
+import UserBubbleGroup from "../ui/user/user-bubble-group";
 import { cn } from "@/app/lib/utils";
 
 type Props = { list: ListSelect };

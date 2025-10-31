@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Avatar, IconButton, Text } from "@radix-ui/themes";
+import { IconButton } from "@radix-ui/themes";
 import useMutations from "@/app/hooks/use-mutations";
 import { LogOutIcon, Settings2Icon, TrashIcon } from "lucide-react";
 import { useAtom } from "jotai";
@@ -9,6 +9,8 @@ import { linkOptions } from "@tanstack/react-router";
 import type { MenuItem } from "./ui/menu/menu.types";
 import ResponsiveMenu from "./ui/menu/responsive-menu";
 import type { UserSelect } from "@/lib/types";
+import UserRow from "./ui/user/user-row";
+import UserBubble from "./ui/user/user-bubble";
 
 const UserMenu: React.FC<{ user: UserSelect }> = ({ user }) => {
   const { deleteUser } = useMutations();
@@ -30,31 +32,12 @@ const UserMenu: React.FC<{ user: UserSelect }> = ({ user }) => {
     });
   };
 
-  const fallback = user.name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
-
   const menuItems: MenuItem[] = [
     {
       type: "custom",
       component: (
-        <header key="user-info" className="flex items-center gap-2 p-2">
-          <Avatar
-            src={user.avatarUrl ?? ""}
-            alt={user.name}
-            fallback={fallback}
-            radius="full"
-          />
-          <div className="grid flex-1 leading-0.5">
-            <Text weight="medium" truncate>
-              {user.name}
-            </Text>
-            <Text color="gray" size="2">
-              {user.email}
-            </Text>
-          </div>
+        <header key="user-info" className="p-2">
+          <UserRow user={user} isLarge />
         </header>
       ),
     },
@@ -90,13 +73,7 @@ const UserMenu: React.FC<{ user: UserSelect }> = ({ user }) => {
       dropdownProps={{ className: "min-w-48", align: "end" }}
     >
       <IconButton size="1" variant="ghost" radius="full">
-        <Avatar
-          size="3"
-          radius="full"
-          src={user.avatarUrl ?? ""}
-          fallback={fallback}
-          className="cursor-pointer"
-        />
+        <UserBubble user={user} avatarProps={{ size: "3" }} />
       </IconButton>
     </ResponsiveMenu>
   );

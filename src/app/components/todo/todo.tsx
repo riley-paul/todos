@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import useMutations from "@/app/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
-import UserBubble from "../ui/user-bubble";
+import UserBubble from "@/app/components/ui/user/user-bubble";
 import {
   Badge,
   Button,

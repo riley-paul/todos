@@ -3,10 +3,10 @@ import React from "react";
 import { Button, Separator, Text, type ButtonProps } from "@radix-ui/themes";
 import { ArrowDownIcon, HourglassIcon, LogOutIcon, XIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import UserBubble from "../ui/user-bubble";
 import { qListShares, qUser } from "@/app/lib/queries";
 import useAlerts from "@/app/hooks/use-alerts";
 import LoadingScreen from "../screens/loading";
+import UserRow from "../ui/user/user-row";
 
 type ListShareProps = {
   listShare: ListUserSelect;
@@ -66,16 +66,8 @@ const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
   };
 
   return (
-    <article className="xs:hover:bg-accent-3 rounded-3 -mx-3 flex items-center gap-3 px-3 py-2 sm:flex">
-      <UserBubble avatarProps={{ size: "2" }} user={listShare.user} />
-      <section className="grid flex-1">
-        <Text size="3" weight="medium">
-          {listShare.user.name}
-        </Text>
-        <Text size="2" color="gray">
-          {listShare.user.email}
-        </Text>
-      </section>
+    <article className="xs:hover:bg-accent-3 rounded-3 -mx-3 flex items-center gap-3 px-3 py-2 transition-colors ease-in">
+      <UserRow user={listShare.user} className="flex-1" isLarge />
       <section className="flex items-center gap-3">
         {listShare.isPending && (
           <HourglassIcon className="text-amber-10 size-3" />
