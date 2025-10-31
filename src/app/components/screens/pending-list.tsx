@@ -43,7 +43,7 @@ const PendingListScreen: React.FC = () => {
       </Empty.Content>
       <Card size="2" className="grid w-full max-w-2xs gap-4">
         <Heading as="h4" size="1" color="gray" className="uppercase">
-          List Users
+          List Members
         </Heading>
         {list.otherUsers.map((user) => (
           <UserRow key={user.id} user={user} />

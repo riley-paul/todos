@@ -11,10 +11,20 @@ const UserRow: React.FC<Props> = ({ user, className, isLarge }) => {
     <article className={cn("flex items-center gap-2", className)}>
       <UserBubble avatarProps={{ size: isLarge ? "3" : "2" }} user={user} />
       <section className="grid flex-1 leading-tight">
-        <Text size={isLarge ? "3" : "2"} weight="medium">
+        <Text
+          title={user.name}
+          size={isLarge ? "3" : "2"}
+          weight="medium"
+          truncate
+        >
           {user.name}
         </Text>
-        <Text size={isLarge ? "2" : "1"} truncate color="gray">
+        <Text
+          title={user.email}
+          size={isLarge ? "2" : "1"}
+          color="gray"
+          truncate
+        >
           {user.email}
         </Text>
       </section>
