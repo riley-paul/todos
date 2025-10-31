@@ -96,7 +96,7 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
         <div ref={setNodeRef} style={style}>
           <article
             className={cn(
-              "sm:hover:bg-accent-3 rounded-3 -mx-3 flex h-12 items-center gap-3 px-3 transition-colors ease-in",
+              "xs:hover:bg-accent-3 rounded-3 -mx-3 flex h-12 items-center gap-3 px-3 transition-colors ease-in",
               isOverlay && "bg-accent-3",
             )}
           >
@@ -137,7 +137,7 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
             {...attributes}
             {...listeners}
             className={cn(
-              "rounded-3 sm:hover:bg-accent-3 -mx-3 flex cursor-grab items-center gap-2 px-3 py-1",
+              "rounded-3 xs:hover:bg-accent-3 -mx-3 flex cursor-grab items-center gap-2 px-3 py-1",
               isOverlay && "bg-accent-3 cursor-grabbing",
             )}
           >

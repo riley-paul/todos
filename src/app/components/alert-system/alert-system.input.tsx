@@ -42,7 +42,7 @@ const AlertSystemContentInput: React.FC<InputAlertProps> = ({
             </div>
           )}
         />
-        <footer className="flex flex-col justify-end gap-3 sm:flex-row">
+        <footer className="flex flex-col justify-end gap-3 xs:flex-row">
           <Dialog.Close>
             <Button size="3" variant="soft" color="gray">
               Cancel

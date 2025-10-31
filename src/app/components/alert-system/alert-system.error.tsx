@@ -5,7 +5,7 @@ import { Dialog, Button } from "@radix-ui/themes";
 const AlertSystemContentError: React.FC<ErrorAlertProps> = ({}) => {
   return (
     <>
-      <footer className="flex flex-col justify-end gap-3 sm:flex-row">
+      <footer className="flex flex-col justify-end gap-3 xs:flex-row">
         <Dialog.Close>
           <Button size="3">Ok</Button>
         </Dialog.Close>

@@ -1,21 +1,9 @@
-import * as React from "react";
+import { useMediaQuery } from "usehooks-ts";
 
-const MOBILE_BREAKPOINT = 512;
+const MOBILE_BREAKPOINT = 520;
 
 export function useIsMobile(breakpoint: number = MOBILE_BREAKPOINT) {
-  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(
-    undefined,
-  );
-
-  React.useEffect(() => {
-    const mql = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
-    const onChange = () => {
-      setIsMobile(window.innerWidth < breakpoint);
-    };
-    mql.addEventListener("change", onChange);
-    setIsMobile(window.innerWidth < breakpoint);
-    return () => mql.removeEventListener("change", onChange);
-  }, []);
+  const isMobile = useMediaQuery(`(max-width >= ${MOBILE_BREAKPOINT}px)`);
 
   return !!isMobile;
 }

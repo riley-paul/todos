@@ -55,8 +55,10 @@ function Component() {
             <UserMenu user={currentUser} />
           </section>
         </div>
-        <div className="container2 px-2">
-          <Separator size="4" />
+        <div className="container2">
+          <div className="-mx-3">
+            <Separator size="4" />
+          </div>
         </div>
       </header>
       <main className="container2 grid gap-6 py-6">

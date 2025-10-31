@@ -23,7 +23,6 @@
 }
 
 @theme inline {
-  --breakpoint-sm: 512px;
   --color-*: initial;
   --shadow-*: initial;
   --font-size-*: initial;
@@ -62,7 +61,7 @@ code {
 
 @layer utilities {
   .container2 {
-    @apply mx-auto w-full max-w-3xl px-4;
+    @apply xs:px-8 mx-auto w-full max-w-3xl px-4;
   }
 
   /*.rt-reset {

@@ -66,7 +66,7 @@ const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
   };
 
   return (
-    <article className="sm:hover:bg-accent-3 rounded-3 -mx-3 flex items-center gap-3 px-3 py-2 sm:flex">
+    <article className="xs:hover:bg-accent-3 rounded-3 -mx-3 flex items-center gap-3 px-3 py-2 sm:flex">
       <UserBubble avatarProps={{ size: "2" }} user={listShare.user} />
       <section className="grid flex-1">
         <Text size="3" weight="medium">
