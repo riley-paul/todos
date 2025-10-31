@@ -23,6 +23,7 @@ import type { ListSelect } from "@/lib/types";
 import { Button, Dialog, IconButton, Separator, Text } from "@radix-ui/themes";
 import {
   ArrowDownIcon,
+  ArrowRightIcon,
   ArrowUpDownIcon,
   ChevronsUpDownIcon,
 } from "lucide-react";
@@ -96,34 +97,33 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
         <div ref={setNodeRef} style={style}>
           <article
             className={cn(
-              "xs:hover:bg-accent-3 rounded-3 -mx-3 flex h-12 items-center gap-3 px-3 transition-colors ease-in",
+              "xs:hover:bg-accent-3 rounded-3 -mx-3 flex h-12 items-center gap-4 px-3 transition-colors ease-in",
               isOverlay && "bg-accent-3",
             )}
           >
-            <IconButton
-              size="2"
-              variant="soft"
+            <section
               className={cn(
+                "flex flex-1 touch-manipulation items-center gap-2",
+                list.isPending && "opacity-50",
                 isOverlay ? "cursor-grabbing" : "cursor-grab",
                 "outline-none",
               )}
               {...attributes}
               {...listeners}
             >
-              <ChevronsUpDownIcon className="size-5" />
-            </IconButton>
+              <ChevronsUpDownIcon className="text-accent-10 size-5" />
+              <ListRow list={list} />
+            </section>
             <Dialog.Close>
-              <Link
-                to="/todos/$listId"
-                params={{ listId: list.id }}
-                className={cn(
-                  "flex h-full flex-1 items-center gap-2",
-                  list.isPending && "opacity-50",
-                )}
-                preload={false}
-              >
-                <ListRow list={list} />
-              </Link>
+              <IconButton asChild radius="full" variant="soft" size="2">
+                <Link
+                  to="/todos/$listId"
+                  params={{ listId: list.id }}
+                  preload={false}
+                >
+                  <ArrowRightIcon className="size-5" />
+                </Link>
+              </IconButton>
             </Dialog.Close>
           </article>
         </div>
@@ -137,7 +137,7 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
             {...attributes}
             {...listeners}
             className={cn(
-              "rounded-3 xs:hover:bg-accent-3 -mx-3 flex cursor-grab items-center gap-2 px-3 py-1",
+              "rounded-3 xs:hover:bg-accent-3 -mx-3 flex cursor-grab touch-manipulation items-center gap-2 px-3 py-1",
               isOverlay && "bg-accent-3 cursor-grabbing",
             )}
           >
