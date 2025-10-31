@@ -14,7 +14,7 @@ const UserRow: React.FC<Props> = ({ user, className, isLarge }) => {
         <Text size={isLarge ? "3" : "2"} weight="medium">
           {user.name}
         </Text>
-        <Text size={isLarge ? "2" : "1"} color="gray">
+        <Text size={isLarge ? "2" : "1"} truncate color="gray">
           {user.email}
         </Text>
       </section>

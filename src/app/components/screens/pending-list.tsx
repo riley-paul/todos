@@ -41,7 +41,7 @@ const PendingListScreen: React.FC = () => {
           </Button>
         </div>
       </Empty.Content>
-      <Card size="2" className="grid w-full max-w-sm gap-4">
+      <Card size="2" className="grid w-full max-w-2xs gap-4">
         <Heading as="h4" size="1" color="gray" className="uppercase">
           List Users
         </Heading>
