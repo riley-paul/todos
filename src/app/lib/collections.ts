@@ -32,7 +32,7 @@ export const listCollection = createCollection(
     queryClient,
     queryKey: ["lists"],
     queryFn: actions.lists.populate.orThrow,
-    schema: zListSelect,
+    // schema: zListSelect,
     getKey: (item) => item.id,
     // Handle all CRUD operations
     onInsert: async ({ transaction }) => {

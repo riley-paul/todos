@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useAtom } from "jotai/react";
 import type { AlertProps } from "./alert-system.types";
 import { alertSystemAtom } from "./alert-system.store";
@@ -23,16 +23,6 @@ const AlertContent: React.FC<AlertProps> = (props) => {
 
 const AlertSystem: React.FC = () => {
   const [state, dispatch] = useAtom(alertSystemAtom);
-  const [localData, setLocalData] = useState<AlertProps | null>(null);
-
-  useEffect(() => {
-    if (state.isOpen && state.data) {
-      setLocalData(state.data);
-    } else {
-      const timeout = setTimeout(() => setLocalData(null), 300);
-      return () => clearTimeout(timeout);
-    }
-  }, [state.isOpen, state.data]);
 
   return (
     <Dialog.Root
@@ -40,15 +30,15 @@ const AlertSystem: React.FC = () => {
       onOpenChange={(open) => open || dispatch({ type: "close" })}
     >
       <ResponsiveDialogContent fullHeightDrawer={state.data?.type === "input"}>
-        {localData && (
+        {state.data && (
           <React.Fragment>
             <header>
-              <Dialog.Title>{localData.title}</Dialog.Title>
+              <Dialog.Title>{state.data.title}</Dialog.Title>
               <Dialog.Description color="gray">
-                {localData.message}
+                {state.data.message}
               </Dialog.Description>
             </header>
-            <AlertContent {...localData} />
+            <AlertContent {...state.data} />
           </React.Fragment>
         )}
       </ResponsiveDialogContent>
