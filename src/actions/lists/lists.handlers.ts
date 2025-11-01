@@ -136,38 +136,34 @@ export const update: ActionHandler<
     .update(List)
     .set(data)
     .where(eq(List.id, listId))
-    .returning({ id: List.id, name: List.name });
+    .returning();
 
   if (!list) throw actionErrors.NOT_FOUND;
 
   await invalidateListUsers(c, listId);
-
-  const [updatedList] = await getLists(c, { listId });
-  return updatedList;
+  return list;
 };
 
 export const create: ActionHandler<
   typeof listInputs.create,
   ListSelect
-> = async ({ name }, c) => {
+> = async ({ data }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 
-  const [list] = await db
-    .insert(List)
-    .values({ name })
-    .returning({ id: List.id });
+  const [list] = await db.insert(List).values(data).returning();
 
-  await db.insert(ListUser).values({
-    listId: list.id,
-    userId,
-    isPending: false,
-  });
+  await db
+    .insert(ListUser)
+    .values({
+      listId: list.id,
+      userId,
+      isPending: false,
+    })
+    .returning();
 
   await invalidateListUsers(c, list.id);
-
-  const [newList] = await getLists(c, { listId: list.id });
-  return newList;
+  return list;
 };
 
 export const remove: ActionHandler<typeof listInputs.remove, null> = async (

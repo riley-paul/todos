@@ -36,8 +36,8 @@ export const listCollection = createCollection(
     getKey: (item) => item.id,
     // Handle all CRUD operations
     onInsert: async ({ transaction }) => {
-      const { modified: newList } = transaction.mutations[0];
-      await actions.lists.create.orThrow({ name: newList.name });
+      const { modified } = transaction.mutations[0];
+      await actions.lists.create.orThrow({ data: modified });
     },
     onUpdate: async ({ transaction }) => {
       const { original, modified } = transaction.mutations[0];
