@@ -229,5 +229,19 @@ export const populate: ActionHandler<
   typeof listInputs.populate,
   ListSelect[]
 > = async (_, c) => {
-  return getLists(c);
+  const db = createDb(c.locals.runtime.env);
+  const userId = ensureAuthorized(c).id;
+
+  const lists: ListSelect[] = await db
+    .select({
+      id: List.id,
+      name: List.name,
+      createdAt: List.createdAt,
+      updatedAt: List.updatedAt,
+    })
+    .from(List)
+    .innerJoin(ListUser, eq(ListUser.listId, List.id))
+    .where(eq(ListUser.userId, userId));
+
+  return lists;
 };

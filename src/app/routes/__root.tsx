@@ -51,7 +51,7 @@ function Component() {
             {/*<Invites />*/}
             {/*<SearchLink />*/}
             <ConnectionState />
-            <AppSearch />
+            {/*<AppSearch />*/}
             <UserMenu user={currentUser} />
           </section>
         </div>
@@ -63,7 +63,7 @@ function Component() {
       </header>
       <main className="container2 grid gap-6 py-6">
         <ListChips />
-        <Outlet />
+        {/*<Outlet />*/}
       </main>
       {import.meta.env.DEV && (
         <TanStackRouterDevtools position="bottom-right" />

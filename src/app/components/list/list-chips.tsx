@@ -1,16 +1,22 @@
 import useAlerts from "@/app/hooks/use-alerts";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
-import { qLists } from "@/app/lib/queries";
-import { type ListSelect } from "@/lib/types";
+import { type ListQ, type ListSelect } from "@/lib/types";
 import { Badge, IconButton } from "@radix-ui/themes";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, linkOptions } from "@tanstack/react-router";
 import { ListPlusIcon } from "lucide-react";
 import React from "react";
 import ListReorder from "./list-reorder";
 import { ACCENT_COLOR } from "@/lib/constants";
+import { count, eq, useLiveQuery, type QueryBuilder } from "@tanstack/react-db";
+import {
+  listCollection,
+  listUserCollection,
+  todoCollection,
+} from "@/app/lib/collections";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { qUser } from "@/app/lib/queries";
 
-const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
+const ListChip: React.FC<{ list: ListQ }> = ({ list }) => {
   const link = linkOptions({
     to: "/todos/$listId",
     params: { listId: list.id },
@@ -41,7 +47,34 @@ const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
 
 const ListChips: React.FC = () => {
   const { handleCreateList } = useAlerts();
-  const { data: lists } = useSuspenseQuery(qLists);
+  const { data: user } = useSuspenseQuery(qUser);
+
+  const { data: lists } = useLiveQuery((q) => {
+    const todoCounts = q
+      .from({ todo: todoCollection })
+      .groupBy(({ todo }) => todo.listId)
+      .select(({ todo }) => ({
+        listId: todo.listId,
+        count: count(todo.id),
+      }));
+
+    return q
+      .from({ list: listCollection })
+      .innerJoin({ listUser: listUserCollection }, ({ listUser, list }) =>
+        eq(listUser.listId, list.id),
+      )
+      .innerJoin({ todoCount: todoCounts }, ({ todoCount, list }) =>
+        eq(todoCount.listId, list.id),
+      )
+      .where(({ listUser }) => eq(listUser.userId, user.id))
+      .select(({ list, listUser, todoCount }) => ({
+        id: list.id,
+        name: list.name,
+        todoCount: todoCount.count,
+        isPending: listUser.isPending,
+        show: listUser.show,
+      }));
+  });
 
   if (lists.length === 0) return null;
 
@@ -52,7 +85,7 @@ const ListChips: React.FC = () => {
         .map((list) => (
           <ListChip key={list.id} list={list} />
         ))}
-      <ListReorder lists={lists} />
+      {/*<ListReorder lists={lists} />*/}
       <IconButton
         size="1"
         className="size-7"

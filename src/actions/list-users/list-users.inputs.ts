@@ -13,3 +13,5 @@ export const remove = z.object({
 export const accept = z.object({ listId: z.string() });
 
 export const getAllForList = z.object({ listId: z.string() });
+
+export const populate = z.any();

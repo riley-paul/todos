@@ -26,69 +26,27 @@ export type UserSessionInfo = {
   expiresAt: Date;
 };
 
-export const zTodoSelect = createSelectSchema(Todo)
-  .pick({
-    id: true,
-    text: true,
-    isCompleted: true,
-    listId: true,
-  })
-  .extend({
-    author: zUserSelect,
-    isAuthor: z.boolean().nullable(),
-    list: createSelectSchema(List).pick({ id: true, name: true }),
-  });
-export const zTodoInsert = createInsertSchema(Todo)
-  .pick({
-    listId: true,
-    text: true,
-    isCompleted: true,
-  })
-  .extend({
-    text: createInsertSchema(Todo).shape.text.trim().min(1),
-  });
+type OmitTimestamps<T> = Omit<T, "createdAt" | "updatedAt">;
+
+export const zTodoSelect = createSelectSchema(Todo);
+export const zTodoInsert = createInsertSchema(Todo);
 export type TodoSelect = z.infer<typeof zTodoSelect>;
 export type TodoInsert = z.infer<typeof zTodoInsert>;
 
-export const zListSelect = createSelectSchema(List)
-  .pick({
-    id: true,
-    name: true,
-  })
-  .extend({
-    todoCount: z.number(),
-    otherUsers: z.array(zUserSelect),
-    isPending: z.boolean(),
-    show: z.boolean(),
-    order: z.number(),
-  });
-export const zListSelectShallow = createSelectSchema(List)
-  .pick({
-    id: true,
-    name: true,
-  })
-  .extend({ isPending: z.boolean() });
-export const zListInsert = createInsertSchema(List)
-  .pick({ name: true })
-  .extend({ name: zListName });
+export type TodoQ = OmitTimestamps<TodoSelect> & {};
+
+export const zListSelect = createSelectSchema(List);
+export const zListInsert = createInsertSchema(List);
 export type ListSelect = z.infer<typeof zListSelect>;
-export type ListSelectShallow = z.infer<typeof zListSelectShallow>;
 export type ListInsert = z.infer<typeof zListInsert>;
 
+export type ListQ = OmitTimestamps<ListSelect> & {
+  todoCount: number;
+  isPending: boolean;
+  show: boolean;
+};
+
 export const zListUserInsert = createInsertSchema(ListUser);
-export const zListUserSelect = createSelectSchema(ListUser)
-  .pick({
-    id: true,
-    listId: true,
-    userId: true,
-    isPending: true,
-  })
-  .extend({
-    user: zUserSelect,
-    list: zListSelectShallow,
-  });
+export const zListUserSelect = createSelectSchema(ListUser);
 export type ListUserInsert = z.infer<typeof zListUserInsert>;
 export type ListUserSelect = z.infer<typeof zListUserSelect>;
-
-export const zListOrder = z.record(z.string(), z.number());
-export type ListOrder = z.infer<typeof zListOrder>;

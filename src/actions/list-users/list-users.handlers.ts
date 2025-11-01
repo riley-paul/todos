@@ -1,7 +1,7 @@
 import { type ActionAPIContext, type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
 import { User, List, ListUser } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 import {
   ensureListMember,
   invalidateListUsers,
@@ -167,4 +167,25 @@ export const getAllForList: ActionHandler<
     .innerJoin(List, eq(List.id, ListUser.listId))
     .innerJoin(User, eq(User.id, ListUser.userId))
     .where(eq(ListUser.listId, listId));
+};
+
+export const populate: ActionHandler<
+  typeof listUserInputs.populate,
+  ListUserSelect[]
+> = async (_, c) => {
+  const db = createDb(c.locals.runtime.env);
+  const userId = ensureAuthorized(c).id;
+
+  const userLists = await db
+    .select({ listId: ListUser.listId })
+    .from(ListUser)
+    .where(eq(ListUser.userId, userId))
+    .then((rows) => rows.map(({ listId }) => listId));
+
+  const listUsers: ListUserSelect[] = await db
+    .select()
+    .from(ListUser)
+    .where(inArray(ListUser.listId, userLists));
+
+  return listUsers;
 };

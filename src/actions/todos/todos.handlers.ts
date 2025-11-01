@@ -200,4 +200,20 @@ export const uncheckCompleted: ActionHandler<
 export const populate: ActionHandler<
   typeof todoInputs.populate,
   TodoSelect[]
-> = (_, c) => getTodos(c);
+> = async (_, c) => {
+  const db = createDb(c.locals.runtime.env);
+  const userId = ensureAuthorized(c).id;
+
+  const userLists = await db
+    .select({ listId: ListUser.listId })
+    .from(ListUser)
+    .where(eq(ListUser.userId, userId))
+    .then((rows) => rows.map(({ listId }) => listId));
+
+  const todos: TodoSelect[] = await db
+    .select()
+    .from(Todo)
+    .where(inArray(Todo.listId, userLists));
+
+  return todos;
+};

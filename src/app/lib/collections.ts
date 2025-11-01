@@ -1,13 +1,15 @@
 import { createCollection } from "@tanstack/react-db";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { actions } from "astro:actions";
-import queryClient from "./client";
+import queryClient from "./query-client";
+import { zListSelect, zListUserSelect, zTodoSelect } from "@/lib/types";
 
 export const todoCollection = createCollection(
   queryCollectionOptions({
     queryClient,
     queryKey: ["todos"],
     queryFn: actions.todos.populate.orThrow,
+    schema: zTodoSelect,
     getKey: (item) => item.id,
     // Handle all CRUD operations
     onInsert: async ({ transaction }) => {
@@ -30,6 +32,7 @@ export const listCollection = createCollection(
     queryClient,
     queryKey: ["lists"],
     queryFn: actions.lists.populate.orThrow,
+    schema: zListSelect,
     getKey: (item) => item.id,
     // Handle all CRUD operations
     onInsert: async ({ transaction }) => {
@@ -44,5 +47,31 @@ export const listCollection = createCollection(
       const { original } = transaction.mutations[0];
       await actions.lists.remove.orThrow({ id: original.id });
     },
+  }),
+);
+
+export const listUserCollection = createCollection(
+  queryCollectionOptions({
+    queryClient,
+    queryKey: ["listUsers"],
+    queryFn: actions.listUsers.populate.orThrow,
+    schema: zListUserSelect,
+    getKey: (item) => item.id,
+    // Handle all CRUD operations
+    // onInsert: async ({ transaction }) => {
+    //   const { modified: newListUser } = transaction.mutations[0];
+    //   await actions.listUsers.create.orThrow({
+    //     listId: newListUser.listId,
+    //     userEmail: newListUser.user.email,
+    //   });
+    // },
+    // onUpdate: async ({ transaction }) => {
+    //   const { original, modified } = transaction.mutations[0];
+    //   // No update action for list users in this example
+    // },
+    // onDelete: async ({ transaction }) => {
+    //   const { original } = transaction.mutations[0];
+    //   await actions.listUsers.remove.orThrow({ listUserId: original.id });
+    // },
   }),
 );
