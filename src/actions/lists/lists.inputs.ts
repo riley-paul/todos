@@ -19,3 +19,5 @@ export const remove = z.object({ id: z.string() });
 export const updateSortShow = z.object({
   listIds: z.array(z.string()),
 });
+
+export const populate = z.any();

@@ -224,3 +224,10 @@ export const updateSortShow: ActionHandler<
 
   return getLists(c);
 };
+
+export const populate: ActionHandler<
+  typeof listInputs.populate,
+  ListSelect[]
+> = async (_, c) => {
+  return getLists(c);
+};

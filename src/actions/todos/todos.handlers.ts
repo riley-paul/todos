@@ -196,3 +196,8 @@ export const uncheckCompleted: ActionHandler<
   await invalidateListUsers(c, listId);
   return null;
 };
+
+export const populate: ActionHandler<
+  typeof todoInputs.populate,
+  TodoSelect[]
+> = (_, c) => getTodos(c);

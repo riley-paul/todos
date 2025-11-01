@@ -1,7 +1,7 @@
 import { zTodoInsert } from "@/lib/types";
 import { z } from "astro/zod";
 
-export const getAll = z.object({ listId: z.string() });
+export const getAll = z.object({ listId: z.string().optional() });
 
 export const search = z.object({ search: z.string() });
 
@@ -14,3 +14,5 @@ export const remove = z.object({ id: z.string() });
 export const removeCompleted = z.object({ listId: z.string() });
 
 export const uncheckCompleted = z.object({ listId: z.string() });
+
+export const populate = z.any();
