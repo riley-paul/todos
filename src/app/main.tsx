@@ -12,7 +12,7 @@ import NotFoundScreen from "./components/screens/not-found";
 import ErrorScreen from "./components/screens/error";
 import CustomToaster from "./components/ui/custom-toaster";
 import AlertSystem from "./components/alert-system/alert-system";
-import queryClient from "./lib/client";
+import queryClient from "./lib/query-client";
 
 const currentUser = await queryClient.ensureQueryData(qUser);
 
