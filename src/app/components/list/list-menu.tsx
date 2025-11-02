@@ -19,6 +19,7 @@ import { alertSystemAtom } from "../alert-system/alert-system.store";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
 import useAlerts from "@/app/hooks/use-alerts";
+import { getListUrl } from "@/lib/constants";
 
 type Props = {
   list: ListSelect;
@@ -75,13 +76,13 @@ const ListMenu: React.FC<Props> = ({ list }) => {
   const { handleRemoveSelf } = useAlerts();
 
   const handleCopyLink = () => {
-    const link = `${window.location.origin}/todos/${id}`;
+    const link = getListUrl(id);
     copyToClipboard(link);
     toast.success("Link copied to clipboard", { description: link });
   };
 
   const handleOpenInNewTab = () => {
-    const link = `${window.location.origin}/todos/${id}`;
+    const link = getListUrl(id);
     window.open(link, "_blank");
   };
 
