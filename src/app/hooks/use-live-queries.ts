@@ -1,4 +1,4 @@
-import { count, eq, useLiveQuery } from "@tanstack/react-db";
+import { and, count, eq, useLiveQuery } from "@tanstack/react-db";
 import {
   listCollection,
   listUserCollection,
@@ -37,4 +37,29 @@ export function useLiveLists() {
       .orderBy(({ listUser }) => listUser.show, "desc")
       .orderBy(({ list }) => list.createdAt, "asc");
   });
+}
+
+export function useLiveList(listId: string) {
+  const { data: user } = useSuspenseQuery(qUser);
+  return useLiveQuery(
+    (q) => {
+      return q
+        .from({ list: listCollection })
+        .innerJoin({ listUser: listUserCollection }, ({ listUser, list }) =>
+          eq(listUser.listId, list.id),
+        )
+        .where(({ listUser, list }) =>
+          and(eq(listUser.userId, user.id), eq(list.id, listId)),
+        )
+        .select(({ list, listUser }) => ({
+          id: list.id,
+          name: list.name,
+          // todoCount: todoCount.count,
+          isPending: listUser.isPending,
+          show: listUser.show,
+        }))
+        .findOne();
+    },
+    [listId],
+  );
 }
