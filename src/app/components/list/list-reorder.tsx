@@ -103,7 +103,7 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
           >
             <section
               className={cn(
-                "flex flex-1 touch-manipulation items-center gap-2",
+                "flex h-full flex-1 touch-manipulation items-center gap-2",
                 list.isPending && "opacity-50",
                 isOverlay ? "cursor-grabbing" : "cursor-grab",
                 "outline-none",
@@ -137,7 +137,7 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
             {...attributes}
             {...listeners}
             className={cn(
-              "rounded-3 xs:hover:bg-accent-3 -mx-3 flex cursor-grab touch-manipulation items-center gap-2 px-3 h-8",
+              "rounded-3 xs:hover:bg-accent-3 -mx-3 flex h-8 cursor-grab touch-manipulation items-center gap-2 px-3",
               isOverlay && "bg-accent-3 cursor-grabbing",
             )}
           >
