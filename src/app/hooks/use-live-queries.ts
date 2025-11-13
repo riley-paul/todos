@@ -40,17 +40,14 @@ export function useLiveLists() {
 }
 
 export function useLiveList(listId: string) {
-  const { data: user } = useSuspenseQuery(qUser);
   return useLiveQuery(
-    (q) => {
-      return q
+    (q) =>
+      q
         .from({ list: listCollection })
         .innerJoin({ listUser: listUserCollection }, ({ listUser, list }) =>
           eq(listUser.listId, list.id),
         )
-        .where(({ listUser, list }) =>
-          and(eq(listUser.userId, user.id), eq(list.id, listId)),
-        )
+        .where(({ list }) => eq(list.id, listId))
         .select(({ list, listUser }) => ({
           id: list.id,
           name: list.name,
@@ -58,8 +55,7 @@ export function useLiveList(listId: string) {
           isPending: listUser.isPending,
           show: listUser.show,
         }))
-        .findOne();
-    },
+        .findOne(),
     [listId],
   );
 }

@@ -1,6 +1,6 @@
 import { qList, qTodos } from "@/app/lib/queries";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, Navigate, notFound } from "@tanstack/react-router";
 import React from "react";
 import { useDocumentTitle } from "usehooks-ts";
 import ListHeader from "../components/list/list-header";
@@ -18,6 +18,8 @@ export const Route = createFileRoute("/todos/$listId")({
 function RouteComponent() {
   const { listId } = Route.useParams();
   const { data: list } = useLiveList(listId);
+
+  if (!list) return <Navigate to="/" />;
 
   useDocumentTitle(list.name ?? "Todos");
 
