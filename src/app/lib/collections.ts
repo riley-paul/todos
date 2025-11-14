@@ -1,16 +1,10 @@
-import { createCollection } from "@tanstack/react-db";
-import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { actions } from "astro:actions";
+import { createCollection } from "@tanstack/db";
+import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import queryClient from "./query-client";
-import {
-  type ListSelect,
-  type TodoSelect,
-  zListSelect,
-  zListUserSelect,
-  zTodoSelect,
-} from "@/lib/types";
+import { zListSelect, zListUserSelect, zTodoSelect } from "@/lib/types";
 
-export const todoCollection = createCollection<TodoSelect>(
+export const todoCollection = createCollection(
   queryCollectionOptions({
     queryClient,
     queryKey: ["todos"],
@@ -33,7 +27,7 @@ export const todoCollection = createCollection<TodoSelect>(
   }),
 );
 
-export const listCollection = createCollection<ListSelect>(
+export const listCollection = createCollection(
   queryCollectionOptions({
     queryClient,
     queryKey: ["lists"],

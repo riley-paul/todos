@@ -1,5 +1,5 @@
-import { MutationCache, QueryClient } from "@tanstack/react-query";
 import { handleError } from "./errors";
+import { QueryClient, MutationCache } from "@tanstack/query-core";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
