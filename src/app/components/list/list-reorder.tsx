@@ -101,29 +101,34 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
               isOverlay && "bg-accent-3",
             )}
           >
-            <section
+            <IconButton
+              variant="soft"
               className={cn(
-                "flex h-full flex-1 touch-manipulation items-center gap-2",
-                list.isPending && "opacity-50",
+                "touch-manipulation outline-none",
                 isOverlay ? "cursor-grabbing" : "cursor-grab",
-                "outline-none",
               )}
               {...attributes}
               {...listeners}
             >
               <ChevronsUpDownIcon className="text-accent-10 size-5" />
-              <ListRow list={list} />
-            </section>
+            </IconButton>
             <Dialog.Close>
-              <IconButton asChild radius="full" variant="soft" size="2">
-                <Link
-                  to="/todos/$listId"
-                  params={{ listId: list.id }}
-                  preload={false}
+              <Link
+                to="/todos/$listId"
+                params={{ listId: list.id }}
+                preload={false}
+                className="w-full"
+              >
+                <section
+                  className={cn(
+                    "flex h-full flex-1 items-center gap-2",
+                    list.isPending && "opacity-50",
+                  )}
                 >
-                  <ArrowRightIcon className="size-5" />
-                </Link>
-              </IconButton>
+                  <ListRow list={list} />
+                  <ArrowRightIcon className="text-accent-10 size-5" />
+                </section>
+              </Link>
             </Dialog.Close>
           </article>
         </div>
