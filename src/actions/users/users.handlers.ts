@@ -3,7 +3,7 @@ import { ensureAuthorized } from "../helpers";
 import { createDb } from "@/db";
 import { Todo, User, UserSession } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import type { UserSelectWithSettings } from "@/lib/types";
+import type { UserSelect, UserSelectWithSettings } from "@/lib/types";
 import * as userInputs from "./users.inputs";
 import actionErrors from "../errors";
 
@@ -64,4 +64,18 @@ export const updateUserSettings: ActionHandler<
   if (!updatedUser) throw actionErrors.NOT_FOUND;
 
   return updatedUser;
+};
+
+export const populate: ActionHandler<
+  typeof userInputs.populate,
+  UserSelect[]
+> = async (_, c) => {
+  const db = createDb(c.locals.runtime.env);
+  const userId = ensureAuthorized(c).id;
+
+  
+  
+  
+  // get all users sharing a list with the current user
+  const users = await db.select().from(User).where();
 };

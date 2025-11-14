@@ -18,10 +18,9 @@ export const Route = createFileRoute("/todos/$listId")({
 function RouteComponent() {
   const { listId } = Route.useParams();
   const { data: list } = useLiveList(listId);
+  if (!list) throw notFound();
 
-  if (!list) return <Navigate to="/" />;
-
-  useDocumentTitle(list.name ?? "Todos");
+  useDocumentTitle(list?.name ?? "Todos");
 
   if (list.isPending) return <PendingListScreen />;
 

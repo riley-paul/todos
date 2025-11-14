@@ -33,7 +33,14 @@ export const zTodoInsert = createInsertSchema(Todo);
 export type TodoSelect = z.infer<typeof zTodoSelect>;
 export type TodoInsert = z.infer<typeof zTodoInsert>;
 
-export type TodoQ = OmitTimestamps<TodoSelect> & {};
+export type TodoQ = OmitTimestamps<TodoSelect> & {
+  author: UserSelect;
+  isAuthor: boolean;
+  list: {
+    id: string;
+    name: string;
+  };
+};
 
 export const zListSelect = createSelectSchema(List);
 export const zListInsert = createInsertSchema(List);

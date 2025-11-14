@@ -2,7 +2,7 @@ import { type ActionAPIContext, type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
 import { User, Todo, List, ListUser } from "@/db/schema";
 import { eq, and, desc, or, like, inArray } from "drizzle-orm";
-import type { TodoSelect } from "@/lib/types";
+import type { TodoQ, TodoSelect } from "@/lib/types";
 import {
   ensureAuthorized,
   invalidateListUsers,
@@ -20,7 +20,7 @@ const getTodos = async (
     userId: string;
     search: string;
   }> = {},
-): Promise<TodoSelect[]> => {
+): Promise<TodoQ[]> => {
   const db = createDb(c.locals.runtime.env);
   const reqUserId = ensureAuthorized(c).id;
 
@@ -38,10 +38,11 @@ const getTodos = async (
     like(List.name, searchTerm),
   );
 
-  const todos: TodoSelect[] = await db
+  const todos: TodoQ[] = await db
     .selectDistinct({
       id: Todo.id,
       text: Todo.text,
+      userId: Todo.userId,
       isCompleted: Todo.isCompleted,
       author: {
         id: User.id,
@@ -74,24 +75,10 @@ const getTodos = async (
   return todos;
 };
 
-export const getAll: ActionHandler<
-  typeof todoInputs.getAll,
-  TodoSelect[]
-> = async ({ listId }, c) => {
-  return getTodos(c, { listId });
-};
-
-export const search: ActionHandler<
-  typeof todoInputs.search,
-  TodoSelect[]
-> = async ({ search }, c) => {
-  return getTodos(c, { search });
-};
-
-export const create: ActionHandler<
-  typeof todoInputs.create,
-  TodoSelect
-> = async ({ data }, c) => {
+export const create: ActionHandler<typeof todoInputs.create, TodoQ> = async (
+  { data },
+  c,
+) => {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 
@@ -108,10 +95,10 @@ export const create: ActionHandler<
   return todo;
 };
 
-export const update: ActionHandler<
-  typeof todoInputs.update,
-  TodoSelect
-> = async ({ id, data }, c) => {
+export const update: ActionHandler<typeof todoInputs.update, TodoQ> = async (
+  { id, data },
+  c,
+) => {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 

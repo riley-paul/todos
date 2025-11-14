@@ -6,3 +6,5 @@ export const getMe = z.any();
 export const remove = z.any();
 
 export const updateUserSettings = zSettings.partial();
+
+export const populate = z.any();

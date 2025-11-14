@@ -1,4 +1,10 @@
-import { and, count, eq, useLiveQuery } from "@tanstack/react-db";
+import {
+  and,
+  count,
+  eq,
+  useLiveQuery,
+  useLiveSuspenseQuery,
+} from "@tanstack/react-db";
 import {
   listCollection,
   listUserCollection,
@@ -9,7 +15,7 @@ import { qUser } from "@/app/lib/queries";
 
 export function useLiveLists() {
   const { data: user } = useSuspenseQuery(qUser);
-  return useLiveQuery((q) => {
+  return useLiveSuspenseQuery((q) => {
     const todoCounts = q
       .from({ todo: todoCollection })
       .groupBy(({ todo }) => todo.listId)
@@ -40,22 +46,36 @@ export function useLiveLists() {
 }
 
 export function useLiveList(listId: string) {
-  return useLiveQuery(
-    (q) =>
-      q
+  return useLiveSuspenseQuery(
+    (q) => {
+      const todoCounts = q
+        .from({ todo: todoCollection })
+        .groupBy(({ todo }) => todo.listId)
+        .select(({ todo }) => ({
+          listId: todo.listId,
+          count: count(todo.id),
+        }));
+
+      return q
         .from({ list: listCollection })
         .innerJoin({ listUser: listUserCollection }, ({ listUser, list }) =>
           eq(listUser.listId, list.id),
         )
+        .innerJoin({ todoCount: todoCounts }, ({ todoCount, list }) =>
+          eq(todoCount.listId, list.id),
+        )
         .where(({ list }) => eq(list.id, listId))
-        .select(({ list, listUser }) => ({
+        .select(({ list, listUser, todoCount }) => ({
           id: list.id,
           name: list.name,
-          // todoCount: todoCount.count,
+          todoCount: todoCount.count,
           isPending: listUser.isPending,
           show: listUser.show,
         }))
-        .findOne(),
+        .orderBy(({ listUser }) => listUser.show, "desc")
+        .orderBy(({ list }) => list.createdAt, "asc")
+        .findOne();
+    },
     [listId],
   );
 }
