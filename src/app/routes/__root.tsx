@@ -1,4 +1,4 @@
-import { qLists, qUser } from "@/app/lib/queries";
+import { qUser } from "@/app/lib/queries";
 import type { UserSelect } from "@/lib/types";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import {
@@ -14,7 +14,6 @@ import { Heading, Separator } from "@radix-ui/themes";
 import UserMenu from "../components/user-menu";
 import ListChips from "../components/list/list-chips";
 import ConnectionState from "../components/connection-state";
-import AppSearch from "../components/app-search";
 
 type RouterContext = {
   queryClient: QueryClient;
@@ -24,7 +23,6 @@ type RouterContext = {
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: Component,
   loader: async ({ context }) => {
-    context.queryClient.ensureQueryData(qLists);
     const user = await context.queryClient.ensureQueryData(qUser);
     return { user };
   },

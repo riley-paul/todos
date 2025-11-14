@@ -2,7 +2,6 @@ import {
   and,
   count,
   eq,
-  useLiveQuery,
   useLiveSuspenseQuery,
 } from "@tanstack/react-db";
 import {

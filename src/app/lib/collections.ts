@@ -1,8 +1,15 @@
 import { actions } from "astro:actions";
 import { createCollection } from "@tanstack/db";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import queryClient from "./query-client";
-import { zListSelect, zListUserSelect, zTodoSelect } from "@/lib/types";
+import {
+  zListSelect,
+  zListUserSelect,
+  zTodoSelect,
+  zUserSelect,
+} from "@/lib/types";
+import { QueryClient } from "@tanstack/query-core";
+
+const queryClient = new QueryClient();
 
 export const todoCollection = createCollection(
   queryCollectionOptions({
@@ -73,5 +80,16 @@ export const listUserCollection = createCollection(
     //   const { original } = transaction.mutations[0];
     //   await actions.listUsers.remove.orThrow({ listUserId: original.id });
     // },
+  }),
+);
+
+export const userCollection = createCollection(
+  queryCollectionOptions({
+    queryClient,
+    queryKey: ["users"],
+    queryFn: actions.users.populate.orThrow,
+    schema: zUserSelect,
+    getKey: (item) => item.id,
+    // No CRUD operations defined for users in this example
   }),
 );
