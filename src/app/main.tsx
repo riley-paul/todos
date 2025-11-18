@@ -1,22 +1,21 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { AblyProvider, ChannelProvider } from "ably/react";
-import * as Ably from "ably";
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
-import RadixProvider from "@/app/components/ui/radix-provider";
+import RadixProvider from "@/app/providers/radix-provider";
 import {
   MutationCache,
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { qUser } from "@/app/lib/queries";
 import LoadingScreen from "./components/screens/loading";
 import NotFoundScreen from "./components/screens/not-found";
 import ErrorScreen from "./components/screens/error";
 import CustomToaster from "./components/ui/custom-toaster";
 import AlertSystem from "./components/alert-system/alert-system";
 import { handleError } from "./lib/errors";
+import RealtimeProvider from "./providers/realtime-provider";
+import type { UserSelect } from "@/lib/types";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -30,11 +29,9 @@ const queryClient = new QueryClient({
   }),
 });
 
-const currentUser = await queryClient.ensureQueryData(qUser);
-
 const router = createRouter({
   routeTree,
-  context: { queryClient, currentUser },
+  context: { queryClient, currentUser: null as unknown as UserSelect },
   defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
   defaultPendingComponent: LoadingScreen,
@@ -42,25 +39,29 @@ const router = createRouter({
   defaultErrorComponent: ErrorScreen,
 });
 
-const realtimeClient = new Ably.Realtime({ authUrl: "/ably-auth" });
-
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
   }
 }
 
-// Render the app
-export default () => (
-  <AblyProvider client={realtimeClient}>
-    <ChannelProvider channelName={`user:${currentUser.id}`}>
-      <QueryClientProvider client={queryClient}>
+type Props = { currentUser: UserSelect };
+
+const App: React.FC<Props> = ({ currentUser }) => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RealtimeProvider currentUser={currentUser}>
         <RadixProvider>
-          <RouterProvider router={router} />
+          <RouterProvider
+            router={router}
+            context={{ queryClient, currentUser }}
+          />
           <CustomToaster />
           <AlertSystem />
         </RadixProvider>
-      </QueryClientProvider>
-    </ChannelProvider>
-  </AblyProvider>
-);
+      </RealtimeProvider>
+    </QueryClientProvider>
+  );
+};
+
+export default App;

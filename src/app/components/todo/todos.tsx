@@ -12,9 +12,7 @@ import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
 import NoTodosScreen from "../screens/no-todos";
 
-const CompletedTodosActions: React.FC<{ listId: string }> = ({
-  listId,
-}) => (
+const CompletedTodosActions: React.FC<{ listId: string }> = ({ listId }) => (
   <div className="flex items-center justify-end gap-4">
     <UncheckAllTodosButton listId={listId} />
     <DeleteCompletedTodosButton listId={listId} />
