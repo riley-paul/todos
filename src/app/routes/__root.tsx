@@ -40,8 +40,6 @@ function Component() {
             <Heading size="4">Todos</Heading>
           </Link>
           <section className="flex items-center gap-3">
-            {/*<Invites />*/}
-            {/*<SearchLink />*/}
             <ConnectionState />
             <AppSearch />
             <UserMenu user={currentUser} />
