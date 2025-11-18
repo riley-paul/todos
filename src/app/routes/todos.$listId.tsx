@@ -4,9 +4,8 @@ import { useDocumentTitle } from "usehooks-ts";
 // import ListHeader from "../components/list/list-header";
 import { z } from "astro/zod";
 import PendingListScreen from "../components/screens/pending-list";
-// import TodoAdder from "../components/todo-adder";
-// import Todos from "../components/todo/todos";
-import { useLiveList } from "../hooks/use-live-queries";
+import TodoAdder from "../components/todo-adder";
+import Todos from "../components/todo/todos";
 import { listCollection } from "../lib/collections";
 
 export const Route = createFileRoute("/todos/$listId")({
@@ -21,6 +20,7 @@ export const Route = createFileRoute("/todos/$listId")({
 });
 
 function RouteComponent() {
+  const { currentUser } = Route.useRouteContext();
   const { listId } = Route.useParams();
   const { list } = Route.useLoaderData();
 
@@ -32,8 +32,8 @@ function RouteComponent() {
   return (
     <React.Fragment>
       {/*<ListHeader list={list} />*/}
-      {/*<TodoAdder listId={listId} />*/}
-      {/*<Todos list={list} />*/}
+      <TodoAdder listId={listId} userId={currentUser.id} />
+      <Todos list={list} />
     </React.Fragment>
   );
 }

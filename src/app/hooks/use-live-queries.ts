@@ -1,9 +1,4 @@
-import {
-  and,
-  count,
-  eq,
-  useLiveSuspenseQuery,
-} from "@tanstack/react-db";
+import { and, count, eq, useLiveSuspenseQuery } from "@tanstack/react-db";
 import {
   listCollection,
   listUserCollection,
