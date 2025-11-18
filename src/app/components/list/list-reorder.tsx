@@ -97,33 +97,38 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
         <div ref={setNodeRef} style={style}>
           <article
             className={cn(
-              "xs:hover:bg-accent-3 rounded-3 -mx-3 flex h-12 items-center gap-4 px-3 transition-colors ease-in",
+              "xs:hover:bg-accent-3 rounded-3 -mx-3 flex h-full min-h-11 items-center gap-4 px-3 transition-colors ease-in",
               isOverlay && "bg-accent-3",
             )}
           >
-            <section
+            <IconButton
+              variant="soft"
               className={cn(
-                "flex flex-1 touch-manipulation items-center gap-2",
-                list.isPending && "opacity-50",
+                "touch-manipulation outline-none",
                 isOverlay ? "cursor-grabbing" : "cursor-grab",
-                "outline-none",
               )}
               {...attributes}
               {...listeners}
             >
               <ChevronsUpDownIcon className="text-accent-10 size-5" />
-              <ListRow list={list} />
-            </section>
+            </IconButton>
             <Dialog.Close>
-              <IconButton asChild radius="full" variant="soft" size="2">
-                <Link
-                  to="/todos/$listId"
-                  params={{ listId: list.id }}
-                  preload={false}
+              <Link
+                to="/todos/$listId"
+                params={{ listId: list.id }}
+                preload={false}
+                className="w-full"
+              >
+                <section
+                  className={cn(
+                    "flex h-full flex-1 items-center gap-2",
+                    list.isPending && "opacity-50",
+                  )}
                 >
-                  <ArrowRightIcon className="size-5" />
-                </Link>
-              </IconButton>
+                  <ListRow list={list} />
+                  <ArrowRightIcon className="text-accent-10 size-5" />
+                </section>
+              </Link>
             </Dialog.Close>
           </article>
         </div>
@@ -137,7 +142,7 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
             {...attributes}
             {...listeners}
             className={cn(
-              "rounded-3 xs:hover:bg-accent-3 -mx-3 flex cursor-grab touch-manipulation items-center gap-2 px-3 py-1",
+              "rounded-3 xs:hover:bg-accent-3 -mx-3 flex h-8 cursor-grab touch-manipulation items-center gap-2 px-3",
               isOverlay && "bg-accent-3 cursor-grabbing",
             )}
           >

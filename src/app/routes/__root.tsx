@@ -1,12 +1,12 @@
-import { qUser } from "@/app/lib/queries";
 import type { UserSelect } from "@/lib/types";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
+import { qLists, qUser } from "@/app/lib/queries";
+import { type QueryClient } from "@tanstack/react-query";
 import {
   createRootRouteWithContext,
   Link,
   Outlet,
 } from "@tanstack/react-router";
-import { useChannel } from "ably/react";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import React from "react";
 import { CircleCheckBigIcon } from "lucide-react";
@@ -14,6 +14,8 @@ import { Heading, Separator } from "@radix-ui/themes";
 import UserMenu from "../components/user-menu";
 import ListChips from "../components/list/list-chips";
 import ConnectionState from "../components/connection-state";
+import AppSearch from "../components/app-search";
+import type { UserSelect } from "@/lib/types";
 
 type RouterContext = {
   queryClient: QueryClient;
@@ -29,14 +31,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function Component() {
-  const queryClient = useQueryClient();
   const { currentUser } = Route.useRouteContext();
-
-  useChannel(`user:${currentUser.id}`, "invalidate", () => {
-    console.log("Invalidating...");
-    queryClient.invalidateQueries();
-  });
-
   return (
     <React.Fragment>
       <header className="sticky top-0 z-10 flex h-18 flex-col justify-center bg-[var(--background)]">
@@ -46,8 +41,6 @@ function Component() {
             <Heading size="4">Todos</Heading>
           </Link>
           <section className="flex items-center gap-3">
-            {/*<Invites />*/}
-            {/*<SearchLink />*/}
             <ConnectionState />
             {/*<AppSearch />*/}
             <UserMenu user={currentUser} />
