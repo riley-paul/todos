@@ -1,4 +1,3 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Navigate, notFound } from "@tanstack/react-router";
 import React from "react";
 import { useDocumentTitle } from "usehooks-ts";
@@ -8,20 +7,27 @@ import PendingListScreen from "../components/screens/pending-list";
 // import TodoAdder from "../components/todo-adder";
 // import Todos from "../components/todo/todos";
 import { useLiveList } from "../hooks/use-live-queries";
+import { listCollection } from "../lib/collections";
 
 export const Route = createFileRoute("/todos/$listId")({
   component: RouteComponent,
   validateSearch: z.object({ highlightedTodoId: z.string().optional() }),
+  loader: async ({ params: { listId } }) => {
+    const state = await listCollection.stateWhenReady();
+    const list = state.get(listId);
+    if (!list) throw notFound();
+    return { list };
+  },
 });
 
 function RouteComponent() {
   const { listId } = Route.useParams();
-  const { data: list } = useLiveList(listId);
+  const { list } = Route.useLoaderData();
 
-  useDocumentTitle(list?.name ?? "Todos");
+  useDocumentTitle(list.name);
 
   if (!list) return <Navigate to="/" replace />;
-  if (list.isPending) return <PendingListScreen />;
+  // if (list.isPending) return <PendingListScreen />;
 
   return (
     <React.Fragment>
