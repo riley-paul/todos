@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { CircleCheckBigIcon } from "lucide-react";
 import { Heading, Separator } from "@radix-ui/themes";
-import UserMenu from "../components/user-menu";
-import ConnectionState from "../components/connection-state";
-import AppSearch from "../components/app-search";
+import UserMenu from "./user-menu";
+import ConnectionState from "./connection-state";
+import AppSearch from "./app-search";
 
 import React from "react";
 import type { UserSelect } from "@/lib/types";
