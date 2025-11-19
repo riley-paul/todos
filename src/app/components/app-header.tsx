@@ -7,6 +7,7 @@ import AppSearch from "./app-search";
 
 import React from "react";
 import type { UserSelect } from "@/lib/types";
+import { cn } from "../lib/utils";
 
 type Props = {
   currentUser: UserSelect;
@@ -14,7 +15,12 @@ type Props = {
 
 const AppHeader: React.FC<Props> = ({ currentUser }) => {
   return (
-    <header className="backdrop-blue-md sticky top-0 z-10 flex h-18 flex-col justify-center bg-[color-mix(in_lch,var(--background)_70%,transparent)] backdrop-blur-md">
+    <header
+      className={cn(
+        "sticky top-0 z-10 flex h-18 flex-col justify-center",
+        "bg-linear-to-t from-[color-mix(in_lch,var(--background)_80%,transparent)] to-[var(--background)] backdrop-blur-md",
+      )}
+    >
       <div className="container2 flex flex-1 items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <CircleCheckBigIcon className="text-accent-10 size-6" />
