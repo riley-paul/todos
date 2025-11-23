@@ -12,7 +12,7 @@ class TodosViewModel: ObservableObject {
         error = nil
 
         do {
-            todos = try await ApiService.shared.fetchTodos()
+            todos = try await TodosService.shared.fetchTodos()
 
         } catch {
             self.error = error.localizedDescription

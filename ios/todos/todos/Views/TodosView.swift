@@ -12,6 +12,7 @@ struct TodosView: View {
                     if todo.isCompleted { Image(systemName: "checkmark") }
                 }
             }
+            .refreshable { await vm.load() }
             .navigationTitle("Todos")
             .overlay {
                 if vm.isLoading {

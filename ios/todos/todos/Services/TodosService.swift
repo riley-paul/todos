@@ -1,12 +1,11 @@
 import Foundation
 
-class ApiService {
-    static let shared = ApiService()
-    var baseUrl = URL(string: "http://localhost:4321")!
+class TodosService {
+    static let shared = TodosService()
 
     func fetchTodos() async throws -> [TodoSelect] {
         let (data, response) = try await URLSession.shared.data(
-            from: URL(string: "/api/todos", relativeTo: baseUrl)!
+            from: URL(string: "/api/todos", relativeTo: Constants.apiURL)!
         )
 
         print("Raw JSON:")
