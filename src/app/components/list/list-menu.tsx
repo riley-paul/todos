@@ -155,7 +155,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       menuItems={menuItems}
       dropdownProps={{ align: "start", side: "bottom" }}
     >
-      <IconButton variant="ghost" radius="full">
+      <IconButton variant="ghost">
         <MoreHorizontalIcon className="size-4" />
       </IconButton>
     </ResponsiveMenu>
