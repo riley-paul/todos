@@ -3,17 +3,14 @@ import SwiftUI
 struct TodosView: View {
     @StateObject private var vm = TodosViewModel()
 
+    let isOn = false
+
     var body: some View {
         NavigationView {
             List(vm.todos) { todo in
-                HStack {
-                    Text(todo.text)
-                    Spacer()
-                    if todo.isCompleted { Image(systemName: "checkmark") }
-                }
+                Text(todo.text)
             }
             .refreshable { await vm.load() }
-            .navigationTitle("Todos")
             .overlay {
                 if vm.isLoading {
                     ProgressView()
@@ -27,10 +24,12 @@ struct TodosView: View {
             } message: {
                 Text(vm.error ?? "")
             }
+            .navigationTitle("Todos")
         }
     }
 }
 
 #Preview {
+
     TodosView()
 }
