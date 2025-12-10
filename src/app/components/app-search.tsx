@@ -19,6 +19,7 @@ import ResponsiveDialogContent from "./ui/responsive-dialog-content";
 import LoadingScreen from "./screens/loading";
 import ListRow from "./list/list-row";
 import TodoRow from "./todo/todo-row";
+import NoSearchResultsScreen from "./screens/no-search-results";
 
 type ContentProps = {
   handleClose: () => void;
@@ -80,7 +81,14 @@ const CommandList: React.FC<{ handleClose: () => void }> = ({
 
   return (
     <Command.List className={cn("flex-1 overflow-y-auto p-6", listClassNames)}>
-      <Command.Group heading="Lists" className={groupClassNames}>
+      <Command.Group
+        heading={
+          <span className="flex items-center gap-2">
+            Lists <span className="font-mono opacity-70"> {lists.length}</span>
+          </span>
+        }
+        className={groupClassNames}
+      >
         {lists.map((list) => (
           <Command.Item
             key={list.id}
@@ -99,7 +107,14 @@ const CommandList: React.FC<{ handleClose: () => void }> = ({
         ))}
       </Command.Group>
       <Command.Separator />
-      <Command.Group heading="Todos" className={groupClassNames}>
+      <Command.Group
+        heading={
+          <span className="flex items-center gap-2">
+            Todos <span className="font-mono opacity-70"> {todos.length}</span>
+          </span>
+        }
+        className={groupClassNames}
+      >
         {todos.map((todo) => (
           <Command.Item
             key={todo.id}
@@ -129,6 +144,9 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
       <Separator size="4" />
       <ScrollArea>
         <CommandList handleClose={handleClose} />
+        <Command.Empty>
+          <NoSearchResultsScreen />
+        </Command.Empty>
       </ScrollArea>
     </Command>
   );
