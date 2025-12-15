@@ -17,6 +17,9 @@ import { handleError } from "./lib/errors";
 import RealtimeProvider from "./providers/realtime-provider";
 import type { UserSelect } from "@/lib/types";
 
+import { ApolloClient, HttpLink, InMemoryCache, gql } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client/react";
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
   mutationCache: new MutationCache({
@@ -27,6 +30,11 @@ const queryClient = new QueryClient({
       handleError(error);
     },
   }),
+});
+
+const apolloClient = new ApolloClient({
+  link: new HttpLink({ uri: "/graphql" }),
+  cache: new InMemoryCache(),
 });
 
 const router = createRouter({
@@ -49,18 +57,20 @@ type Props = { currentUser: UserSelect };
 
 const App: React.FC<Props> = ({ currentUser }) => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <RealtimeProvider currentUser={currentUser}>
-        <RadixProvider>
-          <RouterProvider
-            router={router}
-            context={{ queryClient, currentUser }}
-          />
-          <CustomToaster />
-          <AlertSystem />
-        </RadixProvider>
-      </RealtimeProvider>
-    </QueryClientProvider>
+    <ApolloProvider client={apolloClient}>
+      <QueryClientProvider client={queryClient}>
+        <RealtimeProvider currentUser={currentUser}>
+          <RadixProvider>
+            <RouterProvider
+              router={router}
+              context={{ queryClient, currentUser }}
+            />
+            <CustomToaster />
+            <AlertSystem />
+          </RadixProvider>
+        </RealtimeProvider>
+      </QueryClientProvider>
+    </ApolloProvider>
   );
 };
 

@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TestRouteImport } from './routes/test'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TodosListIdRouteImport } from './routes/todos.$listId'
 
+const TestRoute = TestRouteImport.update({
+  id: '/test',
+  path: '/test',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -32,35 +38,46 @@ const TodosListIdRoute = TodosListIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/settings': typeof SettingsRoute
+  '/test': typeof TestRoute
   '/todos/$listId': typeof TodosListIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/settings': typeof SettingsRoute
+  '/test': typeof TestRoute
   '/todos/$listId': typeof TodosListIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/settings': typeof SettingsRoute
+  '/test': typeof TestRoute
   '/todos/$listId': typeof TodosListIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/settings' | '/todos/$listId'
+  fullPaths: '/' | '/settings' | '/test' | '/todos/$listId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/settings' | '/todos/$listId'
-  id: '__root__' | '/' | '/settings' | '/todos/$listId'
+  to: '/' | '/settings' | '/test' | '/todos/$listId'
+  id: '__root__' | '/' | '/settings' | '/test' | '/todos/$listId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SettingsRoute: typeof SettingsRoute
+  TestRoute: typeof TestRoute
   TodosListIdRoute: typeof TodosListIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/test': {
+      id: '/test'
+      path: '/test'
+      fullPath: '/test'
+      preLoaderRoute: typeof TestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings': {
       id: '/settings'
       path: '/settings'
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SettingsRoute: SettingsRoute,
+  TestRoute: TestRoute,
   TodosListIdRoute: TodosListIdRoute,
 }
 export const routeTree = rootRouteImport
