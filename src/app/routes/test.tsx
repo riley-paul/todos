@@ -6,14 +6,7 @@ export const Route = createFileRoute("/test")({
   component: RouteComponent,
 });
 
-const GET_LISTS = gql`
-  query GetLists {
-    list {
-      id
-      name
-    }
-  }
-`;
+
 
 function RouteComponent() {
   const { data: lists } = useQuery(GET_LISTS);

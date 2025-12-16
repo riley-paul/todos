@@ -1,0 +1,6 @@
+query GetLists {
+  list {
+    id
+    name
+  }
+}
