@@ -7,8 +7,9 @@ import {
   zTodoSelect,
   zUserSelect,
 } from "@/lib/types";
-import queryClient from "./query-client";
+import { QueryClient } from "@tanstack/query-core";
 
+const queryClient = new QueryClient();
 
 export const todoCollection = createCollection(
   queryCollectionOptions({

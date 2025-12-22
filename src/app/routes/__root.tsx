@@ -4,8 +4,6 @@ import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import React from "react";
 import ListChips from "../components/list/list-chips";
-import ConnectionState from "../components/connection-state";
-import type { UserSelect } from "@/lib/types";
 import AppHeader from "../components/app-header";
 
 type RouterContext = {
