@@ -1,9 +1,9 @@
 import type { ActionHandler } from "astro:actions";
 import { ensureAuthorized } from "../helpers";
 import { createDb } from "@/db";
-import { Todo, User, UserSession } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import type { UserSelectWithSettings } from "@/lib/types";
+import { ListUser, Todo, User, UserSession } from "@/db/schema";
+import { eq, inArray } from "drizzle-orm";
+import type { BaseUserSelect, UserSelectWithSettings } from "@/lib/types";
 import * as userInputs from "./users.inputs";
 import actionErrors from "../errors";
 
@@ -64,4 +64,25 @@ export const updateUserSettings: ActionHandler<
   if (!updatedUser) throw actionErrors.NOT_FOUND;
 
   return updatedUser;
+};
+
+export const populate: ActionHandler<
+  typeof userInputs.populate,
+  BaseUserSelect[]
+> = async (_, c) => {
+  const db = createDb(c.locals.runtime.env);
+  const userId = ensureAuthorized(c).id;
+
+  const userIds = await db
+    .select({ userId: ListUser.userId })
+    .from(ListUser)
+    .where(eq(ListUser.userId, userId))
+    .then((rows) => rows.map(({ userId }) => userId));
+
+  const users: BaseUserSelect[] = await db
+    .select()
+    .from(User)
+    .where(inArray(User.id, userIds));
+
+  return users;
 };

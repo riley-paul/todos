@@ -36,3 +36,8 @@ export const uncheckCompleted = defineAction({
   input: todoInputs.uncheckCompleted,
   handler: todoHanders.uncheckCompleted,
 });
+
+export const populate = defineAction({
+  input: todoInputs.populate,
+  handler: todoHanders.populate,
+});
