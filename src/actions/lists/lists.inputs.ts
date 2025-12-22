@@ -12,7 +12,7 @@ export const update = z.object({
   data: zListInsert.partial(),
 });
 
-export const create = zBaseListInsert;
+export const create = z.object({ data: zBaseListInsert });
 
 export const remove = z.object({ id: z.string() });
 

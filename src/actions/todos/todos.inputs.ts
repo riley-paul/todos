@@ -1,11 +1,11 @@
-import { zTodoInsert } from "@/lib/types";
+import { zBaseTodoInsert, zTodoInsert } from "@/lib/types";
 import { z } from "astro/zod";
 
 export const getAll = z.object({ listId: z.string() });
 
 export const search = z.object({ search: z.string() });
 
-export const create = z.object({ data: zTodoInsert });
+export const create = z.object({ data: zBaseTodoInsert });
 
 export const update = z.object({ id: z.string(), data: zTodoInsert.partial() });
 
