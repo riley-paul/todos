@@ -1,4 +1,4 @@
-import { count, eq, useLiveSuspenseQuery } from "@tanstack/react-db";
+import { and, count, eq, not, useLiveSuspenseQuery } from "@tanstack/react-db";
 import {
   listCollection,
   listUserCollection,
@@ -41,6 +41,7 @@ export function useLiveLists() {
 }
 
 export function useLiveListUsers(listId: string) {
+  const { currentUser } = useRouteContext({ strict: false });
   return useLiveSuspenseQuery(
     (q) =>
       q
@@ -48,7 +49,13 @@ export function useLiveListUsers(listId: string) {
         .innerJoin({ user: userCollection }, ({ user, listUser }) =>
           eq(listUser.userId, user.id),
         )
-        .where(({ listUser }) => eq(listUser.listId, listId))
+        .where(({ listUser }) =>
+          and(
+            eq(listUser.listId, listId),
+            not(eq(listUser.isPending, true)),
+            not(eq(listUser.userId, currentUser?.id)),
+          ),
+        )
         .select(({ user }) => ({
           id: user.id,
           name: user.name,

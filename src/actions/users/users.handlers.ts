@@ -73,10 +73,16 @@ export const populate: ActionHandler<
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 
+  const listIds = await db
+    .select({ listId: ListUser.listId })
+    .from(ListUser)
+    .where(eq(ListUser.userId, userId))
+    .then((rows) => rows.map(({ listId }) => listId));
+
   const userIds = await db
     .select({ userId: ListUser.userId })
     .from(ListUser)
-    .where(eq(ListUser.userId, userId))
+    .where(inArray(ListUser.listId, listIds))
     .then((rows) => rows.map(({ userId }) => userId));
 
   const users: BaseUserSelect[] = await db
