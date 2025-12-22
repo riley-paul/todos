@@ -52,7 +52,7 @@ export function useLiveListUsers(listId: string) {
         .where(({ listUser }) =>
           and(
             eq(listUser.listId, listId),
-            not(eq(listUser.isPending, true)),
+            eq(listUser.isPending, false),
             not(eq(listUser.userId, currentUser?.id)),
           ),
         )
@@ -92,6 +92,7 @@ export function useLiveList(listId: string) {
           todoCount: todoCount.count,
           isPending: listUser.isPending,
           show: listUser.show,
+          order: listUser.order,
         }))
         .orderBy(({ listUser }) => listUser.show, "desc")
         .orderBy(({ list }) => list.createdAt, "asc")

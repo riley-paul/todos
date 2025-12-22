@@ -20,16 +20,18 @@ import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
 import useAlerts from "@/app/hooks/use-alerts";
 import { getListUrl } from "@/lib/constants";
+import { useLiveListUsers } from "@/app/hooks/use-live-lists";
+import { listCollection } from "@/app/lib/collections";
 
 type Props = {
   list: ListSelect;
 };
 
 const ListMenu: React.FC<Props> = ({ list }) => {
-  const { id, name, otherUsers } = list;
+  const { id, name } = list;
+  const { data: otherUsers } = useLiveListUsers(list.id);
+
   const {
-    deleteList,
-    updateList,
     uncheckCompletedTodos,
     deleteCompletedTodos,
   } = useMutations();
@@ -50,7 +52,9 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         placeholder: "Enter new list name",
         schema: zListName,
         handleSubmit: (name: string) => {
-          updateList.mutate({ id, data: { name } });
+          listCollection.update(list.id, (draft) => {
+            draft.name = name;
+          });
           dispatchAlert({ type: "close" });
           toast.success("List renamed successfully");
         },
@@ -66,7 +70,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         title: "Delete List",
         message: `Are you sure you want to delete this list? This action cannot be undone.`,
         handleDelete: () => {
-          deleteList.mutate({ id });
+          listCollection.delete(list.id);
           dispatchAlert({ type: "close" });
         },
       },

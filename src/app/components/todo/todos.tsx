@@ -4,7 +4,7 @@ import { cn } from "@/app/lib/utils";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Todo from "./todo";
 import { Button, Card, Text } from "@radix-ui/themes";
-import type { ListSelect, TodoSelect } from "@/lib/types";
+import type { TodoSelect } from "@/lib/types";
 import { qTodos, qUser } from "@/app/lib/queries";
 import { ChevronRightIcon } from "lucide-react";
 import DeleteCompletedTodosButton from "./footer-buttons/delete-completed-todos-button";
@@ -59,12 +59,10 @@ const CompletedTodosGroup: React.FC<{
 
 const produceTodo = (todo: TodoSelect) => <Todo key={todo.id} todo={todo} />;
 
-type Props = {
-  list: ListSelect;
-};
+type Props = { listId: string };
 
-const Todos: React.FC<Props> = ({ list }) => {
-  const { data: todos } = useSuspenseQuery(qTodos(list.id));
+const Todos: React.FC<Props> = ({ listId }) => {
+  const { data: todos } = useSuspenseQuery(qTodos(listId));
   const { data: user } = useSuspenseQuery(qUser);
 
   const completedTodos = todos.filter(({ isCompleted }) => isCompleted);
@@ -78,7 +76,7 @@ const Todos: React.FC<Props> = ({ list }) => {
     return (
       <React.Fragment>
         <div className="grid gap-1">{notCompletedTodos.map(produceTodo)}</div>
-        <CompletedTodosGroup completedTodos={completedTodos} listId={list.id} />
+        <CompletedTodosGroup completedTodos={completedTodos} listId={listId} />
       </React.Fragment>
     );
   }
@@ -86,7 +84,7 @@ const Todos: React.FC<Props> = ({ list }) => {
   return (
     <React.Fragment>
       <div className="grid gap-1">{todos.map(produceTodo)}</div>
-      <CompletedTodosActions listId={list.id} />
+      <CompletedTodosActions listId={listId} />
     </React.Fragment>
   );
 };

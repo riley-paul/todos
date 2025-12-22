@@ -1,11 +1,16 @@
 import { qLists, qUser } from "@/app/lib/queries";
 import { type QueryClient } from "@tanstack/react-query";
-import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import {
+  CatchNotFound,
+  createRootRouteWithContext,
+  Outlet,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import React from "react";
 import ListChips from "../components/list/list-chips";
 import type { UserSelect } from "@/lib/types";
 import AppHeader from "../components/app-header";
+import NotFoundScreen from "../components/screens/not-found";
 
 type RouterContext = {
   queryClient: QueryClient;
@@ -28,7 +33,9 @@ function Component() {
       <AppHeader currentUser={currentUser} />
       <main className="container2 grid gap-6 py-6">
         <ListChips />
-        <Outlet />
+        <CatchNotFound fallback={() => <NotFoundScreen />}>
+          <Outlet />
+        </CatchNotFound>
       </main>
       {import.meta.env.DEV && (
         <TanStackRouterDevtools position="bottom-right" />

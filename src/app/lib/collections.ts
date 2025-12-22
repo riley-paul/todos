@@ -61,7 +61,7 @@ export const listUserCollection = createCollection(
     queryKey: ["listUsers"],
     queryFn: actions.listUsers.populate.orThrow,
     schema: zBaseListUserSelect,
-    getKey: (item) => item.id,
+    getKey: (item) => `${item.listId}-${item.userId}`,
   }),
 );
 
