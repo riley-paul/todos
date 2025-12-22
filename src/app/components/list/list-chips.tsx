@@ -9,6 +9,8 @@ import { ListPlusIcon } from "lucide-react";
 import React from "react";
 import ListReorder from "./list-reorder";
 import { ACCENT_COLOR } from "@/lib/constants";
+import { useLiveSuspenseQuery } from "@tanstack/react-db";
+import { listCollection } from "@/app/lib/collections";
 
 const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
   const link = linkOptions({
@@ -41,18 +43,20 @@ const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
 
 const ListChips: React.FC = () => {
   const { handleCreateList } = useAlerts();
-  const { data: lists } = useSuspenseQuery(qLists);
+  const { data: lists } = useLiveSuspenseQuery((q) =>
+    q.from({ list: listCollection }),
+  );
 
   if (lists.length === 0) return null;
 
   return (
     <div className="flex flex-wrap gap-2">
       {lists
-        .filter(({ show }) => show)
+        // .filter(({ show }) => show)
         .map((list) => (
           <ListChip key={list.id} list={list} />
         ))}
-      <ListReorder lists={lists} />
+      {/*<ListReorder lists={lists} />*/}
       <IconButton
         size="1"
         className="size-7"

@@ -75,6 +75,11 @@ export type ListSelect = z.infer<typeof zListSelect>;
 export type ListSelectShallow = z.infer<typeof zListSelectShallow>;
 export type ListInsert = z.infer<typeof zListInsert>;
 
+export const zBaseListSelect = createSelectSchema(List);
+export const zBaseListInsert = createInsertSchema(List);
+export type BaseListInsert = z.infer<typeof zBaseListInsert>;
+export type BaseListSelect = z.infer<typeof zBaseListSelect>;
+
 export const zListUserInsert = createInsertSchema(ListUser);
 export const zListUserSelect = createSelectSchema(ListUser)
   .pick({

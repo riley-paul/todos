@@ -1,5 +1,5 @@
 import { type ActionAPIContext, type ActionHandler } from "astro:actions";
-import type { ListSelect, UserSelect } from "@/lib/types";
+import type { BaseListSelect, ListSelect, UserSelect } from "@/lib/types";
 import {
   ensureListMember,
   invalidateListUsers,
@@ -223,4 +223,25 @@ export const updateSortShow: ActionHandler<
    `);
 
   return getLists(c);
+};
+
+export const populate: ActionHandler<
+  typeof listInputs.populate,
+  BaseListSelect[]
+> = async (_, c) => {
+  const db = createDb(c.locals.runtime.env);
+  const userId = ensureAuthorized(c).id;
+
+  const lists: BaseListSelect[] = await db
+    .select({
+      id: List.id,
+      name: List.name,
+      createdAt: List.createdAt,
+      updatedAt: List.updatedAt,
+    })
+    .from(List)
+    .innerJoin(ListUser, eq(ListUser.listId, List.id))
+    .where(eq(ListUser.userId, userId));
+
+  return lists;
 };
