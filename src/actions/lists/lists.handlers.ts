@@ -149,7 +149,7 @@ export const update: ActionHandler<
 export const create: ActionHandler<
   typeof listInputs.create,
   ListSelect
-> = async ({ name }, c) => {
+> = async ({ data: { name } }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 

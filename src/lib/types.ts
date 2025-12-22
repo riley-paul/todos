@@ -56,7 +56,7 @@ export type TodoSelect = z.infer<typeof zTodoSelect>;
 export type TodoInsert = z.infer<typeof zTodoInsert>;
 
 export const zBaseTodoSelect = createSelectSchema(Todo);
-export const zBaseTodoInsert = createInsertSchema(Todo);
+export const zBaseTodoInsert = createInsertSchema(Todo).omit({ userId: true });
 export type BaseTodoSelect = z.infer<typeof zBaseTodoSelect>;
 export type BaseTodoInsert = z.infer<typeof zBaseTodoInsert>;
 
@@ -67,7 +67,7 @@ export const zListSelect = createSelectSchema(List)
   })
   .extend({
     todoCount: z.number(),
-    otherUsers: z.array(zUserSelect),
+    // otherUsers: z.array(zUserSelect),
     isPending: z.boolean(),
     show: z.boolean(),
     order: z.number(),

@@ -3,16 +3,20 @@ import Empty from "../ui/empty";
 import { Button, Card, Heading } from "@radix-ui/themes";
 import { CheckIcon, HourglassIcon, XIcon } from "lucide-react";
 import useMutations from "@/app/hooks/use-mutations";
-import { getRouteApi } from "@tanstack/react-router";
+import { getRouteApi, notFound } from "@tanstack/react-router";
 import UserRow from "../ui/user/user-row";
+import { useLiveList, useLiveListUsers } from "@/app/hooks/use-live-lists";
 
 const route = getRouteApi("/todos/$listId");
 
 const PendingListScreen: React.FC = () => {
   const { listId } = route.useParams();
-  const { list } = route.useLoaderData();
+  const { data: otherUsers } = useLiveListUsers(listId);
+  const { data: list } = useLiveList(listId);
 
   const { acceptListJoin, removeSelfFromList } = useMutations();
+
+  if (!list) throw notFound();
 
   const handleAcceptJoin = () => acceptListJoin.mutate({ listId });
   const handleDeclineJoin = () => removeSelfFromList.mutate({ listId });
@@ -45,7 +49,7 @@ const PendingListScreen: React.FC = () => {
         <Heading as="h4" size="1" color="gray" className="uppercase">
           List Members
         </Heading>
-        {list.otherUsers.map((user) => (
+        {otherUsers.map((user) => (
           <UserRow key={user.id} user={user} />
         ))}
       </Card>

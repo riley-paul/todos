@@ -26,7 +26,7 @@ export default function useAlerts() {
         schema: zListName,
         handleSubmit: (name: string) => {
           createList.mutate(
-            { name },
+            { data: { name } },
             {
               onSuccess: () => {
                 dispatchAlert({ type: "close" });
