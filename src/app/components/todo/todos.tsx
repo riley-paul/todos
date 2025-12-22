@@ -5,12 +5,13 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import Todo from "./todo";
 import { Button, Card, Text } from "@radix-ui/themes";
 import type { TodoSelect } from "@/lib/types";
-import { qTodos, qUser } from "@/app/lib/queries";
+import { qUser } from "@/app/lib/queries";
 import { ChevronRightIcon } from "lucide-react";
 import DeleteCompletedTodosButton from "./footer-buttons/delete-completed-todos-button";
 import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
 import NoTodosScreen from "../screens/no-todos";
+import { useLiveTodos } from "@/app/hooks/use-live-todos";
 
 const CompletedTodosActions: React.FC<{ listId: string }> = ({ listId }) => (
   <div className="flex items-center justify-end gap-4">
@@ -62,11 +63,9 @@ const produceTodo = (todo: TodoSelect) => <Todo key={todo.id} todo={todo} />;
 type Props = { listId: string };
 
 const Todos: React.FC<Props> = ({ listId }) => {
-  const { data: todos } = useSuspenseQuery(qTodos(listId));
-  const { data: user } = useSuspenseQuery(qUser);
+  const { todos, completedTodos, notCompletedTodos } = useLiveTodos(listId);
 
-  const completedTodos = todos.filter(({ isCompleted }) => isCompleted);
-  const notCompletedTodos = todos.filter(({ isCompleted }) => !isCompleted);
+  const { data: user } = useSuspenseQuery(qUser);
 
   if (todos.length === 0) {
     return <NoTodosScreen />;

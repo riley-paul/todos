@@ -40,7 +40,7 @@ export const zTodoSelect = createSelectSchema(Todo)
   })
   .extend({
     author: zUserSelect,
-    isAuthor: z.boolean().nullable(),
+    // isAuthor: z.boolean().nullable(),
     list: createSelectSchema(List).pick({ id: true, name: true }),
   });
 export const zTodoInsert = createInsertSchema(Todo)
