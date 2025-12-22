@@ -11,7 +11,6 @@ import {
   TrashIcon,
 } from "lucide-react";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
-import useMutations from "@/app/hooks/use-mutations";
 import { useAtom } from "jotai";
 import { toast } from "sonner";
 import { useCopyToClipboard } from "usehooks-ts";
@@ -21,7 +20,8 @@ import { IconButton } from "@radix-ui/themes";
 import useAlerts from "@/app/hooks/use-alerts";
 import { getListUrl } from "@/lib/constants";
 import { useLiveListUsers } from "@/app/hooks/use-live-lists";
-import { listCollection } from "@/app/lib/collections";
+import { listCollection, todoCollection } from "@/app/lib/collections";
+import { useLiveTodos } from "@/app/hooks/use-live-todos";
 
 type Props = {
   list: ListSelect;
@@ -31,10 +31,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
   const { id, name } = list;
   const { data: otherUsers } = useLiveListUsers(list.id);
 
-  const {
-    uncheckCompletedTodos,
-    deleteCompletedTodos,
-  } = useMutations();
+  const { completedTodos } = useLiveTodos(list.id);
 
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const [, copyToClipboard] = useCopyToClipboard();
@@ -123,14 +120,27 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       key: "uncheck-all",
       text: "Uncheck all",
       icon: <SquareMinusIcon className="size-4 opacity-70" />,
-      onClick: () => uncheckCompletedTodos.mutate({ listId: id }),
+      disabled: completedTodos.length === 0,
+      onClick: () => {
+        todoCollection.update(
+          completedTodos.map(({ id }) => id),
+          (drafts) => {
+            drafts.forEach((draft) => {
+              draft.isCompleted = false;
+            });
+          },
+        );
+      },
     },
     {
       type: "item",
       key: "delete-completed",
       text: "Delete completed",
       icon: <ListXIcon className="size-4 opacity-70" />,
-      onClick: () => deleteCompletedTodos.mutate({ listId: id }),
+      disabled: completedTodos.length === 0,
+      onClick: () => {
+        todoCollection.delete(completedTodos.map(({ id }) => id));
+      },
     },
     {
       type: "separator",

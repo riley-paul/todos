@@ -18,17 +18,24 @@ export const todoCollection = createCollection(
     queryFn: actions.todos.populate.orThrow,
     schema: zBaseTodoSelect,
     getKey: (item) => item.id,
-    onInsert: async ({ transaction }) => {
-      const { modified } = transaction.mutations[0];
-      await actions.todos.create.orThrow({ data: modified });
-    },
-    onUpdate: async ({ transaction }) => {
-      const { original, modified } = transaction.mutations[0];
-      await actions.todos.update.orThrow({ id: original.id, data: modified });
-    },
+    onInsert: async ({ transaction }) =>
+      Promise.all(
+        transaction.mutations.map(({ modified }) =>
+          actions.todos.create.orThrow({ data: modified }),
+        ),
+      ),
+    onUpdate: async ({ transaction }) =>
+      Promise.all(
+        transaction.mutations.map(({ original, modified }) =>
+          actions.todos.update.orThrow({ id: original.id, data: modified }),
+        ),
+      ),
     onDelete: async ({ transaction }) => {
-      const { original } = transaction.mutations[0];
-      await actions.todos.remove.orThrow({ id: original.id });
+      Promise.all(
+        transaction.mutations.map(({ original }) =>
+          actions.todos.remove.orThrow({ id: original.id }),
+        ),
+      );
     },
   }),
 );
@@ -40,17 +47,24 @@ export const listCollection = createCollection(
     queryFn: actions.lists.populate.orThrow,
     schema: zBaseListSelect,
     getKey: (item) => item.id,
-    onInsert: async ({ transaction }) => {
-      const { modified } = transaction.mutations[0];
-      await actions.lists.create.orThrow({ data: modified });
-    },
-    onUpdate: async ({ transaction }) => {
-      const { original, modified } = transaction.mutations[0];
-      await actions.lists.update.orThrow({ id: original.id, data: modified });
-    },
+    onInsert: async ({ transaction }) =>
+      Promise.all(
+        transaction.mutations.map(({ modified }) =>
+          actions.lists.create.orThrow({ data: modified }),
+        ),
+      ),
+    onUpdate: async ({ transaction }) =>
+      Promise.all(
+        transaction.mutations.map(({ original, modified }) =>
+          actions.lists.update.orThrow({ id: original.id, data: modified }),
+        ),
+      ),
     onDelete: async ({ transaction }) => {
-      const { original } = transaction.mutations[0];
-      await actions.lists.remove.orThrow({ id: original.id });
+      Promise.all(
+        transaction.mutations.map(({ original }) =>
+          actions.lists.remove.orThrow({ id: original.id }),
+        ),
+      );
     },
   }),
 );
