@@ -1,4 +1,12 @@
-import { and, count, eq, not, useLiveSuspenseQuery } from "@tanstack/react-db";
+import {
+  and,
+  count,
+  createCollection,
+  eq,
+  liveQueryCollectionOptions,
+  not,
+  useLiveSuspenseQuery,
+} from "@tanstack/react-db";
 import {
   listCollection,
   listUserCollection,
@@ -7,37 +15,59 @@ import {
 } from "@/app/lib/collections";
 import { useRouteContext } from "@tanstack/react-router";
 
+export const liveListCollection = (userId: string | undefined) =>
+  createCollection(
+    liveQueryCollectionOptions({
+      query: (q) => {
+        const todoCounts = q
+          .from({ todo: todoCollection })
+          .where(({ todo }) => eq(todo.isCompleted, false))
+          .groupBy(({ todo }) => todo.listId)
+          .select(({ todo }) => ({
+            listId: todo.listId,
+            count: count(todo.id),
+          }));
+
+        return q
+          .from({ list: listCollection })
+          .innerJoin({ listUser: listUserCollection }, ({ listUser, list }) =>
+            eq(listUser.listId, list.id),
+          )
+          .innerJoin({ todoCount: todoCounts }, ({ todoCount, list }) =>
+            eq(todoCount.listId, list.id),
+          )
+          .where(({ listUser }) => eq(listUser.userId, userId))
+          .select(({ list, listUser, todoCount }) => ({
+            id: list.id,
+            name: list.name,
+            todoCount: todoCount.count,
+            isPending: listUser.isPending,
+            show: listUser.show,
+            order: listUser.order,
+          }))
+          .orderBy(({ listUser }) => listUser.show, "desc")
+          .orderBy(({ list }) => list.createdAt, "asc");
+      },
+    }),
+  );
+
 export function useLiveLists() {
   const { currentUser } = useRouteContext({ strict: false });
-  return useLiveSuspenseQuery((q) => {
-    const todoCounts = q
-      .from({ todo: todoCollection })
-      .groupBy(({ todo }) => todo.listId)
-      .select(({ todo }) => ({
-        listId: todo.listId,
-        count: count(todo.id),
-      }));
+  return useLiveSuspenseQuery((q) =>
+    q.from({ list: liveListCollection(currentUser?.id) }),
+  );
+}
 
-    return q
-      .from({ list: listCollection })
-      .innerJoin({ listUser: listUserCollection }, ({ listUser, list }) =>
-        eq(listUser.listId, list.id),
-      )
-      .innerJoin({ todoCount: todoCounts }, ({ todoCount, list }) =>
-        eq(todoCount.listId, list.id),
-      )
-      .where(({ listUser }) => eq(listUser.userId, currentUser?.id))
-      .select(({ list, listUser, todoCount }) => ({
-        id: list.id,
-        name: list.name,
-        todoCount: todoCount.count,
-        isPending: listUser.isPending,
-        show: listUser.show,
-        order: listUser.order,
-      }))
-      .orderBy(({ listUser }) => listUser.show, "desc")
-      .orderBy(({ list }) => list.createdAt, "asc");
-  });
+export function useLiveList(listId: string) {
+  const { currentUser } = useRouteContext({ strict: false });
+  return useLiveSuspenseQuery(
+    (q) =>
+      q
+        .from({ list: liveListCollection(currentUser?.id) })
+        .where(({ list }) => eq(list.id, listId))
+        .findOne(),
+    [listId],
+  );
 }
 
 export function useLiveListUsers(listId: string) {
@@ -62,42 +92,6 @@ export function useLiveListUsers(listId: string) {
           email: user.email,
           avatarUrl: user.avatarUrl,
         })),
-    [listId],
-  );
-}
-
-export function useLiveList(listId: string) {
-  return useLiveSuspenseQuery(
-    (q) => {
-      const todoCounts = q
-        .from({ todo: todoCollection })
-        .groupBy(({ todo }) => todo.listId)
-        .select(({ todo }) => ({
-          listId: todo.listId,
-          count: count(todo.id),
-        }));
-
-      return q
-        .from({ list: listCollection })
-        .innerJoin({ listUser: listUserCollection }, ({ listUser, list }) =>
-          eq(listUser.listId, list.id),
-        )
-        .innerJoin({ todoCount: todoCounts }, ({ todoCount, list }) =>
-          eq(todoCount.listId, list.id),
-        )
-        .where(({ list }) => eq(list.id, listId))
-        .select(({ list, listUser, todoCount }) => ({
-          id: list.id,
-          name: list.name,
-          todoCount: todoCount.count,
-          isPending: listUser.isPending,
-          show: listUser.show,
-          order: listUser.order,
-        }))
-        .orderBy(({ listUser }) => listUser.show, "desc")
-        .orderBy(({ list }) => list.createdAt, "asc")
-        .findOne();
-    },
     [listId],
   );
 }
