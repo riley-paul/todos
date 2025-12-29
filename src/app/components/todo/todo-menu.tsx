@@ -6,18 +6,17 @@ import {
   Edit2Icon,
   EllipsisIcon,
 } from "lucide-react";
-import { qLists } from "@/app/lib/queries";
-import { useQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { useAtom } from "jotai";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { editingTodoIdAtom } from "./todos.store";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
 import { todoCollection } from "@/app/lib/collections";
+import { useLiveLists } from "@/app/hooks/use-live-lists";
 
 const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
   const { listId } = useParams({ strict: false });
-  const { data: lists = [] } = useQuery(qLists);
+  const { data: lists } = useLiveLists();
 
   const [_, setEditingTodoId] = useAtom(editingTodoIdAtom);
 
@@ -40,6 +39,7 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
       type: "item",
       key: `move-${list.id}`,
       text: list.name,
+      disabled: list.id === listId || list.isPending,
       onClick: () => handleMove(list.id),
       hide: list.id === listId,
     }),

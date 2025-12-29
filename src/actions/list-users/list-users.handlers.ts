@@ -169,6 +169,22 @@ export const getAllForList: ActionHandler<
     .where(eq(ListUser.listId, listId));
 };
 
+export const update: ActionHandler<
+  typeof listUserInputs.update,
+  BaseListUserSelect
+> = async ({ id, data }, c) => {
+  const db = createDb(c.locals.runtime.env);
+  const userId = ensureAuthorized(c).id;
+
+  const [updated] = await db
+    .update(ListUser)
+    .set({ ...data, userId })
+    .where(and(eq(ListUser.id, id), eq(ListUser.userId, userId)))
+    .returning();
+
+  return updated;
+};
+
 export const populate: ActionHandler<
   typeof listUserInputs.populate,
   BaseListUserSelect[]

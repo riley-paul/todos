@@ -75,7 +75,13 @@ export const listUserCollection = createCollection(
     queryKey: ["listUsers"],
     queryFn: actions.listUsers.populate.orThrow,
     schema: zBaseListUserSelect,
-    getKey: (item) => `${item.listId}-${item.userId}`,
+    getKey: (item) => item.id,
+    onUpdate: async ({ transaction }) =>
+      Promise.all(
+        transaction.mutations.map(({ original, modified }) =>
+          actions.listUsers.update.orThrow({ id: original.id, data: modified }),
+        ),
+      ),
   }),
 );
 

@@ -71,6 +71,7 @@ export const zListSelect = createSelectSchema(List)
     isPending: z.boolean(),
     show: z.boolean(),
     order: z.number(),
+    listUserId: z.string(),
   });
 export const zListSelectShallow = createSelectSchema(List)
   .pick({

@@ -74,6 +74,7 @@ const getLists = async (
       isPending: ListUser.isPending,
       show: ListUser.show,
       order: ListUser.order,
+      listUserId: ListUser.id,
     })
     .from(List)
     .innerJoin(ListUser, eq(ListUser.listId, List.id))

@@ -44,9 +44,10 @@ export const liveListCollection = (userId: string | undefined) =>
             isPending: listUser.isPending,
             show: listUser.show,
             order: listUser.order,
+            listUserId: listUser.id,
           }))
-          .orderBy(({ listUser }) => listUser.show, "desc")
-          .orderBy(({ list }) => list.createdAt, "asc");
+          .orderBy(({ listUser }) => listUser.order, "asc")
+          .orderBy(({ listUser }) => listUser.show, "desc");
       },
     }),
   );

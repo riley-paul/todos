@@ -30,7 +30,6 @@ type Props = {
 const ListMenu: React.FC<Props> = ({ list }) => {
   const { id, name } = list;
   const { data: otherUsers } = useLiveListUsers(list.id);
-
   const { completedTodos } = useLiveTodos(list.id);
 
   const [, dispatchAlert] = useAtom(alertSystemAtom);

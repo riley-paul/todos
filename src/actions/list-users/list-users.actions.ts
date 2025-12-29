@@ -22,6 +22,11 @@ export const getAllForList = defineAction({
   handler: listShareHandlers.getAllForList,
 });
 
+export const update = defineAction({
+  input: listUserInputs.update,
+  handler: listShareHandlers.update,
+});
+
 export const populate = defineAction({
   input: listUserInputs.populate,
   handler: listShareHandlers.populate,
