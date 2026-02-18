@@ -150,14 +150,11 @@ export const update: ActionHandler<
 export const create: ActionHandler<
   typeof listInputs.create,
   ListSelect
-> = async ({ data: { name } }, c) => {
+> = async ({ data }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 
-  const [list] = await db
-    .insert(List)
-    .values({ name })
-    .returning({ id: List.id });
+  const [list] = await db.insert(List).values(data).returning({ id: List.id });
 
   await db.insert(ListUser).values({
     listId: list.id,

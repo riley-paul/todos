@@ -4,15 +4,14 @@ import { useAtom } from "jotai";
 import { toast } from "sonner";
 import useMutations from "./use-mutations";
 import { z } from "astro/zod";
+import { listCollection, listUserCollection } from "../lib/collections";
+import { useRouteContext } from "@tanstack/react-router";
 
 export default function useAlerts() {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
-  const {
-    createList,
-    removeSelfFromList,
-    removeUserFromList,
-    inviteUserToList,
-  } = useMutations();
+  const { removeSelfFromList, removeUserFromList, inviteUserToList } =
+    useMutations();
+  const { currentUser } = useRouteContext({ strict: false });
 
   const handleCreateList = () => {
     dispatchAlert({
@@ -25,15 +24,26 @@ export default function useAlerts() {
         placeholder: "List name",
         schema: zListName,
         handleSubmit: (name: string) => {
-          createList.mutate(
-            { data: { name } },
-            {
-              onSuccess: () => {
-                dispatchAlert({ type: "close" });
-                toast.success(`List "${name}" created`);
-              },
-            },
-          );
+          if (!currentUser) return;
+          const newListId = crypto.randomUUID();
+
+          listCollection.insert({
+            id: newListId,
+            name,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
+          listUserCollection.insert({
+            id: crypto.randomUUID(),
+            listId: newListId,
+            userId: currentUser.id,
+            isPending: false,
+            show: true,
+            order: 0,
+          });
+
+          dispatchAlert({ type: "close" });
+          toast.success(`List "${name}" created`);
         },
       },
     });
