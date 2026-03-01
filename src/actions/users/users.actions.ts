@@ -16,3 +16,8 @@ export const updateUserSettings = defineAction({
   input: userInputs.updateUserSettings,
   handler: userHandlers.updateUserSettings,
 });
+
+export const populate = defineAction({
+  input: userInputs.populate,
+  handler: userHandlers.populate,
+});

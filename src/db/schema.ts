@@ -70,7 +70,6 @@ export const Todo = sqliteTable(
     id,
     userId,
     listId,
-    sortOrder: integer().default(0).notNull(),
     text: text().notNull(),
     isCompleted: integer({ mode: "boolean" }).default(false).notNull(),
     ...timeStamps,

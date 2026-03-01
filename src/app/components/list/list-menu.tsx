@@ -19,6 +19,7 @@ import { alertSystemAtom } from "../alert-system/alert-system.store";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
 import useAlerts from "@/app/hooks/use-alerts";
+import { listCollection } from "@/app/lib/collections";
 import { getListUrl } from "@/lib/constants";
 
 type Props = {
@@ -50,7 +51,9 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         placeholder: "Enter new list name",
         schema: zListName,
         handleSubmit: (name: string) => {
-          updateList.mutate({ id, data: { name } });
+          listCollection.update(id, (draft) => {
+            draft.name = name;
+          });
           dispatchAlert({ type: "close" });
           toast.success("List renamed successfully");
         },

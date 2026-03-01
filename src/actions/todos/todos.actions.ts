@@ -2,16 +2,6 @@ import { defineAction } from "astro:actions";
 import * as todoInputs from "./todos.inputs";
 import * as todoHanders from "./todos.handlers";
 
-export const getAll = defineAction({
-  input: todoInputs.getAll,
-  handler: todoHanders.getAll,
-});
-
-export const search = defineAction({
-  input: todoInputs.search,
-  handler: todoHanders.search,
-});
-
 export const create = defineAction({
   input: todoInputs.create,
   handler: todoHanders.create,
@@ -27,12 +17,7 @@ export const remove = defineAction({
   handler: todoHanders.remove,
 });
 
-export const removeCompleted = defineAction({
-  input: todoInputs.removeCompleted,
-  handler: todoHanders.removeCompleted,
-});
-
-export const uncheckCompleted = defineAction({
-  input: todoInputs.uncheckCompleted,
-  handler: todoHanders.uncheckCompleted,
+export const populate = defineAction({
+  input: todoInputs.populate,
+  handler: todoHanders.populate,
 });

@@ -1,9 +1,9 @@
 import type { ActionHandler } from "astro:actions";
 import { ensureAuthorized } from "../helpers";
 import { createDb } from "@/db";
-import { Todo, User, UserSession } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import type { UserSelectWithSettings } from "@/lib/types";
+import { ListUser, Todo, User, UserSession } from "@/db/schema";
+import { eq, inArray } from "drizzle-orm";
+import type { UserSelect, UserSelectWithSettings } from "@/lib/types";
 import * as userInputs from "./users.inputs";
 import actionErrors from "../errors";
 
@@ -64,4 +64,32 @@ export const updateUserSettings: ActionHandler<
   if (!updatedUser) throw actionErrors.NOT_FOUND;
 
   return updatedUser;
+};
+
+export const populate: ActionHandler<
+  typeof userInputs.populate,
+  UserSelect[]
+> = async (_, c) => {
+  const db = createDb(c.locals.runtime.env);
+  const userId = ensureAuthorized(c).id;
+
+  const userLists = await db
+    .select({ listId: ListUser.listId })
+    .from(ListUser)
+    .where(eq(ListUser.userId, userId))
+    .then((rows) => rows.map(({ listId }) => listId));
+
+  // get all users sharing a list with the current user
+  const users = await db
+    .select({
+      id: User.id,
+      name: User.name,
+      email: User.email,
+      avatarUrl: User.avatarUrl,
+    })
+    .from(User)
+    .innerJoin(ListUser, eq(User.id, ListUser.userId))
+    .where(inArray(ListUser.listId, userLists));
+
+  return users;
 };
