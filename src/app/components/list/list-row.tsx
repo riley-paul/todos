@@ -4,10 +4,12 @@ import { HourglassIcon } from "lucide-react";
 import React from "react";
 import UserBubbleGroup from "../ui/user/user-bubble-group";
 import { cn } from "@/app/lib/utils";
+import { useLiveListUsers } from "@/app/hooks/use-live-lists";
 
 type Props = { list: ListSelect };
 
 const ListRow: React.FC<Props> = ({ list }) => {
+  const { data: otherUsers } = useLiveListUsers(list.id);
   return (
     <article className="flex flex-1 items-center gap-4">
       <Text
@@ -20,7 +22,7 @@ const ListRow: React.FC<Props> = ({ list }) => {
       </Text>
       <section className="flex items-center gap-2">
         {list.isPending && <HourglassIcon className="text-amber-10 size-4" />}
-        <UserBubbleGroup users={list.otherUsers} />
+        <UserBubbleGroup users={otherUsers} />
       </section>
     </article>
   );

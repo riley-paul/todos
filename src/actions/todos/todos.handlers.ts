@@ -2,7 +2,7 @@ import { type ActionAPIContext, type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
 import { User, Todo, List, ListUser } from "@/db/schema";
 import { eq, and, desc, or, like, inArray } from "drizzle-orm";
-import type { TodoSelect } from "@/lib/types";
+import type { BaseTodoSelect, TodoSelect } from "@/lib/types";
 import {
   ensureAuthorized,
   invalidateListUsers,
@@ -195,4 +195,25 @@ export const uncheckCompleted: ActionHandler<
     .where(and(eq(Todo.isCompleted, true), eq(Todo.listId, listId)));
   await invalidateListUsers(c, listId);
   return null;
+};
+
+export const populate: ActionHandler<
+  typeof todoInputs.populate,
+  BaseTodoSelect[]
+> = async (_, c) => {
+  const db = createDb(c.locals.runtime.env);
+  const userId = ensureAuthorized(c).id;
+
+  const userLists = await db
+    .select({ listId: ListUser.listId })
+    .from(ListUser)
+    .where(eq(ListUser.userId, userId))
+    .then((rows) => rows.map(({ listId }) => listId));
+
+  const todos: BaseTodoSelect[] = await db
+    .select()
+    .from(Todo)
+    .where(inArray(Todo.listId, userLists));
+
+  return todos;
 };

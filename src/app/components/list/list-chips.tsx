@@ -1,14 +1,13 @@
 import useAlerts from "@/app/hooks/use-alerts";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
-import { qLists } from "@/app/lib/queries";
 import { type ListSelect } from "@/lib/types";
 import { Badge, IconButton } from "@radix-ui/themes";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, linkOptions } from "@tanstack/react-router";
 import { ListPlusIcon } from "lucide-react";
 import React from "react";
 import ListReorder from "./list-reorder";
 import { ACCENT_COLOR } from "@/lib/constants";
+import { useLiveLists } from "@/app/hooks/use-live-lists";
 
 const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
   const link = linkOptions({
@@ -41,7 +40,7 @@ const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
 
 const ListChips: React.FC = () => {
   const { handleCreateList } = useAlerts();
-  const { data: lists } = useSuspenseQuery(qLists);
+  const { data: lists } = useLiveLists();
 
   if (lists.length === 0) return null;
 

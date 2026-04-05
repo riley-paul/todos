@@ -75,7 +75,7 @@ describe("List fetching", () => {
 describe("List creation", () => {
   test("able to create a list", async () => {
     const result = await listHandlers.create(
-      { name: "New Test List" },
+      { data: { name: "New Test List" } },
       mockApiContext(USER1_ID),
     );
     expect(result).toEqual({

@@ -1,3 +1,4 @@
+import { zBaseListUserInsert } from "@/lib/types";
 import { z } from "astro/zod";
 
 export const create = z.object({
@@ -13,3 +14,9 @@ export const remove = z.object({
 export const accept = z.object({ listId: z.string() });
 
 export const getAllForList = z.object({ listId: z.string() });
+
+export const update = z.object({
+  id: z.string(),
+  data: zBaseListUserInsert,
+});
+export const populate = z.any();

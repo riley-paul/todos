@@ -29,10 +29,10 @@ import {
 } from "lucide-react";
 import { cn } from "@/app/lib/utils";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
-import useMutations from "@/app/hooks/use-mutations";
 import { Link } from "@tanstack/react-router";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import ListRow from "./list-row";
+import { listUserCollection } from "@/app/lib/collections";
 
 type SortableObjectData =
   | {
@@ -176,8 +176,6 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
     }),
   );
 
-  const { updateListSortShow } = useMutations();
-
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
   };
@@ -187,13 +185,23 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
       const ids = localObjs.map(({ id }) => id);
+
       const oldIndex = ids.indexOf(active.id as string);
       const newIndex = ids.indexOf(over.id as string);
 
-      const newOrder = arrayMove(ids, oldIndex, newIndex);
+      const newOrder = arrayMove(localObjs, oldIndex, newIndex);
+      const separatorIndex = newOrder.findIndex((i) => i.type === "separator");
 
+      listUserCollection.update(
+        newOrder.filter((i) => i.type === "list").map((i) => i.list.listUserId),
+        (drafts) => {
+          drafts.forEach((draft, idx) => {
+            draft.order = idx;
+            draft.show = idx < separatorIndex;
+          });
+        },
+      );
       setLocalObjs((prev) => arrayMove(prev, oldIndex, newIndex));
-      return updateListSortShow.mutate({ listIds: newOrder });
     }
   };
 

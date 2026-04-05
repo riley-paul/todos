@@ -36,3 +36,8 @@ export const updateSortShow = defineAction({
   input: listInputs.updateSortShow,
   handler: listHandlers.updateSortShow,
 });
+
+export const populate = defineAction({
+  input: listInputs.populate,
+  handler: listHandlers.populate,
+});

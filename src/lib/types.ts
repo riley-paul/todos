@@ -20,6 +20,11 @@ export type UserSelect = z.infer<typeof zUserSelect>;
 export type UserSelectWithSettings = z.infer<typeof zUserSelectWithSettings>;
 export type UserInsert = z.infer<typeof zUserInsert>;
 
+export const zBaseUserSelect = createSelectSchema(User);
+export const zBaseUserInsert = createInsertSchema(User);
+export type BaseUserSelect = z.infer<typeof zBaseUserSelect>;
+export type BaseUserInsert = z.infer<typeof zBaseUserInsert>;
+
 export type UserSessionInfo = {
   id: string;
   userId: string;
@@ -35,7 +40,7 @@ export const zTodoSelect = createSelectSchema(Todo)
   })
   .extend({
     author: zUserSelect,
-    isAuthor: z.boolean().nullable(),
+    // isAuthor: z.boolean().nullable(),
     list: createSelectSchema(List).pick({ id: true, name: true }),
   });
 export const zTodoInsert = createInsertSchema(Todo)
@@ -50,6 +55,11 @@ export const zTodoInsert = createInsertSchema(Todo)
 export type TodoSelect = z.infer<typeof zTodoSelect>;
 export type TodoInsert = z.infer<typeof zTodoInsert>;
 
+export const zBaseTodoSelect = createSelectSchema(Todo);
+export const zBaseTodoInsert = createInsertSchema(Todo).omit({ userId: true });
+export type BaseTodoSelect = z.infer<typeof zBaseTodoSelect>;
+export type BaseTodoInsert = z.infer<typeof zBaseTodoInsert>;
+
 export const zListSelect = createSelectSchema(List)
   .pick({
     id: true,
@@ -57,10 +67,11 @@ export const zListSelect = createSelectSchema(List)
   })
   .extend({
     todoCount: z.number(),
-    otherUsers: z.array(zUserSelect),
+    // otherUsers: z.array(zUserSelect),
     isPending: z.boolean(),
     show: z.boolean(),
     order: z.number(),
+    listUserId: z.string(),
   });
 export const zListSelectShallow = createSelectSchema(List)
   .pick({
@@ -74,6 +85,11 @@ export const zListInsert = createInsertSchema(List)
 export type ListSelect = z.infer<typeof zListSelect>;
 export type ListSelectShallow = z.infer<typeof zListSelectShallow>;
 export type ListInsert = z.infer<typeof zListInsert>;
+
+export const zBaseListSelect = createSelectSchema(List);
+export const zBaseListInsert = createInsertSchema(List);
+export type BaseListInsert = z.infer<typeof zBaseListInsert>;
+export type BaseListSelect = z.infer<typeof zBaseListSelect>;
 
 export const zListUserInsert = createInsertSchema(ListUser);
 export const zListUserSelect = createSelectSchema(ListUser)
@@ -89,6 +105,11 @@ export const zListUserSelect = createSelectSchema(ListUser)
   });
 export type ListUserInsert = z.infer<typeof zListUserInsert>;
 export type ListUserSelect = z.infer<typeof zListUserSelect>;
+
+export const zBaseListUserSelect = createSelectSchema(ListUser);
+export const zBaseListUserInsert = createInsertSchema(ListUser);
+export type BaseListUserSelect = z.infer<typeof zBaseListUserSelect>;
+export type BaseListUserInsert = z.infer<typeof zBaseListUserInsert>;
 
 export const zListOrder = z.record(z.string(), z.number());
 export type ListOrder = z.infer<typeof zListOrder>;

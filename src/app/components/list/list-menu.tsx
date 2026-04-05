@@ -11,7 +11,6 @@ import {
   TrashIcon,
 } from "lucide-react";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
-import useMutations from "@/app/hooks/use-mutations";
 import { useAtom } from "jotai";
 import { toast } from "sonner";
 import { useCopyToClipboard } from "usehooks-ts";
@@ -20,19 +19,18 @@ import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
 import useAlerts from "@/app/hooks/use-alerts";
 import { getListUrl } from "@/lib/constants";
+import { useLiveListUsers } from "@/app/hooks/use-live-lists";
+import { listCollection, todoCollection } from "@/app/lib/collections";
+import { useLiveTodos } from "@/app/hooks/use-live-todos";
 
 type Props = {
   list: ListSelect;
 };
 
 const ListMenu: React.FC<Props> = ({ list }) => {
-  const { id, name, otherUsers } = list;
-  const {
-    deleteList,
-    updateList,
-    uncheckCompletedTodos,
-    deleteCompletedTodos,
-  } = useMutations();
+  const { id, name } = list;
+  const { data: otherUsers } = useLiveListUsers(list.id);
+  const { completedTodos } = useLiveTodos(list.id);
 
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const [, copyToClipboard] = useCopyToClipboard();
@@ -50,7 +48,9 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         placeholder: "Enter new list name",
         schema: zListName,
         handleSubmit: (name: string) => {
-          updateList.mutate({ id, data: { name } });
+          listCollection.update(list.id, (draft) => {
+            draft.name = name;
+          });
           dispatchAlert({ type: "close" });
           toast.success("List renamed successfully");
         },
@@ -66,7 +66,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         title: "Delete List",
         message: `Are you sure you want to delete this list? This action cannot be undone.`,
         handleDelete: () => {
-          deleteList.mutate({ id });
+          listCollection.delete(list.id);
           dispatchAlert({ type: "close" });
         },
       },
@@ -119,14 +119,27 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       key: "uncheck-all",
       text: "Uncheck all",
       icon: <SquareMinusIcon className="size-4 opacity-70" />,
-      onClick: () => uncheckCompletedTodos.mutate({ listId: id }),
+      disabled: completedTodos.length === 0,
+      onClick: () => {
+        todoCollection.update(
+          completedTodos.map(({ id }) => id),
+          (drafts) => {
+            drafts.forEach((draft) => {
+              draft.isCompleted = false;
+            });
+          },
+        );
+      },
     },
     {
       type: "item",
       key: "delete-completed",
       text: "Delete completed",
       icon: <ListXIcon className="size-4 opacity-70" />,
-      onClick: () => deleteCompletedTodos.mutate({ listId: id }),
+      disabled: completedTodos.length === 0,
+      onClick: () => {
+        todoCollection.delete(completedTodos.map(({ id }) => id));
+      },
     },
     {
       type: "separator",

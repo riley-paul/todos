@@ -1,5 +1,5 @@
 import { type ActionAPIContext, type ActionHandler } from "astro:actions";
-import type { ListSelect, UserSelect } from "@/lib/types";
+import type { BaseListSelect, ListSelect, UserSelect } from "@/lib/types";
 import {
   ensureListMember,
   invalidateListUsers,
@@ -74,6 +74,7 @@ const getLists = async (
       isPending: ListUser.isPending,
       show: ListUser.show,
       order: ListUser.order,
+      listUserId: ListUser.id,
     })
     .from(List)
     .innerJoin(ListUser, eq(ListUser.listId, List.id))
@@ -149,14 +150,11 @@ export const update: ActionHandler<
 export const create: ActionHandler<
   typeof listInputs.create,
   ListSelect
-> = async ({ name }, c) => {
+> = async ({ data }, c) => {
   const db = createDb(c.locals.runtime.env);
   const userId = ensureAuthorized(c).id;
 
-  const [list] = await db
-    .insert(List)
-    .values({ name })
-    .returning({ id: List.id });
+  const [list] = await db.insert(List).values(data).returning({ id: List.id });
 
   await db.insert(ListUser).values({
     listId: list.id,
@@ -223,4 +221,25 @@ export const updateSortShow: ActionHandler<
    `);
 
   return getLists(c);
+};
+
+export const populate: ActionHandler<
+  typeof listInputs.populate,
+  BaseListSelect[]
+> = async (_, c) => {
+  const db = createDb(c.locals.runtime.env);
+  const userId = ensureAuthorized(c).id;
+
+  const lists: BaseListSelect[] = await db
+    .select({
+      id: List.id,
+      name: List.name,
+      createdAt: List.createdAt,
+      updatedAt: List.updatedAt,
+    })
+    .from(List)
+    .innerJoin(ListUser, eq(ListUser.listId, List.id))
+    .where(eq(ListUser.userId, userId));
+
+  return lists;
 };

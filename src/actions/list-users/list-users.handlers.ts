@@ -1,7 +1,7 @@
 import { type ActionAPIContext, type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
 import { User, List, ListUser } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 import {
   ensureListMember,
   invalidateListUsers,
@@ -9,7 +9,7 @@ import {
 } from "../helpers";
 import actionErrors from "../errors";
 import * as listUserInputs from "./list-users.inputs";
-import type { ListUserSelect } from "@/lib/types";
+import type { BaseListUserSelect, ListUserSelect } from "@/lib/types";
 
 export const getListUser = async (
   context: ActionAPIContext,
@@ -167,4 +167,41 @@ export const getAllForList: ActionHandler<
     .innerJoin(List, eq(List.id, ListUser.listId))
     .innerJoin(User, eq(User.id, ListUser.userId))
     .where(eq(ListUser.listId, listId));
+};
+
+export const update: ActionHandler<
+  typeof listUserInputs.update,
+  BaseListUserSelect
+> = async ({ id, data }, c) => {
+  const db = createDb(c.locals.runtime.env);
+  const userId = ensureAuthorized(c).id;
+
+  const [updated] = await db
+    .update(ListUser)
+    .set({ ...data, userId })
+    .where(and(eq(ListUser.id, id), eq(ListUser.userId, userId)))
+    .returning();
+
+  return updated;
+};
+
+export const populate: ActionHandler<
+  typeof listUserInputs.populate,
+  BaseListUserSelect[]
+> = async (_, c) => {
+  const db = createDb(c.locals.runtime.env);
+  const userId = ensureAuthorized(c).id;
+
+  const userLists = await db
+    .select({ listId: ListUser.listId })
+    .from(ListUser)
+    .where(eq(ListUser.userId, userId))
+    .then((rows) => rows.map(({ listId }) => listId));
+
+  const listUsers: BaseListUserSelect[] = await db
+    .select()
+    .from(ListUser)
+    .where(inArray(ListUser.listId, userLists));
+
+  return listUsers;
 };
