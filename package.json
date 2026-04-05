@@ -31,7 +31,7 @@
     "@node-rs/argon2": "^1.8.3",
     "@radix-ui/themes": "^3.3.0",
     "@tailwindcss/vite": "^4.2.2",
-    "@tanstack/db": "^0.5.33",
+    "@tanstack/db": "^0.6.2",
     "@tanstack/query-core": "^5.90.20",
     "@tanstack/query-db-collection": "^1.0.33",
     "@tanstack/react-db": "^0.1.80",
