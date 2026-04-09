@@ -1,9 +1,10 @@
-import type { ActionAPIContext } from "astro/actions/runtime/utils.js";
 import { ListUser } from "@/db/schema";
 import { eq, and, not } from "drizzle-orm";
 import actionErrors from "./errors";
 import { createDb } from "@/db";
 import { Rest } from "ably";
+import type { ActionAPIContext } from "astro:actions";
+import { env } from "cloudflare:workers";
 
 export const ensureAuthorized = (context: ActionAPIContext) => {
   const { user } = context.locals;
@@ -16,10 +17,10 @@ export const invalidateListUsers = async (
   listId: string,
 ) => {
   console.log("Invalidating list users for listId:", listId);
-  const db = createDb(context.locals.runtime.env);
+  const db = createDb(env);
   const userId = ensureAuthorized(context).id;
   const ably = new Rest({
-    key: context.locals.runtime.env.ABLY_API_KEY,
+    key: env.ABLY_API_KEY,
     clientId: "server",
   });
 
@@ -46,10 +47,10 @@ type EnsureListMemberArgs = {
   checkPending?: boolean;
 };
 export const ensureListMember = async (
-  context: ActionAPIContext,
+  _: ActionAPIContext,
   { listId, userId, checkPending = true }: EnsureListMemberArgs,
 ) => {
-  const db = createDb(context.locals.runtime.env);
+  const db = createDb(env);
   const [listUser] = await db
     .select({ id: ListUser.id, isPending: ListUser.isPending })
     .from(ListUser)

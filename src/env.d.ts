@@ -11,6 +11,6 @@ type Runtime = import("@astrojs/cloudflare").Runtime<ENV>;
 declare namespace App {
   interface Locals extends Runtime {
     session: import("./lib/types").UserSessionInfo | null;
-    user: Pick<import("./lib/types").UserSelect, "id"> | null;
+    user: import("./lib/types").UserSelect | null;
   }
 }
