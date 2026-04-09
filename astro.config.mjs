@@ -12,7 +12,6 @@ export default defineConfig({
   prefetch: true,
   integrations: [react()],
   vite: {
-    build: { minify: false },
     plugins: [
       tanstackRouter({
         target: "react",
