@@ -2,6 +2,9 @@
   "name": "astro-test",
   "type": "module",
   "version": "1.0.0",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "npm-run-all --parallel dev:db dev:server",
     "build": "astro check && astro build --remote",
@@ -11,13 +14,8 @@
     "dev:server": "astro dev --host",
     "cf-typegen": "wrangler types",
     "db:push": "drizzle-kit push",
-    "db:push:prod": "NODE_ENV=production drizzle-kit push",
-    "db:push:test": "NODE_ENV=test drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:studio:prod": "NODE_ENV=production drizzle-kit studio",
-    "db:studio:test": "NODE_ENV=test drizzle-kit studio",
-    "db:seed": "tsx src/db/seed.ts",
-    "db:seed:test": "NODE_ENV=test tsx src/db/seed.ts"
+    "db:seed": "tsx src/db/seed.ts"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.8",
@@ -44,7 +42,6 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "dotenv": "^16.6.1",
-    "dotenv-expand": "^12.0.3",
     "drizzle-kit": "^0.30.6",
     "drizzle-orm": "^0.40.1",
     "drizzle-zod": "^0.7.1",
@@ -74,6 +71,6 @@
     "wrangler": "^4.25.0"
   },
   "overrides": {
-    "vite": "6.0.2"
+    "vite": "^7"
   }
 }

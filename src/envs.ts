@@ -10,14 +10,14 @@ const zEnv = z
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
     ABLY_API_KEY: z.string(),
-    SITE: z.string().url().default("http://localhost:4321"),
-    DATABASE_URL: z.string().url(),
+    SITE: z.url().default("http://localhost:4321"),
+    DATABASE_URL: z.url(),
     DATABASE_AUTH_TOKEN: z.string().optional(),
   })
   .superRefine(({ NODE_ENV, DATABASE_AUTH_TOKEN }, ctx) => {
     if (NODE_ENV === "production" && !DATABASE_AUTH_TOKEN) {
       ctx.addIssue({
-        code: z.ZodIssueCode.invalid_type,
+        code: "invalid_type",
         expected: "string",
         received: "undefined",
         path: ["DATABASE_AUTH_TOKEN"],
@@ -31,7 +31,7 @@ export type Environment = z.infer<typeof zEnv> & Env;
 export function parseEnv(data: any) {
   const { data: env, error } = zEnv.safeParse(data);
   if (error) {
-    const errorMessage = `Invalid environment variables: ${error.flatten().fieldErrors}`;
+    const errorMessage = `Invalid environment variables: ${z.prettifyError(error)}`;
     throw new Error(errorMessage);
   }
   return env as Environment;
