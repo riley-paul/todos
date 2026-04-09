@@ -1,9 +1,7 @@
 import { GitHub, Google } from "arctic";
-import type { APIContext } from "astro";
 import { z } from "astro/zod";
 
-export const createGithub = (context: APIContext) => {
-  const { env } = context.locals.runtime;
+export const createGithub = (env: Env) => {
   return new GitHub(
     env.GITHUB_CLIENT_ID,
     env.GITHUB_CLIENT_SECRET,
@@ -11,8 +9,7 @@ export const createGithub = (context: APIContext) => {
   );
 };
 
-export const createGoogle = (context: APIContext) => {
-  const { env } = context.locals.runtime;
+export const createGoogle = (env: Env) => {
   return new Google(
     env.GOOGLE_CLIENT_ID,
     env.GOOGLE_CLIENT_SECRET,
@@ -42,6 +39,7 @@ export const getGithubUser = async (accessToken: string) => {
     headers: {
       Authorization: `Bearer ${accessToken}`,
       "User-Agent": "Todos/1.0",
+      "X-GitHub-Api-Version": "2022-11-28",
     },
   };
 
@@ -55,14 +53,17 @@ export const getGithubUser = async (accessToken: string) => {
         res.statusText,
         errorText,
       );
-      throw new Error("Failed to fetch user");
+      throw new Error(`Failed to fetch user\n\n${errorText}`);
     }
     return zGithubUser.parse(await res.json());
   };
 
   const getEmails = async () => {
     const res = await fetch("https://api.github.com/user/emails", fetchInit);
-    if (!res.ok) throw new Error("Failed to fetch emails");
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Failed to fetch emails\n\n${errorText}`);
+    }
     return z.array(zGithubEmail).parse(await res.json());
   };
 

@@ -4,16 +4,17 @@ import type { APIContext } from "astro";
 import { createDb } from "@/db";
 import { User } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { getGoogleUser, createGoogle } from "@/lib/oauth";
+import { getGoogleUser, createGoogle } from "@/lib/server/oauth";
 import {
   createSession,
   generateSessionToken,
   setSessionTokenCookie,
-} from "@/lib/lucia";
+} from "@/lib/server/lucia";
+import { env } from "cloudflare:workers";
 
 export async function GET(context: APIContext): Promise<Response> {
-  const db = createDb(context.locals.runtime.env);
-  const google = createGoogle(context);
+  const db = createDb(env);
+  const google = createGoogle(env);
 
   const code = context.url.searchParams.get("code");
   const state = context.url.searchParams.get("state");
@@ -49,12 +50,8 @@ export async function GET(context: APIContext): Promise<Response> {
         .set({ googleId: googleUser.id })
         .where(eq(User.id, existingUser.id));
       const sessionToken = generateSessionToken();
-      const session = await createSession(
-        context,
-        sessionToken,
-        existingUser.id,
-      );
-      setSessionTokenCookie(context, sessionToken, session.expiresAt);
+      const session = await createSession(env, sessionToken, existingUser.id);
+      setSessionTokenCookie(env, context, sessionToken, session.expiresAt);
       return context.redirect("/");
     }
 
@@ -70,8 +67,8 @@ export async function GET(context: APIContext): Promise<Response> {
       .returning();
 
     const sessionToken = generateSessionToken();
-    const session = await createSession(context, sessionToken, user.id);
-    setSessionTokenCookie(context, sessionToken, session.expiresAt);
+    const session = await createSession(env, sessionToken, user.id);
+    setSessionTokenCookie(env, context, sessionToken, session.expiresAt);
     return context.redirect("/");
   } catch (e) {
     // the specific error message depends on the provider

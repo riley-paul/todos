@@ -1,10 +1,11 @@
-import { createGoogle } from "@/lib/oauth";
+import { createGoogle } from "@/lib/server/oauth";
 import { generateCodeVerifier, generateState } from "arctic";
 
 import type { APIContext } from "astro";
+import { env } from "cloudflare:workers";
 
 export async function GET(context: APIContext): Promise<Response> {
-  const google = createGoogle(context);
+  const google = createGoogle(env);
 
   const state = generateState();
   const codeVerifier = generateCodeVerifier();
