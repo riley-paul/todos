@@ -3,12 +3,13 @@ import React, { useState } from "react";
 import {
   Dialog,
   IconButton,
+  Kbd,
   ScrollArea,
   Separator,
   TextField,
+  Tooltip,
   VisuallyHidden,
 } from "@radix-ui/themes";
-import { useEventListener } from "usehooks-ts";
 import { useQuery } from "@tanstack/react-query";
 import { qListSearch, qTodoSearch } from "@/app/lib/queries";
 import { cn } from "@/app/lib/utils";
@@ -20,6 +21,7 @@ import LoadingScreen from "./screens/loading";
 import ListRow from "./list/list-row";
 import TodoRow from "./todo/todo-row";
 import NoSearchResultsScreen from "./screens/no-search-results";
+import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 
 type ContentProps = {
   handleClose: () => void;
@@ -155,19 +157,23 @@ const SearchContent: React.FC<ContentProps> = ({ handleClose }) => {
 const AppSearch: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  useEventListener("keydown", (e) => {
-    if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault();
-      setIsOpen(true);
-    }
-  });
+  useHotkey("Mod+K", () => setIsOpen(true));
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
       <Dialog.Trigger>
-        <IconButton variant="soft" radius="full">
-          <SearchIcon className="size-4" />
-        </IconButton>
+        <Tooltip
+          side="bottom"
+          content={
+            <span>
+              Search <Kbd>{formatForDisplay("Mod+K")}</Kbd>
+            </span>
+          }
+        >
+          <IconButton variant="soft" radius="full">
+            <SearchIcon className="size-4" />
+          </IconButton>
+        </Tooltip>
       </Dialog.Trigger>
       <ResponsiveDialogContent
         fullHeightDrawer

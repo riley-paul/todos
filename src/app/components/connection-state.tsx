@@ -6,7 +6,7 @@ import { useState } from "react";
 type ConnectionDotProps = { className: string; title: string };
 
 const ConnectionDot: React.FC<ConnectionDotProps> = ({ className, title }) => (
-  <Tooltip content={title} side="top">
+  <Tooltip content={title} side="left">
     <div className={cn("size-2 rounded-full", className)} />
   </Tooltip>
 );
