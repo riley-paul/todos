@@ -4,7 +4,7 @@
  */
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "my-astro-app",
+  "name": "todos",
   "main": "./dist/_worker.js/index.js",
   "compatibility_date": "2026-02-27",
   "compatibility_flags": ["nodejs_compat"],
