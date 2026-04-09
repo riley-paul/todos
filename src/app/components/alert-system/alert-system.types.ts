@@ -1,5 +1,5 @@
 import type { ButtonProps } from "@radix-ui/themes";
-import type { ZodString } from "astro/zod";
+import type { ZodAny, ZodString } from "astro/zod";
 
 export type DeleteAlertProps = {
   type: "delete";
@@ -21,7 +21,7 @@ export type InputAlertProps = {
   message: string;
   value?: string;
   placeholder?: string;
-  schema?: ZodString;
+  schema?: ZodAny;
   handleSubmit: (value: string) => void;
 };
 

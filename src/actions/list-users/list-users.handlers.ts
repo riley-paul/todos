@@ -1,4 +1,4 @@
-import { type ActionAPIContext, type ActionHandler } from "astro:actions";
+import { type ActionAPIContext } from "astro:actions";
 import { createDb } from "@/db";
 import { User, List, ListUser } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
@@ -10,12 +10,14 @@ import {
 import actionErrors from "../errors";
 import * as listUserInputs from "./list-users.inputs";
 import type { ListUserSelect } from "@/lib/types";
+import { env } from "cloudflare:workers";
+import type { ActionHandler } from "node_modules/astro/dist/actions/runtime/types";
 
 export const getListUser = async (
-  context: ActionAPIContext,
+  _: ActionAPIContext,
   { listUserId }: { listUserId: string },
 ): Promise<ListUserSelect> => {
-  const db = createDb(context.locals.runtime.env);
+  const db = createDb(env);
   const [listUser] = await db
     .select({
       id: ListUser.id,
@@ -46,7 +48,7 @@ export const create: ActionHandler<
   typeof listUserInputs.create,
   ListUserSelect
 > = async ({ email, listId }, c) => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const userId = ensureAuthorized(c).id;
 
   // only list members can add other users
@@ -77,7 +79,7 @@ export const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
   input,
   c,
 ) => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const userId = ensureAuthorized(c).id;
 
   const data = { userId, ...input };
@@ -103,7 +105,7 @@ export const accept: ActionHandler<
   typeof listUserInputs.accept,
   ListUserSelect
 > = async ({ listId }, c) => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const userId = ensureAuthorized(c).id;
 
   // ensure list user exists and is pending and pertains to current user
@@ -140,7 +142,7 @@ export const getAllForList: ActionHandler<
   typeof listUserInputs.getAllForList,
   ListUserSelect[]
 > = async ({ listId }, c) => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const userId = ensureAuthorized(c).id;
 
   await ensureListMember(c, { listId, userId });

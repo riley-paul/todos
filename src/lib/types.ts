@@ -14,7 +14,7 @@ export const zUserSelect = createSelectSchema(User).pick({
   email: true,
   avatarUrl: true,
 });
-export const zUserSelectWithSettings = zUserSelect.extend(zSettings);
+export const zUserSelectWithSettings = zUserSelect.extend(zSettings.shape);
 export const zUserInsert = createInsertSchema(User);
 export type UserSelect = z.infer<typeof zUserSelect>;
 export type UserSelectWithSettings = z.infer<typeof zUserSelectWithSettings>;

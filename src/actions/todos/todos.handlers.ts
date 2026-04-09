@@ -1,4 +1,4 @@
-import { type ActionAPIContext, type ActionHandler } from "astro:actions";
+import { type ActionAPIContext } from "astro:actions";
 import { createDb } from "@/db";
 import { User, Todo, List, ListUser } from "@/db/schema";
 import { eq, and, desc, or, like, inArray } from "drizzle-orm";
@@ -11,6 +11,8 @@ import {
 
 import * as todoInputs from "./todos.inputs";
 import actionErrors from "../errors";
+import type { ActionHandler } from "node_modules/astro/dist/actions/runtime/types";
+import { env } from "cloudflare:workers";
 
 const getTodos = async (
   c: ActionAPIContext,
@@ -21,7 +23,7 @@ const getTodos = async (
     search: string;
   }> = {},
 ): Promise<TodoSelect[]> => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const reqUserId = ensureAuthorized(c).id;
 
   const { todoId, listId, userId, search } = filters;
@@ -92,7 +94,7 @@ export const create: ActionHandler<
   typeof todoInputs.create,
   TodoSelect
 > = async ({ data }, c) => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const userId = ensureAuthorized(c).id;
 
   const { listId } = data;
@@ -112,7 +114,7 @@ export const update: ActionHandler<
   typeof todoInputs.update,
   TodoSelect
 > = async ({ id, data }, c) => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const userId = ensureAuthorized(c).id;
 
   const [currentTodo] = await db
@@ -146,7 +148,7 @@ export const remove: ActionHandler<typeof todoInputs.remove, null> = async (
   { id },
   c,
 ) => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const userId = ensureAuthorized(c).id;
 
   const [currentTodo] = await db
@@ -168,7 +170,7 @@ export const removeCompleted: ActionHandler<
   typeof todoInputs.removeCompleted,
   null
 > = async ({ listId }, c) => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const userId = ensureAuthorized(c).id;
 
   await ensureListMember(c, { listId, userId });
@@ -184,7 +186,7 @@ export const uncheckCompleted: ActionHandler<
   typeof todoInputs.uncheckCompleted,
   null
 > = async ({ listId }, c) => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const userId = ensureAuthorized(c).id;
 
   await ensureListMember(c, { listId, userId });

@@ -1,4 +1,3 @@
-import type { ActionHandler } from "astro:actions";
 import { ensureAuthorized } from "../helpers";
 import { createDb } from "@/db";
 import { Todo, User, UserSession } from "@/db/schema";
@@ -6,6 +5,8 @@ import { eq } from "drizzle-orm";
 import type { UserSelectWithSettings } from "@/lib/types";
 import * as userInputs from "./users.inputs";
 import actionErrors from "../errors";
+import { env } from "cloudflare:workers";
+import type { ActionHandler } from "node_modules/astro/dist/actions/runtime/types";
 
 const USER_FIELDS = {
   id: User.id,
@@ -19,7 +20,7 @@ export const getMe: ActionHandler<
   typeof userInputs.getMe,
   UserSelectWithSettings
 > = async (_, c) => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const user = c.locals.user;
   if (!user) throw actionErrors.UNAUTHORIZED;
 
@@ -36,7 +37,7 @@ export const remove: ActionHandler<typeof userInputs.remove, null> = async (
   _,
   c,
 ) => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const userId = ensureAuthorized(c).id;
   await db.delete(UserSession).where(eq(UserSession.userId, userId));
   await db.delete(Todo).where(eq(Todo.userId, userId));
@@ -50,7 +51,7 @@ export const updateUserSettings: ActionHandler<
   typeof userInputs.updateUserSettings,
   UserSelectWithSettings
 > = async (data, c) => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const user = c.locals.user;
   if (!user) {
     throw actionErrors.UNAUTHORIZED;

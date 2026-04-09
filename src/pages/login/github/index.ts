@@ -1,7 +1,7 @@
 import { generateState } from "arctic";
 
 import type { APIContext } from "astro";
-import { createGithub } from "@/lib/server/oauth";
+import { createGithub } from "@/lib/oauth";
 import { env } from "cloudflare:workers";
 
 export async function GET(context: APIContext): Promise<Response> {

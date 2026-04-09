@@ -1,4 +1,4 @@
-import { type ActionAPIContext, type ActionHandler } from "astro:actions";
+import { type ActionAPIContext } from "astro:actions";
 import type { ListSelect, UserSelect } from "@/lib/types";
 import {
   ensureListMember,
@@ -11,12 +11,14 @@ import { and, asc, count, desc, eq, like, not, or, sql } from "drizzle-orm";
 import actionErrors from "../errors";
 import * as listInputs from "./lists.inputs";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
+import { env } from "cloudflare:workers";
+import type { ActionHandler } from "node_modules/astro/dist/actions/runtime/types";
 
 const getOtherListUsers = async (
   c: ActionAPIContext,
   listId: string,
 ): Promise<UserSelect[]> => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const userId = ensureAuthorized(c).id;
 
   const otherUsers = await db
@@ -39,10 +41,10 @@ const getOtherListUsers = async (
 };
 
 const getListTodoCount = async (
-  c: ActionAPIContext,
+  _: ActionAPIContext,
   listId: string,
 ): Promise<number> => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
 
   const [{ count: todoCount }] = await db
     .select({ count: count() })
@@ -59,7 +61,7 @@ const getLists = async (
     search: string;
   }> = {},
 ): Promise<ListSelect[]> => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const userId = ensureAuthorized(c).id;
 
   const { listId, search } = filters;
@@ -127,7 +129,7 @@ export const update: ActionHandler<
   typeof listInputs.update,
   ListSelect
 > = async ({ id: listId, data }, c) => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const userId = ensureAuthorized(c).id;
 
   await ensureListMember(c, { listId, userId });
@@ -150,7 +152,7 @@ export const create: ActionHandler<
   typeof listInputs.create,
   ListSelect
 > = async ({ name }, c) => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const userId = ensureAuthorized(c).id;
 
   const [list] = await db
@@ -174,7 +176,7 @@ export const remove: ActionHandler<typeof listInputs.remove, null> = async (
   { id: listId },
   c,
 ) => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const userId = ensureAuthorized(c).id;
 
   await ensureListMember(c, { listId, userId });
@@ -190,7 +192,7 @@ export const updateSortShow: ActionHandler<
   typeof listInputs.updateSortShow,
   ListSelect[]
 > = async ({ listIds }, c) => {
-  const db = createDb(c.locals.runtime.env);
+  const db = createDb(env);
   const userId = ensureAuthorized(c).id;
 
   const separatorIdx = listIds.indexOf(LIST_SEPARATOR_ID);
