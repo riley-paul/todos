@@ -20,7 +20,15 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import type { ListSelect } from "@/lib/types";
-import { Button, Dialog, IconButton, Separator, Text } from "@radix-ui/themes";
+import {
+  Button,
+  Dialog,
+  IconButton,
+  Kbd,
+  Separator,
+  Text,
+  Tooltip,
+} from "@radix-ui/themes";
 import {
   ArrowDownIcon,
   ArrowRightIcon,
@@ -33,6 +41,7 @@ import useMutations from "@/app/hooks/use-mutations";
 import { Link } from "@tanstack/react-router";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import ListRow from "./list-row";
+import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 
 type SortableObjectData =
   | {
@@ -152,7 +161,7 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
                 Hidden
               </Text>
             </section>
-            <Separator orientation="horizontal" size="4" className="h-[2px]" />
+            <Separator orientation="horizontal" size="4" className="h-0.5" />
           </article>
         </div>
       );
@@ -230,13 +239,27 @@ type ListReorderProps = {
 };
 
 const ListReorder: React.FC<ListReorderProps> = ({ lists }) => {
+  const [open, setOpen] = React.useState(false);
+
+  useHotkey("R", () => setOpen(true), { ignoreInputs: true });
+
   return (
-    <Dialog.Root>
-      <Dialog.Trigger>
-        <IconButton className="size-7" size="1" variant="soft">
-          <ArrowUpDownIcon className="size-4" />
-        </IconButton>
-      </Dialog.Trigger>
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Tooltip
+        side="bottom"
+        content={
+          <span className="flex items-center gap-1">
+            Reorder lists
+            <Kbd>{formatForDisplay("R")}</Kbd>
+          </span>
+        }
+      >
+        <Dialog.Trigger>
+          <IconButton className="size-7" size="1" variant="soft">
+            <ArrowUpDownIcon className="size-4" />
+          </IconButton>
+        </Dialog.Trigger>
+      </Tooltip>
       <ResponsiveDialogContent title="Reorder Lists" desktopDrawer>
         <header>
           <Dialog.Title>Reorder Lists</Dialog.Title>

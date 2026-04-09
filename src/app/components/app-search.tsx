@@ -161,20 +161,21 @@ const AppSearch: React.FC = () => {
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Dialog.Trigger>
-        <Tooltip
-          side="bottom"
-          content={
-            <span>
-              Search <Kbd>{formatForDisplay("Mod+K")}</Kbd>
-            </span>
-          }
-        >
+      <Tooltip
+        side="bottom"
+        content={
+          <span className="flex items-center gap-1">
+            Search
+            <Kbd>{formatForDisplay("Mod+K")}</Kbd>
+          </span>
+        }
+      >
+        <Dialog.Trigger>
           <IconButton variant="soft" radius="full">
             <SearchIcon className="size-4" />
           </IconButton>
-        </Tooltip>
-      </Dialog.Trigger>
+        </Dialog.Trigger>
+      </Tooltip>
       <ResponsiveDialogContent
         fullHeightDrawer
         hideCloseButton

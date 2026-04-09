@@ -49,13 +49,7 @@ const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
     { target: inputRef },
   );
 
-  useHotkey(
-    "L",
-    () => {
-      inputRef.current?.focus();
-    },
-    { ignoreInputs: true },
-  );
+  useHotkey("L", () => inputRef.current?.focus(), { ignoreInputs: true });
 
   return (
     <form onSubmit={onSubmit} className="flex gap-2">
