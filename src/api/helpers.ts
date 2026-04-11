@@ -3,8 +3,8 @@ import { eq, and, not } from "drizzle-orm";
 import actionErrors from "./errors";
 import { createDb } from "@/db";
 import { Rest } from "ably";
-import type { ActionAPIContext } from "astro:actions";
 import { env } from "cloudflare:workers";
+import type { ActionAPIContext } from "astro:actions";
 
 export const ensureAuthorized = (context: ActionAPIContext) => {
   const { user } = context.locals;
@@ -12,13 +12,16 @@ export const ensureAuthorized = (context: ActionAPIContext) => {
   return user;
 };
 
-export const invalidateListUsers = async (
-  context: ActionAPIContext,
-  listId: string,
-) => {
+type InvalidateListUsersArgs = {
+  listId: string;
+  userId: string;
+};
+export const invalidateListUsers = async ({
+  listId,
+  userId,
+}: InvalidateListUsersArgs) => {
   console.log("Invalidating list users for listId:", listId);
   const db = createDb(env);
-  const userId = ensureAuthorized(context).id;
   const ably = new Rest({
     key: env.ABLY_API_KEY,
     clientId: "server",
@@ -46,10 +49,11 @@ type EnsureListMemberArgs = {
   userId: string;
   checkPending?: boolean;
 };
-export const ensureListMember = async (
-  _: ActionAPIContext,
-  { listId, userId, checkPending = true }: EnsureListMemberArgs,
-) => {
+export const ensureListMember = async ({
+  listId,
+  userId,
+  checkPending = true,
+}: EnsureListMemberArgs) => {
   const db = createDb(env);
   const [listUser] = await db
     .select({ id: ListUser.id, isPending: ListUser.isPending })

@@ -7,7 +7,7 @@ import { createDb } from "@/db";
 import env from "@/envs-runtime";
 import * as listHandlers from "./lists.handlers";
 import mockApiContext from "../__test__/mock-api-context";
-import actionErrors from "../errors";
+import actionErrors from "../../api/errors";
 import { count, eq } from "drizzle-orm";
 
 const USER1_ID = crypto.randomUUID();
