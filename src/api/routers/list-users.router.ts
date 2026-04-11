@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 
 import * as listUserFunctions from "@/api/functions/list-users";
-import * as listUserInputs from "@/api/schema/list-users.input";
+import * as listUserInputs from "@/api/inputs/list-users.input";
 import { userAuthorized } from "../middlewares";
 
 const listUsersRouter = new Hono<HonoEnv>();

@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 
 import * as todoFunctions from "@/api/functions/todos";
-import * as todoInputs from "@/api/schema/todos.input";
+import * as todoInputs from "@/api/inputs/todos.input";
 import { userAuthorized } from "../middlewares";
 
 const todosRouter = new Hono<HonoEnv>();

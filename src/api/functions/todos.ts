@@ -4,7 +4,7 @@ import { eq, and, desc, or, like, inArray } from "drizzle-orm";
 import type { ApiFunction, TodoSelect } from "@/lib/types";
 import { invalidateListUsers, ensureListMember } from "../helpers";
 
-import * as todoInputs from "@/api/schema/todos.input";
+import * as todoInputs from "@/api/inputs/todos.input";
 import actionErrors from "../errors";
 import { env } from "cloudflare:workers";
 
