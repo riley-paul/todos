@@ -5,9 +5,9 @@ import { List, ListUser, User } from "@/db/schema";
 import { deleteAllData } from "@/db/scripts/delete-all-data";
 import { createDb } from "@/db";
 import env from "@/envs-runtime";
-import * as listHandlers from "./lists.handlers";
-import mockApiContext from "../__test__/mock-api-context";
-import actionErrors from "../../api/errors";
+import * as listHandlers from "../../actions/lists/lists.handlers";
+import mockApiContext from "../../actions/__test__/mock-api-context";
+import actionErrors from "../errors";
 import { count, eq } from "drizzle-orm";
 
 const USER1_ID = crypto.randomUUID();

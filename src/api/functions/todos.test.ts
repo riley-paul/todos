@@ -1,12 +1,12 @@
 import { expect, test, describe, beforeAll, afterAll } from "vitest";
-import mockApiContext from "../__test__/mock-api-context";
+import mockApiContext from "../../actions/__test__/mock-api-context";
 import { execSync } from "child_process";
 import { rmSync } from "fs";
 import { List, ListUser, Todo, User } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { deleteAllData } from "@/db/scripts/delete-all-data";
-import actionErrors from "../../api/errors";
-import * as todoHanders from "./todos.handlers";
+import actionErrors from "../errors";
+import * as todoHanders from "../../actions/todos/todos.handlers";
 import { createDb } from "@/db";
 import env from "@/envs-runtime";
 

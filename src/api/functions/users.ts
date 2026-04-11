@@ -1,12 +1,10 @@
-import { ensureAuthorized } from "../../api/helpers";
 import { createDb } from "@/db";
 import { Todo, User, UserSession } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import type { UserSelectWithSettings } from "@/lib/types";
-import * as userInputs from "./users.inputs";
+import type { ApiFunction, UserSelectWithSettings } from "@/lib/types";
+import * as userInputs from "../schema/users";
 import actionErrors from "../../api/errors";
 import { env } from "cloudflare:workers";
-import type { ActionHandler } from "node_modules/astro/dist/actions/runtime/types";
 
 const USER_FIELDS = {
   id: User.id,
@@ -16,29 +14,25 @@ const USER_FIELDS = {
   settingGroupCompleted: User.settingGroupCompleted,
 } as const;
 
-export const getMe: ActionHandler<
+export const getMe: ApiFunction<
   typeof userInputs.getMe,
   UserSelectWithSettings
-> = async (_, c) => {
+> = async ({ userId }) => {
   const db = createDb(env);
-  const user = c.locals.user;
-  if (!user) throw actionErrors.UNAUTHORIZED;
 
   const [data] = await db
     .select(USER_FIELDS)
     .from(User)
-    .where(eq(User.id, user.id));
+    .where(eq(User.id, userId));
 
   if (!data) throw actionErrors.NOT_FOUND;
   return data;
 };
 
-export const remove: ActionHandler<typeof userInputs.remove, null> = async (
-  _,
-  c,
-) => {
+export const remove: ApiFunction<typeof userInputs.remove, null> = async ({
+  userId,
+}) => {
   const db = createDb(env);
-  const userId = ensureAuthorized(c).id;
   await db.delete(UserSession).where(eq(UserSession.userId, userId));
   await db.delete(Todo).where(eq(Todo.userId, userId));
   await db.delete(User).where(eq(User.id, userId));
@@ -47,19 +41,15 @@ export const remove: ActionHandler<typeof userInputs.remove, null> = async (
   return null;
 };
 
-export const updateUserSettings: ActionHandler<
+export const updateUserSettings: ApiFunction<
   typeof userInputs.updateUserSettings,
   UserSelectWithSettings
-> = async (data, c) => {
+> = async ({ userId, ...data }) => {
   const db = createDb(env);
-  const user = c.locals.user;
-  if (!user) {
-    throw actionErrors.UNAUTHORIZED;
-  }
   const [updatedUser] = await db
     .update(User)
     .set(data)
-    .where(eq(User.id, user.id))
+    .where(eq(User.id, userId))
     .returning(USER_FIELDS);
 
   if (!updatedUser) throw actionErrors.NOT_FOUND;
