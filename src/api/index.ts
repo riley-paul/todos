@@ -6,11 +6,8 @@ import usersRouter from "@/api/routers/users.router";
 
 export const app = new Hono<HonoEnv>().basePath("/api");
 
-app.get("/", (c) => {
-  return c.json({ message: "Hello World" });
-});
+app.get("/", (c) => c.json({ message: "Hello World" }));
 
-// Routers
 app.route("/todos", todosRouter);
 app.route("/lists", listsRouter);
 app.route("/list-users", listUsersRouter);
