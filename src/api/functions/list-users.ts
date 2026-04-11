@@ -70,12 +70,17 @@ export const create: ApiFunction<
 };
 
 export const remove: ApiFunction<typeof listUserInputs.remove, null> = async ({
-  userId,
+  userToRemoveId,
+  userId: reqUserId,
   listId,
 }) => {
   const db = createDb(env);
 
-  // ensure current user is a member of the list or the one being removed
+  // ensure the requesting user is a member of the list
+  await ensureListMember({ listId, userId: reqUserId });
+
+  // if user to remove is not specified, default to removing the requesting user (i.e. leaving the list)
+  const userId = userToRemoveId || reqUserId;
   await ensureListMember({
     listId,
     userId,
@@ -86,7 +91,7 @@ export const remove: ApiFunction<typeof listUserInputs.remove, null> = async ({
     .delete(ListUser)
     .where(and(eq(ListUser.listId, listId), eq(ListUser.userId, userId)));
 
-  await invalidateListUsers({ listId, userId });
+  await invalidateListUsers({ listId, userId: reqUserId });
   return null;
 };
 
