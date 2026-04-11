@@ -4,7 +4,7 @@ import { createDb } from "@/db";
 import { List, ListUser, Todo, User } from "@/db/schema";
 import { and, asc, count, desc, eq, like, not, or, sql } from "drizzle-orm";
 import actionErrors from "../errors";
-import * as listInputs from "../schema/lists";
+import * as listInputs from "@/api/schema/lists.input";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import { env } from "cloudflare:workers";
 

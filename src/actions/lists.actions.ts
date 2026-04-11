@@ -1,5 +1,5 @@
 import { defineAction } from "astro:actions";
-import * as listInputs from "@/api/schema/lists";
+import * as listInputs from "@/api/schema/lists.input";
 import * as listFunctions from "@/api/functions/lists";
 import { ensureAuthorized } from "@/api/helpers";
 import { z } from "astro/zod";

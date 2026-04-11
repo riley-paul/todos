@@ -2,7 +2,7 @@ import { createDb } from "@/db";
 import { Todo, User, UserSession } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import type { ApiFunction, UserSelectWithSettings } from "@/lib/types";
-import * as userInputs from "../schema/users";
+import * as userInputs from "@/api/schema/users.input";
 import actionErrors from "../../api/errors";
 import { env } from "cloudflare:workers";
 

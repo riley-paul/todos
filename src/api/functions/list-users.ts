@@ -3,7 +3,7 @@ import { User, List, ListUser } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { ensureListMember, invalidateListUsers } from "../helpers";
 import actionErrors from "../errors";
-import * as listUserInputs from "../schema/list-users";
+import * as listUserInputs from "@/api/schema/list-users.input";
 import type { ApiFunction, ListUserSelect } from "@/lib/types";
 import { env } from "cloudflare:workers";
 

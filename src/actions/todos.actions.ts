@@ -1,5 +1,5 @@
 import { defineAction } from "astro:actions";
-import * as todoInputs from "@/api/schema/todos";
+import * as todoInputs from "@/api/schema/todos.input";
 import * as todoFunctions from "@/api/functions/todos";
 import { ensureAuthorized } from "@/api/helpers";
 

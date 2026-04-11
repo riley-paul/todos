@@ -1,5 +1,5 @@
 import { defineAction } from "astro:actions";
-import * as userInputs from "@/api/schema/users";
+import * as userInputs from "@/api/schema/users.input";
 import * as userFunctions from "@/api/functions/users";
 import { ensureAuthorized } from "@/api/helpers";
 import { z } from "astro/zod";
