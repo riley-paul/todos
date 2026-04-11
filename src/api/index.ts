@@ -1,10 +1,11 @@
 import { Hono } from "hono";
+import todosRouter from "@/api/routers/todos.router";
 
-export const app = new Hono<HonoEnv>().basePath("/api/").get("/hello", (c) => {
-  const user = c.env.user;
-  console.log(user);
-  return c.json({
-    message: "Hello from Hono!",
-    user,
-  });
+export const app = new Hono<HonoEnv>().basePath("/api");
+
+app.get("/", (c) => {
+  return c.json({ message: "Hello World" });
 });
+
+// Routers
+app.route("/todos", todosRouter);
