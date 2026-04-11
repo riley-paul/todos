@@ -2,9 +2,10 @@ import { defineAction } from "astro:actions";
 import * as listInputs from "@/api/schema/lists";
 import * as listFunctions from "@/api/functions/lists";
 import { ensureAuthorized } from "@/api/helpers";
+import { z } from "astro/zod";
 
 export const getAll = defineAction({
-  input: listInputs.getAll,
+  input: z.any(),
   handler: (input, c) => {
     const userId = ensureAuthorized(c).id;
     return listFunctions.getAll({ ...input, userId });
