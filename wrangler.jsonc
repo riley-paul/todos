@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "todos",
-  "main": "@astrojs/cloudflare/entrypoints/server",
+  "main": "./src/worker.ts",
   "compatibility_date": "2026-04-09",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
@@ -17,8 +17,13 @@
       {
         "name": "SOCKETS",
         "class_name": "Sockets",
-        "script_name": "src/api/sockets.ts"
       },
     ],
   },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_classes": ["Sockets"],
+    },
+  ],
 }
