@@ -12,4 +12,18 @@
   "observability": {
     "enabled": true,
   },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "SOCKETS",
+        "class_name": "Sockets",
+      },
+    ],
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["Sockets"],
+    },
+  ],
 }
