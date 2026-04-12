@@ -39,7 +39,7 @@ export default function useAlerts() {
     });
   };
 
-  const handleCancelInvite = (data: { listId: string; userId: string }) => {
+  const handleCancelInvite = (data: { listId: string; userToRemoveId: string }) => {
     dispatchAlert({
       type: "open",
       data: {
@@ -63,7 +63,7 @@ export default function useAlerts() {
     });
   };
 
-  const handleRemoveUser = (data: { listId: string; userId: string }) => {
+  const handleRemoveUser = (data: { listId: string; userToRemoveId: string }) => {
     dispatchAlert({
       type: "open",
       data: {
