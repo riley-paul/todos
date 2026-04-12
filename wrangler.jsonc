@@ -17,6 +17,7 @@
       {
         "name": "SOCKETS",
         "class_name": "Sockets",
+        "script_name": "src/api/sockets.ts"
       },
     ],
   },
