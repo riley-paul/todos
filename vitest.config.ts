@@ -1,4 +1,16 @@
-/// <reference types="vitest" />
-import { getViteConfig } from "astro/config";
+import { defineConfig } from "vitest/config";
+import { resolve } from "path";
 
-export default getViteConfig({});
+export default defineConfig({
+  test: {
+    environment: "node",
+    env: {
+      NODE_ENV: "test",
+    },
+  },
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "./src"),
+    },
+  },
+});

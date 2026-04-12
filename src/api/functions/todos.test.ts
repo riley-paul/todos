@@ -25,7 +25,7 @@ const LIST_USER_ID = crypto.randomUUID();
 const db = createDb(env);
 
 beforeAll(async () => {
-  execSync("npm run db:push:test");
+  execSync("npm run db:push");
   await deleteAllData();
 
   await db.insert(User).values([

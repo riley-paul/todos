@@ -14,6 +14,7 @@
     "dev:server": "astro dev --host",
     "cf-typegen": "wrangler types",
     "db:push": "drizzle-kit push",
+    "db:push:test": "NODE_ENV=test drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx src/db/seed.ts"
   },
