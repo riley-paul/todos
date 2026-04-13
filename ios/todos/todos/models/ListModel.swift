@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct ListModel: Identifiable, Codable {
-    var id: UUID
+struct ListModel: Identifiable, Codable, Hashable {
+    var id: String
     var name: String
     var todoCount: Int
 }
