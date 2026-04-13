@@ -21,7 +21,7 @@ func makeRequest(to path: String) throws -> URLRequest {
     return request
 }
 
-final class WebService {
+final class ApiService {
     private let session: URLSession
     private let decoder: JSONDecoder
 

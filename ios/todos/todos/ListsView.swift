@@ -8,9 +8,39 @@
 import SwiftUI
 
 struct ListsView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
+    @State private var lists: [ListModel] = []
+     @State private var isLoading = false
+     @State private var error: String?
+
+     private let apiService = ApiService()
+
+     var body: some View {
+         VStack {
+             if isLoading {
+                 ProgressView()
+             } else if let error {
+                 Text(error)
+             } else {
+                 List(lists) { list in
+                     Text(list.name)
+                 }
+             }
+         }
+         .task {
+             await loadTodos()
+         }
+     }
+
+     func loadTodos() async {
+         isLoading = true
+         defer { isLoading = false }
+
+         do {
+             lists = try await apiService.request("lists")
+         } catch {
+             self.error = error.localizedDescription
+         }
+     }
 }
 
 #Preview {

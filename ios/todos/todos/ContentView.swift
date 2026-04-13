@@ -13,9 +13,7 @@ struct ContentView: View {
         if KeychainHelper.load(forKey: "session_token") == nil {
             LoginView()
         } else {
-            VStack {
-                Text("Welcome to todos")
-            }.padding()
+            ListsView()
         }
     }
 }
