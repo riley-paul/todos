@@ -31,5 +31,16 @@ export async function GET(context: APIContext): Promise<Response> {
     sameSite: "lax",
   });
 
+  const platform = context.url.searchParams.get("platform");
+  if (platform === "native") {
+    context.cookies.set("oauth_platform", "native", {
+      path: "/",
+      secure: Boolean(import.meta.env.PROD),
+      httpOnly: true,
+      maxAge: 60 * 10,
+      sameSite: "lax",
+    });
+  }
+
   return context.redirect(url.toString());
 }

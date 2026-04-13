@@ -44,6 +44,8 @@ export async function GET(context: APIContext): Promise<Response> {
       .from(User)
       .where(eq(User.email, googleUser.email));
 
+    const isNative = context.cookies.get("oauth_platform")?.value === "native";
+
     if (existingUser) {
       await db
         .update(User)
@@ -51,6 +53,8 @@ export async function GET(context: APIContext): Promise<Response> {
         .where(eq(User.id, existingUser.id));
       const sessionToken = generateSessionToken();
       const session = await createSession(env, sessionToken, existingUser.id);
+      if (isNative)
+        return context.redirect(`todos://auth?token=${sessionToken}`);
       setSessionTokenCookie(env, context, sessionToken, session.expiresAt);
       return context.redirect("/");
     }
@@ -68,6 +72,7 @@ export async function GET(context: APIContext): Promise<Response> {
 
     const sessionToken = generateSessionToken();
     const session = await createSession(env, sessionToken, user.id);
+    if (isNative) return context.redirect(`todos://auth?token=${sessionToken}`);
     setSessionTokenCookie(env, context, sessionToken, session.expiresAt);
     return context.redirect("/");
   } catch (e) {
