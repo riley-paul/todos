@@ -6,10 +6,33 @@ enum NetworkError: Error {
     case noAuthToken
 }
 
-func makeRequest(to path: String) throws -> URLRequest {
-    let url = baseUrl
+func makeRequest(
+    to path: String,
+    queryItems: [URLQueryItem] = []
+) throws -> URLRequest {
+
+    guard
+        var components = URLComponents(
+            url: baseUrl,
+            resolvingAgainstBaseURL: false
+        )
+    else {
+        throw NetworkError.badResponse
+    }
+
+    components.path =
+        baseUrl
         .appendingPathComponent("api")
         .appendingPathComponent(path)
+        .path
+
+    if !queryItems.isEmpty {
+        components.queryItems = queryItems
+    }
+
+    guard let url = components.url else {
+        throw NetworkError.badResponse
+    }
 
     var request = URLRequest(url: url)
 
@@ -33,8 +56,11 @@ final class ApiService {
         self.decoder = decoder
     }
 
-    func request<T: Decodable>(_ path: String) async throws -> T {
-        let request = try makeRequest(to: path)
+    func request<T: Decodable>(
+        _ path: String,
+        query: [URLQueryItem] = []
+    ) async throws -> T {
+        let request = try makeRequest(to: path, queryItems: query)
 
         let (data, response) = try await session.data(for: request)
 

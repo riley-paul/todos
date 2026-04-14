@@ -24,7 +24,13 @@ struct ListsView: View {
                 NavigationStack {
                     List(lists) { list in
                         NavigationLink(value: list) {
-                            Text(list.name)
+                            HStack {
+
+                                Text(list.name)
+                                Spacer()
+                                Text(list.todoCount.formatted())
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                     }
                     .navigationDestination(for: ListModel.self) { list in
@@ -34,11 +40,11 @@ struct ListsView: View {
             }
         }
         .task {
-            await loadTodos()
+            await loadLists()
         }
     }
 
-    func loadTodos() async {
+    func loadLists() async {
         isLoading = true
         defer { isLoading = false }
 

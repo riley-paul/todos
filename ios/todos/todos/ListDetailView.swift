@@ -11,7 +11,8 @@ struct ListDetailView: View {
     let list: ListModel
 
     var body: some View {
-        Text( /*@START_MENU_TOKEN@*/"Hello, World!" /*@END_MENU_TOKEN@*/)
+        TodosView(listId: list.id)
+            .navigationTitle(list.name)
     }
 }
 
