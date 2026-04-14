@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/web-manifest",
+  "name": "Todos",
+  "short_name": "Todos",
+  "description": "A simple todo list app",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#061419",
+  "theme_color": "#061419",
+  "lang": "en",
+  "scope": "/"
+}

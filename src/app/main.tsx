@@ -16,6 +16,7 @@ import AlertSystem from "./components/alert-system/alert-system";
 import { handleError } from "./lib/errors";
 import RealtimeProvider from "./providers/realtime-provider";
 import type { UserSelect } from "@/lib/types";
+import useServiceWorker from "./hooks/use-service-worker";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -48,6 +49,7 @@ declare module "@tanstack/react-router" {
 type Props = { currentUser: UserSelect };
 
 const App: React.FC<Props> = ({ currentUser }) => {
+  useServiceWorker();
   return (
     <QueryClientProvider client={queryClient}>
       <RealtimeProvider currentUser={currentUser}>
