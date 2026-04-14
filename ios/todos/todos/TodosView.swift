@@ -26,7 +26,24 @@ struct TodosView: View {
                 List(todos) { todo in
                     HStack {
 
+                        Button(action: {
+                            toggleTodo(todo)
+                        }) {
+                            Image(
+                                systemName: todo.isCompleted
+                                    ? "checkmark.circle.fill" : "circle"
+                            )
+                            .foregroundStyle(todo.isCompleted ? .green : .gray)
+                        }
+                        .buttonStyle(.plain)
+
                         Text(todo.text)
+                            .strikethrough(todo.isCompleted)
+                            .foregroundStyle(
+                                todo.isCompleted ? .secondary : .primary
+                            )
+
+                        Spacer()
                     }
                 }
             }
@@ -50,6 +67,10 @@ struct TodosView: View {
         } catch {
             self.error = error.localizedDescription
         }
+    }
+
+    func toggleTodo(_: TodoModel) {
+        return
     }
 }
 
