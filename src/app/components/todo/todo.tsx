@@ -104,10 +104,14 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
     if (isHighlighted) navigate({ search: undefined });
   });
 
-  useHotkey("Escape", () => {
-    if (isEditing) setEditingTodoId(null);
-    if (isHighlighted) navigate({ search: undefined });
-  });
+  useHotkey(
+    "Escape",
+    () => {
+      if (isEditing) setEditingTodoId(null);
+      if (isHighlighted) navigate({ search: undefined });
+    },
+    { conflictBehavior: "allow" },
+  );
 
   useEffect(() => {
     if (isHighlighted)

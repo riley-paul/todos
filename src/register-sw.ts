@@ -1,6 +1,7 @@
 import { Workbox } from "workbox-window";
 
 export function registerServiceWorker(onUpdate: () => void) {
+  if (import.meta.env.DEV) return;
   if (!("serviceWorker" in navigator)) return;
 
   const wb = new Workbox("/sw.js");
