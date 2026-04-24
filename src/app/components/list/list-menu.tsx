@@ -1,5 +1,5 @@
 import React from "react";
-import { zListName, type ListSelect } from "@/lib/types";
+import { zListName } from "@/lib/types";
 import {
   Edit2Icon,
   ExternalLinkIcon,
@@ -20,9 +20,10 @@ import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
 import useAlerts from "@/app/hooks/use-alerts";
 import { getListUrl } from "@/lib/constants";
+import type { ListChipFragment } from "@/app/gql";
 
 type Props = {
-  list: ListSelect;
+  list: ListChipFragment;
 };
 
 const ListMenu: React.FC<Props> = ({ list }) => {

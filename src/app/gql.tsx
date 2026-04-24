@@ -22,6 +22,7 @@ export type ListObjectType = {
   id: Scalars['ID']['output'];
   isPending: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
+  order: Scalars['Int']['output'];
   otherUsers: Array<UserObjectType>;
   show: Scalars['Boolean']['output'];
   todoCount: Scalars['Int']['output'];
@@ -38,8 +39,14 @@ export type ListUserObjectType = {
 
 export type Query = {
   __typename?: 'Query';
+  list?: Maybe<ListObjectType>;
   lists: Array<ListObjectType>;
   todos: Array<TodoObjectType>;
+};
+
+
+export type QueryListArgs = {
+  listId: Scalars['ID']['input'];
 };
 
 
@@ -65,12 +72,21 @@ export type UserObjectType = {
   name: Scalars['String']['output'];
 };
 
-export type ListChipFragment = { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> };
+export type ListChipFragment = { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> };
+
+export type ListFullFragment = { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> };
 
 export type GetListsForChipsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetListsForChipsQuery = { __typename?: 'Query', lists: Array<{ __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> }> };
+export type GetListsForChipsQuery = { __typename?: 'Query', lists: Array<{ __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> }> };
+
+export type GetListQueryVariables = Exact<{
+  listId: Scalars['ID']['input'];
+}>;
+
+
+export type GetListQuery = { __typename?: 'Query', list?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
 
 export type TodoFragment = { __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } };
 
@@ -97,6 +113,7 @@ export const ListChipFragmentDoc = gql`
   name
   todoCount
   show
+  order
   isPending
   otherUsers {
     ...User
@@ -118,6 +135,15 @@ export const TodoFragmentDoc = gql`
   }
 }
     ${UserFragmentDoc}`;
+export const ListFullFragmentDoc = gql`
+    fragment ListFull on ListObjectType {
+  ...ListChip
+  todos {
+    ...Todo
+  }
+}
+    ${ListChipFragmentDoc}
+${TodoFragmentDoc}`;
 export const GetListsForChipsDocument = gql`
     query GetListsForChips {
   lists {
@@ -160,6 +186,49 @@ export type GetListsForChipsQueryHookResult = ReturnType<typeof useGetListsForCh
 export type GetListsForChipsLazyQueryHookResult = ReturnType<typeof useGetListsForChipsLazyQuery>;
 export type GetListsForChipsSuspenseQueryHookResult = ReturnType<typeof useGetListsForChipsSuspenseQuery>;
 export type GetListsForChipsQueryResult = Apollo.QueryResult<GetListsForChipsQuery, GetListsForChipsQueryVariables>;
+export const GetListDocument = gql`
+    query GetList($listId: ID!) {
+  list(listId: $listId) {
+    ...ListFull
+  }
+}
+    ${ListFullFragmentDoc}`;
+
+/**
+ * __useGetListQuery__
+ *
+ * To run a query within a React component, call `useGetListQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetListQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetListQuery({
+ *   variables: {
+ *      listId: // value for 'listId'
+ *   },
+ * });
+ */
+export function useGetListQuery(baseOptions: Apollo.QueryHookOptions<GetListQuery, GetListQueryVariables> & ({ variables: GetListQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetListQuery, GetListQueryVariables>(GetListDocument, options);
+      }
+export function useGetListLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetListQuery, GetListQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetListQuery, GetListQueryVariables>(GetListDocument, options);
+        }
+// @ts-ignore
+export function useGetListSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetListQuery, GetListQueryVariables>): Apollo.UseSuspenseQueryResult<GetListQuery, GetListQueryVariables>;
+export function useGetListSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetListQuery, GetListQueryVariables>): Apollo.UseSuspenseQueryResult<GetListQuery | undefined, GetListQueryVariables>;
+export function useGetListSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetListQuery, GetListQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetListQuery, GetListQueryVariables>(GetListDocument, options);
+        }
+export type GetListQueryHookResult = ReturnType<typeof useGetListQuery>;
+export type GetListLazyQueryHookResult = ReturnType<typeof useGetListLazyQuery>;
+export type GetListSuspenseQueryHookResult = ReturnType<typeof useGetListSuspenseQuery>;
+export type GetListQueryResult = Apollo.QueryResult<GetListQuery, GetListQueryVariables>;
 export const GetTodosDocument = gql`
     query GetTodos($listId: ID) {
   todos(listId: $listId) {

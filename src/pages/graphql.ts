@@ -70,6 +70,13 @@ builder.drizzleObject("List", {
         return !!listUser?.show;
       },
     }),
+    order: t.int({
+      select: { with: { listUser: true } },
+      resolve: async (list, args, ctx) => {
+        const listUser = list.listUser.find((lu) => lu.userId === ctx.userId);
+        return listUser?.order ?? 1_000_000;
+      },
+    }),
     isPending: t.boolean({
       select: { with: { listUser: true } },
       resolve: async (list, args, ctx) => {
@@ -102,6 +109,19 @@ builder.queryType({
         if (userLists.length) filters.push({ id: { in: userLists } });
 
         return db.query.List.findMany(query({ where: { AND: filters } }));
+      },
+    }),
+    list: t.drizzleField({
+      type: "List",
+      nullable: true,
+      args: { listId: t.arg.id({ required: true }) },
+      resolve: async (query, root, args, ctx) => {
+        const userLists = await getUserLists(ctx.userId);
+        if (!userLists.includes(args.listId)) return null;
+
+        return db.query.List.findFirst(
+          query({ where: { id: { eq: args.listId } } }),
+        );
       },
     }),
     todos: t.drizzleField({

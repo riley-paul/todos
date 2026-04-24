@@ -4,14 +4,13 @@ import { cn } from "@/app/lib/utils";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Todo from "./todo";
 import { Button, Card, Text } from "@radix-ui/themes";
-import type { ListSelect } from "@/lib/types";
 import { qUser } from "@/app/lib/queries";
 import { ChevronRightIcon } from "lucide-react";
 import DeleteCompletedTodosButton from "./footer-buttons/delete-completed-todos-button";
 import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
 import NoTodosScreen from "../screens/no-todos";
-import { useGetTodosSuspenseQuery, type TodoFragment } from "@/app/gql";
+import { type ListFullFragment, type TodoFragment } from "@/app/gql";
 
 const CompletedTodosActions: React.FC<{ listId: string }> = ({ listId }) => (
   <div className="flex items-center justify-end gap-4">
@@ -61,13 +60,11 @@ const CompletedTodosGroup: React.FC<{
 const produceTodo = (todo: TodoFragment) => <Todo key={todo.id} todo={todo} />;
 
 type Props = {
-  list: ListSelect;
+  list: ListFullFragment;
 };
 
 const Todos: React.FC<Props> = ({ list }) => {
-  const { data: { todos = [] } = {} } = useGetTodosSuspenseQuery({
-    variables: { listId: list.id },
-  });
+  const { todos } = list;
   const { data: user } = useSuspenseQuery(qUser);
 
   const completedTodos = todos.filter(({ isCompleted }) => isCompleted);

@@ -3,14 +3,28 @@ fragment ListChip on ListObjectType {
   name
   todoCount
   show
+  order
   isPending
   otherUsers {
     ...User
   }
 }
 
+fragment ListFull on ListObjectType {
+  ...ListChip
+  todos {
+    ...Todo
+  }
+}
+
 query GetListsForChips {
   lists {
     ...ListChip
+  }
+}
+
+query GetList($listId: ID!) {
+  list(listId: $listId) {
+    ...ListFull
   }
 }
