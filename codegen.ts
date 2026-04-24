@@ -11,12 +11,18 @@ const config: CodegenConfig = {
   },
   documents: ["src/**/*.graphql"],
   generates: {
-    "./src/app/gql/": {
-      preset: "client",
+    "./src/app/gql.tsx": {
+      plugins: [
+        "typescript",
+        "typescript-operations",
+        "typescript-react-apollo",
+      ],
     },
   },
   config: {
     useTypeImports: true,
+    withComponents: false,
+    withHOC: false,
   },
 };
 export default config;

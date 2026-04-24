@@ -9,9 +9,9 @@ import ListReorder from "./list-reorder";
 import { ACCENT_COLOR } from "@/lib/constants";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import { useSuspenseQuery } from "@apollo/client/react";
-import { GetListsForChipsDocument } from "@/app/gql/graphql";
+import { GetListsForChipsDocument, type ListChipFragment } from "@/app/gql/graphql";
 
-const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
+const ListChip: React.FC<{ list: ListChipFragment }> = ({ list }) => {
   const link = linkOptions({
     to: "/todos/$listId",
     params: { listId: list.id },
@@ -20,8 +20,8 @@ const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
   const isActive = useIsLinkActive(link);
 
   const getColor = () => {
-    if (!list.show) return "red";
-    if (list.isPending) return "gray";
+    if (!list.listUser.show) return "red";
+    if (list.listUser.isPending) return "gray";
     return ACCENT_COLOR;
   };
 

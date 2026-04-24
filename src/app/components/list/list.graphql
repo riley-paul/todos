@@ -5,6 +5,7 @@ query GetListsForChips {
     todoCount
     listUser {
       show
+      isPending
     }
   }
 }
