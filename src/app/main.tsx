@@ -18,7 +18,7 @@ import RealtimeProvider from "./providers/realtime-provider";
 import type { UserSelect } from "@/lib/types";
 import useServiceWorker from "./hooks/use-service-worker";
 
-import { ApolloClient, HttpLink, InMemoryCache, gql } from "@apollo/client";
+import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
 
 const queryClient = new QueryClient({
