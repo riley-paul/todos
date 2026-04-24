@@ -1,4 +1,4 @@
-import { qLists, qUser } from "@/app/lib/queries";
+import {  qUser } from "@/app/lib/queries";
 import { type QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
@@ -15,7 +15,6 @@ type RouterContext = {
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: Component,
   loader: async ({ context }) => {
-    context.queryClient.ensureQueryData(qLists);
     const user = await context.queryClient.ensureQueryData(qUser);
     return { user };
   },

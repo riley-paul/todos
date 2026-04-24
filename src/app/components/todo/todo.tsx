@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import useMutations from "@/app/hooks/use-mutations";
-import type { TodoSelect } from "@/lib/types";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 import UserBubble from "@/app/components/ui/user/user-bubble";
 import {
@@ -26,6 +25,7 @@ import { useAtom } from "jotai";
 import { editingTodoIdAtom } from "./todos.store";
 import { SaveIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
+import type { TodoFragment } from "@/app/gql";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -86,7 +86,7 @@ const TodoForm: React.FC<{
   );
 };
 
-const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
+const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
   const { listId } = useParams({ strict: false });
   const { updateTodo } = useMutations();
   const navigate = useNavigate();
