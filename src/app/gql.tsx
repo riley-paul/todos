@@ -72,7 +72,7 @@ export type UserObjectType = {
   name: Scalars['String']['output'];
 };
 
-export type ListChipFragment = { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> };
+export type ShallowListFragment = { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> };
 
 export type ListFullFragment = { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> };
 
@@ -107,7 +107,7 @@ export const UserFragmentDoc = gql`
   avatarUrl
 }
     `;
-export const ListChipFragmentDoc = gql`
+export const ShallowListFragmentDoc = gql`
     fragment ListChip on ListObjectType {
   id
   name
@@ -142,7 +142,7 @@ export const ListFullFragmentDoc = gql`
     ...Todo
   }
 }
-    ${ListChipFragmentDoc}
+    ${ShallowListFragmentDoc}
 ${TodoFragmentDoc}`;
 export const GetListsForChipsDocument = gql`
     query GetListsForChips {
@@ -150,7 +150,7 @@ export const GetListsForChipsDocument = gql`
     ...ListChip
   }
 }
-    ${ListChipFragmentDoc}`;
+    ${ShallowListFragmentDoc}`;
 
 /**
  * __useGetListsForChipsQuery__

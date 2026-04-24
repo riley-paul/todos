@@ -1,4 +1,4 @@
-fragment ListChip on ListObjectType {
+fragment ShallowList on ListObjectType {
   id
   name
   todoCount
@@ -11,7 +11,7 @@ fragment ListChip on ListObjectType {
 }
 
 fragment ListFull on ListObjectType {
-  ...ListChip
+  ...ShallowList
   todos {
     ...Todo
   }
@@ -19,7 +19,7 @@ fragment ListFull on ListObjectType {
 
 query GetListsForChips {
   lists {
-    ...ListChip
+    ...ShallowList
   }
 }
 

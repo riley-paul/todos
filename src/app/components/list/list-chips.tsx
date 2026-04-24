@@ -9,10 +9,10 @@ import { ACCENT_COLOR } from "@/lib/constants";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import {
   useGetListsForChipsSuspenseQuery,
-  type ListChipFragment,
+  type ShallowListFragment,
 } from "@/app/gql";
 
-const ListChip: React.FC<{ list: ListChipFragment }> = ({ list }) => {
+const ListChip: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
   const link = linkOptions({
     to: "/todos/$listId",
     params: { listId: list.id },

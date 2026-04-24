@@ -20,10 +20,10 @@ import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
 import useAlerts from "@/app/hooks/use-alerts";
 import { getListUrl } from "@/lib/constants";
-import type { ListChipFragment } from "@/app/gql";
+import type { ShallowListFragment } from "@/app/gql";
 
 type Props = {
-  list: ListChipFragment;
+  list: ShallowListFragment;
 };
 
 const ListMenu: React.FC<Props> = ({ list }) => {

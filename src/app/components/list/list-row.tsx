@@ -3,9 +3,9 @@ import { HourglassIcon } from "lucide-react";
 import React from "react";
 import UserBubbleGroup from "../ui/user/user-bubble-group";
 import { cn } from "@/app/lib/utils";
-import type { ListChipFragment } from "@/app/gql";
+import type { ShallowListFragment } from "@/app/gql";
 
-type Props = { list: ListChipFragment };
+type Props = { list: ShallowListFragment };
 
 const ListRow: React.FC<Props> = ({ list }) => {
   return (

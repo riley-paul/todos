@@ -5,9 +5,9 @@ import { PlusIcon, Share2Icon } from "lucide-react";
 import useAlerts from "@/app/hooks/use-alerts";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 import UserBubbleGroup from "@/app/components/ui/user/user-bubble-group";
-import type { ListChipFragment } from "@/app/gql";
+import type { ShallowListFragment } from "@/app/gql";
 
-const ListSharing: React.FC<{ list: ListChipFragment }> = ({ list }) => {
+const ListSharing: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
   const { handleInviteUser } = useAlerts();
 
   return (

@@ -41,13 +41,13 @@ import { Link } from "@tanstack/react-router";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import ListRow from "./list-row";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
-import type { ListChipFragment } from "@/app/gql";
+import type { ShallowListFragment } from "@/app/gql";
 
 type SortableObjectData =
   | {
       type: "list";
       id: string;
-      list: ListChipFragment;
+      list: ShallowListFragment;
     }
   | {
       type: "separator";
@@ -55,9 +55,9 @@ type SortableObjectData =
     };
 
 const getSortableObjectList = (
-  lists: ListChipFragment[],
+  lists: ShallowListFragment[],
 ): SortableObjectData[] => {
-  const listToSortableObj = (list: ListChipFragment): SortableObjectData => ({
+  const listToSortableObj = (list: ShallowListFragment): SortableObjectData => ({
     type: "list",
     id: list.id,
     list,
@@ -171,7 +171,7 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
   }
 };
 
-type ListReorderContentProps = { lists: ListChipFragment[] };
+type ListReorderContentProps = { lists: ShallowListFragment[] };
 
 const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -237,7 +237,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
 };
 
 type ListReorderProps = {
-  lists: ListChipFragment[];
+  lists: ShallowListFragment[];
 };
 
 const ListReorder: React.FC<ListReorderProps> = ({ lists }) => {

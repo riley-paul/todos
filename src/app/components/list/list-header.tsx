@@ -3,9 +3,9 @@ import React from "react";
 import ListMenu from "./list-menu";
 import { cn } from "@/app/lib/utils";
 import ListSharing from "./list-sharing";
-import type { ListChipFragment } from "@/app/gql";
+import type { ShallowListFragment } from "@/app/gql";
 
-type Props = { list: ListChipFragment };
+type Props = { list: ShallowListFragment };
 
 const ListHeader: React.FC<Props> = ({ list }) => {
   return (
