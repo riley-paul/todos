@@ -91,12 +91,19 @@ builder.queryType({
 });
 
 export const ALL: APIRoute = async (ctx) => {
+  const bearerToken = ctx.request.headers
+    .get("Authorization")
+    ?.replace("Bearer ", "");
+  const bearerTokenValid =
+    bearerToken !== undefined && bearerToken === env.API_KEY;
+
   const user = ctx.locals.user;
-  if (!user) return new Response("Unauthorized", { status: 401 });
+  if (!(user || bearerTokenValid))
+    return new Response("Unauthorized", { status: 401 });
 
   const yoga = createYoga({
     schema: builder.toSchema(),
-    context: { userId: user.id },
+    context: { userId: user?.id },
     fetchAPI: { Response },
   });
   return yoga(ctx.request);
