@@ -16,18 +16,18 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
-export type List = {
-  __typename?: 'List';
-  id?: Maybe<Scalars['ID']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
+export type ListObjectType = {
+  __typename?: 'ListObjectType';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
   todoCount: Scalars['Int']['output'];
-  todos?: Maybe<Array<Todo>>;
+  todos: Array<TodoObjectType>;
 };
 
 export type Query = {
   __typename?: 'Query';
-  lists?: Maybe<Array<List>>;
-  todos?: Maybe<Array<Todo>>;
+  lists: Array<ListObjectType>;
+  todos: Array<TodoObjectType>;
 };
 
 
@@ -35,28 +35,28 @@ export type QueryTodosArgs = {
   listId?: InputMaybe<Scalars['ID']['input']>;
 };
 
-export type Todo = {
-  __typename?: 'Todo';
-  author?: Maybe<User>;
-  id?: Maybe<Scalars['ID']['output']>;
-  isAuthor?: Maybe<Scalars['Boolean']['output']>;
-  isCompleted?: Maybe<Scalars['Boolean']['output']>;
-  list?: Maybe<List>;
-  text?: Maybe<Scalars['String']['output']>;
+export type TodoObjectType = {
+  __typename?: 'TodoObjectType';
+  author: UserObjectType;
+  id: Scalars['ID']['output'];
+  isAuthor: Scalars['Boolean']['output'];
+  isCompleted: Scalars['Boolean']['output'];
+  list: ListObjectType;
+  text: Scalars['String']['output'];
 };
 
-export type User = {
-  __typename?: 'User';
+export type UserObjectType = {
+  __typename?: 'UserObjectType';
   avatarUrl?: Maybe<Scalars['String']['output']>;
-  email?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
+  email: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type GetListsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetListsQuery = { __typename?: 'Query', lists?: Array<{ __typename?: 'List', id?: string | null, name?: string | null }> | null };
+export type GetListsQuery = { __typename?: 'Query', lists: Array<{ __typename?: 'ListObjectType', id: string, name: string }> };
 
 
 export const GetListsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetLists"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lists"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetListsQuery, GetListsQueryVariables>;

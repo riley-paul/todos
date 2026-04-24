@@ -12,6 +12,7 @@ type DrizzleRelations = typeof relations;
 export interface PothosTypes {
   DrizzleRelations: DrizzleRelations;
   Context: { userId: string };
+  DefaultFieldNullability: false;
 }
 
 const db = createDb(env);
@@ -23,6 +24,7 @@ const getUserLists = async (userId: string): Promise<string[]> => {
 
 const builder = new SchemaBuilder<PothosTypes>({
   plugins: [DrizzlePlugin],
+  defaultFieldNullability: false,
   drizzle: {
     client: db, // or (ctx) => db if you want to create a request specific client
     getTableConfig,
@@ -31,15 +33,17 @@ const builder = new SchemaBuilder<PothosTypes>({
 });
 
 builder.drizzleObject("User", {
+  name: "UserObjectType",
   fields: (t) => ({
     id: t.exposeID("id"),
     name: t.exposeString("name"),
     email: t.exposeString("email"),
-    avatarUrl: t.exposeString("avatarUrl"),
+    avatarUrl: t.exposeString("avatarUrl", { nullable: true }),
   }),
 });
 
 builder.drizzleObject("Todo", {
+  name: "TodoObjectType",
   fields: (t) => ({
     id: t.exposeID("id"),
     text: t.exposeString("text"),
@@ -53,6 +57,7 @@ builder.drizzleObject("Todo", {
 });
 
 builder.drizzleObject("List", {
+  name: "ListObjectType",
   fields: (t) => ({
     id: t.exposeID("id"),
     name: t.exposeString("name"),
