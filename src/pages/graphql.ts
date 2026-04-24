@@ -24,19 +24,49 @@ const builder = new SchemaBuilder<PothosTypes>({
   },
 });
 
-const UserRef = builder.drizzleObject("User", {});
+builder.drizzleObject("User", {
+  fields: (t) => ({
+    id: t.exposeID("id"),
+    name: t.exposeString("name"),
+    email: t.exposeString("email"),
+    avatarUrl: t.exposeString("avatarUrl"),
+  }),
+});
 
-const TodoRef = builder.drizzleObject("Todo", {});
+builder.drizzleObject("Todo", {
+  fields: (t) => ({
+    id: t.exposeID("id"),
+    text: t.exposeString("text"),
+    isCompleted: t.exposeBoolean("isCompleted"),
+    isAuthor: t.boolean({
+      resolve: (parent, _args, ctx) => parent.userId === ctx.userId,
+    }),
+    author: t.relation("author"),
+    list: t.relation("list"),
+  }),
+});
 
-const ListRef = builder.drizzleObject("List", {});
+builder.drizzleObject("List", {
+  fields: (t) => ({
+    id: t.exposeID("id"),
+    name: t.exposeString("name"),
+    todos: t.relation("todos"),
+  }),
+});
 
 builder.queryType({
   fields: (t) => ({
-    lists: t.field({
-      type: [ListRef],
-      resolve: async () => {
-        return db.query.List.findMany();
-      },
+    lists: t.drizzleField({
+      type: ["List"],
+      resolve: async (query, _args, ctx) =>
+        db.query.List.findMany(
+          query({
+            where: (lists, { exists }) =>
+              exists(db.query.ListUser, (lu) =>
+                lu.listId.equals(lists.id).and(lu.userId.equals(ctx.userId)),
+              ),
+          }),
+        ),
     }),
   }),
 });
