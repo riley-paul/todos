@@ -17,7 +17,7 @@ const relations = defineRelations(schema, (r) => ({
       from: r.List.id.through(r.ListUser.listId),
       to: r.User.id.through(r.ListUser.userId),
     }),
-    listUser: r.one.ListUser({
+    listUser: r.many.ListUser({
       from: r.List.id,
       to: r.ListUser.listId,
     }),

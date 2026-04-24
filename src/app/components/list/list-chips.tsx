@@ -21,8 +21,8 @@ const ListChip: React.FC<{ list: ListChipFragment }> = ({ list }) => {
   const isActive = useIsLinkActive(link);
 
   const getColor = () => {
-    if (!list.listUser.show) return "red";
-    if (list.listUser.isPending) return "gray";
+    if (!list.show) return "red";
+    if (list.isPending) return "gray";
     return ACCENT_COLOR;
   };
 
@@ -52,7 +52,7 @@ const ListChips: React.FC = () => {
   return (
     <div className="flex flex-wrap gap-2">
       {lists
-        .filter(({ listUser: { show } }) => show)
+        .filter(({ show }) => show)
         .map((list) => (
           <ListChip key={list.id} list={list} />
         ))}

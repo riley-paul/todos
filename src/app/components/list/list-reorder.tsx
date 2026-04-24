@@ -69,17 +69,17 @@ const getSortableObjectList = (
   };
 
   if (lists.length === 0) return [];
-  if (lists.every(({ listUser: { show } }) => show)) {
+  if (lists.every(({ show }) => show)) {
     return [...lists.map(listToSortableObj), separator];
   }
-  if (lists.every(({ listUser: { show } }) => !show)) {
+  if (lists.every(({ show }) => !show)) {
     return [separator, ...lists.map(listToSortableObj)];
   }
 
   return [
-    ...lists.filter(({ listUser: { show } }) => show).map(listToSortableObj),
+    ...lists.filter(({ show }) => show).map(listToSortableObj),
     separator,
-    ...lists.filter(({ listUser: { show } }) => !show).map(listToSortableObj),
+    ...lists.filter(({ show }) => !show).map(listToSortableObj),
   ];
 };
 
@@ -133,7 +133,7 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
                 <section
                   className={cn(
                     "flex h-full flex-1 items-center gap-2",
-                    list.listUser.isPending && "opacity-50",
+                    list.isPending && "opacity-50",
                   )}
                 >
                   <ListRow list={list} />

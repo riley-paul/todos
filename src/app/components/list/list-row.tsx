@@ -15,14 +15,14 @@ const ListRow: React.FC<Props> = ({ list }) => {
         weight="bold"
         className={cn(
           "flex flex-1 gap-2",
-          list.listUser.isPending && "opacity-50",
+          list.isPending && "opacity-50",
         )}
       >
         <span>{list.name}</span>
         <span className="font-mono opacity-70">{list.todoCount}</span>
       </Text>
       <section className="flex items-center gap-2">
-        {list.listUser.isPending && (
+        {list.isPending && (
           <HourglassIcon className="text-amber-10 size-4" />
         )}
         <UserBubbleGroup users={list.otherUsers} />

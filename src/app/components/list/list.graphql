@@ -2,10 +2,8 @@ fragment ListChip on ListObjectType {
   id
   name
   todoCount
-  listUser {
-    show
-    isPending
-  }
+  show
+  isPending
   otherUsers {
     ...User
   }

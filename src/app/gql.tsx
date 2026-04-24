@@ -20,9 +20,10 @@ export type Scalars = {
 export type ListObjectType = {
   __typename?: 'ListObjectType';
   id: Scalars['ID']['output'];
-  listUser: ListUserObjectType;
+  isPending: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   otherUsers: Array<UserObjectType>;
+  show: Scalars['Boolean']['output'];
   todoCount: Scalars['Int']['output'];
   todos: Array<TodoObjectType>;
 };
@@ -64,12 +65,12 @@ export type UserObjectType = {
   name: Scalars['String']['output'];
 };
 
-export type ListChipFragment = { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, listUser: { __typename?: 'ListUserObjectType', show: boolean, isPending: boolean }, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> };
+export type ListChipFragment = { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> };
 
 export type GetListsForChipsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetListsForChipsQuery = { __typename?: 'Query', lists: Array<{ __typename?: 'ListObjectType', id: string, name: string, todoCount: number, listUser: { __typename?: 'ListUserObjectType', show: boolean, isPending: boolean }, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> }> };
+export type GetListsForChipsQuery = { __typename?: 'Query', lists: Array<{ __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> }> };
 
 export type UserFragment = { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null };
 
@@ -86,10 +87,8 @@ export const ListChipFragmentDoc = gql`
   id
   name
   todoCount
-  listUser {
-    show
-    isPending
-  }
+  show
+  isPending
   otherUsers {
     ...User
   }
