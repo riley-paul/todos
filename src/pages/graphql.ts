@@ -58,15 +58,11 @@ builder.queryType({
   fields: (t) => ({
     lists: t.drizzleField({
       type: ["List"],
-      resolve: async (query, _args, ctx) =>
-        db.query.List.findMany(
-          query({
-            where: (lists, { exists }) =>
-              exists(db.query.ListUser, (lu) =>
-                lu.listId.equals(lists.id).and(lu.userId.equals(ctx.userId)),
-              ),
-          }),
-        ),
+      resolve: async (query, _args, ctx) => db.query.List.findMany(query()),
+    }),
+    todos: t.drizzleField({
+      type: ["Todo"],
+      resolve: async (query, _args, ctx) => db.query.Todo.findMany(query()),
     }),
   }),
 });
