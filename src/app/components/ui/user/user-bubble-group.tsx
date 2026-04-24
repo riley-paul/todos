@@ -1,10 +1,10 @@
-import type { UserSelect } from "@/lib/types";
 import React from "react";
 import { Avatar } from "@radix-ui/themes";
 import UserBubble from "./user-bubble";
+import type { UserFragment } from "@/app/gql";
 
 type Props = {
-  users: UserSelect[];
+  users: UserFragment[];
   numAvatars?: number;
 };
 
@@ -14,7 +14,7 @@ const UserBubbleGroup: React.FC<Props> = ({ users, numAvatars = 3 }) => {
   }
 
   return (
-    <div className="flex flex-wrap-reverse items-center pl-rx-1">
+    <div className="pl-rx-1 flex flex-wrap-reverse items-center">
       {users.slice(0, numAvatars).map((user) => (
         <div key={user.id} className="-ml-rx-1 flex items-center">
           <UserBubble user={user} avatarProps={{ size: "1" }} />
@@ -27,7 +27,7 @@ const UserBubbleGroup: React.FC<Props> = ({ users, numAvatars = 3 }) => {
           variant="solid"
           fallback={`+${users.length - numAvatars}`}
           radius="full"
-          className="-ml-rx-1 h-4 text-1"
+          className="-ml-rx-1 text-1 h-4"
           size="1"
         />
       )}

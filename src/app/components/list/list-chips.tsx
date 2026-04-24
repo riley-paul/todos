@@ -1,6 +1,5 @@
 import useAlerts from "@/app/hooks/use-alerts";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
-import { type ListSelect } from "@/lib/types";
 import { Badge, IconButton, Kbd, Tooltip } from "@radix-ui/themes";
 import { Link, linkOptions } from "@tanstack/react-router";
 import { ListPlusIcon } from "lucide-react";
@@ -8,8 +7,10 @@ import React from "react";
 import ListReorder from "./list-reorder";
 import { ACCENT_COLOR } from "@/lib/constants";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
-import { useSuspenseQuery } from "@apollo/client/react";
-import { GetListsForChipsDocument, type ListChipFragment } from "@/app/gql/graphql";
+import {
+  useGetListsForChipsSuspenseQuery,
+  type ListChipFragment,
+} from "@/app/gql";
 
 const ListChip: React.FC<{ list: ListChipFragment }> = ({ list }) => {
   const link = linkOptions({
@@ -42,9 +43,7 @@ const ListChip: React.FC<{ list: ListChipFragment }> = ({ list }) => {
 
 const ListChips: React.FC = () => {
   const { handleCreateList } = useAlerts();
-  const { data: { lists = [] } = {} } = useSuspenseQuery(
-    GetListsForChipsDocument,
-  );
+  const { data: { lists = [] } = {} } = useGetListsForChipsSuspenseQuery();
 
   useHotkey("A", handleCreateList, { ignoreInputs: true });
 

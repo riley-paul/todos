@@ -1,11 +1,18 @@
+fragment ListChip on ListObjectType {
+  id
+  name
+  todoCount
+  listUser {
+    show
+    isPending
+  }
+  otherUsers {
+    ...User
+  }
+}
+
 query GetListsForChips {
   lists {
-    id
-    name
-    todoCount
-    listUser {
-      show
-      isPending
-    }
+    ...ListChip
   }
 }

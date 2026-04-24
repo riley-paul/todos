@@ -1,0 +1,6 @@
+fragment User on UserObjectType {
+  id
+  name
+  email
+  avatarUrl
+}

@@ -64,6 +64,7 @@ builder.drizzleObject("List", {
     todoCount: t.relatedCount("todos"),
     todos: t.relation("todos"),
     listUser: t.relation("listUser"),
+    otherUsers: t.relation("users"),
   }),
 });
 

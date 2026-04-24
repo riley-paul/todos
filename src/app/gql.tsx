@@ -22,6 +22,7 @@ export type ListObjectType = {
   id: Scalars['ID']['output'];
   listUser: ListUserObjectType;
   name: Scalars['String']['output'];
+  otherUsers: Array<UserObjectType>;
   todoCount: Scalars['Int']['output'];
   todos: Array<TodoObjectType>;
 };
@@ -63,25 +64,44 @@ export type UserObjectType = {
   name: Scalars['String']['output'];
 };
 
+export type ListChipFragment = { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, listUser: { __typename?: 'ListUserObjectType', show: boolean, isPending: boolean }, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> };
+
 export type GetListsForChipsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetListsForChipsQuery = { __typename?: 'Query', lists: Array<{ __typename?: 'ListObjectType', id: string, name: string, todoCount: number, listUser: { __typename?: 'ListUserObjectType', show: boolean, isPending: boolean } }> };
+export type GetListsForChipsQuery = { __typename?: 'Query', lists: Array<{ __typename?: 'ListObjectType', id: string, name: string, todoCount: number, listUser: { __typename?: 'ListUserObjectType', show: boolean, isPending: boolean }, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> }> };
 
+export type UserFragment = { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null };
 
+export const UserFragmentDoc = gql`
+    fragment User on UserObjectType {
+  id
+  name
+  email
+  avatarUrl
+}
+    `;
+export const ListChipFragmentDoc = gql`
+    fragment ListChip on ListObjectType {
+  id
+  name
+  todoCount
+  listUser {
+    show
+    isPending
+  }
+  otherUsers {
+    ...User
+  }
+}
+    ${UserFragmentDoc}`;
 export const GetListsForChipsDocument = gql`
     query GetListsForChips {
   lists {
-    id
-    name
-    todoCount
-    listUser {
-      show
-      isPending
-    }
+    ...ListChip
   }
 }
-    `;
+    ${ListChipFragmentDoc}`;
 
 /**
  * __useGetListsForChipsQuery__

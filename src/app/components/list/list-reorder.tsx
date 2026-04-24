@@ -19,7 +19,6 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import type { ListSelect } from "@/lib/types";
 import {
   Button,
   Dialog,
@@ -42,20 +41,23 @@ import { Link } from "@tanstack/react-router";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import ListRow from "./list-row";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
+import type { ListChipFragment } from "@/app/gql";
 
 type SortableObjectData =
   | {
       type: "list";
       id: string;
-      list: ListSelect;
+      list: ListChipFragment;
     }
   | {
       type: "separator";
       id: string;
     };
 
-const getSortableObjectList = (lists: ListSelect[]): SortableObjectData[] => {
-  const listToSortableObj = (list: ListSelect): SortableObjectData => ({
+const getSortableObjectList = (
+  lists: ListChipFragment[],
+): SortableObjectData[] => {
+  const listToSortableObj = (list: ListChipFragment): SortableObjectData => ({
     type: "list",
     id: list.id,
     list,
@@ -67,17 +69,17 @@ const getSortableObjectList = (lists: ListSelect[]): SortableObjectData[] => {
   };
 
   if (lists.length === 0) return [];
-  if (lists.every(({ show }) => show)) {
+  if (lists.every(({ listUser: { show } }) => show)) {
     return [...lists.map(listToSortableObj), separator];
   }
-  if (lists.every(({ show }) => !show)) {
+  if (lists.every(({ listUser: { show } }) => !show)) {
     return [separator, ...lists.map(listToSortableObj)];
   }
 
   return [
-    ...lists.filter(({ show }) => show).map(listToSortableObj),
+    ...lists.filter(({ listUser: { show } }) => show).map(listToSortableObj),
     separator,
-    ...lists.filter(({ show }) => !show).map(listToSortableObj),
+    ...lists.filter(({ listUser: { show } }) => !show).map(listToSortableObj),
   ];
 };
 
@@ -131,7 +133,7 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
                 <section
                   className={cn(
                     "flex h-full flex-1 items-center gap-2",
-                    list.isPending && "opacity-50",
+                    list.listUser.isPending && "opacity-50",
                   )}
                 >
                   <ListRow list={list} />
@@ -169,7 +171,7 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
   }
 };
 
-type ListReorderContentProps = { lists: ListSelect[] };
+type ListReorderContentProps = { lists: ListChipFragment[] };
 
 const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -235,7 +237,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
 };
 
 type ListReorderProps = {
-  lists: ListSelect[];
+  lists: ListChipFragment[];
 };
 
 const ListReorder: React.FC<ListReorderProps> = ({ lists }) => {
