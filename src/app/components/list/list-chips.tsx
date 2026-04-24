@@ -1,15 +1,15 @@
 import useAlerts from "@/app/hooks/use-alerts";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
-import { qLists } from "@/app/lib/queries";
 import { type ListSelect } from "@/lib/types";
 import { Badge, IconButton, Kbd, Tooltip } from "@radix-ui/themes";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, linkOptions } from "@tanstack/react-router";
 import { ListPlusIcon } from "lucide-react";
 import React from "react";
 import ListReorder from "./list-reorder";
 import { ACCENT_COLOR } from "@/lib/constants";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
+import { useSuspenseQuery } from "@apollo/client/react";
+import { GetListsForChipsDocument } from "@/app/gql/graphql";
 
 const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
   const link = linkOptions({
@@ -42,7 +42,9 @@ const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
 
 const ListChips: React.FC = () => {
   const { handleCreateList } = useAlerts();
-  const { data: lists } = useSuspenseQuery(qLists);
+  const { data: { lists = [] } = {} } = useSuspenseQuery(
+    GetListsForChipsDocument,
+  );
 
   useHotkey("A", handleCreateList, { ignoreInputs: true });
 
@@ -51,7 +53,7 @@ const ListChips: React.FC = () => {
   return (
     <div className="flex flex-wrap gap-2">
       {lists
-        .filter(({ show }) => show)
+        .filter(({ listUser: { show } }) => show)
         .map((list) => (
           <ListChip key={list.id} list={list} />
         ))}

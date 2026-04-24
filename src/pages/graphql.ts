@@ -26,7 +26,7 @@ const builder = new SchemaBuilder<PothosTypes>({
   plugins: [DrizzlePlugin],
   defaultFieldNullability: false,
   drizzle: {
-    client: db, // or (ctx) => db if you want to create a request specific client
+    client: db,
     getTableConfig,
     relations,
   },
@@ -63,6 +63,17 @@ builder.drizzleObject("List", {
     name: t.exposeString("name"),
     todoCount: t.relatedCount("todos"),
     todos: t.relation("todos"),
+    listUser: t.relation("listUser"),
+  }),
+});
+
+builder.drizzleObject("ListUser", {
+  name: "ListUserObjectType",
+  fields: (t) => ({
+    listId: t.exposeID("listId"),
+    userId: t.exposeID("userId"),
+    show: t.exposeBoolean("show"),
+    isPending: t.exposeBoolean("isPending"),
   }),
 });
 

@@ -1,36 +1,6 @@
 import { defineRelations } from "drizzle-orm";
 import * as schema from "./schema";
 
-// export const relations = defineRelations({ users, groups, usersToGroups },
-//   (r) => ({
-//     users: {
-//       groups: r.many.groups({
-//         from: r.users.id.through(r.usersToGroups.userId),
-//         to: r.groups.id.through(r.usersToGroups.groupId),
-//       }),
-//     },
-//     groups: {
-//       participants: r.many.users(),
-//     },
-// //   posts: {
-//   author: r.one.users({
-//     from: r.posts.authorId,
-//     to: r.users.id,
-//   }),
-//   comments: r.many.comments(),
-// },
-// users: {
-//   posts: r.many.posts(),
-// },
-// comments: {
-//   post: r.one.posts({
-//     from: r.comments.postId,
-//     to: r.posts.id,
-//   }),
-// },
-//   })
-// );
-
 const relations = defineRelations(schema, (r) => ({
   User: {
     lists: r.many.List({
@@ -46,6 +16,10 @@ const relations = defineRelations(schema, (r) => ({
     users: r.many.User({
       from: r.List.id.through(r.ListUser.listId),
       to: r.User.id.through(r.ListUser.userId),
+    }),
+    listUser: r.one.ListUser({
+      from: r.List.id,
+      to: r.ListUser.listId,
     }),
   },
   Todo: {

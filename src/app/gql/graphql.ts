@@ -19,9 +19,18 @@ export type Scalars = {
 export type ListObjectType = {
   __typename?: 'ListObjectType';
   id: Scalars['ID']['output'];
+  listUser: ListUserObjectType;
   name: Scalars['String']['output'];
   todoCount: Scalars['Int']['output'];
   todos: Array<TodoObjectType>;
+};
+
+export type ListUserObjectType = {
+  __typename?: 'ListUserObjectType';
+  isPending: Scalars['Boolean']['output'];
+  listId: Scalars['ID']['output'];
+  show: Scalars['Boolean']['output'];
+  userId: Scalars['ID']['output'];
 };
 
 export type Query = {
@@ -53,10 +62,10 @@ export type UserObjectType = {
   name: Scalars['String']['output'];
 };
 
-export type GetListsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetListsForChipsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetListsQuery = { __typename?: 'Query', lists: Array<{ __typename?: 'ListObjectType', id: string, name: string }> };
+export type GetListsForChipsQuery = { __typename?: 'Query', lists: Array<{ __typename?: 'ListObjectType', id: string, name: string, todoCount: number, listUser: { __typename?: 'ListUserObjectType', show: boolean } }> };
 
 
-export const GetListsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetLists"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lists"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetListsQuery, GetListsQueryVariables>;
+export const GetListsForChipsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetListsForChips"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lists"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"todoCount"}},{"kind":"Field","name":{"kind":"Name","value":"listUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"show"}}]}}]}}]}}]} as unknown as DocumentNode<GetListsForChipsQuery, GetListsForChipsQueryVariables>;

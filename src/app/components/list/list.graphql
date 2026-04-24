@@ -1,6 +1,10 @@
-query GetLists {
+query GetListsForChips {
   lists {
     id
     name
+    todoCount
+    listUser {
+      show
+    }
   }
 }
