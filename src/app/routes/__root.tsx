@@ -1,4 +1,4 @@
-import {  qUser } from "@/app/lib/queries";
+import { qUser } from "@/app/lib/queries";
 import { type QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
@@ -6,9 +6,11 @@ import React from "react";
 import ListChips from "../components/list/list-chips";
 import type { UserSelect } from "@/lib/types";
 import AppHeader from "../components/app-header";
+import type { ApolloClient, NormalizedCacheObject } from "@apollo/client";
 
 type RouterContext = {
   queryClient: QueryClient;
+  apolloClient: ApolloClient<NormalizedCacheObject>;
   currentUser: UserSelect;
 };
 

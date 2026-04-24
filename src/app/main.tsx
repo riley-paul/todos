@@ -40,7 +40,11 @@ const apolloClient = new ApolloClient({
 
 const router = createRouter({
   routeTree,
-  context: { queryClient, currentUser: null as unknown as UserSelect },
+  context: {
+    queryClient,
+    apolloClient,
+    currentUser: null as unknown as UserSelect,
+  },
   defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
   defaultPendingComponent: LoadingScreen,
@@ -65,7 +69,7 @@ const App: React.FC<Props> = ({ currentUser }) => {
           <RadixProvider>
             <RouterProvider
               router={router}
-              context={{ queryClient, currentUser }}
+              context={{ queryClient, apolloClient, currentUser }}
             />
             <CustomToaster />
             <AlertSystem />
