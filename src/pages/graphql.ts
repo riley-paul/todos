@@ -13,7 +13,13 @@ export interface PothosTypes {
   DrizzleRelations: DrizzleRelations;
   Context: { userId: string };
 }
+
 const db = createDb(env);
+
+const getUserLists = async (userId: string): Promise<string[]> => {
+  const listUsers = await db.query.ListUser.findMany({ where: { userId } });
+  return listUsers.map((lu) => lu.listId);
+};
 
 const builder = new SchemaBuilder<PothosTypes>({
   plugins: [DrizzlePlugin],
@@ -50,6 +56,7 @@ builder.drizzleObject("List", {
   fields: (t) => ({
     id: t.exposeID("id"),
     name: t.exposeString("name"),
+    todoCount: t.relatedCount("todos"),
     todos: t.relation("todos"),
   }),
 });
@@ -58,11 +65,27 @@ builder.queryType({
   fields: (t) => ({
     lists: t.drizzleField({
       type: ["List"],
-      resolve: async (query, _args, ctx) => db.query.List.findMany(query()),
+      resolve: async (query, root, args, ctx) => {
+        const userLists = await getUserLists(ctx.userId);
+
+        const filters = [];
+        if (userLists.length) filters.push({ id: { in: userLists } });
+
+        return db.query.List.findMany(query({ where: { AND: filters } }));
+      },
     }),
     todos: t.drizzleField({
       type: ["Todo"],
-      resolve: async (query, _args, ctx) => db.query.Todo.findMany(query()),
+      args: { listId: t.arg.id({ required: false }) },
+      resolve: async (query, root, args, ctx) => {
+        const userLists = await getUserLists(ctx.userId);
+
+        const filters = [];
+        if (userLists.length) filters.push({ listId: { in: userLists } });
+        if (args.listId) filters.push({ listId: { eq: args.listId } });
+
+        return db.query.Todo.findMany(query({ where: { AND: filters } }));
+      },
     }),
   }),
 });
