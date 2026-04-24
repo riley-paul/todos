@@ -675,7 +675,7 @@ export type Query = {
   listUserSingle?: Maybe<ListUserSelectItem>;
   todo: Array<TodoSelectItem>;
   todoSingle?: Maybe<TodoSelectItem>;
-  user: Array<UserSelectItem>;
+  user?: Maybe<Array<UserSelectItem>>;
   userSession: Array<UserSessionSelectItem>;
   userSessionSingle?: Maybe<UserSessionSelectItem>;
   userSingle?: Maybe<UserSelectItem>;
@@ -728,9 +728,6 @@ export type QueryTodoSingleArgs = {
 
 
 export type QueryUserArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<UserOrderBy>;
   where?: InputMaybe<UserFilters>;
 };
 
