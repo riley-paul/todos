@@ -2,17 +2,18 @@ import {
   deleteSessionTokenCookie,
   invalidateSession,
 } from "@/lib/lucia";
-import type { APIRoute } from "astro";
+import type { APIContext } from "astro";
+import { env } from "cloudflare:workers";
 
-export const GET: APIRoute = (context) => {
+export async function GET(context: APIContext): Promise<Response> {
   if (!context.locals.session) {
     return new Response(null, {
       status: 401,
     });
   }
 
-  invalidateSession(context, context.locals.session.id);
-  deleteSessionTokenCookie(context);
+  invalidateSession(env, context.locals.session.id);
+  deleteSessionTokenCookie(env, context);
 
   return context.redirect("/");
-};
+}

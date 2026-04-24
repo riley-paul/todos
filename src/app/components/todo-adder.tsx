@@ -9,6 +9,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { mergeRefs } from "@/app/lib/utils";
 import { PlusIcon } from "lucide-react";
+import { useHotkey } from "@tanstack/react-hotkeys";
 
 const schema = z.object({
   text: z.string().nonempty("Todo text cannot be empty"),
@@ -39,17 +40,16 @@ const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
     resizeTextArea(inputRef.current);
   });
 
-  useEventListener("keydown", (e) => {
-    if (e.key === "i" && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      inputRef.current?.focus();
-    }
-
-    if (e.key === "Escape") {
+  useHotkey(
+    "Escape",
+    () => {
       resetInput();
       inputRef.current?.blur();
-    }
-  });
+    },
+    { target: inputRef },
+  );
+
+  useHotkey("L", () => inputRef.current?.focus(), { ignoreInputs: true });
 
   return (
     <form onSubmit={onSubmit} className="flex gap-2">

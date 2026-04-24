@@ -2,13 +2,14 @@ import useAlerts from "@/app/hooks/use-alerts";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
 import { qLists } from "@/app/lib/queries";
 import { type ListSelect } from "@/lib/types";
-import { Badge, IconButton } from "@radix-ui/themes";
+import { Badge, IconButton, Kbd, Tooltip } from "@radix-ui/themes";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, linkOptions } from "@tanstack/react-router";
 import { ListPlusIcon } from "lucide-react";
 import React from "react";
 import ListReorder from "./list-reorder";
 import { ACCENT_COLOR } from "@/lib/constants";
+import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 
 const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
   const link = linkOptions({
@@ -43,6 +44,8 @@ const ListChips: React.FC = () => {
   const { handleCreateList } = useAlerts();
   const { data: lists } = useSuspenseQuery(qLists);
 
+  useHotkey("A", handleCreateList, { ignoreInputs: true });
+
   if (lists.length === 0) return null;
 
   return (
@@ -53,15 +56,25 @@ const ListChips: React.FC = () => {
           <ListChip key={list.id} list={list} />
         ))}
       <ListReorder lists={lists} />
-      <IconButton
-        size="1"
-        className="size-7"
-        variant="soft"
-        onClick={handleCreateList}
+      <Tooltip
+        side="bottom"
+        content={
+          <span className="flex items-center gap-1">
+            Add list
+            <Kbd>{formatForDisplay("A")}</Kbd>
+          </span>
+        }
       >
-        <ListPlusIcon className="size-4" />
-        <span className="sr-only">Create new list</span>
-      </IconButton>
+        <IconButton
+          size="1"
+          className="size-7"
+          variant="soft"
+          onClick={handleCreateList}
+        >
+          <ListPlusIcon className="size-4" />
+          <span className="sr-only">Create new list</span>
+        </IconButton>
+      </Tooltip>
     </div>
   );
 };

@@ -6,6 +6,13 @@
 type KVNamespace = import("@cloudflare/workers-types").KVNamespace;
 type ENV = {} & import("./envs").Environment;
 
+type HonoEnv = {
+  Bindings: {
+    session: import("./lib/types").UserSessionInfo | null;
+    user: import("./lib/types").UserSelect | null;
+  };
+};
+
 // use a default runtime configuration (advanced mode).
 type Runtime = import("@astrojs/cloudflare").Runtime<ENV>;
 declare namespace App {

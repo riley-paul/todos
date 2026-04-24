@@ -1,21 +1,18 @@
-import { type ActionAPIContext, type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
 import { User, List, ListUser } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
-import {
-  ensureListMember,
-  invalidateListUsers,
-  ensureAuthorized,
-} from "../helpers";
+import { ensureListMember, invalidateListUsers } from "../helpers";
 import actionErrors from "../errors";
-import * as listUserInputs from "./list-users.inputs";
-import type { ListUserSelect } from "@/lib/types";
+import * as listUserInputs from "@/api/inputs/list-users.input";
+import type { ApiFunction, ListUserSelect } from "@/lib/types";
+import { env } from "cloudflare:workers";
 
-export const getListUser = async (
-  context: ActionAPIContext,
-  { listUserId }: { listUserId: string },
-): Promise<ListUserSelect> => {
-  const db = createDb(context.locals.runtime.env);
+export const getListUser = async ({
+  listUserId,
+}: {
+  listUserId: string;
+}): Promise<ListUserSelect> => {
+  const db = createDb(env);
   const [listUser] = await db
     .select({
       id: ListUser.id,
@@ -42,15 +39,14 @@ export const getListUser = async (
   return listUser;
 };
 
-export const create: ActionHandler<
+export const create: ApiFunction<
   typeof listUserInputs.create,
   ListUserSelect
-> = async ({ email, listId }, c) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
+> = async ({ email, listId, userId }) => {
+  const db = createDb(env);
 
   // only list members can add other users
-  await ensureListMember(c, { listId, userId });
+  await ensureListMember({ listId, userId });
 
   // check if user with email exists
   const [user] = await db.select().from(User).where(eq(User.email, email));
@@ -69,42 +65,41 @@ export const create: ActionHandler<
     .values({ listId, userId: user.id })
     .returning({ listUserId: ListUser.id });
 
-  await invalidateListUsers(c, listId);
-  return getListUser(c, { listUserId });
+  await invalidateListUsers({ userId, listId });
+  return getListUser({ listUserId });
 };
 
-export const remove: ActionHandler<typeof listUserInputs.remove, null> = async (
-  input,
-  c,
-) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
+export const remove: ApiFunction<typeof listUserInputs.remove, null> = async ({
+  userToRemoveId,
+  userId: reqUserId,
+  listId,
+}) => {
+  const db = createDb(env);
 
-  const data = { userId, ...input };
+  // ensure the requesting user is a member of the list
+  await ensureListMember({ listId, userId: reqUserId });
 
-  // ensure current user is a member of the list or the one being removed
-  await ensureListMember(c, {
-    listId: data.listId,
+  // if user to remove is not specified, default to removing the requesting user (i.e. leaving the list)
+  const userId = userToRemoveId || reqUserId;
+  await ensureListMember({
+    listId,
     userId,
     checkPending: false,
   });
 
   await db
     .delete(ListUser)
-    .where(
-      and(eq(ListUser.listId, data.listId), eq(ListUser.userId, data.userId)),
-    );
+    .where(and(eq(ListUser.listId, listId), eq(ListUser.userId, userId)));
 
-  await invalidateListUsers(c, data.listId);
+  await invalidateListUsers({ listId, userId: reqUserId });
   return null;
 };
 
-export const accept: ActionHandler<
+export const accept: ApiFunction<
   typeof listUserInputs.accept,
   ListUserSelect
-> = async ({ listId }, c) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
+> = async ({ listId, userId }) => {
+  const db = createDb(env);
 
   // ensure list user exists and is pending and pertains to current user
   const [listUser] = await db
@@ -132,18 +127,17 @@ export const accept: ActionHandler<
     )
     .returning();
 
-  await invalidateListUsers(c, updated.listId);
-  return getListUser(c, { listUserId: updated.id });
+  await invalidateListUsers({ userId, listId: updated.listId });
+  return getListUser({ listUserId: updated.id });
 };
 
-export const getAllForList: ActionHandler<
+export const getAllForList: ApiFunction<
   typeof listUserInputs.getAllForList,
   ListUserSelect[]
-> = async ({ listId }, c) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
+> = async ({ listId, userId }) => {
+  const db = createDb(env);
 
-  await ensureListMember(c, { listId, userId });
+  await ensureListMember({ listId, userId });
 
   return db
     .select({

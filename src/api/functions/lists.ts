@@ -1,23 +1,18 @@
-import { type ActionAPIContext, type ActionHandler } from "astro:actions";
-import type { ListSelect, UserSelect } from "@/lib/types";
-import {
-  ensureListMember,
-  invalidateListUsers,
-  ensureAuthorized,
-} from "../helpers";
+import type { ApiFunction, ListSelect, UserSelect } from "@/lib/types";
+import { ensureListMember, invalidateListUsers } from "../helpers";
 import { createDb } from "@/db";
 import { List, ListUser, Todo, User } from "@/db/schema";
 import { and, asc, count, desc, eq, like, not, or, sql } from "drizzle-orm";
 import actionErrors from "../errors";
-import * as listInputs from "./lists.inputs";
+import * as listInputs from "@/api/inputs/lists.input";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
+import { env } from "cloudflare:workers";
 
 const getOtherListUsers = async (
-  c: ActionAPIContext,
+  userId: string,
   listId: string,
 ): Promise<UserSelect[]> => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
+  const db = createDb(env);
 
   const otherUsers = await db
     .selectDistinct({
@@ -38,11 +33,8 @@ const getOtherListUsers = async (
   return otherUsers;
 };
 
-const getListTodoCount = async (
-  c: ActionAPIContext,
-  listId: string,
-): Promise<number> => {
-  const db = createDb(c.locals.runtime.env);
+const getListTodoCount = async (listId: string): Promise<number> => {
+  const db = createDb(env);
 
   const [{ count: todoCount }] = await db
     .select({ count: count() })
@@ -53,14 +45,13 @@ const getListTodoCount = async (
 };
 
 const getLists = async (
-  c: ActionAPIContext,
+  userId: string,
   filters: Partial<{
     listId: string;
     search: string;
   }> = {},
 ): Promise<ListSelect[]> => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
+  const db = createDb(env);
 
   const { listId, search } = filters;
 
@@ -89,8 +80,8 @@ const getLists = async (
       Promise.all(
         lists.map(async (list) => {
           const [otherUsers, todoCount] = await Promise.all([
-            getOtherListUsers(c, list.id),
-            getListTodoCount(c, list.id),
+            getOtherListUsers(userId, list.id),
+            getListTodoCount(list.id),
           ]);
           return { ...list, todoCount, otherUsers };
         }),
@@ -100,37 +91,36 @@ const getLists = async (
   return lists;
 };
 
-export const getAll: ActionHandler<
+export const getAll: ApiFunction<
   typeof listInputs.getAll,
   ListSelect[]
-> = async (_, c) => {
-  return getLists(c);
+> = async ({ userId }) => {
+  return getLists(userId);
 };
 
-export const get: ActionHandler<
+export const get: ApiFunction<
   typeof listInputs.get,
   ListSelect | null
-> = async ({ listId }, c) => {
-  const [list] = await getLists(c, { listId });
+> = async ({ listId, userId }) => {
+  const [list] = await getLists(userId, { listId });
   if (!list) return null;
   return list;
 };
 
-export const search: ActionHandler<
+export const search: ApiFunction<
   typeof listInputs.search,
   ListSelect[]
-> = async ({ search }, c) => {
-  return getLists(c, { search });
+> = async ({ search, userId }) => {
+  return getLists(userId, { search });
 };
 
-export const update: ActionHandler<
+export const update: ApiFunction<
   typeof listInputs.update,
   ListSelect
-> = async ({ id: listId, data }, c) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
+> = async ({ id: listId, data, userId }) => {
+  const db = createDb(env);
 
-  await ensureListMember(c, { listId, userId });
+  await ensureListMember({ listId, userId });
 
   const [list] = await db
     .update(List)
@@ -140,18 +130,17 @@ export const update: ActionHandler<
 
   if (!list) throw actionErrors.NOT_FOUND;
 
-  await invalidateListUsers(c, listId);
+  await invalidateListUsers({ listId, userId });
 
-  const [updatedList] = await getLists(c, { listId });
+  const [updatedList] = await getLists(userId, { listId });
   return updatedList;
 };
 
-export const create: ActionHandler<
+export const create: ApiFunction<
   typeof listInputs.create,
   ListSelect
-> = async ({ name }, c) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
+> = async ({ name, userId }) => {
+  const db = createDb(env);
 
   const [list] = await db
     .insert(List)
@@ -164,38 +153,36 @@ export const create: ActionHandler<
     isPending: false,
   });
 
-  await invalidateListUsers(c, list.id);
+  await invalidateListUsers({ listId: list.id, userId });
 
-  const [newList] = await getLists(c, { listId: list.id });
+  const [newList] = await getLists(userId, { listId: list.id });
   return newList;
 };
 
-export const remove: ActionHandler<typeof listInputs.remove, null> = async (
-  { id: listId },
-  c,
-) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
+export const remove: ApiFunction<typeof listInputs.remove, null> = async ({
+  id: listId,
+  userId,
+}) => {
+  const db = createDb(env);
 
-  await ensureListMember(c, { listId, userId });
+  await ensureListMember({ listId, userId });
 
   const [result] = await db.delete(List).where(eq(List.id, listId)).returning();
   if (!result) throw actionErrors.NOT_FOUND;
 
-  await invalidateListUsers(c, listId);
+  await invalidateListUsers({ listId, userId });
   return null;
 };
 
-export const updateSortShow: ActionHandler<
+export const updateSortShow: ApiFunction<
   typeof listInputs.updateSortShow,
   ListSelect[]
-> = async ({ listIds }, c) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
+> = async ({ listIds, userId }) => {
+  const db = createDb(env);
 
   const separatorIdx = listIds.indexOf(LIST_SEPARATOR_ID);
 
-  if (listIds.length === 0) return getLists(c);
+  if (listIds.length === 0) return getLists(userId);
 
   // Build CASE WHEN expressions dynamically
   const orderCase = sql.join(
@@ -222,5 +209,5 @@ export const updateSortShow: ActionHandler<
        AND "listId" IN (${sql.join(listIds, sql`, `)});
    `);
 
-  return getLists(c);
+  return getLists(userId);
 };

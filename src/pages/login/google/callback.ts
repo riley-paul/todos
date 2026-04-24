@@ -10,10 +10,11 @@ import {
   generateSessionToken,
   setSessionTokenCookie,
 } from "@/lib/lucia";
+import { env } from "cloudflare:workers";
 
 export async function GET(context: APIContext): Promise<Response> {
-  const db = createDb(context.locals.runtime.env);
-  const google = createGoogle(context);
+  const db = createDb(env);
+  const google = createGoogle(env);
 
   const code = context.url.searchParams.get("code");
   const state = context.url.searchParams.get("state");
@@ -43,18 +44,18 @@ export async function GET(context: APIContext): Promise<Response> {
       .from(User)
       .where(eq(User.email, googleUser.email));
 
+    const isNative = context.cookies.get("oauth_platform")?.value === "native";
+
     if (existingUser) {
       await db
         .update(User)
         .set({ googleId: googleUser.id })
         .where(eq(User.id, existingUser.id));
       const sessionToken = generateSessionToken();
-      const session = await createSession(
-        context,
-        sessionToken,
-        existingUser.id,
-      );
-      setSessionTokenCookie(context, sessionToken, session.expiresAt);
+      const session = await createSession(env, sessionToken, existingUser.id);
+      if (isNative)
+        return context.redirect(`todos://auth?token=${sessionToken}`);
+      setSessionTokenCookie(env, context, sessionToken, session.expiresAt);
       return context.redirect("/");
     }
 
@@ -70,8 +71,9 @@ export async function GET(context: APIContext): Promise<Response> {
       .returning();
 
     const sessionToken = generateSessionToken();
-    const session = await createSession(context, sessionToken, user.id);
-    setSessionTokenCookie(context, sessionToken, session.expiresAt);
+    const session = await createSession(env, sessionToken, user.id);
+    if (isNative) return context.redirect(`todos://auth?token=${sessionToken}`);
+    setSessionTokenCookie(env, context, sessionToken, session.expiresAt);
     return context.redirect("/");
   } catch (e) {
     // the specific error message depends on the provider

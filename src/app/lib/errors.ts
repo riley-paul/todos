@@ -1,4 +1,5 @@
-import { ActionInputError, isActionError } from "astro:actions";
+import { isActionError } from "astro:actions";
+import { ActionInputError } from "node_modules/astro/dist/actions/runtime/client";
 import { toast } from "sonner";
 
 export const handleError = (error: Error) => {

@@ -25,6 +25,7 @@ import {
 import { useAtom } from "jotai";
 import { editingTodoIdAtom } from "./todos.store";
 import { SaveIcon } from "lucide-react";
+import { useHotkey } from "@tanstack/react-hotkeys";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -103,12 +104,14 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
     if (isHighlighted) navigate({ search: undefined });
   });
 
-  useEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
+  useHotkey(
+    "Escape",
+    () => {
       if (isEditing) setEditingTodoId(null);
       if (isHighlighted) navigate({ search: undefined });
-    }
-  });
+    },
+    { conflictBehavior: "allow" },
+  );
 
   useEffect(() => {
     if (isHighlighted)
@@ -154,11 +157,11 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
             flexGrow="1"
             align="center"
             onClick={() => setEditingTodoId(todo.id)}
-            className="min-w-0 break-words whitespace-normal"
+            className="min-w-0 wrap-break-word whitespace-normal"
           >
             <Text
               size="2"
-              className={cn(todo.isCompleted && "opacity-50 line-through")}
+              className={cn(todo.isCompleted && "line-through opacity-50")}
             >
               <TextWithLinks text={todo.text} />
             </Text>

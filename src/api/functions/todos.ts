@@ -1,19 +1,15 @@
-import { type ActionAPIContext, type ActionHandler } from "astro:actions";
 import { createDb } from "@/db";
 import { User, Todo, List, ListUser } from "@/db/schema";
 import { eq, and, desc, or, like, inArray } from "drizzle-orm";
-import type { TodoSelect } from "@/lib/types";
-import {
-  ensureAuthorized,
-  invalidateListUsers,
-  ensureListMember,
-} from "../helpers";
+import type { ApiFunction, TodoSelect } from "@/lib/types";
+import { invalidateListUsers, ensureListMember } from "../helpers";
 
-import * as todoInputs from "./todos.inputs";
+import * as todoInputs from "@/api/inputs/todos.input";
 import actionErrors from "../errors";
+import { env } from "cloudflare:workers";
 
 const getTodos = async (
-  c: ActionAPIContext,
+  reqUserId: string,
   filters: Partial<{
     todoId: string;
     listId: string;
@@ -21,8 +17,7 @@ const getTodos = async (
     search: string;
   }> = {},
 ): Promise<TodoSelect[]> => {
-  const db = createDb(c.locals.runtime.env);
-  const reqUserId = ensureAuthorized(c).id;
+  const db = createDb(env);
 
   const { todoId, listId, userId, search } = filters;
 
@@ -74,46 +69,44 @@ const getTodos = async (
   return todos;
 };
 
-export const getAll: ActionHandler<
+export const getAll: ApiFunction<
   typeof todoInputs.getAll,
   TodoSelect[]
-> = async ({ listId }, c) => {
-  return getTodos(c, { listId });
+> = async ({ listId, userId }) => {
+  return getTodos(userId, { listId });
 };
 
-export const search: ActionHandler<
+export const search: ApiFunction<
   typeof todoInputs.search,
   TodoSelect[]
-> = async ({ search }, c) => {
-  return getTodos(c, { search });
+> = async ({ search, userId }) => {
+  return getTodos(userId, { search });
 };
 
-export const create: ActionHandler<
+export const create: ApiFunction<
   typeof todoInputs.create,
   TodoSelect
-> = async ({ data }, c) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
+> = async ({ data, userId }) => {
+  const db = createDb(env);
 
   const { listId } = data;
 
-  await ensureListMember(c, { listId, userId });
+  await ensureListMember({ listId, userId });
   const [{ id: todoId }] = await db
     .insert(Todo)
     .values({ ...data, userId })
     .returning();
-  await invalidateListUsers(c, listId);
+  await invalidateListUsers({ listId, userId });
 
-  const [todo] = await getTodos(c, { todoId });
+  const [todo] = await getTodos(userId, { todoId });
   return todo;
 };
 
-export const update: ActionHandler<
+export const update: ApiFunction<
   typeof todoInputs.update,
   TodoSelect
-> = async ({ id, data }, c) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
+> = async ({ id, data, userId }) => {
+  const db = createDb(env);
 
   const [currentTodo] = await db
     .select({ listId: Todo.listId })
@@ -124,8 +117,8 @@ export const update: ActionHandler<
 
   if (data.listId !== undefined) {
     // ensure the user is a member of both the current and new list
-    await ensureListMember(c, { listId: currentTodo.listId, userId });
-    await ensureListMember(c, { listId: data.listId, userId });
+    await ensureListMember({ listId: currentTodo.listId, userId });
+    await ensureListMember({ listId: data.listId, userId });
   }
 
   const [updated] = await db
@@ -134,20 +127,19 @@ export const update: ActionHandler<
     .where(and(eq(Todo.id, id)))
     .returning();
 
-  await invalidateListUsers(c, updated.listId);
+  await invalidateListUsers({ listId: updated.listId, userId });
   if (currentTodo.listId !== updated.listId)
-    await invalidateListUsers(c, currentTodo.listId);
+    await invalidateListUsers({ listId: currentTodo.listId, userId });
 
-  const [todo] = await getTodos(c, { todoId: id });
+  const [todo] = await getTodos(userId, { todoId: id });
   return todo;
 };
 
-export const remove: ActionHandler<typeof todoInputs.remove, null> = async (
-  { id },
-  c,
-) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
+export const remove: ApiFunction<typeof todoInputs.remove, null> = async ({
+  id,
+  userId,
+}) => {
+  const db = createDb(env);
 
   const [currentTodo] = await db
     .select({ listId: Todo.listId })
@@ -157,42 +149,40 @@ export const remove: ActionHandler<typeof todoInputs.remove, null> = async (
 
   if (!currentTodo) throw actionErrors.NOT_FOUND;
 
-  await ensureListMember(c, { listId: currentTodo.listId, userId });
+  await ensureListMember({ listId: currentTodo.listId, userId });
 
   await db.delete(Todo).where(eq(Todo.id, id));
-  await invalidateListUsers(c, currentTodo.listId);
+  await invalidateListUsers({ listId: currentTodo.listId, userId });
   return null;
 };
 
-export const removeCompleted: ActionHandler<
+export const removeCompleted: ApiFunction<
   typeof todoInputs.removeCompleted,
   null
-> = async ({ listId }, c) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
+> = async ({ listId, userId }) => {
+  const db = createDb(env);
 
-  await ensureListMember(c, { listId, userId });
+  await ensureListMember({ listId, userId });
 
   await db
     .delete(Todo)
     .where(and(eq(Todo.isCompleted, true), eq(Todo.listId, listId)));
-  await invalidateListUsers(c, listId);
+  await invalidateListUsers({ listId, userId });
   return null;
 };
 
-export const uncheckCompleted: ActionHandler<
+export const uncheckCompleted: ApiFunction<
   typeof todoInputs.uncheckCompleted,
   null
-> = async ({ listId }, c) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
+> = async ({ listId, userId }) => {
+  const db = createDb(env);
 
-  await ensureListMember(c, { listId, userId });
+  await ensureListMember({ listId, userId });
 
   await db
     .update(Todo)
     .set({ isCompleted: false })
     .where(and(eq(Todo.isCompleted, true), eq(Todo.listId, listId)));
-  await invalidateListUsers(c, listId);
+  await invalidateListUsers({ listId, userId });
   return null;
 };

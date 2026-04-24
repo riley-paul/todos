@@ -1,11 +1,10 @@
-import type { ActionHandler } from "astro:actions";
-import { ensureAuthorized } from "../helpers";
 import { createDb } from "@/db";
 import { Todo, User, UserSession } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import type { UserSelectWithSettings } from "@/lib/types";
-import * as userInputs from "./users.inputs";
-import actionErrors from "../errors";
+import type { ApiFunction, UserSelectWithSettings } from "@/lib/types";
+import * as userInputs from "@/api/inputs/users.input";
+import actionErrors from "../../api/errors";
+import { env } from "cloudflare:workers";
 
 const USER_FIELDS = {
   id: User.id,
@@ -15,29 +14,25 @@ const USER_FIELDS = {
   settingGroupCompleted: User.settingGroupCompleted,
 } as const;
 
-export const getMe: ActionHandler<
+export const getMe: ApiFunction<
   typeof userInputs.getMe,
   UserSelectWithSettings
-> = async (_, c) => {
-  const db = createDb(c.locals.runtime.env);
-  const user = c.locals.user;
-  if (!user) throw actionErrors.UNAUTHORIZED;
+> = async ({ userId }) => {
+  const db = createDb(env);
 
   const [data] = await db
     .select(USER_FIELDS)
     .from(User)
-    .where(eq(User.id, user.id));
+    .where(eq(User.id, userId));
 
   if (!data) throw actionErrors.NOT_FOUND;
   return data;
 };
 
-export const remove: ActionHandler<typeof userInputs.remove, null> = async (
-  _,
-  c,
-) => {
-  const db = createDb(c.locals.runtime.env);
-  const userId = ensureAuthorized(c).id;
+export const remove: ApiFunction<typeof userInputs.remove, null> = async ({
+  userId,
+}) => {
+  const db = createDb(env);
   await db.delete(UserSession).where(eq(UserSession.userId, userId));
   await db.delete(Todo).where(eq(Todo.userId, userId));
   await db.delete(User).where(eq(User.id, userId));
@@ -46,19 +41,15 @@ export const remove: ActionHandler<typeof userInputs.remove, null> = async (
   return null;
 };
 
-export const updateUserSettings: ActionHandler<
+export const updateUserSettings: ApiFunction<
   typeof userInputs.updateUserSettings,
   UserSelectWithSettings
-> = async (data, c) => {
-  const db = createDb(c.locals.runtime.env);
-  const user = c.locals.user;
-  if (!user) {
-    throw actionErrors.UNAUTHORIZED;
-  }
+> = async ({ userId, ...data }) => {
+  const db = createDb(env);
   const [updatedUser] = await db
     .update(User)
     .set(data)
-    .where(eq(User.id, user.id))
+    .where(eq(User.id, userId))
     .returning(USER_FIELDS);
 
   if (!updatedUser) throw actionErrors.NOT_FOUND;

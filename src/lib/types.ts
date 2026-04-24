@@ -2,6 +2,10 @@ import { User, Todo, List, ListUser } from "@/db/schema";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "astro/zod";
 
+export type ApiFunction<TInputSchema extends z.ZodType, TOutput> = (
+  input: z.infer<TInputSchema> & { userId: string },
+) => Promise<TOutput>;
+
 export const zListName = z.string().trim().min(1).max(256);
 
 export const zSettings = createSelectSchema(User).pick({
@@ -14,7 +18,7 @@ export const zUserSelect = createSelectSchema(User).pick({
   email: true,
   avatarUrl: true,
 });
-export const zUserSelectWithSettings = zUserSelect.merge(zSettings);
+export const zUserSelectWithSettings = zUserSelect.extend(zSettings.shape);
 export const zUserInsert = createInsertSchema(User);
 export type UserSelect = z.infer<typeof zUserSelect>;
 export type UserSelectWithSettings = z.infer<typeof zUserSelectWithSettings>;

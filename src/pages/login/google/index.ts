@@ -2,9 +2,10 @@ import { createGoogle } from "@/lib/oauth";
 import { generateCodeVerifier, generateState } from "arctic";
 
 import type { APIContext } from "astro";
+import { env } from "cloudflare:workers";
 
 export async function GET(context: APIContext): Promise<Response> {
-  const google = createGoogle(context);
+  const google = createGoogle(env);
 
   const state = generateState();
   const codeVerifier = generateCodeVerifier();
@@ -29,6 +30,17 @@ export async function GET(context: APIContext): Promise<Response> {
     maxAge: 60 * 10, // 10 min
     sameSite: "lax",
   });
+
+  const platform = context.url.searchParams.get("platform");
+  if (platform === "native") {
+    context.cookies.set("oauth_platform", "native", {
+      path: "/",
+      secure: Boolean(import.meta.env.PROD),
+      httpOnly: true,
+      maxAge: 60 * 10,
+      sameSite: "lax",
+    });
+  }
 
   return context.redirect(url.toString());
 }

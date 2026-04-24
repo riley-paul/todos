@@ -7,7 +7,7 @@ export const create = z.object({
 
 export const remove = z.object({
   listId: z.string(),
-  userId: z.string().optional(),
+  userToRemoveId: z.string().optional(),
 });
 
 export const accept = z.object({ listId: z.string() });

@@ -8,14 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        if KeychainHelper.load(forKey: "session_token") == nil {
+            LoginView()
+        } else {
+            ListsView()
         }
-        .padding()
     }
 }
 

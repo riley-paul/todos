@@ -5,8 +5,7 @@ import { List, ListUser, User } from "@/db/schema";
 import { deleteAllData } from "@/db/scripts/delete-all-data";
 import { createDb } from "@/db";
 import env from "@/envs-runtime";
-import * as listHandlers from "./lists.handlers";
-import mockApiContext from "../__test__/mock-api-context";
+import * as listFunctions from "./lists";
 import actionErrors from "../errors";
 import { count, eq } from "drizzle-orm";
 
@@ -22,7 +21,7 @@ const LIST_USER_ID = crypto.randomUUID();
 const db = createDb(env);
 
 beforeAll(async () => {
-  execSync("npm run db:push:test");
+  execSync("npm run db:push");
   await deleteAllData();
 
   await db.insert(User).values([
@@ -67,17 +66,17 @@ afterAll(() => {
 
 describe("List fetching", () => {
   test("get all lists for a user", async () => {
-    const result = await listHandlers.getAll({}, mockApiContext(USER1_ID));
+    const result = await listFunctions.getAll({ userId: USER1_ID } as any);
     expect(result.length).toBe(2);
   });
 });
 
 describe("List creation", () => {
   test("able to create a list", async () => {
-    const result = await listHandlers.create(
-      { name: "New Test List" },
-      mockApiContext(USER1_ID),
-    );
+    const result = await listFunctions.create({
+      name: "New Test List",
+      userId: USER1_ID,
+    });
     expect(result).toEqual({
       id: expect.any(String),
       name: "New Test List",
@@ -98,10 +97,10 @@ describe("List deletion", () => {
     const [{ numListsBefore }] = await db
       .select({ numListsBefore: count() })
       .from(List);
-    const result = await listHandlers.remove(
-      { id: LIST1_ID },
-      mockApiContext(USER1_ID),
-    );
+    const result = await listFunctions.remove({
+      id: LIST1_ID,
+      userId: USER1_ID,
+    });
     const [{ numListsAfter }] = await db
       .select({ numListsAfter: count() })
       .from(List);
@@ -112,13 +111,13 @@ describe("List deletion", () => {
 
   test("unable to delete a list if not list member", async () => {
     await expect(() =>
-      listHandlers.remove({ id: LIST3_ID }, mockApiContext(USER1_ID)),
+      listFunctions.remove({ id: LIST3_ID, userId: USER1_ID }),
     ).rejects.toThrow(actionErrors.NO_PERMISSION);
   });
 
   test("throws error when list does not exist", async () => {
     await expect(() =>
-      listHandlers.remove({ id: "nonexistent" }, mockApiContext(USER1_ID)),
+      listFunctions.remove({ id: "nonexistent", userId: USER1_ID }),
     ).rejects.toThrow(actionErrors.NOT_FOUND);
   });
 });

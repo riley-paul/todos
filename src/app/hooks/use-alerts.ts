@@ -39,7 +39,7 @@ export default function useAlerts() {
     });
   };
 
-  const handleCancelInvite = (data: { listId: string; userId: string }) => {
+  const handleCancelInvite = (data: { listId: string; userToRemoveId: string }) => {
     dispatchAlert({
       type: "open",
       data: {
@@ -63,7 +63,7 @@ export default function useAlerts() {
     });
   };
 
-  const handleRemoveUser = (data: { listId: string; userId: string }) => {
+  const handleRemoveUser = (data: { listId: string; userToRemoveId: string }) => {
     dispatchAlert({
       type: "open",
       data: {
@@ -115,7 +115,7 @@ export default function useAlerts() {
         message: "Enter the email address of the user you want to invite",
         value: "",
         placeholder: "User email",
-        schema: z.string().email("Please enter a valid email address"),
+        schema: z.email("Please enter a valid email address"),
         handleSubmit: (email: string) => {
           inviteUserToList.mutate(
             { listId, email },

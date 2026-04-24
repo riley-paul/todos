@@ -31,7 +31,7 @@ const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
         onClick: () =>
           handleCancelInvite({
             listId: listShare.listId,
-            userId: listShare.userId,
+            userToRemoveId: listShare.userId,
           }),
       };
     }
@@ -60,7 +60,7 @@ const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
       onClick: () =>
         handleRemoveUser({
           listId: listShare.listId,
-          userId: listShare.userId,
+          userToRemoveId: listShare.userId,
         }),
     };
   };
@@ -108,7 +108,7 @@ const ListShares: React.FC<{ listId: string }> = ({ listId }) => {
               Pending Invites
             </Text>
           </section>
-          <Separator size="4" className="h-[2px]" />
+          <Separator size="4" className="h-0.5" />
         </div>
       )}
       {pendingListShares.map((listShare) => (
