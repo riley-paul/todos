@@ -64,24 +64,16 @@ builder.drizzleObject("List", {
     todoCount: t.relatedCount("todos"),
     todos: t.relation("todos"),
     show: t.boolean({
+      select: { with: { listUser: true } },
       resolve: async (list, args, ctx) => {
-        const listUser = await db.query.ListUser.findFirst({
-          where: {
-            listId: list.id,
-            userId: ctx.userId,
-          },
-        });
+        const listUser = list.listUser.find((lu) => lu.userId === ctx.userId);
         return !!listUser?.show;
       },
     }),
     isPending: t.boolean({
+      select: { with: { listUser: true } },
       resolve: async (list, args, ctx) => {
-        const listUser = await db.query.ListUser.findFirst({
-          where: {
-            listId: list.id,
-            userId: ctx.userId,
-          },
-        });
+        const listUser = list.listUser.find((lu) => lu.userId === ctx.userId);
         return !!listUser?.isPending;
       },
     }),
