@@ -1,5 +1,5 @@
 query GetLists {
-  list {
+  lists {
     id
     name
   }
