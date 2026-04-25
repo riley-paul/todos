@@ -17,3 +17,9 @@ query GetTodos($listId: ID) {
     ...Todo
   }
 }
+
+mutation CreateTodo($input: CreateTodoInput!) {
+  createTodo(input: $input) {
+    ...Todo
+  }
+}

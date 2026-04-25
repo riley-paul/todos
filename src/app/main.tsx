@@ -34,7 +34,7 @@ const queryClient = new QueryClient({
 });
 
 const apolloClient = new ApolloClient({
-  link: new HttpLink({ uri: "/graphql" }),
+  link: new HttpLink({ uri: "/graphql", useGETForQueries: true }),
   cache: new InMemoryCache(),
 });
 

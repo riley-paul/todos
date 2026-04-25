@@ -1,6 +1,5 @@
 import React from "react";
 import { useEventListener } from "usehooks-ts";
-import useMutations from "@/app/hooks/use-mutations";
 import { Button, Spinner, TextArea } from "@radix-ui/themes";
 import { resizeTextArea } from "@/app/lib/utils";
 import { flushSync } from "react-dom";
@@ -10,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { mergeRefs } from "@/app/lib/utils";
 import { PlusIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
+import { useCreateTodoMutation } from "../gql";
 
 const schema = z.object({
   text: z.string().nonempty("Todo text cannot be empty"),
@@ -17,7 +17,23 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>;
 
 const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
-  const { createTodo } = useMutations();
+  const [createTodo, { loading }] = useCreateTodoMutation({
+    update: (cache, { data }) => {
+      if (!data?.createTodo) return;
+
+      const newTodo = data.createTodo;
+      const cacheId = cache.identify(newTodo);
+      cache.modify({
+        id: cache.identify({ __typename: "ListObjectType", id: listId }),
+        fields: {
+          todos(existingRefs = []) {
+            const newRef = { __ref: cacheId };
+            return [newRef, ...existingRefs];
+          },
+        },
+      });
+    },
+  });
 
   const { control, handleSubmit, reset } = useForm<Schema>({
     resolver: zodResolver(schema),
@@ -32,7 +48,7 @@ const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
   };
 
   const onSubmit = handleSubmit(({ text }) => {
-    createTodo.mutate({ data: { text, listId } });
+    createTodo({ variables: { input: { text, listId } } });
     resetInput();
   });
 
@@ -86,7 +102,7 @@ const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
       <input type="submit" hidden />
 
       <Button size="3" type="submit" className="px-3 sm:px-5">
-        <Spinner loading={createTodo.isPending}>
+        <Spinner loading={loading}>
           <PlusIcon className="size-5" />
         </Spinner>
         <span className="hidden sm:block">Add</span>

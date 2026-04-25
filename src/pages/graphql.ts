@@ -6,6 +6,7 @@ import SchemaBuilder from "@pothos/core";
 import DrizzlePlugin from "@pothos/plugin-drizzle";
 import { getTableConfig } from "drizzle-orm/sqlite-core";
 import relations from "@/db/relations";
+import * as tables from "@/db/schema";
 
 type DrizzleRelations = typeof relations;
 
@@ -13,6 +14,7 @@ export interface PothosTypes {
   DrizzleRelations: DrizzleRelations;
   Context: { userId: string };
   DefaultFieldNullability: false;
+  DefaultInputFieldRequiredness: true;
 }
 
 const db = createDb(env);
@@ -25,6 +27,7 @@ const getUserLists = async (userId: string): Promise<string[]> => {
 const builder = new SchemaBuilder<PothosTypes>({
   plugins: [DrizzlePlugin],
   defaultFieldNullability: false,
+  defaultInputFieldRequiredness: true,
   drizzle: {
     client: db,
     getTableConfig,
@@ -124,7 +127,7 @@ builder.queryType({
     list: t.drizzleField({
       type: "List",
       nullable: true,
-      args: { listId: t.arg.id({ required: true }) },
+      args: { listId: t.arg.id() },
       resolve: async (query, root, args, ctx) => {
         const userLists = await getUserLists(ctx.userId);
         if (!userLists.includes(args.listId)) return null;
@@ -149,6 +152,40 @@ builder.queryType({
     }),
   }),
 });
+
+const CreateTodoInput = builder.inputType("CreateTodoInput", {
+  fields: (t) => ({
+    text: t.string(),
+    listId: t.id(),
+  }),
+});
+
+builder.mutationType({});
+builder.mutationField("createTodo", (t) =>
+  t.drizzleField({
+    type: "Todo",
+    args: { input: t.arg({ type: CreateTodoInput }) },
+    nullable: true,
+    resolve: async (query, root, { input }, ctx) => {
+      const userLists = await getUserLists(ctx.userId);
+      if (!userLists.includes(input.listId)) {
+        throw new Error("You do not have access to this list");
+      }
+      const [newTodo] = await db
+        .insert(tables.Todo)
+        .values({
+          text: input.text,
+          listId: input.listId,
+          userId: ctx.userId,
+        })
+        .returning();
+
+      return db.query.Todo.findFirst(
+        query({ where: { id: { eq: newTodo.id } } }),
+      );
+    },
+  }),
+);
 
 export const ALL: APIRoute = async (ctx) => {
   const bearerToken = ctx.request.headers
