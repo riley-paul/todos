@@ -7,6 +7,8 @@ fragment ShallowList on ListObjectType {
   isPending
   otherUsers {
     ...User
+    
+    
   }
 }
 
