@@ -27,4 +27,7 @@ export const builder = new SchemaBuilder<PothosTypes>({
   },
 });
 
+builder.queryType({});
+builder.mutationType({});
+
 export type Builder = typeof builder;
