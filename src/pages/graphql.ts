@@ -65,7 +65,13 @@ builder.drizzleObject("List", {
     id: t.exposeID("id"),
     name: t.exposeString("name"),
     todoCount: t.relatedCount("todos"),
-    todos: t.relation("todos"),
+    todos: t.relation("todos", {
+      query: () => ({
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+    }),
     show: t.boolean({
       select: { with: { listUser: true } },
       resolve: async (list, args, ctx) => {

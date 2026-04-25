@@ -18,6 +18,25 @@ type Schema = z.infer<typeof schema>;
 
 const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
   const [createTodo, { loading }] = useCreateTodoMutation({
+    optimisticResponse: ({ input: { text } }) => {
+      return {
+        __typename: "Mutation",
+        createTodo: {
+          __typename: "TodoObjectType",
+          id: `temp-id-${Math.random()}`,
+          text,
+          isCompleted: false,
+          isAuthor: true,
+          author: {
+            __typename: "UserObjectType",
+            id: "current-user-id",
+            name: "Current User",
+            email: "",
+          },
+          list: { __typename: "ListObjectType", id: listId, name: "" },
+        },
+      };
+    },
     update: (cache, { data }) => {
       if (!data?.createTodo) return;
 
