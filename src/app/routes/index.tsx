@@ -4,7 +4,7 @@ import {
   GetListsForChipsDocument,
   type GetListsForChipsQuery,
   type GetListsForChipsQueryVariables,
-} from "../gql";
+} from "@/app/gql.gen";
 
 export const Route = createFileRoute("/")({
   component: NoListsScreen,

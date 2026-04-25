@@ -3,7 +3,7 @@ import { HourglassIcon } from "lucide-react";
 import React from "react";
 import UserBubbleGroup from "../ui/user/user-bubble-group";
 import { cn } from "@/app/lib/utils";
-import type { ShallowListFragment } from "@/app/gql";
+import type { ShallowListFragment } from "@/app/gql.gen";
 
 type Props = { list: ShallowListFragment };
 
@@ -13,18 +13,13 @@ const ListRow: React.FC<Props> = ({ list }) => {
       <Text
         size="2"
         weight="bold"
-        className={cn(
-          "flex flex-1 gap-2",
-          list.isPending && "opacity-50",
-        )}
+        className={cn("flex flex-1 gap-2", list.isPending && "opacity-50")}
       >
         <span>{list.name}</span>
         <span className="font-mono opacity-70">{list.todoCount}</span>
       </Text>
       <section className="flex items-center gap-2">
-        {list.isPending && (
-          <HourglassIcon className="text-amber-10 size-4" />
-        )}
+        {list.isPending && <HourglassIcon className="text-amber-10 size-4" />}
         <UserBubbleGroup users={list.otherUsers} />
       </section>
     </article>

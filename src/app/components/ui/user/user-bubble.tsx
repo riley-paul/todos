@@ -1,4 +1,4 @@
-import type { UserFragment } from "@/app/gql";
+import type { UserFragment } from "@/app/gql.gen";
 import { Avatar, type AvatarProps } from "@radix-ui/themes";
 import React from "react";
 

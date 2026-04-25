@@ -24,7 +24,7 @@ import { useAtom } from "jotai";
 import { editingTodoIdAtom } from "./todos.store";
 import { SaveIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
-import { useUpdateTodoMutation, type TodoFragment } from "@/app/gql";
+import { useUpdateTodoMutation, type TodoFragment } from "@/app/gql.gen";
 
 const TodoForm: React.FC<{
   initialValue: string;

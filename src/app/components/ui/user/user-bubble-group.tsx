@@ -1,7 +1,7 @@
 import React from "react";
 import { Avatar } from "@radix-ui/themes";
 import UserBubble from "./user-bubble";
-import type { UserFragment } from "@/app/gql";
+import type { UserFragment } from "@/app/gql.gen";
 
 type Props = {
   users: UserFragment[];

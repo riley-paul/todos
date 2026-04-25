@@ -9,12 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { mergeRefs } from "@/app/lib/utils";
 import { PlusIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
-import { useCreateTodoMutation, type ListFullFragment } from "../gql";
-import {
-  useLoaderData,
-  useRouteContext,
-  useRouter,
-} from "@tanstack/react-router";
+import { useCreateTodoMutation, type ListFullFragment } from "@/app/gql.gen";
 
 const schema = z.object({
   text: z.string().nonempty("Todo text cannot be empty"),

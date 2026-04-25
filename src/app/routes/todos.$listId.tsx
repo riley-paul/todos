@@ -11,7 +11,7 @@ import {
   useGetListSuspenseQuery,
   type GetListQuery,
   type GetListQueryVariables,
-} from "../gql";
+} from "@/app/gql.gen";
 
 export const Route = createFileRoute("/todos/$listId")({
   component: RouteComponent,

@@ -10,7 +10,7 @@ import DeleteCompletedTodosButton from "./footer-buttons/delete-completed-todos-
 import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
 import NoTodosScreen from "../screens/no-todos";
-import { type ListFullFragment, type TodoFragment } from "@/app/gql";
+import { type ListFullFragment, type TodoFragment } from "@/app/gql.gen";
 
 const CompletedTodosActions: React.FC<{ listId: string }> = ({ listId }) => (
   <div className="flex items-center justify-end gap-4">

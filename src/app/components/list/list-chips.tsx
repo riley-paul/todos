@@ -10,7 +10,7 @@ import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import {
   useGetListsForChipsSuspenseQuery,
   type ShallowListFragment,
-} from "@/app/gql";
+} from "@/app/gql.gen";
 
 const ListChip: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
   const link = linkOptions({

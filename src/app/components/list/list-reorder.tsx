@@ -41,7 +41,7 @@ import { Link } from "@tanstack/react-router";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import ListRow from "./list-row";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
-import type { ShallowListFragment } from "@/app/gql";
+import type { ShallowListFragment } from "@/app/gql.gen";
 
 type SortableObjectData =
   | {
@@ -57,7 +57,9 @@ type SortableObjectData =
 const getSortableObjectList = (
   lists: ShallowListFragment[],
 ): SortableObjectData[] => {
-  const listToSortableObj = (list: ShallowListFragment): SortableObjectData => ({
+  const listToSortableObj = (
+    list: ShallowListFragment,
+  ): SortableObjectData => ({
     type: "list",
     id: list.id,
     list,

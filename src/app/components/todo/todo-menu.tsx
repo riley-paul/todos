@@ -15,7 +15,7 @@ import ResponsiveMenu from "../ui/menu/responsive-menu";
 import {
   useDeleteTodoMutation,
   useGetListsForChipsSuspenseQuery,
-} from "@/app/gql";
+} from "@/app/gql.gen";
 
 const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
   const { moveTodo } = useMutations();
