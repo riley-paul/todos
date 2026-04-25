@@ -20,7 +20,7 @@ query GetTodos($listId: ID) {
 
 mutation CreateTodo($input: CreateTodoInput!) {
   createTodo(input: $input) {
-    ...Todo
+    ...ListFull
   }
 }
 

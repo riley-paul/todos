@@ -44,7 +44,7 @@ function RouteComponent() {
   return (
     <React.Fragment>
       <ListHeader list={list} />
-      <TodoAdder listId={listId} />
+      <TodoAdder list={list} />
       <Todos list={list} />
     </React.Fragment>
   );

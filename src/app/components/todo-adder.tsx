@@ -9,48 +9,49 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { mergeRefs } from "@/app/lib/utils";
 import { PlusIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
-import { useCreateTodoMutation } from "../gql";
+import { useCreateTodoMutation, type ListFullFragment } from "../gql";
+import {
+  useLoaderData,
+  useRouteContext,
+  useRouter,
+} from "@tanstack/react-router";
 
 const schema = z.object({
   text: z.string().nonempty("Todo text cannot be empty"),
 });
 type Schema = z.infer<typeof schema>;
 
-const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
+const TodoAdder: React.FC<{ list: ListFullFragment }> = ({ list }) => {
   const [createTodo, { loading }] = useCreateTodoMutation({
     optimisticResponse: ({ input: { text } }) => {
       return {
         __typename: "Mutation",
         createTodo: {
-          __typename: "TodoObjectType",
-          id: `temp-id-${Math.random()}`,
-          text,
-          isCompleted: false,
-          isAuthor: true,
-          author: {
-            __typename: "UserObjectType",
-            id: "current-user-id",
-            name: "Current User",
-            email: "",
-          },
-          list: { __typename: "ListObjectType", id: listId, name: "" },
+          ...list,
+          todoCount: list.todoCount + 1,
+          todos: [
+            {
+              __typename: "TodoObjectType",
+              id: `temp-id-${Math.random()}`,
+              text,
+              isCompleted: false,
+              isAuthor: true,
+              author: {
+                __typename: "UserObjectType",
+                id: "current-user-id",
+                name: "Current User",
+                email: "",
+              },
+              list: {
+                __typename: "ListObjectType",
+                id: list.id,
+                name: list.name,
+              },
+            },
+            ...list.todos,
+          ],
         },
       };
-    },
-    update: (cache, { data }) => {
-      if (!data?.createTodo) return;
-
-      const newTodo = data.createTodo;
-      const cacheId = cache.identify(newTodo);
-      cache.modify({
-        id: cache.identify({ __typename: "ListObjectType", id: listId }),
-        fields: {
-          todos(existingRefs = []) {
-            const newRef = { __ref: cacheId };
-            return [newRef, ...existingRefs];
-          },
-        },
-      });
     },
   });
 
@@ -67,7 +68,7 @@ const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
   };
 
   const onSubmit = handleSubmit(({ text }) => {
-    createTodo({ variables: { input: { text, listId } } });
+    createTodo({ variables: { input: { text, listId: list.id } } });
     resetInput();
   });
 

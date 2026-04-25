@@ -48,7 +48,7 @@ export type ListUserObjectType = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createTodo?: Maybe<TodoObjectType>;
+  createTodo?: Maybe<ListObjectType>;
   deleteTodo?: Maybe<Scalars['Boolean']['output']>;
   updateTodo?: Maybe<TodoObjectType>;
 };
@@ -141,7 +141,7 @@ export type CreateTodoMutationVariables = Exact<{
 }>;
 
 
-export type CreateTodoMutation = { __typename?: 'Mutation', createTodo?: { __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } } | null };
+export type CreateTodoMutation = { __typename?: 'Mutation', createTodo?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
 
 export type DeleteTodoMutationVariables = Exact<{
   input: DeleteTodoInput;
@@ -335,10 +335,10 @@ export type GetTodosQueryResult = Apollo.QueryResult<GetTodosQuery, GetTodosQuer
 export const CreateTodoDocument = gql`
     mutation CreateTodo($input: CreateTodoInput!) {
   createTodo(input: $input) {
-    ...Todo
+    ...ListFull
   }
 }
-    ${TodoFragmentDoc}`;
+    ${ListFullFragmentDoc}`;
 export type CreateTodoMutationFn = Apollo.MutationFunction<CreateTodoMutation, CreateTodoMutationVariables>;
 
 /**

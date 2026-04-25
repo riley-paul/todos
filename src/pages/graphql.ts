@@ -171,7 +171,7 @@ const CreateTodoInput = builder.inputType("CreateTodoInput", {
 
 builder.mutationField("createTodo", (t) =>
   t.drizzleField({
-    type: "Todo",
+    type: "List",
     args: { input: t.arg({ type: CreateTodoInput }) },
     nullable: true,
     resolve: async (query, root, { input }, ctx) => {
@@ -179,7 +179,7 @@ builder.mutationField("createTodo", (t) =>
       if (!userLists.has(input.listId)) {
         throw new Error("You do not have access to this list");
       }
-      const [newTodo] = await db
+      await db
         .insert(tables.Todo)
         .values({
           text: input.text,
@@ -188,8 +188,8 @@ builder.mutationField("createTodo", (t) =>
         })
         .returning();
 
-      return db.query.Todo.findFirst(
-        query({ where: { id: { eq: newTodo.id } } }),
+      return db.query.List.findFirst(
+        query({ where: { id: { eq: input.listId } } }),
       );
     },
   }),
