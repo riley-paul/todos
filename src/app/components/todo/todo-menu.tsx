@@ -12,10 +12,30 @@ import { useAtom } from "jotai";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { editingTodoIdAtom } from "./todos.store";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
-import { useGetListsForChipsSuspenseQuery } from "@/app/gql";
+import {
+  useDeleteTodoMutation,
+  useGetListsForChipsSuspenseQuery,
+} from "@/app/gql";
 
 const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
-  const { deleteTodo, moveTodo } = useMutations();
+  const { moveTodo } = useMutations();
+  const [deleteTodo] = useDeleteTodoMutation({
+    optimisticResponse: {
+      __typename: "Mutation",
+      deleteTodo: true,
+    },
+    update: (cache, { data }, { variables }) => {
+      if (!data?.deleteTodo) return;
+
+      const deletedTodo = {
+        __typename: "TodoObjectType",
+        id: variables?.input.id,
+      };
+      const cacheId = cache.identify(deletedTodo);
+      cache.evict({ id: cacheId });
+      cache.gc();
+    },
+  });
 
   const { listId } = useParams({ strict: false });
   const {
@@ -29,7 +49,7 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
   };
 
   const handleDelete = () => {
-    deleteTodo.mutate({ id: todoId });
+    deleteTodo({ variables: { input: { id: todoId } } });
   };
 
   const handleEdit = () => {

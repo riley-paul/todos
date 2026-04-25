@@ -23,3 +23,7 @@ mutation CreateTodo($input: CreateTodoInput!) {
     ...Todo
   }
 }
+
+mutation DeleteTodo($input: DeleteTodoInput!) {
+  deleteTodo(input: $input)
+}

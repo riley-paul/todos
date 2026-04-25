@@ -7,6 +7,7 @@ import DrizzlePlugin from "@pothos/plugin-drizzle";
 import { getTableConfig } from "drizzle-orm/sqlite-core";
 import relations from "@/db/relations";
 import * as tables from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 type DrizzleRelations = typeof relations;
 
@@ -159,6 +160,8 @@ builder.queryType({
   }),
 });
 
+builder.mutationType({});
+
 const CreateTodoInput = builder.inputType("CreateTodoInput", {
   fields: (t) => ({
     text: t.string(),
@@ -166,7 +169,6 @@ const CreateTodoInput = builder.inputType("CreateTodoInput", {
   }),
 });
 
-builder.mutationType({});
 builder.mutationField("createTodo", (t) =>
   t.drizzleField({
     type: "Todo",
@@ -189,6 +191,33 @@ builder.mutationField("createTodo", (t) =>
       return db.query.Todo.findFirst(
         query({ where: { id: { eq: newTodo.id } } }),
       );
+    },
+  }),
+);
+
+const DeleteTodoInput = builder.inputType("DeleteTodoInput", {
+  fields: (t) => ({
+    id: t.id(),
+  }),
+});
+
+builder.mutationField("deleteTodo", (t) =>
+  t.boolean({
+    args: { input: t.arg({ type: DeleteTodoInput }) },
+    nullable: true,
+    resolve: async (root, { input }, ctx) => {
+      const todo = await db.query.Todo.findFirst({
+        where: { id: { eq: input.id } },
+      });
+      if (!todo) throw new Error("Todo not found");
+
+      const userLists = await getUserLists(ctx.userId);
+      if (!userLists.includes(todo.listId)) {
+        throw new Error("You do not have access to this todo");
+      }
+
+      await db.delete(tables.Todo).where(eq(tables.Todo.id, input.id));
+      return true;
     },
   }),
 );
