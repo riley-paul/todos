@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import useMutations from "@/app/hooks/use-mutations";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 import UserBubble from "@/app/components/ui/user/user-bubble";
 import {
@@ -25,7 +24,7 @@ import { useAtom } from "jotai";
 import { editingTodoIdAtom } from "./todos.store";
 import { SaveIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
-import type { TodoFragment } from "@/app/gql";
+import { useUpdateTodoMutation, type TodoFragment } from "@/app/gql";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -88,7 +87,23 @@ const TodoForm: React.FC<{
 
 const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
   const { listId } = useParams({ strict: false });
-  const { updateTodo } = useMutations();
+  const [updateTodo, { loading }] = useUpdateTodoMutation({
+    optimisticResponse: (vars) => {
+      const definedInputs = Object.fromEntries(
+        Object.entries(vars.input).filter(
+          ([_, value]) => value !== undefined && value !== null,
+        ),
+      );
+      return {
+        __typename: "Mutation",
+        updateTodo: {
+          __typename: "TodoObjectType",
+          ...todo,
+          ...definedInputs,
+        },
+      };
+    },
+  });
   const navigate = useNavigate();
 
   const [editingTodoId, setEditingTodoId] = useAtom(editingTodoIdAtom);
@@ -131,24 +146,22 @@ const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
         <TodoForm
           initialValue={todo.text}
           handleSubmit={(text) => {
-            updateTodo.mutate({
-              id: todo.id,
-              data: { text },
-            });
+            updateTodo({ variables: { input: { id: todo.id, text } } });
             setEditingTodoId(null);
           }}
         />
       ) : (
         <>
-          <Spinner loading={updateTodo.isPending}>
+          <Spinner loading={loading}>
             <Checkbox
               size="3"
               variant="soft"
               checked={todo.isCompleted}
               onCheckedChange={() =>
-                updateTodo.mutate({
-                  id: todo.id,
-                  data: { isCompleted: !todo.isCompleted },
+                updateTodo({
+                  variables: {
+                    input: { id: todo.id, isCompleted: !todo.isCompleted },
+                  },
                 })
               }
             />

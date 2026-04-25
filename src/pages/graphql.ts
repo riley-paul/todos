@@ -20,9 +20,9 @@ export interface PothosTypes {
 
 const db = createDb(env);
 
-const getUserLists = async (userId: string): Promise<string[]> => {
+const getUserLists = async (userId: string): Promise<Set<string>> => {
   const listUsers = await db.query.ListUser.findMany({ where: { userId } });
-  return listUsers.map((lu) => lu.listId);
+  return new Set(listUsers.map((lu) => lu.listId));
 };
 
 const builder = new SchemaBuilder<PothosTypes>({
@@ -126,7 +126,7 @@ builder.queryType({
         const userLists = await getUserLists(ctx.userId);
 
         const filters = [];
-        if (userLists.length) filters.push({ id: { in: userLists } });
+        if (userLists.size) filters.push({ id: { in: [...userLists] } });
 
         return db.query.List.findMany(query({ where: { AND: filters } }));
       },
@@ -137,7 +137,7 @@ builder.queryType({
       args: { listId: t.arg.id() },
       resolve: async (query, root, args, ctx) => {
         const userLists = await getUserLists(ctx.userId);
-        if (!userLists.includes(args.listId)) return null;
+        if (!userLists.has(args.listId)) return null;
 
         return db.query.List.findFirst(
           query({ where: { id: { eq: args.listId } } }),
@@ -151,7 +151,7 @@ builder.queryType({
         const userLists = await getUserLists(ctx.userId);
 
         const filters = [];
-        if (userLists.length) filters.push({ listId: { in: userLists } });
+        if (userLists.size) filters.push({ listId: { in: [...userLists] } });
         if (args.listId) filters.push({ listId: { eq: args.listId } });
 
         return db.query.Todo.findMany(query({ where: { AND: filters } }));
@@ -176,7 +176,7 @@ builder.mutationField("createTodo", (t) =>
     nullable: true,
     resolve: async (query, root, { input }, ctx) => {
       const userLists = await getUserLists(ctx.userId);
-      if (!userLists.includes(input.listId)) {
+      if (!userLists.has(input.listId)) {
         throw new Error("You do not have access to this list");
       }
       const [newTodo] = await db
@@ -212,12 +212,56 @@ builder.mutationField("deleteTodo", (t) =>
       if (!todo) throw new Error("Todo not found");
 
       const userLists = await getUserLists(ctx.userId);
-      if (!userLists.includes(todo.listId)) {
+      if (!userLists.has(todo.listId)) {
         throw new Error("You do not have access to this todo");
       }
 
       await db.delete(tables.Todo).where(eq(tables.Todo.id, input.id));
       return true;
+    },
+  }),
+);
+
+const UpdateTodoInput = builder.inputType("UpdateTodoInput", {
+  fields: (t) => ({
+    id: t.id(),
+    text: t.string({ required: false }),
+    isCompleted: t.boolean({ required: false }),
+    listId: t.id({ required: false }),
+  }),
+});
+
+builder.mutationField("updateTodo", (t) =>
+  t.drizzleField({
+    type: "Todo",
+    args: { input: t.arg({ type: UpdateTodoInput }) },
+    nullable: true,
+    resolve: async (query, root, { input }, ctx) => {
+      const todo = await db.query.Todo.findFirst({
+        where: { id: { eq: input.id } },
+      });
+      if (!todo) throw new Error("Todo not found");
+
+      const userLists = await getUserLists(ctx.userId);
+      if (!userLists.has(todo.listId)) {
+        throw new Error("You do not have access to this todo");
+      }
+      if (input.listId && !userLists.has(input.listId)) {
+        throw new Error("You cannot move to this list");
+      }
+
+      await db
+        .update(tables.Todo)
+        .set({
+          text: input.text ?? undefined,
+          isCompleted: input.isCompleted ?? undefined,
+          listId: input.listId ?? undefined,
+        })
+        .where(eq(tables.Todo.id, input.id));
+
+      return db.query.Todo.findFirst(
+        query({ where: { id: { eq: input.id } } }),
+      );
     },
   }),
 );
