@@ -7,19 +7,20 @@ import {
   EllipsisIcon,
 } from "lucide-react";
 import useMutations from "@/app/hooks/use-mutations";
-import { qLists } from "@/app/lib/queries";
-import { useQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { useAtom } from "jotai";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { editingTodoIdAtom } from "./todos.store";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
+import { useGetListsForChipsSuspenseQuery } from "@/app/gql";
 
 const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
   const { deleteTodo, moveTodo } = useMutations();
 
   const { listId } = useParams({ strict: false });
-  const { data: lists = [] } = useQuery(qLists);
+  const {
+    data: { lists = [] },
+  } = useGetListsForChipsSuspenseQuery();
 
   const [_, setEditingTodoId] = useAtom(editingTodoIdAtom);
 

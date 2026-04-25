@@ -100,6 +100,16 @@ builder.drizzleObject("ListUser", {
 
 builder.queryType({
   fields: (t) => ({
+    me: t.drizzleField({
+      type: "User",
+      resolve: async (query, root, args, ctx) => {
+        const user = await db.query.User.findFirst(
+          query({ where: { id: { eq: ctx.userId } } }),
+        );
+        if (!user) throw new Error("User not found");
+        return user;
+      },
+    }),
     lists: t.drizzleField({
       type: ["List"],
       resolve: async (query, root, args, ctx) => {
