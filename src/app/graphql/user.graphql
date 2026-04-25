@@ -4,3 +4,10 @@ fragment User on UserObjectType {
   email
   avatarUrl
 }
+
+query GetMe {
+  me {
+    ...User
+    settingGroupCompleted
+  }
+}

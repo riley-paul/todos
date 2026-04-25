@@ -3,7 +3,7 @@ import { builder } from "../gql-builder";
 import { getUserLists } from "../helpers";
 import { env } from "cloudflare:workers";
 import * as tables from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 const db = createDb(env);
 
@@ -110,3 +110,51 @@ builder.mutationField("updateTodo", (t) =>
     },
   }),
 );
+
+builder.mutationFields((t) => ({
+  deleteCompletedTodos: t.drizzleField({
+    type: "List",
+    args: { listId: t.arg.id() },
+    nullable: true,
+    resolve: async (query, root, { listId }, ctx) => {
+      const userLists = await getUserLists(ctx.userId);
+      if (!userLists.has(listId)) {
+        throw new Error("You do not have access to this list");
+      }
+
+      await db
+        .delete(tables.Todo)
+        .where(
+          and(
+            eq(tables.Todo.listId, listId),
+            eq(tables.Todo.isCompleted, true),
+          ),
+        );
+
+      return db.query.List.findFirst(query({ where: { id: { eq: listId } } }));
+    },
+  }),
+  uncheckCompletedTodos: t.drizzleField({
+    type: "List",
+    args: { listId: t.arg.id() },
+    nullable: true,
+    resolve: async (query, root, { listId }, ctx) => {
+      const userLists = await getUserLists(ctx.userId);
+      if (!userLists.has(listId)) {
+        throw new Error("You do not have access to this list");
+      }
+
+      await db
+        .update(tables.Todo)
+        .set({ isCompleted: false })
+        .where(
+          and(
+            eq(tables.Todo.listId, listId),
+            eq(tables.Todo.isCompleted, true),
+          ),
+        );
+
+      return db.query.List.findFirst(query({ where: { id: { eq: listId } } }));
+    },
+  }),
+}));

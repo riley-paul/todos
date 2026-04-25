@@ -33,3 +33,15 @@ mutation UpdateTodo($input: UpdateTodoInput!) {
     ...Todo
   }
 }
+
+mutation DeleteCompletedTodos($listId: ID!) {
+  deleteCompletedTodos(listId: $listId) {
+    ...ListFull
+  }
+}
+
+mutation UncheckCompletedTodos($listId: ID!) {
+  uncheckCompletedTodos(listId: $listId) {
+    ...ListFull
+  }
+}

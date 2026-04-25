@@ -49,7 +49,9 @@ export type ListUserObjectType = {
 export type Mutation = {
   __typename?: 'Mutation';
   createTodo?: Maybe<ListObjectType>;
+  deleteCompletedTodos?: Maybe<ListObjectType>;
   deleteTodo?: Maybe<Scalars['Boolean']['output']>;
+  uncheckCompletedTodos?: Maybe<ListObjectType>;
   updateTodo?: Maybe<TodoObjectType>;
 };
 
@@ -59,8 +61,18 @@ export type MutationCreateTodoArgs = {
 };
 
 
+export type MutationDeleteCompletedTodosArgs = {
+  listId: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteTodoArgs = {
   input: DeleteTodoInput;
+};
+
+
+export type MutationUncheckCompletedTodosArgs = {
+  listId: Scalars['ID']['input'];
 };
 
 
@@ -109,6 +121,7 @@ export type UserObjectType = {
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  settingGroupCompleted: Scalars['Boolean']['output'];
 };
 
 export type ShallowListFragment = { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> };
@@ -157,7 +170,26 @@ export type UpdateTodoMutationVariables = Exact<{
 
 export type UpdateTodoMutation = { __typename?: 'Mutation', updateTodo?: { __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } } | null };
 
+export type DeleteCompletedTodosMutationVariables = Exact<{
+  listId: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteCompletedTodosMutation = { __typename?: 'Mutation', deleteCompletedTodos?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
+
+export type UncheckCompletedTodosMutationVariables = Exact<{
+  listId: Scalars['ID']['input'];
+}>;
+
+
+export type UncheckCompletedTodosMutation = { __typename?: 'Mutation', uncheckCompletedTodos?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
+
 export type UserFragment = { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null };
+
+export type GetMeQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetMeQuery = { __typename?: 'Query', me: { __typename?: 'UserObjectType', settingGroupCompleted: boolean, id: string, name: string, email: string, avatarUrl?: string | null } };
 
 export const UserFragmentDoc = gql`
     fragment User on UserObjectType {
@@ -429,3 +461,112 @@ export function useUpdateTodoMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateTodoMutationHookResult = ReturnType<typeof useUpdateTodoMutation>;
 export type UpdateTodoMutationResult = Apollo.MutationResult<UpdateTodoMutation>;
 export type UpdateTodoMutationOptions = Apollo.BaseMutationOptions<UpdateTodoMutation, UpdateTodoMutationVariables>;
+export const DeleteCompletedTodosDocument = gql`
+    mutation DeleteCompletedTodos($listId: ID!) {
+  deleteCompletedTodos(listId: $listId) {
+    ...ListFull
+  }
+}
+    ${ListFullFragmentDoc}`;
+export type DeleteCompletedTodosMutationFn = Apollo.MutationFunction<DeleteCompletedTodosMutation, DeleteCompletedTodosMutationVariables>;
+
+/**
+ * __useDeleteCompletedTodosMutation__
+ *
+ * To run a mutation, you first call `useDeleteCompletedTodosMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteCompletedTodosMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteCompletedTodosMutation, { data, loading, error }] = useDeleteCompletedTodosMutation({
+ *   variables: {
+ *      listId: // value for 'listId'
+ *   },
+ * });
+ */
+export function useDeleteCompletedTodosMutation(baseOptions?: Apollo.MutationHookOptions<DeleteCompletedTodosMutation, DeleteCompletedTodosMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteCompletedTodosMutation, DeleteCompletedTodosMutationVariables>(DeleteCompletedTodosDocument, options);
+      }
+export type DeleteCompletedTodosMutationHookResult = ReturnType<typeof useDeleteCompletedTodosMutation>;
+export type DeleteCompletedTodosMutationResult = Apollo.MutationResult<DeleteCompletedTodosMutation>;
+export type DeleteCompletedTodosMutationOptions = Apollo.BaseMutationOptions<DeleteCompletedTodosMutation, DeleteCompletedTodosMutationVariables>;
+export const UncheckCompletedTodosDocument = gql`
+    mutation UncheckCompletedTodos($listId: ID!) {
+  uncheckCompletedTodos(listId: $listId) {
+    ...ListFull
+  }
+}
+    ${ListFullFragmentDoc}`;
+export type UncheckCompletedTodosMutationFn = Apollo.MutationFunction<UncheckCompletedTodosMutation, UncheckCompletedTodosMutationVariables>;
+
+/**
+ * __useUncheckCompletedTodosMutation__
+ *
+ * To run a mutation, you first call `useUncheckCompletedTodosMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUncheckCompletedTodosMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [uncheckCompletedTodosMutation, { data, loading, error }] = useUncheckCompletedTodosMutation({
+ *   variables: {
+ *      listId: // value for 'listId'
+ *   },
+ * });
+ */
+export function useUncheckCompletedTodosMutation(baseOptions?: Apollo.MutationHookOptions<UncheckCompletedTodosMutation, UncheckCompletedTodosMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UncheckCompletedTodosMutation, UncheckCompletedTodosMutationVariables>(UncheckCompletedTodosDocument, options);
+      }
+export type UncheckCompletedTodosMutationHookResult = ReturnType<typeof useUncheckCompletedTodosMutation>;
+export type UncheckCompletedTodosMutationResult = Apollo.MutationResult<UncheckCompletedTodosMutation>;
+export type UncheckCompletedTodosMutationOptions = Apollo.BaseMutationOptions<UncheckCompletedTodosMutation, UncheckCompletedTodosMutationVariables>;
+export const GetMeDocument = gql`
+    query GetMe {
+  me {
+    ...User
+    settingGroupCompleted
+  }
+}
+    ${UserFragmentDoc}`;
+
+/**
+ * __useGetMeQuery__
+ *
+ * To run a query within a React component, call `useGetMeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMeQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetMeQuery(baseOptions?: Apollo.QueryHookOptions<GetMeQuery, GetMeQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMeQuery, GetMeQueryVariables>(GetMeDocument, options);
+      }
+export function useGetMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMeQuery, GetMeQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMeQuery, GetMeQueryVariables>(GetMeDocument, options);
+        }
+// @ts-ignore
+export function useGetMeSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetMeQuery, GetMeQueryVariables>): Apollo.UseSuspenseQueryResult<GetMeQuery, GetMeQueryVariables>;
+export function useGetMeSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMeQuery, GetMeQueryVariables>): Apollo.UseSuspenseQueryResult<GetMeQuery | undefined, GetMeQueryVariables>;
+export function useGetMeSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMeQuery, GetMeQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetMeQuery, GetMeQueryVariables>(GetMeDocument, options);
+        }
+export type GetMeQueryHookResult = ReturnType<typeof useGetMeQuery>;
+export type GetMeLazyQueryHookResult = ReturnType<typeof useGetMeLazyQuery>;
+export type GetMeSuspenseQueryHookResult = ReturnType<typeof useGetMeSuspenseQuery>;
+export type GetMeQueryResult = Apollo.QueryResult<GetMeQuery, GetMeQueryVariables>;

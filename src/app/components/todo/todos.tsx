@@ -1,16 +1,18 @@
 import React from "react";
 import { cn } from "@/app/lib/utils";
 
-import { useSuspenseQuery } from "@tanstack/react-query";
 import Todo from "./todo";
 import { Button, Card, Text } from "@radix-ui/themes";
-import { qUser } from "@/app/lib/queries";
 import { ChevronRightIcon } from "lucide-react";
 import DeleteCompletedTodosButton from "./footer-buttons/delete-completed-todos-button";
 import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
 import NoTodosScreen from "../screens/no-todos";
-import { type ListFullFragment, type TodoFragment } from "@/app/gql.gen";
+import {
+  useGetMeSuspenseQuery,
+  type ListFullFragment,
+  type TodoFragment,
+} from "@/app/gql.gen";
 
 const CompletedTodosActions: React.FC<{ listId: string }> = ({ listId }) => (
   <div className="flex items-center justify-end gap-4">
@@ -65,7 +67,9 @@ type Props = {
 
 const Todos: React.FC<Props> = ({ list }) => {
   const { todos } = list;
-  const { data: user } = useSuspenseQuery(qUser);
+  const {
+    data: { me },
+  } = useGetMeSuspenseQuery();
 
   const completedTodos = todos.filter(({ isCompleted }) => isCompleted);
   const notCompletedTodos = todos.filter(({ isCompleted }) => !isCompleted);
@@ -74,7 +78,7 @@ const Todos: React.FC<Props> = ({ list }) => {
     return <NoTodosScreen />;
   }
 
-  if (user.settingGroupCompleted) {
+  if (me.settingGroupCompleted) {
     return (
       <React.Fragment>
         <div className="grid gap-1">{notCompletedTodos.map(produceTodo)}</div>

@@ -1,4 +1,3 @@
-import { qUser } from "@/app/lib/queries";
 import { type QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
@@ -7,6 +6,11 @@ import ListChips from "../components/list/list-chips";
 import type { UserSelect } from "@/lib/types";
 import AppHeader from "../components/app-header";
 import type { ApolloClient, NormalizedCacheObject } from "@apollo/client";
+import {
+  GetMeDocument,
+  type GetMeQuery,
+  type GetMeQueryVariables,
+} from "../gql.gen";
 
 type RouterContext = {
   queryClient: QueryClient;
@@ -16,9 +20,13 @@ type RouterContext = {
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: Component,
-  loader: async ({ context }) => {
-    const user = await context.queryClient.ensureQueryData(qUser);
-    return { user };
+  loader: async ({ context: { apolloClient } }) => {
+    const {
+      data: { me },
+    } = await apolloClient.query<GetMeQuery, GetMeQueryVariables>({
+      query: GetMeDocument,
+    });
+    return { user: me };
   },
 });
 

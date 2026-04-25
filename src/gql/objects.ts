@@ -7,6 +7,8 @@ builder.drizzleObject("User", {
     name: t.exposeString("name"),
     email: t.exposeString("email"),
     avatarUrl: t.exposeString("avatarUrl", { nullable: true }),
+
+    settingGroupCompleted: t.exposeBoolean("settingGroupCompleted"),
   }),
 });
 
