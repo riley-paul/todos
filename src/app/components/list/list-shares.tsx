@@ -7,6 +7,7 @@ import { qListShares, qUser } from "@/app/lib/queries";
 import useAlerts from "@/app/hooks/use-alerts";
 import LoadingScreen from "../screens/loading";
 import UserRow from "../ui/user/user-row";
+import useLeaveList from "@/app/hooks/actions/use-leave-list";
 
 type ListShareProps = {
   listShare: ListUserSelect;
@@ -15,8 +16,9 @@ type ListShareProps = {
 
 const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
   const { data: currentUser } = useQuery(qUser);
-  const { handleCancelInvite, handleRemoveSelf, handleRemoveUser } =
-    useAlerts();
+  const { handleCancelInvite, handleRemoveUser } = useAlerts();
+
+  const { handleLeaveList } = useLeaveList();
 
   const getActionProps = (): ButtonProps => {
     if (listShare.isPending) {
@@ -45,7 +47,7 @@ const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
             <span>Leave</span>
           </React.Fragment>
         ),
-        onClick: () => handleRemoveSelf({ listId: listShare.listId }),
+        onClick: () => handleLeaveList(listShare.listId),
       };
     }
 

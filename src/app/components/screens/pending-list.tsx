@@ -2,10 +2,10 @@ import React from "react";
 import Empty from "../ui/empty";
 import { Button, Card, Heading } from "@radix-ui/themes";
 import { CheckIcon, HourglassIcon, XIcon } from "lucide-react";
-import useMutations from "@/app/hooks/use-mutations";
 import { getRouteApi } from "@tanstack/react-router";
 import UserRow from "../ui/user/user-row";
 import useLeaveList from "@/app/hooks/actions/use-leave-list";
+import useAcceptListInvite from "@/app/hooks/actions/use-accept-list-invite";
 
 const route = getRouteApi("/todos/$listId");
 
@@ -13,11 +13,8 @@ const PendingListScreen: React.FC = () => {
   const { listId } = route.useParams();
   const { list } = route.useLoaderData();
 
-  const { acceptListJoin } = useMutations();
-
-  const handleAcceptJoin = () => acceptListJoin.mutate({ listId });
-
   const { handleLeaveList } = useLeaveList();
+  const { handleAcceptListInvite } = useAcceptListInvite();
 
   return (
     <Empty.Root>
@@ -41,7 +38,11 @@ const PendingListScreen: React.FC = () => {
             <XIcon className="size-4" />
             Decline
           </Button>
-          <Button variant="solid" className="h-9" onClick={handleAcceptJoin}>
+          <Button
+            variant="solid"
+            className="h-9"
+            onClick={() => handleAcceptListInvite(listId)}
+          >
             <CheckIcon className="size-4" />
             Join
           </Button>

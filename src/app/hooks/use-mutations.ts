@@ -185,19 +185,6 @@ export default function useMutations() {
     mutationFn: actions.listUsers.create.orThrow,
   });
 
-  const acceptListJoin = useMutation({
-    mutationFn: actions.listUsers.accept.orThrow,
-    onSuccess: ({ listId, list: { name } }) => {
-      router.invalidate();
-      const goToList = () => {
-        navigate({ to: "/todos/$listId", params: { listId } });
-      };
-      toast.success(`You now have access to ${name}`, {
-        action: { label: "Go to list", onClick: goToList },
-      });
-    },
-  });
-
   const deleteList = useMutation({
     mutationFn: actions.lists.remove.orThrow,
     onMutate: ({ id }) => {
@@ -215,19 +202,6 @@ export default function useMutations() {
       const lists = queryClient.getQueryData(qLists.queryKey);
       const list = lists?.find((l) => l.id === listId);
       toast.success(`User removed from ${list?.name ?? "the list"}`);
-    },
-  });
-
-  const removeSelfFromList = useMutation({
-    mutationFn: actions.listUsers.remove.orThrow,
-    onMutate: ({ listId }) => {
-      if (listId === selectedList) navigate({ to: "/" });
-    },
-    onSuccess: (_, { listId }) => {
-      router.invalidate();
-      const lists = queryClient.getQueryData(qLists.queryKey);
-      const list = lists?.find((l) => l.id === listId);
-      toast.success(`You left ${list?.name ?? "the list"}`);
     },
   });
 
@@ -255,8 +229,6 @@ export default function useMutations() {
     deleteList,
 
     inviteUserToList,
-    acceptListJoin,
-    removeSelfFromList,
     removeUserFromList,
 
     updateListSortShow,

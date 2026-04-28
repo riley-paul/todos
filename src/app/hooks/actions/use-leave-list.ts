@@ -13,7 +13,7 @@ export default function useLeaveList() {
 
   const leaveListMutation = useMutation({
     mutationFn: actions.lists.leave.orThrow,
-    onSuccess: (data, { listId }) => {
+    onSuccess: (_, { listId }) => {
       toast.success("You have left the list");
       router.invalidate();
       if (listId === currentList) router.navigate({ to: "/" });

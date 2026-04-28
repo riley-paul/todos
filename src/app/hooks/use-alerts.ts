@@ -7,12 +7,7 @@ import { z } from "astro/zod";
 
 export default function useAlerts() {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
-  const {
-    createList,
-    removeSelfFromList,
-    removeUserFromList,
-    inviteUserToList,
-  } = useMutations();
+  const { createList, removeUserFromList, inviteUserToList } = useMutations();
 
   const handleCreateList = () => {
     dispatchAlert({
@@ -39,7 +34,10 @@ export default function useAlerts() {
     });
   };
 
-  const handleCancelInvite = (data: { listId: string; userToRemoveId: string }) => {
+  const handleCancelInvite = (data: {
+    listId: string;
+    userToRemoveId: string;
+  }) => {
     dispatchAlert({
       type: "open",
       data: {
@@ -63,7 +61,10 @@ export default function useAlerts() {
     });
   };
 
-  const handleRemoveUser = (data: { listId: string; userToRemoveId: string }) => {
+  const handleRemoveUser = (data: {
+    listId: string;
+    userToRemoveId: string;
+  }) => {
     dispatchAlert({
       type: "open",
       data: {
@@ -80,27 +81,6 @@ export default function useAlerts() {
           });
         },
         confirmButtonProps: { children: "Remove" },
-      },
-    });
-  };
-
-  const handleRemoveSelf = (data: { listId: string }) => {
-    dispatchAlert({
-      type: "open",
-      data: {
-        type: "delete",
-        title: "Leave List",
-        message:
-          "Are you sure you want to leave this list? You will no longer have access to it.",
-        handleDelete: () => {
-          removeSelfFromList.mutate(data, {
-            onSuccess: () => {
-              dispatchAlert({ type: "close" });
-              toast.success("You have left the list");
-            },
-          });
-        },
-        confirmButtonProps: { children: "Leave" },
       },
     });
   };
@@ -134,7 +114,6 @@ export default function useAlerts() {
   return {
     handleCreateList,
     handleCancelInvite,
-    handleRemoveSelf,
     handleRemoveUser,
     handleInviteUser,
   };
