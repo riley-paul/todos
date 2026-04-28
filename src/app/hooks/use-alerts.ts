@@ -4,15 +4,31 @@ import { useAtom } from "jotai";
 import { toast } from "sonner";
 import useMutations from "./use-mutations";
 import { z } from "astro/zod";
+import { GetListsForChipsDocument, useCreateListMutation } from "../gql.gen";
+import { useNavigate, useRouter } from "@tanstack/react-router";
 
 export default function useAlerts() {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
-  const {
-    createList,
-    removeSelfFromList,
-    removeUserFromList,
-    inviteUserToList,
-  } = useMutations();
+  const { removeSelfFromList, removeUserFromList, inviteUserToList } =
+    useMutations();
+
+  const navigate = useNavigate();
+  const router = useRouter();
+
+  const [createList] = useCreateListMutation({
+    refetchQueries: [GetListsForChipsDocument],
+    update: (cache, { data }) => {
+      if (!data?.createList) return;
+    },
+    onCompleted: async (data) => {
+      if (!data.createList) return;
+      const newList = data.createList;
+
+      await router.invalidate();
+      navigate({ to: "/todos/$listId", params: { listId: newList.id } });
+      toast.success(`List "${newList.name}" created`);
+    },
+  });
 
   const handleCreateList = () => {
     dispatchAlert({
@@ -25,21 +41,21 @@ export default function useAlerts() {
         placeholder: "List name",
         schema: zListName,
         handleSubmit: (name: string) => {
-          createList.mutate(
-            { name },
-            {
-              onSuccess: () => {
-                dispatchAlert({ type: "close" });
-                toast.success(`List "${name}" created`);
-              },
+          createList({
+            variables: { input: { name } },
+            onCompleted: () => {
+              dispatchAlert({ type: "close" });
             },
-          );
+          });
         },
       },
     });
   };
 
-  const handleCancelInvite = (data: { listId: string; userToRemoveId: string }) => {
+  const handleCancelInvite = (data: {
+    listId: string;
+    userToRemoveId: string;
+  }) => {
     dispatchAlert({
       type: "open",
       data: {
@@ -63,7 +79,10 @@ export default function useAlerts() {
     });
   };
 
-  const handleRemoveUser = (data: { listId: string; userToRemoveId: string }) => {
+  const handleRemoveUser = (data: {
+    listId: string;
+    userToRemoveId: string;
+  }) => {
     dispatchAlert({
       type: "open",
       data: {

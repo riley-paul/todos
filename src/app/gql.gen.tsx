@@ -17,6 +17,10 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type CreateListInput = {
+  name: Scalars['String']['input'];
+};
+
 export type CreateTodoInput = {
   listId: Scalars['ID']['input'];
   text: Scalars['String']['input'];
@@ -48,11 +52,17 @@ export type ListUserObjectType = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createList?: Maybe<ListObjectType>;
   createTodo?: Maybe<ListObjectType>;
   deleteCompletedTodos?: Maybe<ListObjectType>;
   deleteTodo?: Maybe<Scalars['Boolean']['output']>;
   uncheckCompletedTodos?: Maybe<ListObjectType>;
   updateTodo?: Maybe<TodoObjectType>;
+};
+
+
+export type MutationCreateListArgs = {
+  input: CreateListInput;
 };
 
 
@@ -139,6 +149,13 @@ export type GetListQueryVariables = Exact<{
 
 
 export type GetListQuery = { __typename?: 'Query', list?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
+
+export type CreateListMutationVariables = Exact<{
+  input: CreateListInput;
+}>;
+
+
+export type CreateListMutation = { __typename?: 'Mutation', createList?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
 
 export type TodoFragment = { __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } };
 
@@ -321,6 +338,39 @@ export type GetListQueryHookResult = ReturnType<typeof useGetListQuery>;
 export type GetListLazyQueryHookResult = ReturnType<typeof useGetListLazyQuery>;
 export type GetListSuspenseQueryHookResult = ReturnType<typeof useGetListSuspenseQuery>;
 export type GetListQueryResult = Apollo.QueryResult<GetListQuery, GetListQueryVariables>;
+export const CreateListDocument = gql`
+    mutation CreateList($input: CreateListInput!) {
+  createList(input: $input) {
+    ...ListFull
+  }
+}
+    ${ListFullFragmentDoc}`;
+export type CreateListMutationFn = Apollo.MutationFunction<CreateListMutation, CreateListMutationVariables>;
+
+/**
+ * __useCreateListMutation__
+ *
+ * To run a mutation, you first call `useCreateListMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateListMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createListMutation, { data, loading, error }] = useCreateListMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateListMutation(baseOptions?: Apollo.MutationHookOptions<CreateListMutation, CreateListMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateListMutation, CreateListMutationVariables>(CreateListDocument, options);
+      }
+export type CreateListMutationHookResult = ReturnType<typeof useCreateListMutation>;
+export type CreateListMutationResult = Apollo.MutationResult<CreateListMutation>;
+export type CreateListMutationOptions = Apollo.BaseMutationOptions<CreateListMutation, CreateListMutationVariables>;
 export const GetTodosDocument = gql`
     query GetTodos($listId: ID) {
   todos(listId: $listId) {

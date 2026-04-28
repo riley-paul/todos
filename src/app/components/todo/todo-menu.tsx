@@ -22,10 +22,6 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
   const { listId } = useParams({ strict: false });
 
   const [deleteTodo] = useDeleteTodoMutation({
-    optimisticResponse: {
-      __typename: "Mutation",
-      deleteTodo: true,
-    },
     update: (cache, { data }, { variables }) => {
       if (!data?.deleteTodo) return;
 

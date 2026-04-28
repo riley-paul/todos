@@ -7,8 +7,6 @@ fragment ShallowList on ListObjectType {
   isPending
   otherUsers {
     ...User
-    
-    
   }
 }
 
@@ -27,6 +25,12 @@ query GetListsForChips {
 
 query GetList($listId: ID!) {
   list(listId: $listId) {
+    ...ListFull
+  }
+}
+
+mutation CreateList($input: CreateListInput!) {
+  createList(input: $input) {
     ...ListFull
   }
 }
