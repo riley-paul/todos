@@ -12,6 +12,23 @@ export const ensureAuthorized = (context: ActionAPIContext) => {
   return user;
 };
 
+export const getListUsers = async (
+  listId: string,
+  opts: { excludePending?: boolean } = {},
+): Promise<Set<string>> => {
+  const db = createDb(env);
+
+  const filters = [];
+  filters.push({ listId });
+  if (opts.excludePending) filters.push({ isPending: { eq: false } });
+
+  const listUsers = await db.query.ListUser.findMany({
+    where: { AND: filters },
+    columns: { userId: true },
+  });
+  return new Set(listUsers.map(({ userId }) => userId));
+};
+
 type InvalidateListUsersArgs = {
   listId: string;
   userId: string;
