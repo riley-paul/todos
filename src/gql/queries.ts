@@ -35,8 +35,23 @@ builder.queryFields((t) => ({
       const userLists = await getUserLists(ctx.userId);
       if (!userLists.has(args.listId)) return null;
 
+      // .orderBy(desc(ListUser.show), asc(ListUser.order), asc(List.createdAt))
+
       return db.query.List.findFirst(
-        query({ where: { id: { eq: args.listId } } }),
+        query({
+          where: { id: { eq: args.listId } },
+          orderBy: {
+            createdAt: "asc",
+          },
+          with: {
+            listUser: {
+              orderBy: {
+                show: "desc",
+                order: "asc",
+              },
+            },
+          },
+        }),
       );
     },
   }),
