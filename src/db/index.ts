@@ -1,6 +1,7 @@
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "./schema";
+import relations from "./relations";
 
 export const getDbUrl = (env: Env) => {
   if (env.NODE_ENV === "development") return "http://127.0.0.1:8080";
@@ -14,7 +15,7 @@ export const createDb = (env: Env) => {
     url: getDbUrl(env),
     authToken: env.DATABASE_AUTH_TOKEN,
   });
-  return drizzle(client, { schema });
+  return drizzle({ client, schema, relations });
 };
 
 export type Db = ReturnType<typeof createDb>;

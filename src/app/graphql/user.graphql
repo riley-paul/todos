@@ -1,0 +1,13 @@
+fragment User on UserObjectType {
+  id
+  name
+  email
+  avatarUrl
+}
+
+query GetMe {
+  me {
+    ...User
+    settingGroupCompleted
+  }
+}

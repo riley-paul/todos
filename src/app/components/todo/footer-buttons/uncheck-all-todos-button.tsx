@@ -1,15 +1,24 @@
-import useMutations from "@/app/hooks/use-mutations";
-import { qTodos } from "@/app/lib/queries";
+import {
+  useGetListSuspenseQuery,
+  useUncheckCompletedTodosMutation,
+} from "@/app/gql.gen";
 import { Button } from "@radix-ui/themes";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { SquareMinusIcon } from "lucide-react";
 import React from "react";
+import { toast } from "sonner";
 
 type Props = { listId: string };
 
 const UncheckAllTodosButton: React.FC<Props> = ({ listId }) => {
-  const { uncheckCompletedTodos } = useMutations();
-  const { data: todos } = useSuspenseQuery(qTodos(listId));
+  const [uncheckCompletedTodos] = useUncheckCompletedTodosMutation({
+    onCompleted: () => {
+      toast.success("Completed todos unchecked");
+    },
+  });
+  const {
+    data: { list },
+  } = useGetListSuspenseQuery({ variables: { listId } });
+  const todos = list?.todos || [];
   const numCompleted = todos.filter((i) => i.isCompleted).length;
 
   return (
@@ -17,7 +26,7 @@ const UncheckAllTodosButton: React.FC<Props> = ({ listId }) => {
       size="1"
       variant="ghost"
       color="gray"
-      onClick={() => uncheckCompletedTodos.mutate({ listId })}
+      onClick={() => uncheckCompletedTodos({ variables: { listId } })}
       disabled={numCompleted === 0}
     >
       <SquareMinusIcon className="size-3" />

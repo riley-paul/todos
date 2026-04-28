@@ -1,0 +1,40 @@
+fragment ShallowList on ListObjectType {
+  id
+  name
+  todoCount
+  show
+  order
+  isPending
+  otherUsers {
+    ...User
+  }
+}
+
+fragment ListFull on ListObjectType {
+  ...ShallowList
+  todos {
+    ...Todo
+  }
+}
+
+query GetListsForChips {
+  lists {
+    ...ShallowList
+  }
+}
+
+query GetList($listId: ID!) {
+  list(listId: $listId) {
+    ...ListFull
+  }
+}
+
+mutation CreateList($input: CreateListInput!) {
+  createList(input: $input) {
+    ...ListFull
+  }
+}
+
+mutation DeleteList($listId: ID!) {
+  deleteList(listId: $listId)
+}

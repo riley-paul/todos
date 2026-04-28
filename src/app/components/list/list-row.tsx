@@ -1,11 +1,11 @@
-import type { ListSelect } from "@/lib/types";
 import { Text } from "@radix-ui/themes";
 import { HourglassIcon } from "lucide-react";
 import React from "react";
 import UserBubbleGroup from "../ui/user/user-bubble-group";
 import { cn } from "@/app/lib/utils";
+import type { ShallowListFragment } from "@/app/gql.gen";
 
-type Props = { list: ListSelect };
+type Props = { list: ShallowListFragment };
 
 const ListRow: React.FC<Props> = ({ list }) => {
   return (

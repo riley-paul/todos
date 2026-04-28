@@ -1,17 +1,18 @@
 import useAlerts from "@/app/hooks/use-alerts";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
-import { qLists } from "@/app/lib/queries";
-import { type ListSelect } from "@/lib/types";
 import { Badge, IconButton, Kbd, Tooltip } from "@radix-ui/themes";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, linkOptions } from "@tanstack/react-router";
 import { ListPlusIcon } from "lucide-react";
 import React from "react";
 import ListReorder from "./list-reorder";
 import { ACCENT_COLOR } from "@/lib/constants";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
+import {
+  useGetListsForChipsSuspenseQuery,
+  type ShallowListFragment,
+} from "@/app/gql.gen";
 
-const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
+const ListChip: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
   const link = linkOptions({
     to: "/todos/$listId",
     params: { listId: list.id },
@@ -42,7 +43,7 @@ const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
 
 const ListChips: React.FC = () => {
   const { handleCreateList } = useAlerts();
-  const { data: lists } = useSuspenseQuery(qLists);
+  const { data: { lists = [] } = {} } = useGetListsForChipsSuspenseQuery();
 
   useHotkey("A", handleCreateList, { ignoreInputs: true });
 

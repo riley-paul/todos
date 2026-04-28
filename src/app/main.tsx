@@ -18,6 +18,9 @@ import RealtimeProvider from "./providers/realtime-provider";
 import type { UserSelect } from "@/lib/types";
 import useServiceWorker from "./hooks/use-service-worker";
 
+import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client/react";
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
   mutationCache: new MutationCache({
@@ -30,9 +33,18 @@ const queryClient = new QueryClient({
   }),
 });
 
+const apolloClient = new ApolloClient({
+  link: new HttpLink({ uri: "/graphql", useGETForQueries: true }),
+  cache: new InMemoryCache(),
+});
+
 const router = createRouter({
   routeTree,
-  context: { queryClient, currentUser: null as unknown as UserSelect },
+  context: {
+    queryClient,
+    apolloClient,
+    currentUser: null as unknown as UserSelect,
+  },
   defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
   defaultPendingComponent: LoadingScreen,
@@ -51,18 +63,20 @@ type Props = { currentUser: UserSelect };
 const App: React.FC<Props> = ({ currentUser }) => {
   useServiceWorker();
   return (
-    <QueryClientProvider client={queryClient}>
-      <RealtimeProvider currentUser={currentUser}>
-        <RadixProvider>
-          <RouterProvider
-            router={router}
-            context={{ queryClient, currentUser }}
-          />
-          <CustomToaster />
-          <AlertSystem />
-        </RadixProvider>
-      </RealtimeProvider>
-    </QueryClientProvider>
+    <ApolloProvider client={apolloClient}>
+      <QueryClientProvider client={queryClient}>
+        <RealtimeProvider currentUser={currentUser}>
+          <RadixProvider>
+            <RouterProvider
+              router={router}
+              context={{ queryClient, apolloClient, currentUser }}
+            />
+            <CustomToaster />
+            <AlertSystem />
+          </RadixProvider>
+        </RealtimeProvider>
+      </QueryClientProvider>
+    </ApolloProvider>
   );
 };
 

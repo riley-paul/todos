@@ -5,7 +5,7 @@ const ASSET_CACHE = "asset-cache-v1";
 // --------------------
 // INSTALL
 // --------------------
-self.addEventListener("install", (event) => {
+self.addEventListener("install", () => {
   self.skipWaiting();
 });
 

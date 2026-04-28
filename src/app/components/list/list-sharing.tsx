@@ -3,11 +3,11 @@ import { Avatar, Button, Dialog, IconButton } from "@radix-ui/themes";
 import ListShares from "./list-shares";
 import { PlusIcon, Share2Icon } from "lucide-react";
 import useAlerts from "@/app/hooks/use-alerts";
-import type { ListSelect } from "@/lib/types";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 import UserBubbleGroup from "@/app/components/ui/user/user-bubble-group";
+import type { ShallowListFragment } from "@/app/gql.gen";
 
-const ListSharing: React.FC<{ list: ListSelect }> = ({ list }) => {
+const ListSharing: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
   const { handleInviteUser } = useAlerts();
 
   return (
