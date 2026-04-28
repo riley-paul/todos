@@ -18,8 +18,8 @@ import { useCopyToClipboard } from "usehooks-ts";
 import { alertSystemAtom } from "../alert-system/alert-system.store";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
-import useAlerts from "@/app/hooks/use-alerts";
 import { getListUrl } from "@/lib/constants";
+import useLeaveList from "@/app/hooks/actions/use-leave-list";
 
 type Props = {
   list: ListSelect;
@@ -38,6 +38,8 @@ const ListMenu: React.FC<Props> = ({ list }) => {
   const [, copyToClipboard] = useCopyToClipboard();
 
   const isOnlyUser = otherUsers.length === 0;
+
+  const { handleLeaveList } = useLeaveList();
 
   const handleRenameList = () => {
     dispatchAlert({
@@ -72,8 +74,6 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       },
     });
   };
-
-  const { handleRemoveSelf } = useAlerts();
 
   const handleCopyLink = () => {
     const link = getListUrl(id);
@@ -137,7 +137,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       text: "Leave",
       icon: <LogOutIcon className="size-4 opacity-70" />,
       color: "amber",
-      onClick: () => handleRemoveSelf({ listId: id }),
+      onClick: () => handleLeaveList(id),
       hide: isOnlyUser,
     },
     {

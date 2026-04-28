@@ -1,8 +1,13 @@
-import { defineAction } from "astro:actions";
+import { ActionError, defineAction } from "astro:actions";
 import * as listInputs from "@/api/inputs/lists.input";
 import * as listFunctions from "@/api/functions/lists";
 import { ensureAuthorized } from "@/api/helpers";
 import { z } from "astro/zod";
+import { createDb } from "@/db";
+import { env } from "cloudflare:workers";
+
+import * as tables from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export const getAll = defineAction({
   input: z.any(),
@@ -57,5 +62,40 @@ export const updateSortShow = defineAction({
   handler: (input, c) => {
     const userId = ensureAuthorized(c).id;
     return listFunctions.updateSortShow({ ...input, userId });
+  },
+});
+
+export const leave = defineAction({
+  input: z.object({ listId: z.string() }),
+  handler: async ({ listId }, c) => {
+    const db = createDb(env);
+    const userId = ensureAuthorized(c).id;
+
+    const listUser = await db.query.ListUser.findFirst({
+      where: { listId, userId },
+    });
+
+    if (!listUser) {
+      throw new ActionError({
+        code: "NOT_FOUND",
+        message: "You are not a member of this list",
+      });
+    }
+
+    const numListUsers = await db.$count(
+      tables.ListUser,
+      eq(tables.ListUser.listId, listId),
+    );
+
+    await db.transaction(async (tx) => {
+      await tx
+        .delete(tables.ListUser)
+        .where(eq(tables.ListUser.id, listUser.id));
+
+      if (numListUsers <= 1)
+        await tx.delete(tables.List).where(eq(tables.List.id, listId));
+    });
+
+    return true;
   },
 });

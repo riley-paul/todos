@@ -5,6 +5,7 @@ import { CheckIcon, HourglassIcon, XIcon } from "lucide-react";
 import useMutations from "@/app/hooks/use-mutations";
 import { getRouteApi } from "@tanstack/react-router";
 import UserRow from "../ui/user/user-row";
+import useLeaveList from "@/app/hooks/actions/use-leave-list";
 
 const route = getRouteApi("/todos/$listId");
 
@@ -12,10 +13,11 @@ const PendingListScreen: React.FC = () => {
   const { listId } = route.useParams();
   const { list } = route.useLoaderData();
 
-  const { acceptListJoin, removeSelfFromList } = useMutations();
+  const { acceptListJoin } = useMutations();
 
   const handleAcceptJoin = () => acceptListJoin.mutate({ listId });
-  const handleDeclineJoin = () => removeSelfFromList.mutate({ listId });
+
+  const { handleLeaveList } = useLeaveList();
 
   return (
     <Empty.Root>
@@ -31,7 +33,11 @@ const PendingListScreen: React.FC = () => {
       </Empty.Header>
       <Empty.Content>
         <div className="grid w-full max-w-2xs grid-cols-2 gap-2">
-          <Button variant="soft" className="h-9" onClick={handleDeclineJoin}>
+          <Button
+            variant="soft"
+            className="h-9"
+            onClick={() => handleLeaveList(listId)}
+          >
             <XIcon className="size-4" />
             Decline
           </Button>
