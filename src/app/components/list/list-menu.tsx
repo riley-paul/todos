@@ -20,7 +20,8 @@ import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
 import useAlerts from "@/app/hooks/use-alerts";
 import { getListUrl } from "@/lib/constants";
-import type { ShallowListFragment } from "@/app/gql.gen";
+import { useDeleteListMutation, type ShallowListFragment } from "@/app/gql.gen";
+import { useParams, useRouter } from "@tanstack/react-router";
 
 type Props = {
   list: ShallowListFragment;
@@ -28,12 +29,24 @@ type Props = {
 
 const ListMenu: React.FC<Props> = ({ list }) => {
   const { id, name, otherUsers } = list;
-  const {
-    deleteList,
-    updateList,
-    uncheckCompletedTodos,
-    deleteCompletedTodos,
-  } = useMutations();
+  const { updateList, uncheckCompletedTodos, deleteCompletedTodos } =
+    useMutations();
+
+  const { listId: currentList } = useParams({ strict: false });
+  const router = useRouter();
+
+  const [deleteList] = useDeleteListMutation({
+    onCompleted: () => {
+      router.invalidate();
+      toast.success("List deleted successfully");
+      if (currentList === id) router.navigate({ to: "/" });
+    },
+    update: (cache) => {
+      const listCacheId = cache.identify({ __typename: "ListObjectType", id });
+      cache.evict({ id: listCacheId });
+      cache.gc();
+    },
+  });
 
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const [, copyToClipboard] = useCopyToClipboard();
@@ -67,7 +80,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         title: "Delete List",
         message: `Are you sure you want to delete this list? This action cannot be undone.`,
         handleDelete: () => {
-          deleteList.mutate({ id });
+          deleteList({ variables: { listId: list.id } });
           dispatchAlert({ type: "close" });
         },
       },

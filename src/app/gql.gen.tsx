@@ -55,6 +55,7 @@ export type Mutation = {
   createList?: Maybe<ListObjectType>;
   createTodo?: Maybe<ListObjectType>;
   deleteCompletedTodos?: Maybe<ListObjectType>;
+  deleteList: Scalars['Boolean']['output'];
   deleteTodo?: Maybe<Scalars['Boolean']['output']>;
   uncheckCompletedTodos?: Maybe<ListObjectType>;
   updateTodo?: Maybe<TodoObjectType>;
@@ -72,6 +73,11 @@ export type MutationCreateTodoArgs = {
 
 
 export type MutationDeleteCompletedTodosArgs = {
+  listId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteListArgs = {
   listId: Scalars['ID']['input'];
 };
 
@@ -156,6 +162,13 @@ export type CreateListMutationVariables = Exact<{
 
 
 export type CreateListMutation = { __typename?: 'Mutation', createList?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
+
+export type DeleteListMutationVariables = Exact<{
+  listId: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteListMutation = { __typename?: 'Mutation', deleteList: boolean };
 
 export type TodoFragment = { __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } };
 
@@ -371,6 +384,37 @@ export function useCreateListMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateListMutationHookResult = ReturnType<typeof useCreateListMutation>;
 export type CreateListMutationResult = Apollo.MutationResult<CreateListMutation>;
 export type CreateListMutationOptions = Apollo.BaseMutationOptions<CreateListMutation, CreateListMutationVariables>;
+export const DeleteListDocument = gql`
+    mutation DeleteList($listId: ID!) {
+  deleteList(listId: $listId)
+}
+    `;
+export type DeleteListMutationFn = Apollo.MutationFunction<DeleteListMutation, DeleteListMutationVariables>;
+
+/**
+ * __useDeleteListMutation__
+ *
+ * To run a mutation, you first call `useDeleteListMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteListMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteListMutation, { data, loading, error }] = useDeleteListMutation({
+ *   variables: {
+ *      listId: // value for 'listId'
+ *   },
+ * });
+ */
+export function useDeleteListMutation(baseOptions?: Apollo.MutationHookOptions<DeleteListMutation, DeleteListMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteListMutation, DeleteListMutationVariables>(DeleteListDocument, options);
+      }
+export type DeleteListMutationHookResult = ReturnType<typeof useDeleteListMutation>;
+export type DeleteListMutationResult = Apollo.MutationResult<DeleteListMutation>;
+export type DeleteListMutationOptions = Apollo.BaseMutationOptions<DeleteListMutation, DeleteListMutationVariables>;
 export const GetTodosDocument = gql`
     query GetTodos($listId: ID) {
   todos(listId: $listId) {

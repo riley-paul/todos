@@ -2,6 +2,7 @@ import { env } from "cloudflare:workers";
 import { builder } from "../gql-builder";
 import { createDb } from "@/db";
 import * as tables from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 const db = createDb(env);
 
@@ -31,6 +32,30 @@ builder.mutationFields((t) => ({
       return db.query.List.findFirst(
         query({ where: { id: { eq: newList.id } } }),
       );
+    },
+  }),
+
+  deleteList: t.boolean({
+    args: { listId: t.arg.id() },
+    resolve: async (root, { listId }, ctx) => {
+      const list = await db.query.List.findFirst({
+        where: { id: { eq: listId } },
+      });
+      if (!list) throw new Error("List not found");
+
+      const listUser = await db.query.ListUser.findFirst({
+        where: {
+          AND: [
+            { listId: { eq: listId } },
+            { userId: { eq: ctx.userId } },
+            { isPending: { eq: false } },
+          ],
+        },
+      });
+      if (!listUser) throw new Error("You do not have access to this list");
+
+      await db.delete(tables.List).where(eq(tables.List.id, listId));
+      return true;
     },
   }),
 }));
