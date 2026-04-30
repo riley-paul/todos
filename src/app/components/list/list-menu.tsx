@@ -1,5 +1,5 @@
 import React from "react";
-import { zListName } from "@/lib/types";
+import { zListName } from "@/lib/types2";
 import {
   Edit2Icon,
   ExternalLinkIcon,

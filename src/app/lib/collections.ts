@@ -30,16 +30,22 @@ export const todos = createCollection(
     queryFn: actions.todos2.populate.orThrow,
     schema: zTodoSelect,
     onInsert: async ({ transaction }) =>
-      transaction.mutations.map(({ modified }) =>
-        actions.todos2.create.orThrow(modified),
+      Promise.all(
+        transaction.mutations.map(({ modified }) =>
+          actions.todos2.create.orThrow(modified),
+        ),
       ),
     onUpdate: async ({ transaction }) =>
-      transaction.mutations.map(({ original, changes }) =>
-        actions.todos2.update.orThrow({ todoId: original.id, data: changes }),
+      Promise.all(
+        transaction.mutations.map(({ original, changes }) =>
+          actions.todos2.update.orThrow({ todoId: original.id, data: changes }),
+        ),
       ),
     onDelete: async ({ transaction }) =>
-      transaction.mutations.map(({ original }) =>
-        actions.todos2.remove.orThrow({ todoId: original.id }),
+      Promise.all(
+        transaction.mutations.map(({ original }) =>
+          actions.todos2.remove.orThrow({ todoId: original.id }),
+        ),
       ),
   }),
 );
@@ -51,16 +57,22 @@ export const lists = createCollection(
     queryFn: actions.lists2.populate.orThrow,
     schema: zListSelect,
     onInsert: async ({ transaction }) =>
-      transaction.mutations.map(({ modified }) =>
-        actions.lists2.create.orThrow(modified),
+      Promise.all(
+        transaction.mutations.map(({ modified }) =>
+          actions.lists2.create.orThrow(modified),
+        ),
       ),
     onUpdate: async ({ transaction }) =>
-      transaction.mutations.map(({ original, changes }) =>
-        actions.lists2.update.orThrow({ listId: original.id, data: changes }),
+      Promise.all(
+        transaction.mutations.map(({ original, changes }) =>
+          actions.lists2.update.orThrow({ listId: original.id, data: changes }),
+        ),
       ),
     onDelete: async ({ transaction }) =>
-      transaction.mutations.map(({ original }) =>
-        actions.lists2.remove.orThrow({ listId: original.id }),
+      Promise.all(
+        transaction.mutations.map(({ original }) =>
+          actions.lists2.remove.orThrow({ listId: original.id }),
+        ),
       ),
   }),
 );

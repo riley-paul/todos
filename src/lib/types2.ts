@@ -1,6 +1,8 @@
 import { createSelectSchema } from "drizzle-zod";
 import * as tables from "@/db/schema";
-import type { z } from "astro/zod";
+import { z } from "astro/zod";
+
+export const zListName = z.string().trim().min(1).max(256);
 
 export type UserSessionInfo = {
   id: string;

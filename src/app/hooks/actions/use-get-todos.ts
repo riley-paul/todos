@@ -14,6 +14,8 @@ export default function useGetTodos(listId: string): TodoSelectDetails[] {
           eq(todo.listId, list.id),
         )
         .where(({ todo }) => eq(todo.listId, listId))
+        .distinct()
+        .orderBy(({ todo }) => todo.createdAt, "desc")
         .select(({ todo, user, list }) => ({
           id: todo.id,
           text: todo.text,
@@ -32,9 +34,7 @@ export default function useGetTodos(listId: string): TodoSelectDetails[] {
             id: list.id,
             name: list.name,
           },
-        }))
-        .orderBy(({ todo }) => todo.createdAt, "desc")
-        .distinct();
+        }));
     },
     [listId],
   );
