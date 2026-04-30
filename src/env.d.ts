@@ -8,8 +8,8 @@ type ENV = {} & import("./envs").Environment;
 
 type HonoEnv = {
   Bindings: {
-    session: import("./lib/types").UserSessionInfo | null;
-    user: import("./lib/types").UserSelect | null;
+    session: import("./lib/types2").UserSessionInfo | null;
+    user: import("./lib/types2").UserSelect | null;
   };
 };
 
@@ -17,7 +17,7 @@ type HonoEnv = {
 type Runtime = import("@astrojs/cloudflare").Runtime<ENV>;
 declare namespace App {
   interface Locals extends Runtime {
-    session: import("./lib/types").UserSessionInfo | null;
-    user: import("./lib/types").UserSelect | null;
+    session: import("./lib/types2").UserSessionInfo | null;
+    user: import("./lib/types2").UserSelect | null;
   }
 }

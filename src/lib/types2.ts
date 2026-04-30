@@ -2,6 +2,12 @@ import { createSelectSchema } from "drizzle-zod";
 import * as tables from "@/db/schema";
 import type { z } from "astro/zod";
 
+export type UserSessionInfo = {
+  id: string;
+  userId: string;
+  expiresAt: Date;
+};
+
 export const zTodoSelect = createSelectSchema(tables.Todo);
 export type TodoSelect = z.infer<typeof zTodoSelect>;
 export type TodoSelectDetails = z.infer<typeof zTodoSelect> & {

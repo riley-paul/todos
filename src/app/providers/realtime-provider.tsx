@@ -2,7 +2,7 @@ import { AblyProvider, ChannelProvider, useChannel } from "ably/react";
 import * as Ably from "ably";
 import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import type { UserSelect } from "@/lib/types";
+import type { UserSelect } from "@/lib/types2";
 
 const realtimeClient = new Ably.Realtime({ authUrl: "/ably-auth" });
 
