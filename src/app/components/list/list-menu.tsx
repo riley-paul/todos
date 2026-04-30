@@ -23,6 +23,7 @@ import type { ListSelectDetails } from "@/lib/types2";
 import useGetListUsers from "@/app/hooks/actions/use-get-list-users";
 import * as collections from "@/app/lib/collections";
 import { useNavigate, useParams } from "@tanstack/react-router";
+import useGetNumCompletedTodos from "@/app/hooks/actions/use-get-num-completed-todos";
 
 type Props = {
   list: ListSelectDetails;
@@ -35,6 +36,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
   const navigate = useNavigate();
 
   const listUsers = useGetListUsers(list.id);
+  const numCompleted = useGetNumCompletedTodos(list.id);
 
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const [, copyToClipboard] = useCopyToClipboard();
@@ -127,6 +129,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       text: "Uncheck all",
       icon: <SquareMinusIcon className="size-4 opacity-70" />,
       onClick: () => collections.fns.uncheckCompletedTodos({ listId: id }),
+      disabled: numCompleted <= 0,
     },
     {
       type: "item",
@@ -134,6 +137,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       text: "Delete completed",
       icon: <ListXIcon className="size-4 opacity-70" />,
       onClick: () => collections.fns.deleteCompletedTodos({ listId: id }),
+      disabled: numCompleted <= 0,
     },
     {
       type: "separator",
