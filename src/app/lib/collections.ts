@@ -1,14 +1,20 @@
-import { createCollection } from "@tanstack/db";
+import { BasicIndex, createCollection } from "@tanstack/db";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { queryClient } from "@/app/lib/query-client";
 import { actions } from "astro:actions";
 
+const sharedOptions = {
+  queryClient,
+  autoIndex: "eager",
+  defaultIndexType: BasicIndex,
+  getKey: (item: { id: string }) => item.id,
+} as const;
+
 export const todos = createCollection(
   queryCollectionOptions({
-    queryClient,
+    ...sharedOptions,
     queryKey: ["todos"],
     queryFn: actions.todos2.populate.orThrow,
-    getKey: (todo) => todo.id,
     onInsert: async ({ transaction }) =>
       transaction.mutations.map(({ modified }) =>
         actions.todos2.create.orThrow(modified),
@@ -26,27 +32,24 @@ export const todos = createCollection(
 
 export const lists = createCollection(
   queryCollectionOptions({
-    queryClient,
+    ...sharedOptions,
     queryKey: ["lists"],
     queryFn: actions.lists2.populate.orThrow,
-    getKey: (list) => list.id,
   }),
 );
 
 export const listUsers = createCollection(
   queryCollectionOptions({
-    queryClient,
+    ...sharedOptions,
     queryKey: ["listUsers"],
     queryFn: actions.listUsers2.populate.orThrow,
-    getKey: (listUser) => listUser.id,
   }),
 );
 
 export const users = createCollection(
   queryCollectionOptions({
-    queryClient,
+    ...sharedOptions,
     queryKey: ["users"],
     queryFn: actions.users2.populate.orThrow,
-    getKey: (user) => user.id,
   }),
 );
