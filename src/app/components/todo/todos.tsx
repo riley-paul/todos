@@ -4,13 +4,14 @@ import { cn } from "@/app/lib/utils";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Todo from "./todo";
 import { Button, Card, Text } from "@radix-ui/themes";
-import type { ListSelect, TodoSelect } from "@/lib/types";
-import { qTodos, qUser } from "@/app/lib/queries";
+import { qUser } from "@/app/lib/queries";
 import { ChevronRightIcon } from "lucide-react";
 import DeleteCompletedTodosButton from "./footer-buttons/delete-completed-todos-button";
 import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
 import NoTodosScreen from "../screens/no-todos";
+import useGetTodos from "@/app/hooks/actions/use-get-todos";
+import type { ListSelect, TodoSelectDetails } from "@/lib/types2";
 
 const CompletedTodosActions: React.FC<{ listId: string }> = ({ listId }) => (
   <div className="flex items-center justify-end gap-4">
@@ -20,7 +21,7 @@ const CompletedTodosActions: React.FC<{ listId: string }> = ({ listId }) => (
 );
 
 const CompletedTodosGroup: React.FC<{
-  completedTodos: TodoSelect[];
+  completedTodos: TodoSelectDetails[];
   listId: string;
 }> = ({ completedTodos, listId }) => {
   const [showCompleted, setShowCompleted] = React.useState(false);
@@ -57,14 +58,16 @@ const CompletedTodosGroup: React.FC<{
   );
 };
 
-const produceTodo = (todo: TodoSelect) => <Todo key={todo.id} todo={todo} />;
+const produceTodo = (todo: TodoSelectDetails) => (
+  <Todo key={todo.id} todo={todo} />
+);
 
 type Props = {
   list: ListSelect;
 };
 
 const Todos: React.FC<Props> = ({ list }) => {
-  const { data: todos } = useSuspenseQuery(qTodos(list.id));
+  const todos = useGetTodos(list.id);
   const { data: user } = useSuspenseQuery(qUser);
 
   const completedTodos = todos.filter(({ isCompleted }) => isCompleted);

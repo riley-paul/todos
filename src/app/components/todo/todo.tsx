@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import useMutations from "@/app/hooks/use-mutations";
-import type { TodoSelect } from "@/lib/types";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 import UserBubble from "@/app/components/ui/user/user-bubble";
 import {
@@ -26,6 +25,8 @@ import { useAtom } from "jotai";
 import { editingTodoIdAtom } from "./todos.store";
 import { SaveIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
+import type { TodoSelectDetails } from "@/lib/types2";
+import { useUser } from "@/app/providers/user-provider";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -86,10 +87,13 @@ const TodoForm: React.FC<{
   );
 };
 
-const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
+const Todo: React.FC<{ todo: TodoSelectDetails }> = ({ todo }) => {
   const { listId } = useParams({ strict: false });
   const { updateTodo } = useMutations();
   const navigate = useNavigate();
+  const user = useUser();
+
+  const isAuthor = user.id === todo.userId;
 
   const [editingTodoId, setEditingTodoId] = useAtom(editingTodoIdAtom);
   const isEditing = editingTodoId === todo.id;
@@ -173,7 +177,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
               </Link>
             </Badge>
           )}
-          {!todo.isAuthor && (
+          {!isAuthor && (
             <UserBubble user={todo.author} avatarProps={{ size: "1" }} />
           )}
           <TodoMenu todoId={todo.id} />
