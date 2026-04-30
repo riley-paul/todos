@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router";
 import { actions } from "astro:actions";
 import { toast } from "sonner";
 
-export default function useAcceptListInvite() {
+export default function useAcceptInvite() {
   const router = useRouter();
 
   const acceptInvite = useMutation({

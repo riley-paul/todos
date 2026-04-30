@@ -5,10 +5,11 @@ import { CheckIcon, HourglassIcon, XIcon } from "lucide-react";
 import { getRouteApi } from "@tanstack/react-router";
 import UserRow from "../ui/user/user-row";
 import useLeaveList from "@/app/hooks/actions/use-leave-list";
-import useAcceptListInvite from "@/app/hooks/actions/use-accept-list-invite";
+import useAcceptInvite from "@/app/hooks/actions/use-accept-invite";
 import useGetList from "@/app/hooks/actions/use-get-list";
 import NotFoundScreen from "./not-found";
 import useGetListUsers from "@/app/hooks/actions/use-get-list-users";
+import * as collections from "@/app/lib/collections";
 
 const route = getRouteApi("/todos/$listId");
 
@@ -20,7 +21,7 @@ const PendingListScreen: React.FC = () => {
   if (!list) return <NotFoundScreen />;
 
   const { handleLeaveList } = useLeaveList();
-  const { handleAcceptListInvite } = useAcceptListInvite();
+  const { handleAcceptListInvite } = useAcceptInvite();
 
   return (
     <Empty.Root>
