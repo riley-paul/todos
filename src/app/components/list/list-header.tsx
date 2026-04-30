@@ -1,11 +1,11 @@
-import type { ListSelect } from "@/lib/types";
 import { Heading } from "@radix-ui/themes";
 import React from "react";
 import ListMenu from "./list-menu";
 import { cn } from "@/app/lib/utils";
 import ListSharing from "./list-sharing";
+import type { ListSelectDetails } from "@/lib/types2";
 
-type Props = { list: ListSelect };
+type Props = { list: ListSelectDetails };
 
 const ListHeader: React.FC<Props> = ({ list }) => {
   return (

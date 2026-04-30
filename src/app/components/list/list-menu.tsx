@@ -1,5 +1,5 @@
 import React from "react";
-import { zListName, type ListSelect } from "@/lib/types";
+import { zListName } from "@/lib/types";
 import {
   Edit2Icon,
   ExternalLinkIcon,
@@ -20,13 +20,15 @@ import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
 import { getListUrl } from "@/lib/constants";
 import useLeaveList from "@/app/hooks/actions/use-leave-list";
+import type { ListSelectDetails } from "@/lib/types2";
+import useGetListUsers from "@/app/hooks/actions/use-get-list-users";
 
 type Props = {
-  list: ListSelect;
+  list: ListSelectDetails;
 };
 
 const ListMenu: React.FC<Props> = ({ list }) => {
-  const { id, name, otherUsers } = list;
+  const { id, name } = list;
   const {
     deleteList,
     updateList,
@@ -34,10 +36,12 @@ const ListMenu: React.FC<Props> = ({ list }) => {
     deleteCompletedTodos,
   } = useMutations();
 
+  const listUsers = useGetListUsers(list.id);
+
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const [, copyToClipboard] = useCopyToClipboard();
 
-  const isOnlyUser = otherUsers.length === 0;
+  const isOnlyUser = listUsers.length === 0;
 
   const { handleLeaveList } = useLeaveList();
 
