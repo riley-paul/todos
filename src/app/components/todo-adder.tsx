@@ -1,7 +1,6 @@
 import React from "react";
 import { useEventListener } from "usehooks-ts";
-import useMutations from "@/app/hooks/use-mutations";
-import { Button, Spinner, TextArea } from "@radix-ui/themes";
+import { Button, TextArea } from "@radix-ui/themes";
 import { resizeTextArea } from "@/app/lib/utils";
 import { flushSync } from "react-dom";
 import { z } from "astro/zod";
@@ -20,7 +19,6 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>;
 
 const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
-  const { createTodo } = useMutations();
   const user = useUser();
 
   const { control, handleSubmit, reset } = useForm<Schema>({
@@ -99,9 +97,7 @@ const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
       <input type="submit" hidden />
 
       <Button size="3" type="submit" className="px-3 sm:px-5">
-        <Spinner loading={createTodo.isPending}>
-          <PlusIcon className="size-5" />
-        </Spinner>
+        <PlusIcon className="size-5" />
         <span className="hidden sm:block">Add</span>
       </Button>
     </form>

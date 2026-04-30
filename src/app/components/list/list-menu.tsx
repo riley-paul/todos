@@ -11,7 +11,6 @@ import {
   TrashIcon,
 } from "lucide-react";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
-import useMutations from "@/app/hooks/use-mutations";
 import { useAtom } from "jotai";
 import { toast } from "sonner";
 import { useCopyToClipboard } from "usehooks-ts";
@@ -31,7 +30,6 @@ type Props = {
 
 const ListMenu: React.FC<Props> = ({ list }) => {
   const { id, name } = list;
-  const { uncheckCompletedTodos, deleteCompletedTodos } = useMutations();
 
   const { listId: currentListId } = useParams({ strict: false });
   const navigate = useNavigate();
@@ -128,14 +126,14 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       key: "uncheck-all",
       text: "Uncheck all",
       icon: <SquareMinusIcon className="size-4 opacity-70" />,
-      onClick: () => uncheckCompletedTodos.mutate({ listId: id }),
+      onClick: () => collections.fns.uncheckCompletedTodos({ listId: id }),
     },
     {
       type: "item",
       key: "delete-completed",
       text: "Delete completed",
       icon: <ListXIcon className="size-4 opacity-70" />,
-      onClick: () => deleteCompletedTodos.mutate({ listId: id }),
+      onClick: () => collections.fns.deleteCompletedTodos({ listId: id }),
     },
     {
       type: "separator",

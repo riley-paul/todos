@@ -33,7 +33,6 @@ const queryClient = new QueryClient({
 
 const router = createRouter({
   routeTree,
-  context: { queryClient, currentUser: null as unknown as UserSelect },
   defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
   defaultPendingComponent: LoadingScreen,

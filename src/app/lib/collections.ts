@@ -11,6 +11,7 @@ import {
   zListUserSelect,
   zTodoSelect,
   zUserSelect,
+  type ListSelect,
 } from "@/lib/types2";
 import { toast } from "sonner";
 
@@ -110,6 +111,25 @@ export const fns = {
     mutationFn: async ({ listId }) => {
       await actions.todos2.uncheckCompleted.orThrow({ listId });
       await todos.utils.refetch();
+    },
+  }),
+  insertList: createOptimisticAction<{ list: ListSelect; userId: string }>({
+    onMutate: ({ list, userId }) => {
+      lists.insert(list);
+      listUsers.insert({
+        id: crypto.randomUUID(),
+        listId: list.id,
+        userId,
+        show: true,
+        isPending: false,
+        order: 1_000_000,
+      });
+      toast.success(`List "${list.name}" created`);
+    },
+    mutationFn: async ({ list }) => {
+      await actions.lists2.create.orThrow(list);
+      await lists.utils.refetch();
+      await listUsers.utils.refetch();
     },
   }),
 };

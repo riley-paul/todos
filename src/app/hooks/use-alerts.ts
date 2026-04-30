@@ -4,10 +4,14 @@ import { useAtom } from "jotai";
 import { toast } from "sonner";
 import useMutations from "./use-mutations";
 import { z } from "astro/zod";
+import * as collections from "@/app/lib/collections";
+import type { ListSelect } from "@/lib/types2";
+import { useUser } from "../providers/user-provider";
 
 export default function useAlerts() {
+  const currentUser = useUser();
   const [, dispatchAlert] = useAtom(alertSystemAtom);
-  const { createList, removeUserFromList, inviteUserToList } = useMutations();
+  const { removeUserFromList, inviteUserToList } = useMutations();
 
   const handleCreateList = () => {
     dispatchAlert({
@@ -20,15 +24,14 @@ export default function useAlerts() {
         placeholder: "List name",
         schema: zListName,
         handleSubmit: (name: string) => {
-          createList.mutate(
-            { name },
-            {
-              onSuccess: () => {
-                dispatchAlert({ type: "close" });
-                toast.success(`List "${name}" created`);
-              },
-            },
-          );
+          const list: ListSelect = {
+            id: crypto.randomUUID(),
+            name,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          collections.fns.insertList({ list, userId: currentUser.id });
+          dispatchAlert({ type: "close" });
         },
       },
     });

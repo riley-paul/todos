@@ -55,6 +55,7 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
       text: list.name,
       onClick: () => handleMove(list.id),
       hide: list.id === listId,
+      disabled: list.isPending,
     }),
   );
 

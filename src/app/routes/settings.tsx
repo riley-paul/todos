@@ -18,10 +18,6 @@ import { Trash2Icon } from "lucide-react";
 
 export const Route = createFileRoute("/settings")({
   component: RouteComponent,
-  loader: async ({ context }) => {
-    const user = await context.queryClient.ensureQueryData(qUser);
-    return { user };
-  },
 });
 
 type SettingProps = React.PropsWithChildren<{
