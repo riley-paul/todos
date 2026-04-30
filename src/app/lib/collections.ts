@@ -32,3 +32,21 @@ export const lists = createCollection(
     getKey: (list) => list.id,
   }),
 );
+
+export const listUsers = createCollection(
+  queryCollectionOptions({
+    queryClient,
+    queryKey: ["listUsers"],
+    queryFn: actions.listUsers2.populate.orThrow,
+    getKey: (listUser) => listUser.id,
+  }),
+);
+
+export const users = createCollection(
+  queryCollectionOptions({
+    queryClient,
+    queryKey: ["users"],
+    queryFn: actions.users2.populate.orThrow,
+    getKey: (user) => user.id,
+  }),
+);
