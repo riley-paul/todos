@@ -43,6 +43,18 @@ export const lists = createCollection(
     queryKey: ["lists"],
     queryFn: actions.lists2.populate.orThrow,
     schema: zListSelect,
+    onInsert: async ({ transaction }) =>
+      transaction.mutations.map(({ modified }) =>
+        actions.lists2.create.orThrow(modified),
+      ),
+    onUpdate: async ({ transaction }) =>
+      transaction.mutations.map(({ original, changes }) =>
+        actions.lists2.update.orThrow({ listId: original.id, data: changes }),
+      ),
+    onDelete: async ({ transaction }) =>
+      transaction.mutations.map(({ original }) =>
+        actions.lists2.remove.orThrow({ listId: original.id }),
+      ),
   }),
 );
 

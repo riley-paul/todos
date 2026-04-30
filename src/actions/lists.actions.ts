@@ -40,7 +40,7 @@ export const create = defineAction({
 export const update = defineAction({
   input: z.object({
     listId: z.string(),
-    data: zListSelect.pick({ name: true }),
+    data: zListSelect.pick({ name: true }).partial(),
   }),
   handler: async (input, c): Promise<ListSelect> => {
     const userId = ensureAuthorized(c).id;

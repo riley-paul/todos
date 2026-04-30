@@ -22,6 +22,8 @@ import { getListUrl } from "@/lib/constants";
 import useLeaveList from "@/app/hooks/actions/use-leave-list";
 import type { ListSelectDetails } from "@/lib/types2";
 import useGetListUsers from "@/app/hooks/actions/use-get-list-users";
+import * as collections from "@/app/lib/collections";
+import { useNavigate, useParams } from "@tanstack/react-router";
 
 type Props = {
   list: ListSelectDetails;
@@ -29,12 +31,10 @@ type Props = {
 
 const ListMenu: React.FC<Props> = ({ list }) => {
   const { id, name } = list;
-  const {
-    deleteList,
-    updateList,
-    uncheckCompletedTodos,
-    deleteCompletedTodos,
-  } = useMutations();
+  const { uncheckCompletedTodos, deleteCompletedTodos } = useMutations();
+
+  const { listId: currentListId } = useParams({ strict: false });
+  const navigate = useNavigate();
 
   const listUsers = useGetListUsers(list.id);
 
@@ -56,7 +56,9 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         placeholder: "Enter new list name",
         schema: zListName,
         handleSubmit: (name: string) => {
-          updateList.mutate({ id, data: { name } });
+          collections.lists.update(list.id, (draft) => {
+            draft.name = name;
+          });
           dispatchAlert({ type: "close" });
           toast.success("List renamed successfully");
         },
@@ -72,7 +74,10 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         title: "Delete List",
         message: `Are you sure you want to delete this list? This action cannot be undone.`,
         handleDelete: () => {
-          deleteList.mutate({ id });
+          collections.lists.delete(list.id);
+          if (list.id === currentListId) {
+            navigate({ to: "/" });
+          }
           dispatchAlert({ type: "close" });
         },
       },
