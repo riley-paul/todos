@@ -4,8 +4,9 @@ import { createDb } from "@/db";
 import { env } from "cloudflare:workers";
 import { zListSelect, type ListSelect } from "@/lib/types2";
 import * as tables from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { z } from "astro/zod";
+import { LIST_SEPARATOR_ID } from "@/lib/constants";
 
 const db = createDb(env);
 
@@ -85,5 +86,44 @@ export const remove = defineAction({
     await db.delete(tables.List).where(eq(tables.List.id, input.listId));
 
     return { success: true };
+  },
+});
+
+export const updateSortShow = defineAction({
+  input: z.object({ listIds: z.array(z.string()) }),
+  handler: async ({ listIds }, c): Promise<boolean> => {
+    const userId = ensureAuthorized(c).id;
+    const db = createDb(env);
+
+    const separatorIdx = listIds.indexOf(LIST_SEPARATOR_ID);
+
+    if (listIds.length === 0) return false;
+
+    // Build CASE WHEN expressions dynamically
+    const orderCase = sql.join(
+      listIds.map((listId, idx) => sql`WHEN ${listId} THEN ${idx}`),
+      sql` `,
+    );
+
+    const showCase = sql.join(
+      listIds.map(
+        (listId, idx) =>
+          sql`WHEN ${listId} THEN ${
+            separatorIdx === -1 || idx < separatorIdx ? 1 : 0
+          }`,
+      ),
+      sql` `,
+    );
+
+    await db.run(sql`
+     UPDATE ${tables.ListUser}
+     SET
+       "order" = CASE "listId" ${orderCase} END,
+       "show" = CASE "listId" ${showCase} END
+     WHERE "userId" = ${userId}
+       AND "listId" IN (${sql.join(listIds, sql`, `)});
+   `);
+
+    return true;
   },
 });

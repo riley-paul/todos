@@ -36,12 +36,13 @@ import {
 } from "lucide-react";
 import { cn } from "@/app/lib/utils";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
-import useMutations from "@/app/hooks/use-mutations";
 import { Link } from "@tanstack/react-router";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import ListRow from "./list-row";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import type { ListSelectDetails } from "@/lib/types2";
+import * as collections from "@/app/lib/collections";
+import { actions } from "astro:actions";
 
 type SortableObjectData =
   | {
@@ -187,13 +188,11 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
     }),
   );
 
-  const { updateListSortShow } = useMutations();
-
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     setActiveId(null);
     const { active, over } = event;
     if (over && active.id !== over.id) {
@@ -204,7 +203,8 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
       const newOrder = arrayMove(ids, oldIndex, newIndex);
 
       setLocalObjs((prev) => arrayMove(prev, oldIndex, newIndex));
-      return updateListSortShow.mutate({ listIds: newOrder });
+      await actions.lists2.updateSortShow({ listIds: newOrder });
+      collections.listUsers.utils.refetch();
     }
   };
 
