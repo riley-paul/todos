@@ -20,7 +20,7 @@ export default function useGetLists(): ListSelectDetails[] {
       .innerJoin({ listUser: collections.listUsers }, ({ list, listUser }) =>
         eq(list.id, listUser.listId),
       )
-      .innerJoin({ todoCount }, ({ list, todoCount }) =>
+      .join({ todoCount }, ({ list, todoCount }) =>
         eq(list.id, todoCount.listId),
       )
       .where(({ listUser }) => eq(listUser.userId, user.id))
@@ -31,7 +31,6 @@ export default function useGetLists(): ListSelectDetails[] {
         order: listUser.order,
         isPending: listUser.isPending,
         todoCount: todoCount.count,
-        otherUsers: [],
         createdAt: list.createdAt,
         updatedAt: list.updatedAt,
       }))
@@ -40,5 +39,10 @@ export default function useGetLists(): ListSelectDetails[] {
       .orderBy(({ list }) => list.createdAt, "asc");
   });
 
-  return lists;
+  const processed = lists.map((list) => ({
+    ...list,
+    todoCount: list.todoCount ?? 0,
+  }));
+
+  return processed;
 }

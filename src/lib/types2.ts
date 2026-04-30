@@ -13,7 +13,6 @@ export const zListSelect = createSelectSchema(tables.List);
 export type ListSelect = z.infer<typeof zListSelect>;
 export type ListSelectDetails = z.infer<typeof zListSelect> & {
   todoCount: number;
-  otherUsers: UserSelect[];
   isPending: boolean;
   show: boolean;
   order: number;

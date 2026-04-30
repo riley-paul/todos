@@ -19,7 +19,6 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import type { ListSelect } from "@/lib/types";
 import {
   Button,
   Dialog,
@@ -42,20 +41,23 @@ import { Link } from "@tanstack/react-router";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import ListRow from "./list-row";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
+import type { ListSelectDetails } from "@/lib/types2";
 
 type SortableObjectData =
   | {
       type: "list";
       id: string;
-      list: ListSelect;
+      list: ListSelectDetails;
     }
   | {
       type: "separator";
       id: string;
     };
 
-const getSortableObjectList = (lists: ListSelect[]): SortableObjectData[] => {
-  const listToSortableObj = (list: ListSelect): SortableObjectData => ({
+const getSortableObjectList = (
+  lists: ListSelectDetails[],
+): SortableObjectData[] => {
+  const listToSortableObj = (list: ListSelectDetails): SortableObjectData => ({
     type: "list",
     id: list.id,
     list,
@@ -169,7 +171,7 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
   }
 };
 
-type ListReorderContentProps = { lists: ListSelect[] };
+type ListReorderContentProps = { lists: ListSelectDetails[] };
 
 const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -235,7 +237,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
 };
 
 type ListReorderProps = {
-  lists: ListSelect[];
+  lists: ListSelectDetails[];
 };
 
 const ListReorder: React.FC<ListReorderProps> = ({ lists }) => {

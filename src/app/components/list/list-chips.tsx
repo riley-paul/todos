@@ -1,6 +1,5 @@
 import useAlerts from "@/app/hooks/use-alerts";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
-import { type ListSelect } from "@/lib/types";
 import { Badge, IconButton, Kbd, Tooltip } from "@radix-ui/themes";
 import { Link, linkOptions } from "@tanstack/react-router";
 import { ListPlusIcon } from "lucide-react";
@@ -9,8 +8,9 @@ import ListReorder from "./list-reorder";
 import { ACCENT_COLOR } from "@/lib/constants";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import useGetLists from "@/app/hooks/actions/use-get-lists";
+import type { ListSelectDetails } from "@/lib/types2";
 
-const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
+const ListChip: React.FC<{ list: ListSelectDetails }> = ({ list }) => {
   const link = linkOptions({
     to: "/todos/$listId",
     params: { listId: list.id },
@@ -51,7 +51,7 @@ const ListChips: React.FC = () => {
   return (
     <div className="flex flex-wrap gap-2">
       {lists
-        .filter(({ show }) => show)
+        // .filter(({ show }) => show)
         .map((list) => (
           <ListChip key={list.id} list={list} />
         ))}
