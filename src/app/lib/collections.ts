@@ -14,6 +14,7 @@ import {
   type ListSelect,
 } from "@/lib/types2";
 import { toast } from "sonner";
+import { router } from "./router";
 
 const sharedOptions = {
   queryClient,
@@ -130,6 +131,7 @@ export const fns = {
       await actions.lists2.create.orThrow(list);
       await lists.utils.refetch();
       await listUsers.utils.refetch();
+      router.navigate({ to: "/todos/$listId", params: { listId: list.id } });
     },
   }),
 };
