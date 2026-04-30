@@ -2,6 +2,12 @@ import { BasicIndex, createCollection } from "@tanstack/db";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { queryClient } from "@/app/lib/query-client";
 import { actions } from "astro:actions";
+import {
+  zListSelect,
+  zListUserSelect,
+  zTodoSelect,
+  zUserSelect,
+} from "@/lib/types2";
 
 const sharedOptions = {
   queryClient,
@@ -15,6 +21,7 @@ export const todos = createCollection(
     ...sharedOptions,
     queryKey: ["todos"],
     queryFn: actions.todos2.populate.orThrow,
+    schema: zTodoSelect,
     onInsert: async ({ transaction }) =>
       transaction.mutations.map(({ modified }) =>
         actions.todos2.create.orThrow(modified),
@@ -35,6 +42,7 @@ export const lists = createCollection(
     ...sharedOptions,
     queryKey: ["lists"],
     queryFn: actions.lists2.populate.orThrow,
+    schema: zListSelect,
   }),
 );
 
@@ -43,6 +51,7 @@ export const listUsers = createCollection(
     ...sharedOptions,
     queryKey: ["listUsers"],
     queryFn: actions.listUsers2.populate.orThrow,
+    schema: zListUserSelect,
   }),
 );
 
@@ -51,5 +60,6 @@ export const users = createCollection(
     ...sharedOptions,
     queryKey: ["users"],
     queryFn: actions.users2.populate.orThrow,
+    schema: zUserSelect,
   }),
 );

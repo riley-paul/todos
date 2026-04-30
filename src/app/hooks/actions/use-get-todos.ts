@@ -33,7 +33,8 @@ export default function useGetTodos(listId: string): TodoSelectDetails[] {
             name: list.name,
           },
         }))
-        .orderBy(({ todo }) => todo.createdAt, "desc");
+        .orderBy(({ todo }) => todo.createdAt, "desc")
+        .distinct();
     },
     [listId],
   );

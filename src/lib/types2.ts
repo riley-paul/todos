@@ -25,8 +25,10 @@ export type ListUserSelectDetails = z.infer<typeof zListUserSelect> & {
   list: ListSelect;
 };
 
-export const zUserSelect = createSelectSchema(tables.User);
-export type UserSelect = Pick<
-  z.infer<typeof zUserSelect>,
-  "id" | "name" | "email" | "avatarUrl"
->;
+export const zUserSelect = createSelectSchema(tables.User).pick({
+  id: true,
+  name: true,
+  email: true,
+  avatarUrl: true,
+});
+export type UserSelect = z.infer<typeof zUserSelect>;

@@ -6,12 +6,18 @@ import { getRouteApi } from "@tanstack/react-router";
 import UserRow from "../ui/user/user-row";
 import useLeaveList from "@/app/hooks/actions/use-leave-list";
 import useAcceptListInvite from "@/app/hooks/actions/use-accept-list-invite";
+import useGetList from "@/app/hooks/actions/use-get-list";
+import NotFoundScreen from "./not-found";
+import useGetListUsers from "@/app/hooks/actions/use-get-list-users";
 
 const route = getRouteApi("/todos/$listId");
 
 const PendingListScreen: React.FC = () => {
   const { listId } = route.useParams();
-  const { list } = route.useLoaderData();
+  const list = useGetList(listId);
+  const listUsers = useGetListUsers(listId);
+
+  if (!list) return <NotFoundScreen />;
 
   const { handleLeaveList } = useLeaveList();
   const { handleAcceptListInvite } = useAcceptListInvite();
@@ -52,7 +58,7 @@ const PendingListScreen: React.FC = () => {
         <Heading as="h4" size="1" color="gray" className="uppercase">
           List Members
         </Heading>
-        {list.otherUsers.map((user) => (
+        {listUsers.map((user) => (
           <UserRow key={user.id} user={user} />
         ))}
       </Card>

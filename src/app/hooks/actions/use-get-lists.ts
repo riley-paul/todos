@@ -44,7 +44,8 @@ export default function useGetLists(): ListSelectDetails[] {
       }))
       .orderBy(({ listUser }) => listUser.show, "desc")
       .orderBy(({ listUser }) => listUser.order, "asc")
-      .orderBy(({ list }) => list.createdAt, "asc"),
+      .orderBy(({ list }) => list.createdAt, "asc")
+      .distinct(),
   );
 
   const processed = lists.map((list) => ({
