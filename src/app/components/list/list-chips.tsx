@@ -12,6 +12,7 @@ import { ACCENT_COLOR } from "@/lib/constants";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import { useLiveSuspenseQuery } from "@tanstack/react-db";
 import * as collections from "@/app/lib/collections";
+import useGetLists from "@/app/hooks/actions/use-get-lists";
 
 const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
   const link = linkOptions({
@@ -45,9 +46,7 @@ const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
 const ListChips: React.FC = () => {
   const { handleCreateList } = useAlerts();
 
-  const { data: lists } = useLiveSuspenseQuery((q) =>
-    q.from({ list: collections.lists }),
-  );
+  const lists = useGetLists();
 
   useHotkey("A", handleCreateList, { ignoreInputs: true });
 
@@ -60,7 +59,7 @@ const ListChips: React.FC = () => {
         .map((list) => (
           <ListChip key={list.id} list={list} />
         ))}
-      {/*<ListReorder lists={lists} />*/}
+      <ListReorder lists={lists} />
       <Tooltip
         side="bottom"
         content={

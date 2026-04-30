@@ -17,6 +17,7 @@ import { handleError } from "./lib/errors";
 import RealtimeProvider from "./providers/realtime-provider";
 import type { UserSelect } from "@/lib/types";
 import useServiceWorker from "./hooks/use-service-worker";
+import { UserProvider } from "./providers/user-provider";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -52,16 +53,18 @@ const App: React.FC<Props> = ({ currentUser }) => {
   useServiceWorker();
   return (
     <QueryClientProvider client={queryClient}>
-      <RealtimeProvider currentUser={currentUser}>
-        <RadixProvider>
-          <RouterProvider
-            router={router}
-            context={{ queryClient, currentUser }}
-          />
-          <CustomToaster />
-          <AlertSystem />
-        </RadixProvider>
-      </RealtimeProvider>
+      <UserProvider user={currentUser}>
+        <RealtimeProvider currentUser={currentUser}>
+          <RadixProvider>
+            <RouterProvider
+              router={router}
+              context={{ queryClient, currentUser }}
+            />
+            <CustomToaster />
+            <AlertSystem />
+          </RadixProvider>
+        </RealtimeProvider>
+      </UserProvider>
     </QueryClientProvider>
   );
 };
