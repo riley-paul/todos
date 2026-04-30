@@ -96,7 +96,7 @@ export const leaveList = defineAction({
 });
 
 export const inviteToList = defineAction({
-  input: z.object({ listId: z.string(), email: z.string() }),
+  input: z.object({ listId: z.string(), email: z.email() }),
   handler: async ({ listId, email }, c): Promise<ListUserSelect> => {
     const userId = ensureAuthorized(c).id;
 

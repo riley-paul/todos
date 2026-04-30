@@ -2,15 +2,15 @@ import React from "react";
 import { Avatar, Button, Dialog, IconButton } from "@radix-ui/themes";
 import ListShares from "./list-shares";
 import { PlusIcon, Share2Icon } from "lucide-react";
-import useAlerts from "@/app/hooks/use-alerts";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 import UserBubbleGroup from "@/app/components/ui/user/user-bubble-group";
 import type { ListSelectDetails } from "@/lib/types2";
 import useGetListUsers from "@/app/hooks/actions/use-get-list-users";
+import useInviteToList from "@/app/hooks/actions/use-invite-to-list";
 
 const ListSharing: React.FC<{ list: ListSelectDetails }> = ({ list }) => {
-  const { handleInviteUser } = useAlerts();
   const listUsers = useGetListUsers(list.id);
+  const handleInviteToList = useInviteToList(list.id);
 
   return (
     <Dialog.Root>
@@ -41,7 +41,7 @@ const ListSharing: React.FC<{ list: ListSelectDetails }> = ({ list }) => {
             size="3"
             variant="ghost"
             className="flex flex-1 justify-start gap-3 text-left"
-            onClick={() => handleInviteUser({ listId: list.id })}
+            onClick={handleInviteToList}
           >
             <Avatar
               src=""
