@@ -11,7 +11,7 @@ import ListReorder from "./list-reorder";
 import { ACCENT_COLOR } from "@/lib/constants";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import { useLiveSuspenseQuery } from "@tanstack/react-db";
-import { collections } from "@/app/collections";
+import * as collections from "@/app/lib/collections";
 
 const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
   const link = linkOptions({
@@ -44,7 +44,6 @@ const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
 
 const ListChips: React.FC = () => {
   const { handleCreateList } = useAlerts();
-  const { currentUser } = useRouteContext({ strict: false });
 
   const { data: lists } = useLiveSuspenseQuery((q) =>
     q.from({ list: collections.lists }),

@@ -3,7 +3,7 @@ import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { queryClient } from "@/app/lib/query-client";
 import { actions } from "astro:actions";
 
-const todosCollection = createCollection(
+export const todos = createCollection(
   queryCollectionOptions({
     queryClient,
     queryKey: ["todos"],
@@ -24,4 +24,11 @@ const todosCollection = createCollection(
   }),
 );
 
-export default todosCollection;
+export const lists = createCollection(
+  queryCollectionOptions({
+    queryClient,
+    queryKey: ["lists"],
+    queryFn: actions.lists2.populate.orThrow,
+    getKey: (list) => list.id,
+  }),
+);
