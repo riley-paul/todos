@@ -6,8 +6,6 @@ import {
   Edit2Icon,
   EllipsisIcon,
 } from "lucide-react";
-import { qLists } from "@/app/lib/queries";
-import { useQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { useAtom } from "jotai";
 import type { MenuItem } from "../ui/menu/menu.types";
@@ -15,10 +13,11 @@ import { editingTodoIdAtom } from "./todos.store";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
 import * as collections from "@/app/lib/collections";
 import { toast } from "sonner";
+import useGetLists from "@/app/hooks/actions/use-get-lists";
 
 const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
   const { listId } = useParams({ strict: false });
-  const { data: lists = [] } = useQuery(qLists);
+  const lists = useGetLists();
 
   const [_, setEditingTodoId] = useAtom(editingTodoIdAtom);
 

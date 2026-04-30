@@ -20,10 +20,6 @@ export type ListSelectDetails = z.infer<typeof zListSelect> & {
 
 export const zListUserSelect = createSelectSchema(tables.ListUser);
 export type ListUserSelect = z.infer<typeof zListUserSelect>;
-export type ListUserSelectDetails = z.infer<typeof zListUserSelect> & {
-  user: UserSelect;
-  list: ListSelect;
-};
 
 export const zUserSelect = createSelectSchema(tables.User).pick({
   id: true,
@@ -32,3 +28,6 @@ export const zUserSelect = createSelectSchema(tables.User).pick({
   avatarUrl: true,
 });
 export type UserSelect = z.infer<typeof zUserSelect>;
+export type UserSelectListDetails = z.infer<typeof zUserSelect> & {
+  isPending: boolean;
+};

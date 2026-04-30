@@ -32,7 +32,11 @@ export default function useGetLists(): ListSelectDetails[] {
       .innerJoin({ listUser: collections.listUsers }, ({ list, listUser }) =>
         eq(list.id, listUser.listId),
       )
+      .distinct()
       .where(({ listUser }) => eq(listUser.userId, user.id))
+      .orderBy(({ listUser }) => listUser.show, "desc")
+      .orderBy(({ listUser }) => listUser.order, "asc")
+      .orderBy(({ list }) => list.createdAt, "asc")
       .select(({ list, listUser }) => ({
         id: list.id,
         name: list.name,
@@ -41,11 +45,7 @@ export default function useGetLists(): ListSelectDetails[] {
         isPending: listUser.isPending,
         createdAt: list.createdAt,
         updatedAt: list.updatedAt,
-      }))
-      .orderBy(({ listUser }) => listUser.show, "desc")
-      .orderBy(({ listUser }) => listUser.order, "asc")
-      .orderBy(({ list }) => list.createdAt, "asc")
-      .distinct(),
+      })),
   );
 
   const processed = lists.map((list) => ({
