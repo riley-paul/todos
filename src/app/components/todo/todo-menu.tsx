@@ -6,7 +6,7 @@ import {
   Edit2Icon,
   EllipsisIcon,
 } from "lucide-react";
-import { useParams } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { useAtom } from "jotai";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { editingTodoIdAtom } from "./todos.store";
@@ -18,6 +18,7 @@ import useGetLists from "@/app/hooks/actions/use-get-lists";
 const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
   const { listId } = useParams({ strict: false });
   const lists = useGetLists();
+  const navigate = useNavigate();
 
   const [_, setEditingTodoId] = useAtom(editingTodoIdAtom);
 
@@ -25,11 +26,22 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
     collections.todos.update(todoId, (draft) => {
       draft.listId = targetListId;
     });
+    toast.success("Todo moved to new list", {
+      action: {
+        label: "View",
+        onClick: () =>
+          navigate({
+            to: "/todos/$listId",
+            params: { listId: targetListId },
+            search: { highlightedTodoId: todoId },
+          }),
+      },
+    });
   };
 
   const handleDelete = () => {
     collections.todos.delete(todoId);
-    toast.success("Todo moved to new list");
+    toast.success("Todo deleted");
   };
 
   const handleEdit = () => {
