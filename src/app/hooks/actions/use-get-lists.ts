@@ -22,7 +22,10 @@ export default function useGetLists(): ListSelectDetails[] {
         otherUsers: [],
         createdAt: list.createdAt,
         updatedAt: list.updatedAt,
-      })),
+      }))
+      .orderBy(({ listUser }) => listUser.show, "desc")
+      .orderBy(({ listUser }) => listUser.order, "asc")
+      .orderBy(({ list }) => list.createdAt, "asc"),
   );
 
   return lists;
