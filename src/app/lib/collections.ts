@@ -1,4 +1,8 @@
-import { BasicIndex, createCollection } from "@tanstack/db";
+import {
+  BasicIndex,
+  createCollection,
+  createOptimisticAction,
+} from "@tanstack/db";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { queryClient } from "@/app/lib/query-client";
 import { actions } from "astro:actions";
@@ -8,6 +12,7 @@ import {
   zTodoSelect,
   zUserSelect,
 } from "@/lib/types2";
+import { toast } from "sonner";
 
 const sharedOptions = {
   queryClient,
@@ -75,3 +80,36 @@ export const users = createCollection(
     schema: zUserSelect,
   }),
 );
+
+export const fns = {
+  deleteCompletedTodos: createOptimisticAction<{ listId: string }>({
+    onMutate: ({ listId }) => {
+      const ids = todos.toArray
+        .filter((t) => t.listId === listId && t.isCompleted)
+        .map((t) => t.id);
+      todos.delete(ids);
+      toast.success(`Deleted ${ids.length} completed todos`);
+    },
+    mutationFn: async ({ listId }) => {
+      await actions.todos2.deleteCompleted.orThrow({ listId });
+      await todos.utils.refetch();
+    },
+  }),
+  uncheckCompletedTodos: createOptimisticAction<{ listId: string }>({
+    onMutate: ({ listId }) => {
+      const ids = todos.toArray
+        .filter((t) => t.listId === listId && t.isCompleted)
+        .map((t) => t.id);
+      todos.update(ids, (draft) => {
+        draft.forEach((t) => {
+          t.isCompleted = false;
+        });
+      });
+      toast.success(`Unchecked ${ids.length} completed todos`);
+    },
+    mutationFn: async ({ listId }) => {
+      await actions.todos2.uncheckCompleted.orThrow({ listId });
+      await todos.utils.refetch();
+    },
+  }),
+};

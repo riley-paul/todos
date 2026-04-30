@@ -5,7 +5,7 @@ import { env } from "cloudflare:workers";
 import { zTodoSelect, type TodoSelect } from "@/lib/types2";
 import * as tables from "@/db/schema";
 import { z } from "astro/zod";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 const db = createDb(env);
 
@@ -141,6 +141,57 @@ export const remove = defineAction({
     }
 
     await db.delete(tables.Todo).where(eq(tables.Todo.id, todoId));
+    return true;
+  },
+});
+
+export const deleteCompleted = defineAction({
+  input: z.object({ listId: z.string() }),
+  handler: async ({ listId }, c): Promise<boolean> => {
+    const userId = ensureAuthorized(c).id;
+
+    const listUser = await db.query.ListUser.findFirst({
+      where: { listId, userId, isPending: false },
+    });
+
+    if (!listUser) {
+      throw new ActionError({
+        code: "FORBIDDEN",
+        message: "You do not have access to this list",
+      });
+    }
+
+    await db
+      .delete(tables.Todo)
+      .where(
+        and(eq(tables.Todo.listId, listId), eq(tables.Todo.isCompleted, true)),
+      );
+    return true;
+  },
+});
+
+export const uncheckCompleted = defineAction({
+  input: z.object({ listId: z.string() }),
+  handler: async ({ listId }, c): Promise<boolean> => {
+    const userId = ensureAuthorized(c).id;
+
+    const listUser = await db.query.ListUser.findFirst({
+      where: { listId, userId, isPending: false },
+    });
+
+    if (!listUser) {
+      throw new ActionError({
+        code: "FORBIDDEN",
+        message: "You do not have access to this list",
+      });
+    }
+
+    await db
+      .update(tables.Todo)
+      .set({ isCompleted: false })
+      .where(
+        and(eq(tables.Todo.listId, listId), eq(tables.Todo.isCompleted, true)),
+      );
     return true;
   },
 });
