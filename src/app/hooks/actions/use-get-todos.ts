@@ -32,7 +32,8 @@ export default function useGetTodos(listId: string): TodoSelectDetails[] {
             id: list.id,
             name: list.name,
           },
-        }));
+        }))
+        .orderBy(({ todo }) => todo.createdAt, "desc");
     },
     [listId],
   );

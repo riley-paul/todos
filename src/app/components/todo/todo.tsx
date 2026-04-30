@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import useMutations from "@/app/hooks/use-mutations";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 import UserBubble from "@/app/components/ui/user/user-bubble";
 import {
@@ -7,7 +6,6 @@ import {
   Button,
   Checkbox,
   Flex,
-  Spinner,
   Text,
   TextArea,
 } from "@radix-ui/themes";
@@ -27,6 +25,7 @@ import { SaveIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
 import type { TodoSelectDetails } from "@/lib/types2";
 import { useUser } from "@/app/providers/user-provider";
+import * as collections from "@/app/lib/collections";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -89,7 +88,6 @@ const TodoForm: React.FC<{
 
 const Todo: React.FC<{ todo: TodoSelectDetails }> = ({ todo }) => {
   const { listId } = useParams({ strict: false });
-  const { updateTodo } = useMutations();
   const navigate = useNavigate();
   const user = useUser();
 
@@ -135,28 +133,24 @@ const Todo: React.FC<{ todo: TodoSelectDetails }> = ({ todo }) => {
         <TodoForm
           initialValue={todo.text}
           handleSubmit={(text) => {
-            updateTodo.mutate({
-              id: todo.id,
-              data: { text },
+            collections.todos.update(todo.id, (draft) => {
+              draft.text = text;
             });
             setEditingTodoId(null);
           }}
         />
       ) : (
         <>
-          <Spinner loading={updateTodo.isPending}>
-            <Checkbox
-              size="3"
-              variant="soft"
-              checked={todo.isCompleted}
-              onCheckedChange={() =>
-                updateTodo.mutate({
-                  id: todo.id,
-                  data: { isCompleted: !todo.isCompleted },
-                })
-              }
-            />
-          </Spinner>
+          <Checkbox
+            size="3"
+            variant="soft"
+            checked={todo.isCompleted}
+            onCheckedChange={() =>
+              collections.todos.update(todo.id, (draft) => {
+                draft.isCompleted = !todo.isCompleted;
+              })
+            }
+          />
           <Flex
             flexGrow="1"
             align="center"
