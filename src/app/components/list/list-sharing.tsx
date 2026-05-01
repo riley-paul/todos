@@ -6,11 +6,11 @@ import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 import UserBubbleGroup from "@/app/components/ui/user/user-bubble-group";
 import type { ListSelectDetails } from "@/lib/types2";
 import useGetListUsers from "@/app/hooks/actions/use-get-list-users";
-import useInviteToList from "@/app/hooks/actions/use-invite-to-list";
+import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
 
 const ListSharing: React.FC<{ list: ListSelectDetails }> = ({ list }) => {
   const listUsers = useGetListUsers(list.id);
-  const handleInviteToList = useInviteToList(list.id);
+  const { handleInviteToList } = useManageListUsers(list.id);
 
   return (
     <Dialog.Root>
