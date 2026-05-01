@@ -41,8 +41,8 @@ const migrateInboxTodos = async () => {
 
     console.log("Migrated", inboxTodos.length, "todos");
   }
-  
-  console.log("Migration complete")
+
+  console.log("Migration complete");
 };
 
 migrateInboxTodos().catch(console.error);

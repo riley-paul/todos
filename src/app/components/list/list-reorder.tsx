@@ -19,7 +19,6 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import type { ListSelect } from "@/lib/types";
 import {
   Button,
   Dialog,
@@ -37,25 +36,30 @@ import {
 } from "lucide-react";
 import { cn } from "@/app/lib/utils";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
-import useMutations from "@/app/hooks/use-mutations";
 import { Link } from "@tanstack/react-router";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import ListRow from "./list-row";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
+import type { ListSelectDetails } from "@/lib/types";
+import * as collections from "@/app/lib/collections";
+import { actions } from "astro:actions";
+import { mutationCache, queryClient } from "@/app/lib/query-client";
 
 type SortableObjectData =
   | {
       type: "list";
       id: string;
-      list: ListSelect;
+      list: ListSelectDetails;
     }
   | {
       type: "separator";
       id: string;
     };
 
-const getSortableObjectList = (lists: ListSelect[]): SortableObjectData[] => {
-  const listToSortableObj = (list: ListSelect): SortableObjectData => ({
+const getSortableObjectList = (
+  lists: ListSelectDetails[],
+): SortableObjectData[] => {
+  const listToSortableObj = (list: ListSelectDetails): SortableObjectData => ({
     type: "list",
     id: list.id,
     list,
@@ -80,6 +84,13 @@ const getSortableObjectList = (lists: ListSelect[]): SortableObjectData[] => {
     ...lists.filter(({ show }) => !show).map(listToSortableObj),
   ];
 };
+
+const updateSortShowMutation = mutationCache.build(queryClient, {
+  mutationFn: actions.lists.updateSortShow.orThrow,
+  onSuccess: () => {
+    collections.listUsers.utils.refetch();
+  },
+});
 
 type SortableItemProps = SortableObjectData & {
   isDragging?: boolean;
@@ -169,7 +180,7 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
   }
 };
 
-type ListReorderContentProps = { lists: ListSelect[] };
+type ListReorderContentProps = { lists: ListSelectDetails[] };
 
 const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -185,13 +196,11 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
     }),
   );
 
-  const { updateListSortShow } = useMutations();
-
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     setActiveId(null);
     const { active, over } = event;
     if (over && active.id !== over.id) {
@@ -202,7 +211,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
       const newOrder = arrayMove(ids, oldIndex, newIndex);
 
       setLocalObjs((prev) => arrayMove(prev, oldIndex, newIndex));
-      return updateListSortShow.mutate({ listIds: newOrder });
+      return updateSortShowMutation.execute({ listIds: newOrder });
     }
   };
 
@@ -235,7 +244,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
 };
 
 type ListReorderProps = {
-  lists: ListSelect[];
+  lists: ListSelectDetails[];
 };
 
 const ListReorder: React.FC<ListReorderProps> = ({ lists }) => {

@@ -1,5 +1,3 @@
-import useMutations from "@/app/hooks/use-mutations";
-import { qUser } from "@/app/lib/queries";
 import {
   Button,
   Card,
@@ -8,20 +6,27 @@ import {
   Switch,
   Text,
 } from "@radix-ui/themes";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 import { useAtom } from "jotai";
 import { themeAtom } from "../hooks/use-theme";
 import { alertSystemAtom } from "../components/alert-system/alert-system.store";
 import { Trash2Icon } from "lucide-react";
+import useGetSettings from "../hooks/actions/use-get-settings";
+import * as collections from "@/app/lib/collections";
+import { useUser } from "../providers/user-provider";
+import { actions } from "astro:actions";
+import { mutationCache, queryClient } from "../lib/query-client";
+
+const deleteAccountMutation = mutationCache.build(queryClient, {
+  mutationFn: actions.users.remove.orThrow,
+  onSuccess: () => {
+    window.location.reload();
+  },
+});
 
 export const Route = createFileRoute("/settings")({
   component: RouteComponent,
-  loader: async ({ context }) => {
-    const user = await context.queryClient.ensureQueryData(qUser);
-    return { user };
-  },
 });
 
 type SettingProps = React.PropsWithChildren<{
@@ -39,8 +44,8 @@ const Setting: React.FC<SettingProps> = ({ label, children }) => (
 );
 
 function RouteComponent() {
-  const { data: user } = useSuspenseQuery(qUser);
-  const { updateUserSettings, deleteUser } = useMutations();
+  const user = useUser();
+  const settings = useGetSettings();
 
   const [theme, setTheme] = useAtom(themeAtom);
   const [, dispatchAlert] = useAtom(alertSystemAtom);
@@ -53,10 +58,7 @@ function RouteComponent() {
         title: "Delete Account",
         message:
           "This action cannot be undone. This will permanently delete your account and remove your data from our servers.",
-        handleDelete: () => {
-          deleteUser.mutate({});
-          dispatchAlert({ type: "close" });
-        },
+        handleDelete: () => deleteAccountMutation.execute({}),
       },
     });
   };
@@ -68,9 +70,11 @@ function RouteComponent() {
         <Card size="3" className="grid gap-5">
           <Setting label="Group completed todos">
             <Switch
-              checked={user.settingGroupCompleted}
-              onCheckedChange={(settingGroupCompleted) => {
-                updateUserSettings.mutate({ settingGroupCompleted });
+              checked={settings.settingGroupCompleted}
+              onCheckedChange={(value) => {
+                collections.users.update(user.id, (draft) => {
+                  draft.settingGroupCompleted = value;
+                });
               }}
             />
           </Setting>

@@ -1,7 +1,6 @@
 import React from "react";
 import { useEventListener } from "usehooks-ts";
-import useMutations from "@/app/hooks/use-mutations";
-import { Button, Spinner, TextArea } from "@radix-ui/themes";
+import { Button, TextArea } from "@radix-ui/themes";
 import { resizeTextArea } from "@/app/lib/utils";
 import { flushSync } from "react-dom";
 import { z } from "astro/zod";
@@ -10,6 +9,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { mergeRefs } from "@/app/lib/utils";
 import { PlusIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
+import type { TodoSelect } from "@/lib/types";
+import { useUser } from "../providers/user-provider";
+import * as collections from "@/app/lib/collections";
 
 const schema = z.object({
   text: z.string().nonempty("Todo text cannot be empty"),
@@ -17,7 +19,7 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>;
 
 const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
-  const { createTodo } = useMutations();
+  const user = useUser();
 
   const { control, handleSubmit, reset } = useForm<Schema>({
     resolver: zodResolver(schema),
@@ -32,7 +34,16 @@ const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
   };
 
   const onSubmit = handleSubmit(({ text }) => {
-    createTodo.mutate({ data: { text, listId } });
+    const newTodo: TodoSelect = {
+      id: crypto.randomUUID(),
+      text,
+      isCompleted: false,
+      listId,
+      userId: user.id,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    collections.todos.insert(newTodo);
     resetInput();
   });
 
@@ -86,9 +97,7 @@ const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
       <input type="submit" hidden />
 
       <Button size="3" type="submit" className="px-3 sm:px-5">
-        <Spinner loading={createTodo.isPending}>
-          <PlusIcon className="size-5" />
-        </Spinner>
+        <PlusIcon className="size-5" />
         <span className="hidden sm:block">Add</span>
       </Button>
     </form>

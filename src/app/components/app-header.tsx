@@ -3,7 +3,7 @@ import { CircleCheckBigIcon } from "lucide-react";
 import { Heading, Separator } from "@radix-ui/themes";
 import UserMenu from "./user-menu";
 import ConnectionState from "./connection-state";
-import AppSearch from "./app-search";
+// import AppSearch from "./app-search";
 
 import React from "react";
 import type { UserSelect } from "@/lib/types";
@@ -18,7 +18,7 @@ const AppHeader: React.FC<Props> = ({ currentUser }) => {
     <header
       className={cn(
         "sticky top-0 z-10 flex h-18 flex-col justify-center",
-        "bg-linear-to-t from-[color-mix(in_lch,var(--background)_80%,transparent)] to-[var(--background)] backdrop-blur-md",
+        "bg-linear-to-t from-[color-mix(in_lch,var(--background)_80%,transparent)] to-(--background) backdrop-blur-md",
       )}
     >
       <div className="container2 flex flex-1 items-center justify-between">
@@ -28,7 +28,7 @@ const AppHeader: React.FC<Props> = ({ currentUser }) => {
         </Link>
         <section className="flex items-center gap-3">
           <ConnectionState />
-          <AppSearch />
+          {/*<AppSearch />*/}
           <UserMenu user={currentUser} />
         </section>
       </div>

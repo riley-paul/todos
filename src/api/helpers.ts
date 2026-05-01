@@ -1,42 +1,31 @@
 import { ListUser } from "@/db/schema";
 import { eq, and, not } from "drizzle-orm";
-import actionErrors from "./errors";
 import { createDb } from "@/db";
 import { Rest } from "ably";
-import { env } from "cloudflare:workers";
-import type { ActionAPIContext } from "astro:actions";
+import { ActionError, type ActionAPIContext } from "astro:actions";
 
 export const ensureAuthorized = (context: ActionAPIContext) => {
   const { user } = context.locals;
-  if (!user) throw actionErrors.UNAUTHORIZED;
+  if (!user) {
+    throw new ActionError({
+      code: "UNAUTHORIZED",
+      message: "You must be logged in to perform this action",
+    });
+  }
   return user;
-};
-
-export const getListUsers = async (
-  listId: string,
-  opts: { excludePending?: boolean } = {},
-): Promise<Set<string>> => {
-  const db = createDb(env);
-
-  const filters = [];
-  filters.push({ listId });
-  if (opts.excludePending) filters.push({ isPending: { eq: false } });
-
-  const listUsers = await db.query.ListUser.findMany({
-    where: { AND: filters },
-    columns: { userId: true },
-  });
-  return new Set(listUsers.map(({ userId }) => userId));
 };
 
 type InvalidateListUsersArgs = {
   listId: string;
   userId: string;
+  c: ActionAPIContext;
 };
 export const invalidateListUsers = async ({
   listId,
   userId,
+  c,
 }: InvalidateListUsersArgs) => {
+  const { env } = c.locals;
   console.log("Invalidating list users for listId:", listId);
   const db = createDb(env);
   const ably = new Rest({
@@ -59,24 +48,4 @@ export const invalidateListUsers = async ({
       return channel.publish("invalidate", { actionTakenBy: userId });
     }),
   );
-};
-
-type EnsureListMemberArgs = {
-  listId: string;
-  userId: string;
-  checkPending?: boolean;
-};
-export const ensureListMember = async ({
-  listId,
-  userId,
-  checkPending = true,
-}: EnsureListMemberArgs) => {
-  const db = createDb(env);
-  const [listUser] = await db
-    .select({ id: ListUser.id, isPending: ListUser.isPending })
-    .from(ListUser)
-    .where(and(eq(ListUser.listId, listId), eq(ListUser.userId, userId)))
-    .limit(1);
-  if (!listUser) throw actionErrors.NO_PERMISSION;
-  if (listUser.isPending && checkPending) throw actionErrors.LIST_PENDING;
 };

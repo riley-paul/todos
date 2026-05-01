@@ -1,17 +1,16 @@
-import useAlerts from "@/app/hooks/use-alerts";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
-import { qLists } from "@/app/lib/queries";
-import { type ListSelect } from "@/lib/types";
 import { Badge, IconButton, Kbd, Tooltip } from "@radix-ui/themes";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, linkOptions } from "@tanstack/react-router";
 import { ListPlusIcon } from "lucide-react";
 import React from "react";
 import ListReorder from "./list-reorder";
 import { ACCENT_COLOR } from "@/lib/constants";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
+import useGetLists from "@/app/hooks/actions/use-get-lists";
+import type { ListSelectDetails } from "@/lib/types";
+import useCreateList from "@/app/hooks/actions/use-create-list";
 
-const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
+const ListChip: React.FC<{ list: ListSelectDetails }> = ({ list }) => {
   const link = linkOptions({
     to: "/todos/$listId",
     params: { listId: list.id },
@@ -34,15 +33,18 @@ const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
     >
       <Link {...link}>
         <span>{list.name}</span>
-        <span className="font-mono opacity-70">{list.todoCount}</span>
+        {!list.isPending && (
+          <span className="font-mono opacity-70">{list.todoCount}</span>
+        )}
       </Link>
     </Badge>
   );
 };
 
 const ListChips: React.FC = () => {
-  const { handleCreateList } = useAlerts();
-  const { data: lists } = useSuspenseQuery(qLists);
+  const handleCreateList = useCreateList();
+
+  const lists = useGetLists();
 
   useHotkey("A", handleCreateList, { ignoreInputs: true });
 

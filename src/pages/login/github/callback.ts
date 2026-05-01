@@ -10,9 +10,10 @@ import {
   generateSessionToken,
   setSessionTokenCookie,
 } from "@/lib/lucia";
-import { env } from "cloudflare:workers";
 
 export async function GET(context: APIContext): Promise<Response> {
+  const { env } = context.locals;
+
   const db = createDb(env);
   const github = createGithub(env);
 
@@ -40,8 +41,12 @@ export async function GET(context: APIContext): Promise<Response> {
         .set({ githubId: githubUser.id })
         .where(eq(User.id, existingUser.id));
       const sessionToken = generateSessionToken();
-      const session = await createSession(env, sessionToken, existingUser.id);
-      setSessionTokenCookie(env, context, sessionToken, session.expiresAt);
+      const session = await createSession(
+        context,
+        sessionToken,
+        existingUser.id,
+      );
+      setSessionTokenCookie(context, sessionToken, session.expiresAt);
       return context.redirect("/");
     }
 
@@ -58,8 +63,8 @@ export async function GET(context: APIContext): Promise<Response> {
       .returning();
 
     const sessionToken = generateSessionToken();
-    const session = await createSession(env, sessionToken, user.id);
-    setSessionTokenCookie(env, context, sessionToken, session.expiresAt);
+    const session = await createSession(context, sessionToken, user.id);
+    setSessionTokenCookie(context, sessionToken, session.expiresAt);
     return context.redirect("/");
   } catch (e) {
     console.error(e);

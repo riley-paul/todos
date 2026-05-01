@@ -2,24 +2,26 @@ import React from "react";
 import { Avatar, Button, Dialog, IconButton } from "@radix-ui/themes";
 import ListShares from "./list-shares";
 import { PlusIcon, Share2Icon } from "lucide-react";
-import useAlerts from "@/app/hooks/use-alerts";
-import type { ListSelect } from "@/lib/types";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 import UserBubbleGroup from "@/app/components/ui/user/user-bubble-group";
+import type { ListSelectDetails } from "@/lib/types";
+import useGetListUsers from "@/app/hooks/actions/use-get-list-users";
+import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
 
-const ListSharing: React.FC<{ list: ListSelect }> = ({ list }) => {
-  const { handleInviteUser } = useAlerts();
+const ListSharing: React.FC<{ list: ListSelectDetails }> = ({ list }) => {
+  const listUsers = useGetListUsers(list.id);
+  const { handleInviteToList } = useManageListUsers(list.id);
 
   return (
     <Dialog.Root>
       <Dialog.Trigger>
-        {list.otherUsers.length === 0 ? (
+        {listUsers.length === 0 ? (
           <IconButton variant="ghost">
             <Share2Icon className="size-4" />
           </IconButton>
         ) : (
           <Button variant="ghost">
-            <UserBubbleGroup users={list.otherUsers} numAvatars={3} />
+            <UserBubbleGroup users={listUsers} numAvatars={3} />
           </Button>
         )}
       </Dialog.Trigger>
@@ -39,7 +41,7 @@ const ListSharing: React.FC<{ list: ListSelect }> = ({ list }) => {
             size="3"
             variant="ghost"
             className="flex flex-1 justify-start gap-3 text-left"
-            onClick={() => handleInviteUser({ listId: list.id })}
+            onClick={handleInviteToList}
           >
             <Avatar
               src=""
