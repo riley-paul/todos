@@ -1,4 +1,4 @@
-import { ensureAuthorized, invalidateListUsers } from "@/api/helpers";
+import { ensureAuthorized } from "@/api/helpers";
 import { createDb } from "@/db";
 import { zUserSettings, type UserSelect, type UserSettings } from "@/lib/types";
 import { ActionError, defineAction } from "astro:actions";
@@ -92,15 +92,6 @@ export const remove = defineAction({
     const listsWithSingleMember = listMemberCounts
       .filter((l) => l.memberCount <= 1)
       .map((l) => l.listId);
-
-    await Promise.all(
-      listsWithSingleMember.map(async (id) => {
-        await invalidateListUsers(c, id, "list");
-        await invalidateListUsers(c, id, "listUser");
-        await invalidateListUsers(c, id, "todo");
-        await invalidateListUsers(c, id, "user");
-      }),
-    );
 
     await db
       .delete(tables.List)

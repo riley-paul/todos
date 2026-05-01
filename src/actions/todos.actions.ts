@@ -1,10 +1,11 @@
 import { ActionError, defineAction } from "astro:actions";
-import { ensureAuthorized, invalidateListUsers } from "@/api/helpers";
+import { ensureAuthorized } from "@/api/helpers";
 import { createDb } from "@/db";
 import { zTodoSelect, type TodoSelect } from "@/lib/types";
 import * as tables from "@/db/schema";
 import { z } from "astro/zod";
 import { and, eq } from "drizzle-orm";
+import { notifyListUsers, type Payload } from "@/lib/realtime";
 
 export const populate = defineAction({
   handler: async (_, c): Promise<TodoSelect[]> => {
@@ -39,12 +40,15 @@ export const create = defineAction({
       });
     }
 
-    await invalidateListUsers(c, input.listId, "todo");
-
     const [todo] = await db
       .insert(tables.Todo)
       .values({ ...input, userId })
       .returning();
+
+    await notifyListUsers(c, input.listId, {
+      entity: "todo",
+      operation: { type: "insert", data: todo },
+    });
 
     return todo;
   },
@@ -100,14 +104,19 @@ export const update = defineAction({
       }
     }
 
-    if (data.listId) await invalidateListUsers(c, data.listId, "todo");
-    await invalidateListUsers(c, originalTodo.listId, "todo");
-
     const [updated] = await db
       .update(tables.Todo)
       .set(data)
       .where(eq(tables.Todo.id, todoId))
       .returning();
+
+    const payload: Payload = {
+      entity: "todo",
+      operation: { type: "update", data: updated },
+    };
+
+    await notifyListUsers(c, originalTodo.listId, payload);
+    await notifyListUsers(c, updated.listId, payload);
 
     return updated;
   },
@@ -141,8 +150,13 @@ export const remove = defineAction({
       });
     }
 
-    await invalidateListUsers(c, originalTodo.listId, "todo");
     await db.delete(tables.Todo).where(eq(tables.Todo.id, todoId));
+
+    await notifyListUsers(c, originalTodo.listId, {
+      entity: "todo",
+      operation: { type: "delete", id: todoId },
+    });
+
     return true;
   },
 });
@@ -164,12 +178,18 @@ export const deleteCompleted = defineAction({
       });
     }
 
-    await db
+    const deleted = await db
       .delete(tables.Todo)
       .where(
         and(eq(tables.Todo.listId, listId), eq(tables.Todo.isCompleted, true)),
-      );
-    await invalidateListUsers(c, listId, "todo");
+      )
+      .returning({ id: tables.Todo.id });
+
+    await notifyListUsers(c, listId, {
+      entity: "todo",
+      operation: { type: "delete", id: deleted.map((d) => d.id) },
+    });
+
     return true;
   },
 });
@@ -191,13 +211,19 @@ export const uncheckCompleted = defineAction({
       });
     }
 
-    await db
+    const updated = await db
       .update(tables.Todo)
       .set({ isCompleted: false })
       .where(
         and(eq(tables.Todo.listId, listId), eq(tables.Todo.isCompleted, true)),
-      );
-    await invalidateListUsers(c, listId, "todo");
+      )
+      .returning();
+
+    await notifyListUsers(c, listId, {
+      entity: "todo",
+      operation: { type: "update", data: updated },
+    });
+
     return true;
   },
 });

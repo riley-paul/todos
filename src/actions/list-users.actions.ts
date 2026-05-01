@@ -1,10 +1,11 @@
-import { ensureAuthorized, invalidateListUsers } from "@/api/helpers";
+import { ensureAuthorized } from "@/api/helpers";
 import { createDb } from "@/db";
 import type { ListUserSelect } from "@/lib/types";
 import { z } from "astro/zod";
 import { ActionError, defineAction } from "astro:actions";
 import * as tables from "@/db/schema";
 import { and, eq } from "drizzle-orm";
+import { notifyListUsers } from "@/lib/realtime";
 
 export const populate = defineAction({
   handler: async (_, c): Promise<ListUserSelect[]> => {
@@ -45,7 +46,11 @@ export const acceptInvite = defineAction({
       )
       .returning();
 
-    await invalidateListUsers(c, listId, "listUser");
+    await notifyListUsers(c, listId, {
+      entity: "listUser",
+      operation: { type: "update", data: updated },
+    });
+
     return updated;
   },
 });
@@ -66,16 +71,21 @@ export const leaveList = defineAction({
       });
     }
 
-    await db
+    const [deleted] = await db
       .delete(tables.ListUser)
       .where(
         and(
           eq(tables.ListUser.listId, listId),
           eq(tables.ListUser.userId, userId),
         ),
-      );
+      )
+      .returning();
 
-    await invalidateListUsers(c, listId, "listUser");
+    await notifyListUsers(c, listId, {
+      entity: "listUser",
+      operation: { type: "delete", id: deleted.id },
+    });
+
     return true;
   },
 });
@@ -124,7 +134,11 @@ export const inviteToList = defineAction({
       })
       .returning();
 
-    await invalidateListUsers(c, listId, "listUser");
+    await notifyListUsers(c, listId, {
+      entity: "listUser",
+      operation: { type: "insert", data: invite },
+    });
+
     return invite;
   },
 });
@@ -157,16 +171,21 @@ export const removeFromList = defineAction({
       });
     }
 
-    await db
+    const [deleted] = await db
       .delete(tables.ListUser)
       .where(
         and(
           eq(tables.ListUser.listId, listId),
           eq(tables.ListUser.userId, userId),
         ),
-      );
+      )
+      .returning();
 
-    await invalidateListUsers(c, listId, "listUser");
+    await notifyListUsers(c, listId, {
+      entity: "listUser",
+      operation: { type: "delete", id: deleted.id },
+    });
+
     return true;
   },
 });
