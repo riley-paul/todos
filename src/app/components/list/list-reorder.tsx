@@ -43,6 +43,7 @@ import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import type { ListSelectDetails } from "@/lib/types";
 import * as collections from "@/app/lib/collections";
 import { actions } from "astro:actions";
+import { mutationCache, queryClient } from "@/app/lib/query-client";
 
 type SortableObjectData =
   | {
@@ -83,6 +84,13 @@ const getSortableObjectList = (
     ...lists.filter(({ show }) => !show).map(listToSortableObj),
   ];
 };
+
+const updateSortShowMutation = mutationCache.build(queryClient, {
+  mutationFn: actions.lists.updateSortShow.orThrow,
+  onSuccess: () => {
+    collections.listUsers.utils.refetch();
+  },
+});
 
 type SortableItemProps = SortableObjectData & {
   isDragging?: boolean;
@@ -203,8 +211,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
       const newOrder = arrayMove(ids, oldIndex, newIndex);
 
       setLocalObjs((prev) => arrayMove(prev, oldIndex, newIndex));
-      await actions.lists.updateSortShow({ listIds: newOrder });
-      collections.listUsers.utils.refetch();
+      return updateSortShowMutation.execute({ listIds: newOrder });
     }
   };
 
