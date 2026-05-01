@@ -92,6 +92,12 @@ export const users = createCollection(
     queryKey: ["users"],
     queryFn: actions.users.populate.orThrow,
     schema: zUserSelect,
+    onUpdate: async ({ transaction }) =>
+      Promise.all(
+        transaction.mutations.map(({ changes }) =>
+          actions.users.update.orThrow(changes),
+        ),
+      ),
   }),
 );
 

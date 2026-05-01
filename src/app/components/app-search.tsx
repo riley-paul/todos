@@ -10,8 +10,6 @@ import {
   Tooltip,
   VisuallyHidden,
 } from "@radix-ui/themes";
-import { useQuery } from "@tanstack/react-query";
-import { qListSearch, qTodoSearch } from "@/app/lib/queries";
 import { cn } from "@/app/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
 import { SearchIcon, XIcon } from "lucide-react";

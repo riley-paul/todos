@@ -29,12 +29,18 @@ export type ListSelectDetails = z.infer<typeof zListSelect> & {
 export const zListUserSelect = createSelectSchema(tables.ListUser);
 export type ListUserSelect = z.infer<typeof zListUserSelect>;
 
-export const zUserSelect = createSelectSchema(tables.User).pick({
-  id: true,
-  name: true,
-  email: true,
-  avatarUrl: true,
-});
+export const zUserSettings = createSelectSchema(tables.User)
+  .pick({ settingGroupCompleted: true })
+  .partial();
+export type UserSettings = z.infer<typeof zUserSettings>;
+export const zUserSelect = createSelectSchema(tables.User)
+  .pick({
+    id: true,
+    name: true,
+    email: true,
+    avatarUrl: true,
+  })
+  .extend(zUserSettings.shape);
 export type UserSelect = z.infer<typeof zUserSelect>;
 export type UserSelectListDetails = z.infer<typeof zUserSelect> & {
   isPending: boolean;
