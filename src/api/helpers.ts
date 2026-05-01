@@ -1,14 +1,18 @@
 import { ListUser } from "@/db/schema";
 import { eq, and, not } from "drizzle-orm";
-import actionErrors from "@/api/errors";
 import { createDb } from "@/db";
 import { Rest } from "ably";
 import { env } from "cloudflare:workers";
-import type { ActionAPIContext } from "astro:actions";
+import { ActionError, type ActionAPIContext } from "astro:actions";
 
 export const ensureAuthorized = (context: ActionAPIContext) => {
   const { user } = context.locals;
-  if (!user) throw actionErrors.UNAUTHORIZED;
+  if (!user) {
+    throw new ActionError({
+      code: "UNAUTHORIZED",
+      message: "You must be logged in to perform this action",
+    });
+  }
   return user;
 };
 

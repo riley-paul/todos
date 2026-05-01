@@ -16,6 +16,14 @@ import useGetSettings from "../hooks/actions/use-get-settings";
 import * as collections from "@/app/lib/collections";
 import { useUser } from "../providers/user-provider";
 import { actions } from "astro:actions";
+import { mutationCache, queryClient } from "../lib/query-client";
+
+const deleteAccountMutation = mutationCache.build(queryClient, {
+  mutationFn: actions.users.remove.orThrow,
+  onSuccess: () => {
+    window.location.reload();
+  },
+});
 
 export const Route = createFileRoute("/settings")({
   component: RouteComponent,
@@ -50,11 +58,7 @@ function RouteComponent() {
         title: "Delete Account",
         message:
           "This action cannot be undone. This will permanently delete your account and remove your data from our servers.",
-        handleDelete: async () => {
-          await actions.users.remove.orThrow({});
-          window.location.reload();
-          dispatchAlert({ type: "close" });
-        },
+        handleDelete: () => deleteAccountMutation.execute({}),
       },
     });
   };
