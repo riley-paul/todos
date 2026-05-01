@@ -16,6 +16,7 @@ export const populate = defineAction({
         email: true,
         name: true,
         avatarUrl: true,
+        settingGroupCompleted: true,
       },
     });
   },
@@ -35,6 +36,8 @@ export const update = defineAction({
       .returning({
         settingGroupCompleted: tables.User.settingGroupCompleted,
       });
+
+    console.log(JSON.stringify(settings, null, 2));
     return settings;
   },
 });

@@ -15,6 +15,7 @@ export default function useGetTodos(listId: string): TodoSelectDetails[] {
         )
         .where(({ todo }) => eq(todo.listId, listId))
         .distinct()
+        .orderBy(({ todo }) => todo.isCompleted, "asc")
         .orderBy(({ todo }) => todo.createdAt, "desc")
         .select(({ todo, user, list }) => ({
           id: todo.id,
