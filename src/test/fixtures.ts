@@ -5,6 +5,7 @@ import type { InferSelectModel } from "drizzle-orm";
 
 type User = InferSelectModel<typeof tables.User>;
 type List = InferSelectModel<typeof tables.List>;
+type Todo = InferSelectModel<typeof tables.Todo>;
 
 export type Fixtures = {
   mainUser: User;
@@ -14,6 +15,10 @@ export type Fixtures = {
   mainUserSharedList: List;
   mainUserUnsharedList: List;
   outsideUserList: List;
+
+  sharedListTodos: Todo[];
+  unsharedListTodos: Todo[];
+  outsideListTodos: Todo[];
 };
 
 export const provisionFixtures = async (db: Db): Promise<Fixtures> => {
@@ -66,6 +71,96 @@ export const provisionFixtures = async (db: Db): Promise<Fixtures> => {
     },
   ]);
 
+  const sharedListTodos = await db
+    .insert(tables.Todo)
+    .values([
+      {
+        userId: mainUser.id,
+        listId: mainUserSharedList.id,
+        text: "Shared todo 1",
+        isCompleted: false,
+      },
+      {
+        userId: mainUser.id,
+        listId: mainUserSharedList.id,
+        text: "Shared todo 2",
+        isCompleted: true,
+      },
+      {
+        userId: collaboratingUser.id,
+        listId: mainUserSharedList.id,
+        text: "Shared todo 3",
+        isCompleted: false,
+      },
+      {
+        userId: collaboratingUser.id,
+        listId: mainUserSharedList.id,
+        text: "Shared todo 4",
+        isCompleted: true,
+      },
+    ])
+    .returning();
+
+  const unsharedListTodos = await db
+    .insert(tables.Todo)
+    .values([
+      {
+        userId: mainUser.id,
+        listId: mainUserUnsharedList.id,
+        text: "Unshared todo 1",
+        isCompleted: false,
+      },
+      {
+        userId: mainUser.id,
+        listId: mainUserUnsharedList.id,
+        text: "Unshared todo 2",
+        isCompleted: true,
+      },
+      {
+        userId: mainUser.id,
+        listId: mainUserUnsharedList.id,
+        text: "Unshared todo 3",
+        isCompleted: false,
+      },
+      {
+        userId: mainUser.id,
+        listId: mainUserUnsharedList.id,
+        text: "Unshared todo 4",
+        isCompleted: true,
+      },
+    ])
+    .returning();
+
+  const outsideListTodos = await db
+    .insert(tables.Todo)
+    .values([
+      {
+        userId: outsideUser.id,
+        listId: outsideUserList.id,
+        text: "Outside todo 1",
+        isCompleted: false,
+      },
+      {
+        userId: outsideUser.id,
+        listId: outsideUserList.id,
+        text: "Outside todo 2",
+        isCompleted: true,
+      },
+      {
+        userId: outsideUser.id,
+        listId: outsideUserList.id,
+        text: "Outside todo 3",
+        isCompleted: false,
+      },
+      {
+        userId: outsideUser.id,
+        listId: outsideUserList.id,
+        text: "Outside todo 4",
+        isCompleted: true,
+      },
+    ])
+    .returning();
+
   return {
     mainUser,
     collaboratingUser,
@@ -74,5 +169,9 @@ export const provisionFixtures = async (db: Db): Promise<Fixtures> => {
     mainUserSharedList,
     mainUserUnsharedList,
     outsideUserList,
+
+    sharedListTodos,
+    unsharedListTodos,
+    outsideListTodos,
   };
 };

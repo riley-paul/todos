@@ -3,7 +3,7 @@ import { createDb } from "@/db";
 import { zUserSettings, type UserSelect, type UserSettings } from "@/lib/types";
 import { ActionError, defineAction } from "astro:actions";
 import * as tables from "@/db/schema";
-import { and, eq, inArray, ne } from "drizzle-orm";
+import { and, count, eq, inArray, ne } from "drizzle-orm";
 
 export const populate = defineAction({
   handler: async (_, c): Promise<UserSelect[]> => {
@@ -74,6 +74,29 @@ export const remove = defineAction({
   handler: async (_, c) => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
+
+    const userListIds = await db.query.ListUser.findMany({
+      where: { userId },
+      columns: { listId: true },
+    }).then((uls) => uls.map((ul) => ul.listId));
+
+    const listMemberCounts = await db
+      .select({
+        listId: tables.ListUser.listId,
+        memberCount: count(tables.ListUser.userId),
+      })
+      .from(tables.ListUser)
+      .where(inArray(tables.ListUser.listId, userListIds))
+      .groupBy(tables.ListUser.listId);
+
+    const listsWithSingleMember = listMemberCounts
+      .filter((l) => l.memberCount <= 1)
+      .map((l) => l.listId);
+
+    await db
+      .delete(tables.List)
+      .where(inArray(tables.List.id, listsWithSingleMember));
+
     await db.delete(tables.User).where(eq(tables.User.id, userId));
     return true;
   },

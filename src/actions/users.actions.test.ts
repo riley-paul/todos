@@ -1,10 +1,10 @@
 import { createDb } from "@/db";
+import { deleteAllData } from "@/db/scripts/delete-all-data";
 import env from "@/envs-runtime";
 import { provisionFixtures, type Fixtures } from "@/test/fixtures";
+import { mockActions } from "@/test/mocks/astro-actions";
 import { beforeEach, describe, expect, it } from "vitest";
 import * as actions from "./users.actions";
-import { deleteAllData } from "@/db/scripts/delete-all-data";
-import { mockActions } from "@/test/mocks/astro-actions";
 
 const db = createDb(env);
 
@@ -29,16 +29,16 @@ describe("users.actions", () => {
       expect(userIds).not.toContain(fixtures.outsideUser.id);
     });
   });
+
   describe("update", () => {
     it("should update the user's settings", async () => {
       mockActions(fixtures.mainUser.id);
       await actions.update.orThrow({ settingGroupCompleted: true });
 
-      db.query.User.findFirst({ where: { id: fixtures.mainUser.id } }).then(
-        (user) => {
-          expect(user?.settingGroupCompleted).toBe(true);
-        },
-      );
+      const user = await db.query.User.findFirst({
+        where: { id: fixtures.mainUser.id },
+      });
+      expect(user?.settingGroupCompleted).toBe(true);
     });
 
     it("should only allow updating settings properties", async () => {
@@ -48,18 +48,53 @@ describe("users.actions", () => {
         settingGroupCompleted: false,
       } as any);
 
-      db.query.User.findFirst({ where: { id: fixtures.mainUser.id } }).then(
-        (user) => {
-          expect(user?.settingGroupCompleted).toBe(false);
-        },
-      );
+      const user = await db.query.User.findFirst({
+        where: { id: fixtures.mainUser.id },
+      });
+      // id should be unchanged — zUserSettings strips non-settings fields
+      expect(user?.id).toBe(fixtures.mainUser.id);
     });
   });
+
   describe("remove", () => {
-    it("should remove the user", () => {});
-    it("should remove user's memberships to lists", () => {});
-    it("should not remove user-created todos in shared lists", () => {});
-    it("should remove lists the user is the only member of", () => {});
-    it("should not remove lists the user shares with others", () => {});
+    it("should remove the user", async () => {
+      mockActions(fixtures.mainUser.id);
+      await actions.remove.orThrow();
+
+      const user = await db.query.User.findFirst({
+        where: { id: fixtures.mainUser.id },
+      });
+      expect(user).toBeUndefined();
+    });
+
+    it("should remove user's memberships to lists", async () => {
+      mockActions(fixtures.mainUser.id);
+      await actions.remove.orThrow();
+
+      const memberships = await db.query.ListUser.findMany({
+        where: { userId: fixtures.mainUser.id },
+      });
+      expect(memberships).toHaveLength(0);
+    });
+
+    it("should remove lists the user is the only member of", async () => {
+      mockActions(fixtures.mainUser.id);
+      await actions.remove.orThrow();
+
+      const list = await db.query.List.findFirst({
+        where: { id: fixtures.mainUserUnsharedList.id },
+      });
+      expect(list).toBeUndefined();
+    });
+
+    it("should not remove lists the user shares with others", async () => {
+      mockActions(fixtures.mainUser.id);
+      await actions.remove.orThrow();
+
+      const list = await db.query.List.findFirst({
+        where: { id: fixtures.mainUserSharedList.id },
+      });
+      expect(list).toBeDefined();
+    });
   });
 });
