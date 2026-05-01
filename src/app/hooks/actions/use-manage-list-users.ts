@@ -27,6 +27,7 @@ const acceptInviteMutation = mutationCache.build(queryClient, {
   mutationFn: actions.listUsers.acceptInvite.orThrow,
   onSuccess: () => {
     collections.listUsers.utils.refetch();
+    collections.todos.utils.refetch();
     toast.success("You have joined the list");
   },
 });
@@ -35,6 +36,7 @@ const leaveListMutation = mutationCache.build(queryClient, {
   mutationFn: actions.listUsers.leaveList.orThrow,
   onSuccess: () => {
     collections.listUsers.utils.refetch();
+    collections.todos.utils.refetch();
     toast.success("You have left the list");
   },
 });
