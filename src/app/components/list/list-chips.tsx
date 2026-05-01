@@ -33,7 +33,9 @@ const ListChip: React.FC<{ list: ListSelectDetails }> = ({ list }) => {
     >
       <Link {...link}>
         <span>{list.name}</span>
-        <span className="font-mono opacity-70">{list.todoCount}</span>
+        {!list.isPending && (
+          <span className="font-mono opacity-70">{list.todoCount}</span>
+        )}
       </Link>
     </Badge>
   );

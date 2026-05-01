@@ -17,7 +17,16 @@ describe("lists.actions", () => {
   });
 
   describe("populate", () => {
-    it("should return the lists the user belongs to", async () => {});
+    it("should return the lists the user belongs to", async () => {
+      mockActions(fixtures.mainUser.id);
+      const lists = await actions.populate.orThrow();
+
+      expect(Array.isArray(lists)).toBe(true);
+      const listIds = lists.map((l) => l.id);
+      expect(listIds).toContain(fixtures.mainUserSharedList.id);
+      expect(listIds).toContain(fixtures.mainUserUnsharedList.id);
+      expect(listIds).not.toContain(fixtures.outsideUserList.id);
+    });
   });
   describe("create", () => {
     it("should create a new list with the specified name", async () => {});

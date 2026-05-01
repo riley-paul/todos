@@ -1,8 +1,4 @@
-import {
-  ActionError,
-  defineAction,
-  type ActionAPIContext,
-} from "astro:actions";
+import { ActionError, defineAction } from "astro:actions";
 import { ensureAuthorized } from "@/api/helpers";
 import { createDb } from "@/db";
 import { zTodoSelect, type TodoSelect } from "@/lib/types";
@@ -10,20 +6,13 @@ import * as tables from "@/db/schema";
 import { z } from "astro/zod";
 import { and, eq } from "drizzle-orm";
 
-const getUserLists = async (
-  c: ActionAPIContext,
-  userId: string,
-): Promise<string[]> => {
-  const db = createDb(c.locals.env);
-  const listUsers = await db.query.ListUser.findMany({ where: { userId } });
-  return listUsers.map((lu) => lu.listId);
-};
-
 export const populate = defineAction({
   handler: async (_, c): Promise<TodoSelect[]> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
-    const listIds = await getUserLists(c,userId);
+    const listIds = await db.query.ListUser.findMany({
+      where: { userId, isPending: false },
+    }).then((uls) => uls.map((ul) => ul.listId));
 
     const todos = await db.query.Todo.findMany({
       where: { listId: { in: listIds } },

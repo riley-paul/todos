@@ -6,6 +6,7 @@ import type { InferSelectModel } from "drizzle-orm";
 type User = InferSelectModel<typeof tables.User>;
 type List = InferSelectModel<typeof tables.List>;
 type Todo = InferSelectModel<typeof tables.Todo>;
+type ListUser = InferSelectModel<typeof tables.ListUser>;
 
 export type Fixtures = {
   mainUser: User;
@@ -19,6 +20,8 @@ export type Fixtures = {
   sharedListTodos: Todo[];
   unsharedListTodos: Todo[];
   outsideListTodos: Todo[];
+
+  pendingInvite: ListUser;
 };
 
 export const provisionFixtures = async (db: Db): Promise<Fixtures> => {
@@ -70,6 +73,15 @@ export const provisionFixtures = async (db: Db): Promise<Fixtures> => {
       isPending: false,
     },
   ]);
+
+  const [pendingInvite] = await db
+    .insert(tables.ListUser)
+    .values({
+      listId: outsideUserList.id,
+      userId: collaboratingUser.id,
+      isPending: true,
+    })
+    .returning();
 
   const sharedListTodos = await db
     .insert(tables.Todo)
@@ -173,5 +185,7 @@ export const provisionFixtures = async (db: Db): Promise<Fixtures> => {
     sharedListTodos,
     unsharedListTodos,
     outsideListTodos,
+
+    pendingInvite,
   };
 };
