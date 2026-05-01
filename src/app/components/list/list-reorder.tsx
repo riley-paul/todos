@@ -40,7 +40,7 @@ import { Link } from "@tanstack/react-router";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import ListRow from "./list-row";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
-import type { ListSelectDetails } from "@/lib/types2";
+import type { ListSelectDetails } from "@/lib/types";
 import * as collections from "@/app/lib/collections";
 import { actions } from "astro:actions";
 

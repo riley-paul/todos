@@ -23,7 +23,7 @@ import { useAtom } from "jotai";
 import { editingTodoIdAtom } from "./todos.store";
 import { SaveIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
-import type { TodoSelectDetails } from "@/lib/types2";
+import type { TodoSelectDetails } from "@/lib/types";
 import { useUser } from "@/app/providers/user-provider";
 import * as collections from "@/app/lib/collections";
 

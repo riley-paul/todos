@@ -1,6 +1,6 @@
 import { eq, useLiveSuspenseQuery } from "@tanstack/react-db";
 import * as collections from "@/app/lib/collections";
-import type { TodoSelectDetails } from "@/lib/types2";
+import type { TodoSelectDetails } from "@/lib/types";
 
 export default function useGetTodos(listId: string): TodoSelectDetails[] {
   const { data: todos } = useLiveSuspenseQuery(

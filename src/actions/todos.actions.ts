@@ -2,7 +2,7 @@ import { ActionError, defineAction } from "astro:actions";
 import { ensureAuthorized } from "@/api/helpers";
 import { createDb } from "@/db";
 import { env } from "cloudflare:workers";
-import { zTodoSelect, type TodoSelect } from "@/lib/types2";
+import { zTodoSelect, type TodoSelect } from "@/lib/types";
 import * as tables from "@/db/schema";
 import { z } from "astro/zod";
 import { and, eq } from "drizzle-orm";

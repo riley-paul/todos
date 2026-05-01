@@ -12,7 +12,7 @@ import {
   zTodoSelect,
   zUserSelect,
   type ListSelect,
-} from "@/lib/types2";
+} from "@/lib/types";
 import { toast } from "sonner";
 import { router } from "./router";
 

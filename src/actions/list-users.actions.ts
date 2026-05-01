@@ -1,6 +1,6 @@
 import { ensureAuthorized } from "@/api/helpers";
 import { createDb } from "@/db";
-import type { ListUserSelect } from "@/lib/types2";
+import type { ListUserSelect } from "@/lib/types";
 import { z } from "astro/zod";
 import { ActionError, defineAction } from "astro:actions";
 import { env } from "cloudflare:workers";

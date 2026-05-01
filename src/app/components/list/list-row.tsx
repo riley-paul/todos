@@ -3,7 +3,7 @@ import { HourglassIcon } from "lucide-react";
 import React from "react";
 import UserBubbleGroup from "../ui/user/user-bubble-group";
 import { cn } from "@/app/lib/utils";
-import type { ListSelectDetails } from "@/lib/types2";
+import type { ListSelectDetails } from "@/lib/types";
 import useGetListUsers from "@/app/hooks/actions/use-get-list-users";
 
 type Props = { list: ListSelectDetails };

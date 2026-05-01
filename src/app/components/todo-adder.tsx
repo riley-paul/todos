@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { mergeRefs } from "@/app/lib/utils";
 import { PlusIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
-import type { TodoSelect } from "@/lib/types2";
+import type { TodoSelect } from "@/lib/types";
 import { useUser } from "../providers/user-provider";
 import * as collections from "@/app/lib/collections";
 

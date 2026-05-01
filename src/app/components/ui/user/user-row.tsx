@@ -1,4 +1,4 @@
-import type { UserSelect } from "@/lib/types2";
+import type { UserSelect } from "@/lib/types";
 import React from "react";
 import UserBubble from "./user-bubble";
 import { Text } from "@radix-ui/themes";

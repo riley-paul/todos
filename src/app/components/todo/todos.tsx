@@ -11,7 +11,7 @@ import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
 import NoTodosScreen from "../screens/no-todos";
 import useGetTodos from "@/app/hooks/actions/use-get-todos";
-import type { ListSelect, TodoSelectDetails } from "@/lib/types2";
+import type { ListSelect, TodoSelectDetails } from "@/lib/types";
 
 const CompletedTodosActions: React.FC<{ listId: string }> = ({ listId }) => (
   <div className="flex items-center justify-end gap-4">

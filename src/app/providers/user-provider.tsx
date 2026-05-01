@@ -1,4 +1,4 @@
-import type { UserSelect } from "@/lib/types2";
+import type { UserSelect } from "@/lib/types";
 import { createContext, useContext } from "react";
 
 type Value = { user: UserSelect };

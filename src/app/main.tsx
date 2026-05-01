@@ -11,7 +11,7 @@ import CustomToaster from "./components/ui/custom-toaster";
 import AlertSystem from "./components/alert-system/alert-system";
 import { handleError } from "./lib/errors";
 import RealtimeProvider from "./providers/realtime-provider";
-import type { UserSelect } from "@/lib/types2";
+import type { UserSelect } from "@/lib/types";
 import useServiceWorker from "./hooks/use-service-worker";
 import { UserProvider } from "./providers/user-provider";
 import { router } from "./lib/router";

@@ -7,7 +7,7 @@ import ListReorder from "./list-reorder";
 import { ACCENT_COLOR } from "@/lib/constants";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import useGetLists from "@/app/hooks/actions/use-get-lists";
-import type { ListSelectDetails } from "@/lib/types2";
+import type { ListSelectDetails } from "@/lib/types";
 import useCreateList from "@/app/hooks/actions/use-create-list";
 
 const ListChip: React.FC<{ list: ListSelectDetails }> = ({ list }) => {

@@ -1,5 +1,5 @@
 import React from "react";
-import { zListName } from "@/lib/types2";
+import { zListName } from "@/lib/types";
 import {
   Edit2Icon,
   ExternalLinkIcon,
@@ -18,7 +18,7 @@ import { alertSystemAtom } from "../alert-system/alert-system.store";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
 import { getListUrl } from "@/lib/constants";
-import type { ListSelectDetails } from "@/lib/types2";
+import type { ListSelectDetails } from "@/lib/types";
 import useGetListUsers from "@/app/hooks/actions/use-get-list-users";
 import * as collections from "@/app/lib/collections";
 import { useNavigate, useParams } from "@tanstack/react-router";

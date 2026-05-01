@@ -5,7 +5,7 @@ import { LogOutIcon, Settings2Icon } from "lucide-react";
 import { linkOptions } from "@tanstack/react-router";
 import type { MenuItem } from "./ui/menu/menu.types";
 import ResponsiveMenu from "./ui/menu/responsive-menu";
-import type { UserSelect } from "@/lib/types2";
+import type { UserSelect } from "@/lib/types";
 import UserRow from "./ui/user/user-row";
 import UserBubble from "./ui/user/user-bubble";
 

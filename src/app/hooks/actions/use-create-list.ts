@@ -1,8 +1,8 @@
 import { alertSystemAtom } from "@/app/components/alert-system/alert-system.store";
-import { zListName } from "@/lib/types2";
+import { zListName } from "@/lib/types";
 import { useAtom } from "jotai";
 import * as collections from "@/app/lib/collections";
-import type { ListSelect } from "@/lib/types2";
+import type { ListSelect } from "@/lib/types";
 import { useUser } from "@/app/providers/user-provider";
 
 export default function useCreateList() {

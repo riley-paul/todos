@@ -1,5 +1,5 @@
 import { createDb } from "@/db";
-import type { UserSelect } from "@/lib/types2";
+import type { UserSelect } from "@/lib/types";
 import { defineAction } from "astro:actions";
 import { env } from "cloudflare:workers";
 

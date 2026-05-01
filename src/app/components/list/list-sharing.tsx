@@ -4,7 +4,7 @@ import ListShares from "./list-shares";
 import { PlusIcon, Share2Icon } from "lucide-react";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 import UserBubbleGroup from "@/app/components/ui/user/user-bubble-group";
-import type { ListSelectDetails } from "@/lib/types2";
+import type { ListSelectDetails } from "@/lib/types";
 import useGetListUsers from "@/app/hooks/actions/use-get-list-users";
 import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
 

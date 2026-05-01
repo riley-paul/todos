@@ -1,5 +1,5 @@
 import { cn } from "@/app/lib/utils";
-import type { TodoSelectDetails } from "@/lib/types2";
+import type { TodoSelectDetails } from "@/lib/types";
 import React from "react";
 import TextWithLinks from "../ui/text-with-links";
 import { Badge, Text } from "@radix-ui/themes";

@@ -1,4 +1,4 @@
-import type { UserSelectListDetails } from "@/lib/types2";
+import type { UserSelectListDetails } from "@/lib/types";
 import { eq, not, useLiveSuspenseQuery } from "@tanstack/react-db";
 import * as collections from "@/app/lib/collections";
 import { useUser } from "@/app/providers/user-provider";

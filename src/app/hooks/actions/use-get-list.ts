@@ -1,4 +1,4 @@
-import type { ListSelectDetails } from "@/lib/types2";
+import type { ListSelectDetails } from "@/lib/types";
 import { count, eq, useLiveSuspenseQuery } from "@tanstack/react-db";
 import * as collections from "@/app/lib/collections";
 import { useUser } from "@/app/providers/user-provider";
