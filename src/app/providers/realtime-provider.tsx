@@ -77,7 +77,7 @@ const Invalidator: React.FC<React.PropsWithChildren> = ({ children }) => {
     const { data: payload } = zPayload.safeParse(data);
     if (!payload) return;
 
-    console.log("Received payload:", payload);
+    console.log("socket:", payload.entity, payload.operation.type);
     handlePayload(payload);
   });
 

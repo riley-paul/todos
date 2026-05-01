@@ -91,7 +91,9 @@ export const update = defineAction({
       });
     }
 
-    if (data.listId !== originalTodo.listId) {
+    const isMoving = data.listId && data.listId !== originalTodo.listId;
+
+    if (isMoving) {
       const newListUser = await db.query.ListUser.findFirst({
         where: { listId: data.listId, userId, isPending: false },
       });
@@ -115,7 +117,7 @@ export const update = defineAction({
       operation: { type: "update", data: updated },
     };
 
-    await notifyListUsers(c, originalTodo.listId, payload);
+    if (isMoving) await notifyListUsers(c, originalTodo.listId, payload);
     await notifyListUsers(c, updated.listId, payload);
 
     return updated;
