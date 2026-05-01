@@ -126,7 +126,7 @@ export const update = defineAction({
 
 export const remove = defineAction({
   input: z.object({ todoId: z.string() }),
-  handler: async ({ todoId }, c): Promise<boolean> => {
+  handler: async ({ todoId }, c): Promise<string> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -152,14 +152,17 @@ export const remove = defineAction({
       });
     }
 
-    await db.delete(tables.Todo).where(eq(tables.Todo.id, todoId));
+    const [deleted] = await db
+      .delete(tables.Todo)
+      .where(eq(tables.Todo.id, todoId))
+      .returning();
 
     await notifyListUsers(c, originalTodo.listId, {
       entity: "todo",
       operation: { type: "delete", id: todoId },
     });
 
-    return true;
+    return deleted.id;
   },
 });
 

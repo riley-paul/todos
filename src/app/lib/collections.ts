@@ -27,24 +27,30 @@ export const todos = createCollection(
     queryKey: ["todos"],
     queryFn: actions.todos.populate.orThrow,
     schema: zTodoSelect,
-    onInsert: async ({ transaction }) =>
-      Promise.all(
-        transaction.mutations.map(({ modified }) =>
-          actions.todos.create.orThrow(modified),
-        ),
-      ),
-    onUpdate: async ({ transaction }) =>
-      Promise.all(
-        transaction.mutations.map(({ original, changes }) =>
-          actions.todos.update.orThrow({ todoId: original.id, data: changes }),
-        ),
-      ),
-    onDelete: async ({ transaction }) =>
-      Promise.all(
-        transaction.mutations.map(({ original }) =>
-          actions.todos.remove.orThrow({ todoId: original.id }),
-        ),
-      ),
+    onInsert: async ({ transaction }) => {
+      const promises = transaction.mutations.map(({ modified }) =>
+        actions.todos.create.orThrow(modified),
+      );
+      const results = await Promise.all(promises);
+      todos.utils.writeInsert(results);
+      return { refetch: false };
+    },
+    onUpdate: async ({ transaction }) => {
+      const promises = transaction.mutations.map(({ original, changes }) =>
+        actions.todos.update.orThrow({ todoId: original.id, data: changes }),
+      );
+      const results = await Promise.all(promises);
+      todos.utils.writeUpdate(results);
+      return { refetch: false };
+    },
+    onDelete: async ({ transaction }) => {
+      const promises = transaction.mutations.map(({ original }) =>
+        actions.todos.remove.orThrow({ todoId: original.id }),
+      );
+      const results = await Promise.all(promises);
+      todos.utils.writeDelete(results);
+      return { refetch: false };
+    },
   }),
 );
 
