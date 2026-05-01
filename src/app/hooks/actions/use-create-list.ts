@@ -2,12 +2,21 @@ import { alertSystemAtom } from "@/app/components/alert-system/alert-system.stor
 import { zListName } from "@/lib/types";
 import { useAtom } from "jotai";
 import * as collections from "@/app/lib/collections";
-import type { ListSelect } from "@/lib/types";
-import { useUser } from "@/app/providers/user-provider";
+import { mutationCache, queryClient } from "@/app/lib/query-client";
+import { actions } from "astro:actions";
+import { useNavigate } from "@tanstack/react-router";
+
+const createListMutation = mutationCache.build(queryClient, {
+  mutationFn: actions.lists.create.orThrow,
+  onSuccess: () => {
+    collections.lists.utils.refetch();
+    collections.listUsers.utils.refetch();
+  },
+});
 
 export default function useCreateList() {
-  const currentUser = useUser();
   const [, dispatchAlert] = useAtom(alertSystemAtom);
+  const navigate = useNavigate();
 
   const handleCreateList = () => {
     dispatchAlert({
@@ -19,15 +28,10 @@ export default function useCreateList() {
         value: "",
         placeholder: "List name",
         schema: zListName,
-        handleSubmit: (name: string) => {
-          const list: ListSelect = {
-            id: crypto.randomUUID(),
-            name,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          };
-          collections.fns.insertList({ list, userId: currentUser.id });
+        handleSubmit: async (name: string) => {
+          const newList = await createListMutation.execute({ name });
           dispatchAlert({ type: "close" });
+          navigate({ to: "/todos/$listId", params: { listId: newList.id } });
         },
       },
     });

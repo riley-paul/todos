@@ -22,16 +22,18 @@ export const populate = defineAction({
 });
 
 export const create = defineAction({
-  input: zListSelect,
+  input: z.object({ name: z.string() }),
   handler: async (input, c): Promise<ListSelect> => {
     const userId = ensureAuthorized(c).id;
 
-    const [list] = await db.insert(tables.List).values(input).returning();
-
-    await db.insert(tables.ListUser).values({
-      listId: list.id,
-      userId,
-      isPending: false,
+    const list = await db.transaction(async (tx) => {
+      const [list] = await tx.insert(tables.List).values(input).returning();
+      await tx.insert(tables.ListUser).values({
+        listId: list.id,
+        userId,
+        isPending: false,
+      });
+      return list;
     });
 
     return list;

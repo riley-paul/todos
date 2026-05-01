@@ -4,9 +4,45 @@ import { actions } from "astro:actions";
 import { useAtom } from "jotai";
 import * as collections from "@/app/lib/collections";
 import { toast } from "sonner";
+import { mutationCache, queryClient } from "@/app/lib/query-client";
+import { useNavigate, useParams } from "@tanstack/react-router";
+
+const inviteToListMutation = mutationCache.build(queryClient, {
+  mutationFn: actions.listUsers.inviteToList.orThrow,
+  onSuccess: (_, { email }) => {
+    collections.listUsers.utils.refetch();
+    toast.success(`Invitation sent to "${email}"`);
+  },
+});
+
+const removeFromListMutation = mutationCache.build(queryClient, {
+  mutationFn: actions.listUsers.removeFromList.orThrow,
+  onSuccess: () => {
+    collections.listUsers.utils.refetch();
+    toast.success("User removed from list");
+  },
+});
+
+const acceptInviteMutation = mutationCache.build(queryClient, {
+  mutationFn: actions.listUsers.acceptInvite.orThrow,
+  onSuccess: () => {
+    collections.listUsers.utils.refetch();
+    toast.success("You have joined the list");
+  },
+});
+
+const leaveListMutation = mutationCache.build(queryClient, {
+  mutationFn: actions.listUsers.leaveList.orThrow,
+  onSuccess: () => {
+    collections.listUsers.utils.refetch();
+    toast.success("You have left the list");
+  },
+});
 
 export default function useManageListUsers(listId: string) {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
+  const navigate = useNavigate();
+  const { listId: currentListId } = useParams({ strict: false });
 
   const handleInviteToList = () => {
     dispatchAlert({
@@ -19,10 +55,8 @@ export default function useManageListUsers(listId: string) {
         placeholder: "User email",
         schema: z.email("Please enter a valid email address"),
         handleSubmit: async (email: string) => {
-          await actions.listUsers.inviteToList.orThrow({ listId, email });
-          await collections.listUsers.utils.refetch();
+          await inviteToListMutation.execute({ listId, email });
           dispatchAlert({ type: "close" });
-          toast.success(`Invitation sent to "${email}"`);
         },
       },
     });
@@ -37,13 +71,11 @@ export default function useManageListUsers(listId: string) {
         message:
           "Are you sure you want to remove this user from the list? They will lose access to this list and all its tasks.",
         handleDelete: async () => {
-          await actions.listUsers.removeFromList.orThrow({
+          await removeFromListMutation.execute({
             listId,
             userId: userToRemoveId,
           });
-          await collections.listUsers.utils.refetch();
           dispatchAlert({ type: "close" });
-          toast.success("User removed from list");
         },
         confirmButtonProps: {
           children: "Remove",
@@ -53,9 +85,8 @@ export default function useManageListUsers(listId: string) {
   };
 
   const handleAcceptInvite = async () => {
-    await actions.listUsers.acceptInvite.orThrow({ listId });
-    await collections.listUsers.utils.refetch();
-    toast.success("You have joined the list");
+    await acceptInviteMutation.execute({ listId });
+    navigate({ to: "/todos/$listId", params: { listId } });
   };
 
   const handleLeaveList = () => {
@@ -67,10 +98,9 @@ export default function useManageListUsers(listId: string) {
         message:
           "Are you sure you want to leave this list? You will lose access to this list and all its tasks.",
         handleDelete: async () => {
-          await actions.listUsers.leaveList.orThrow({ listId });
-          await collections.listUsers.utils.refetch();
+          await leaveListMutation.execute({ listId });
           dispatchAlert({ type: "close" });
-          toast.success("You have left the list");
+          if (currentListId === listId) navigate({ to: "/" });
         },
         confirmButtonProps: {
           children: "Leave",

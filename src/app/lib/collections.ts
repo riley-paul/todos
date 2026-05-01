@@ -11,10 +11,8 @@ import {
   zListUserSelect,
   zTodoSelect,
   zUserSelect,
-  type ListSelect,
 } from "@/lib/types";
 import { toast } from "sonner";
-import { router } from "./router";
 
 const sharedOptions = {
   queryClient,
@@ -130,26 +128,6 @@ export const fns = {
     mutationFn: async ({ listId }) => {
       await actions.todos.uncheckCompleted.orThrow({ listId });
       await todos.utils.refetch();
-    },
-  }),
-  insertList: createOptimisticAction<{ list: ListSelect; userId: string }>({
-    onMutate: ({ list, userId }) => {
-      lists.insert(list);
-      listUsers.insert({
-        id: crypto.randomUUID(),
-        listId: list.id,
-        userId,
-        show: true,
-        isPending: false,
-        order: 1_000_000,
-      });
-      toast.success(`List "${list.name}" created`);
-    },
-    mutationFn: async ({ list }) => {
-      await actions.lists.create.orThrow(list);
-      await lists.utils.refetch();
-      await listUsers.utils.refetch();
-      router.navigate({ to: "/todos/$listId", params: { listId: list.id } });
     },
   }),
 };
