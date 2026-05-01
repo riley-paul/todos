@@ -22,13 +22,38 @@ describe("users.actions", () => {
       const users = await actions.populate.orThrow();
 
       expect(Array.isArray(users)).toBe(true);
-      expect(users.length).toBe(1);
+
+      const userIds = users.map((u) => u.id);
+      expect(userIds).toContain(fixtures.mainUser.id);
+      expect(userIds).toContain(fixtures.collaboratingUser.id);
+      expect(userIds).not.toContain(fixtures.outsideUser.id);
     });
-    it("should exlude users that don't share a list with the current user", async () => {});
   });
   describe("update", () => {
-    it("should update the user's settings", () => {});
-    it("should not effect the settings of other users", () => {});
+    it("should update the user's settings", async () => {
+      mockActions(fixtures.mainUser.id);
+      await actions.update.orThrow({ settingGroupCompleted: true });
+
+      db.query.User.findFirst({ where: { id: fixtures.mainUser.id } }).then(
+        (user) => {
+          expect(user?.settingGroupCompleted).toBe(true);
+        },
+      );
+    });
+
+    it("should only allow updating settings properties", async () => {
+      mockActions(fixtures.mainUser.id);
+      await actions.update.orThrow({
+        id: "fake-id",
+        settingGroupCompleted: false,
+      } as any);
+
+      db.query.User.findFirst({ where: { id: fixtures.mainUser.id } }).then(
+        (user) => {
+          expect(user?.settingGroupCompleted).toBe(false);
+        },
+      );
+    });
   });
   describe("remove", () => {
     it("should remove the user", () => {});

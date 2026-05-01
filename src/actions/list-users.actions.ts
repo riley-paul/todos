@@ -9,7 +9,15 @@ import { and, eq } from "drizzle-orm";
 export const populate = defineAction({
   handler: async (_, c): Promise<ListUserSelect[]> => {
     const db = createDb(c.locals.env);
-    return db.query.ListUser.findMany();
+    const userId = ensureAuthorized(c).id;
+
+    const userListIds = await db.query.ListUser.findMany({
+      where: { userId },
+    }).then((uls) => uls.map((ul) => ul.listId));
+
+    return db.query.ListUser.findMany({
+      where: { listId: { in: userListIds } },
+    });
   },
 });
 

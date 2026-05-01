@@ -58,8 +58,6 @@ export const update = defineAction({
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
-    console.log("Updating user with input", input);
-
     const [settings] = await db
       .update(tables.User)
       .set(input)
@@ -68,7 +66,6 @@ export const update = defineAction({
         settingGroupCompleted: tables.User.settingGroupCompleted,
       });
 
-    console.log(JSON.stringify(settings, null, 2));
     return settings;
   },
 });
