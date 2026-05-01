@@ -1,9 +1,23 @@
-import { describe, it } from "vitest";
+import { createDb } from "@/db";
+import env from "@/envs-runtime";
+import { provisionFixtures, type Fixtures } from "@/test/fixtures";
+import { beforeEach, describe, expect, it } from "vitest";
+import * as actions from "./lists.actions";
+import { deleteAllData } from "@/db/scripts/delete-all-data";
+import { mockActions } from "@/test/mocks/astro-actions";
+
+const db = createDb(env);
 
 describe("lists.actions", () => {
+  let fixtures: Fixtures;
+
+  beforeEach(async () => {
+    await deleteAllData();
+    fixtures = await provisionFixtures(db);
+  });
+
   describe("populate", () => {
     it("should return the lists the user belongs to", async () => {});
-    it("should not return lists the user does not belong to", async () => {});
   });
   describe("create", () => {
     it("should create a new list with the specified name", async () => {});
@@ -23,5 +37,5 @@ describe("lists.actions", () => {
     it("should update the sort and show settings of the list", async () => {});
     it("should not allow updating the settings of a list the user doesn't belong to", async () => {});
     it("should not allow updating the settings of a pending list", async () => {});
-  })
+  });
 });

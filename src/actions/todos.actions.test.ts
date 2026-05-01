@@ -1,11 +1,26 @@
-import { describe, it } from "vitest";
+import { createDb } from "@/db";
+import env from "@/envs-runtime";
+import { provisionFixtures, type Fixtures } from "@/test/fixtures";
+import { beforeEach, describe, expect, it } from "vitest";
+import * as actions from "./todos.actions";
+import { deleteAllData } from "@/db/scripts/delete-all-data";
+import { mockActions } from "@/test/mocks/astro-actions";
+
+const db = createDb(env);
 
 describe("todos.actions", () => {
+  let fixtures: Fixtures;
+
+  beforeEach(async () => {
+    await deleteAllData();
+    fixtures = await provisionFixtures(db);
+  });
+
   describe("populate", () => {
     it("should return the todos in the user's lists", async () => {});
     it("should return the todos with their authors and lists", async () => {});
     it("should exclude todos from lists the user doesn't belong to", async () => {});
-    it("should exlude todos from pending lists", () => {});
+    it("should exlude todos from pending lists", async () => {});
   });
   describe("create", () => {
     it("should create a new todo in the specified list", async () => {});
