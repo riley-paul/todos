@@ -7,6 +7,10 @@ const relations = defineRelations(schema, (r) => ({
       from: r.User.id.through(r.ListUser.userId),
       to: r.List.id.through(r.ListUser.listId),
     }),
+    listUsers: r.many.ListUser({
+      from: r.User.id,
+      to: r.ListUser.userId,
+    }),
   },
   List: {
     todos: r.many.Todo({

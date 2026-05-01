@@ -1,16 +1,40 @@
 import { ensureAuthorized } from "@/api/helpers";
 import { createDb } from "@/db";
 import { zUserSettings, type UserSelect, type UserSettings } from "@/lib/types";
-import { defineAction } from "astro:actions";
+import { ActionError, defineAction } from "astro:actions";
 import { env } from "cloudflare:workers";
 import * as tables from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq, inArray, ne } from "drizzle-orm";
 
 const db = createDb(env);
 
 export const populate = defineAction({
-  handler: async (c): Promise<UserSelect[]> => {
-    return db.query.User.findMany({
+  handler: async (_, c): Promise<UserSelect[]> => {
+    const userId = ensureAuthorized(c).id;
+
+    const userListIds = await db.query.ListUser.findMany({
+      where: { userId },
+      columns: { listId: true },
+    }).then((uls) => uls.map((ul) => ul.listId));
+
+    const otherUsers = await db
+      .selectDistinct({
+        id: tables.User.id,
+        email: tables.User.email,
+        name: tables.User.name,
+        avatarUrl: tables.User.avatarUrl,
+      })
+      .from(tables.User)
+      .innerJoin(tables.ListUser, eq(tables.User.id, tables.ListUser.userId))
+      .where(
+        and(
+          inArray(tables.ListUser.listId, userListIds),
+          ne(tables.User.id, userId),
+        ),
+      );
+
+    const currentUser = await db.query.User.findFirst({
+      where: { id: userId },
       columns: {
         id: true,
         email: true,
@@ -19,6 +43,14 @@ export const populate = defineAction({
         settingGroupCompleted: true,
       },
     });
+
+    if (!currentUser)
+      throw new ActionError({
+        code: "UNAUTHORIZED",
+        message: "User not found",
+      });
+
+    return [currentUser, ...otherUsers];
   },
 });
 
@@ -43,7 +75,7 @@ export const update = defineAction({
 });
 
 export const remove = defineAction({
-  handler: async (c) => {
+  handler: async (_, c) => {
     const userId = ensureAuthorized(c).id;
     await db.delete(tables.User).where(eq(tables.User.id, userId));
     return true;
