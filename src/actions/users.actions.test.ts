@@ -1,9 +1,10 @@
 import { createDb } from "@/db";
 import env from "@/envs-runtime";
 import { provisionFixtures } from "@/test/fixtures";
-import { beforeEach, describe, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import * as actions from "./users.actions";
 import { deleteAllData } from "@/db/scripts/delete-all-data";
+import { mockActions } from "@/test/mocks/astro-actions";
 
 const db = createDb(env);
 
@@ -14,7 +15,13 @@ describe("users.actions", () => {
   });
 
   describe("populate", () => {
-    it("should return the current user and other users in the same lists", async () => {});
+    it("should return the current user and other users in the same lists", async () => {
+      mockActions("");
+      const users = await actions.populate.orThrow();
+
+      expect(Array.isArray(users)).toBe(true);
+      expect(users.length).toBe(1);
+    });
     it("should exlude users that don't share a list with the current user", async () => {});
   });
   describe("update", () => {
