@@ -1,4 +1,3 @@
-import useAlerts from "@/app/hooks/use-alerts";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
 import { Badge, IconButton, Kbd, Tooltip } from "@radix-ui/themes";
 import { Link, linkOptions } from "@tanstack/react-router";
@@ -9,6 +8,7 @@ import { ACCENT_COLOR } from "@/lib/constants";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import useGetLists from "@/app/hooks/actions/use-get-lists";
 import type { ListSelectDetails } from "@/lib/types2";
+import useCreateList from "@/app/hooks/actions/use-create-list";
 
 const ListChip: React.FC<{ list: ListSelectDetails }> = ({ list }) => {
   const link = linkOptions({
@@ -40,7 +40,7 @@ const ListChip: React.FC<{ list: ListSelectDetails }> = ({ list }) => {
 };
 
 const ListChips: React.FC = () => {
-  const { handleCreateList } = useAlerts();
+  const handleCreateList = useCreateList();
 
   const lists = useGetLists();
 

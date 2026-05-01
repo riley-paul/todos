@@ -1,6 +1,6 @@
 import { ListUser } from "@/db/schema";
 import { eq, and, not } from "drizzle-orm";
-import actionErrors from "./errors";
+import actionErrors from "@/api/errors";
 import { createDb } from "@/db";
 import { Rest } from "ably";
 import { env } from "cloudflare:workers";
@@ -59,24 +59,4 @@ export const invalidateListUsers = async ({
       return channel.publish("invalidate", { actionTakenBy: userId });
     }),
   );
-};
-
-type EnsureListMemberArgs = {
-  listId: string;
-  userId: string;
-  checkPending?: boolean;
-};
-export const ensureListMember = async ({
-  listId,
-  userId,
-  checkPending = true,
-}: EnsureListMemberArgs) => {
-  const db = createDb(env);
-  const [listUser] = await db
-    .select({ id: ListUser.id, isPending: ListUser.isPending })
-    .from(ListUser)
-    .where(and(eq(ListUser.listId, listId), eq(ListUser.userId, userId)))
-    .limit(1);
-  if (!listUser) throw actionErrors.NO_PERMISSION;
-  if (listUser.isPending && checkPending) throw actionErrors.LIST_PENDING;
 };

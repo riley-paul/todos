@@ -18,20 +18,18 @@ import { alertSystemAtom } from "../alert-system/alert-system.store";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
 import { getListUrl } from "@/lib/constants";
-import useLeaveList from "@/app/hooks/actions/use-leave-list";
 import type { ListSelectDetails } from "@/lib/types2";
 import useGetListUsers from "@/app/hooks/actions/use-get-list-users";
 import * as collections from "@/app/lib/collections";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import useGetNumCompletedTodos from "@/app/hooks/actions/use-get-num-completed-todos";
+import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
 
 type Props = {
   list: ListSelectDetails;
 };
 
 const ListMenu: React.FC<Props> = ({ list }) => {
-  const { id, name } = list;
-
   const { listId: currentListId } = useParams({ strict: false });
   const navigate = useNavigate();
 
@@ -43,7 +41,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
 
   const isOnlyUser = listUsers.length === 0;
 
-  const { handleLeaveList } = useLeaveList();
+  const { handleLeaveList } = useManageListUsers(list.id);
 
   const handleRenameList = () => {
     dispatchAlert({
@@ -52,7 +50,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         type: "input",
         title: "Rename List",
         message: "Update the name of your list",
-        value: name,
+        value: list.name,
         placeholder: "Enter new list name",
         schema: zListName,
         handleSubmit: (name: string) => {
@@ -85,13 +83,13 @@ const ListMenu: React.FC<Props> = ({ list }) => {
   };
 
   const handleCopyLink = () => {
-    const link = getListUrl(id);
+    const link = getListUrl(list.id);
     copyToClipboard(link);
     toast.success("Link copied to clipboard", { description: link });
   };
 
   const handleOpenInNewTab = () => {
-    const link = getListUrl(id);
+    const link = getListUrl(list.id);
     window.open(link, "_blank");
   };
 
@@ -128,7 +126,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       key: "uncheck-all",
       text: "Uncheck all",
       icon: <SquareMinusIcon className="size-4 opacity-70" />,
-      onClick: () => collections.fns.uncheckCompletedTodos({ listId: id }),
+      onClick: () => collections.fns.uncheckCompletedTodos({ listId: list.id }),
       disabled: numCompleted <= 0,
     },
     {
@@ -136,7 +134,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       key: "delete-completed",
       text: "Delete completed",
       icon: <ListXIcon className="size-4 opacity-70" />,
-      onClick: () => collections.fns.deleteCompletedTodos({ listId: id }),
+      onClick: () => collections.fns.deleteCompletedTodos({ listId: list.id }),
       disabled: numCompleted <= 0,
     },
     {
@@ -148,7 +146,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       text: "Leave",
       icon: <LogOutIcon className="size-4 opacity-70" />,
       color: "amber",
-      onClick: () => handleLeaveList(id),
+      onClick: handleLeaveList,
       hide: isOnlyUser,
     },
     {

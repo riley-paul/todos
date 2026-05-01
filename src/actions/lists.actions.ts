@@ -1,5 +1,5 @@
 import { ActionError, defineAction } from "astro:actions";
-import { ensureAuthorized } from "../api/helpers";
+import { ensureAuthorized } from "@/api/helpers";
 import { createDb } from "@/db";
 import { env } from "cloudflare:workers";
 import { zListSelect, type ListSelect } from "@/lib/types2";
