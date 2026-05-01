@@ -1,6 +1,5 @@
-import { ListUser } from "@/db/schema";
-import { eq, and, not } from "drizzle-orm";
 import { createDb } from "@/db";
+import type { EntityType } from "@/lib/types";
 import { Rest } from "ably";
 import { ActionError, type ActionAPIContext } from "astro:actions";
 
@@ -15,17 +14,12 @@ export const ensureAuthorized = (context: ActionAPIContext) => {
   return user;
 };
 
-type InvalidateListUsersArgs = {
-  listId: string;
-  userId: string;
-  c: ActionAPIContext;
-};
-export const invalidateListUsers = async ({
-  listId,
-  userId,
-  c,
-}: InvalidateListUsersArgs) => {
-  const { env } = c.locals;
+export const invalidateListUsers = async (
+  context: ActionAPIContext,
+  listId: string,
+  entityType: EntityType,
+) => {
+  const { env } = context.locals;
   console.log("Invalidating list users for listId:", listId);
   const db = createDb(env);
   const ably = new Rest({
@@ -33,11 +27,10 @@ export const invalidateListUsers = async ({
     clientId: "server",
   });
 
-  const listUserIds = await db
-    .select({ id: ListUser.userId })
-    .from(ListUser)
-    .where(and(eq(ListUser.listId, listId), not(eq(ListUser.userId, userId))))
-    .then((rows) => rows.map(({ id }) => id));
+  const listUserIds = await db.query.ListUser.findMany({
+    where: { listId },
+    columns: { userId: true },
+  }).then((lus) => lus.map((lu) => lu.userId));
 
   console.log("List user IDs to invalidate:", listUserIds);
 
@@ -45,7 +38,10 @@ export const invalidateListUsers = async ({
     listUserIds.map((id) => {
       console.log("Invalidating user channel for userId:", id);
       const channel = ably.channels.get(`user:${id}`);
-      return channel.publish("invalidate", { actionTakenBy: userId });
+      return channel.publish("invalidate", {
+        actionTakenBy: context.locals.user?.id,
+        entityType,
+      });
     }),
   );
 };

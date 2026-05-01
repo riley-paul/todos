@@ -1,5 +1,5 @@
 import { ActionError, defineAction } from "astro:actions";
-import { ensureAuthorized } from "@/api/helpers";
+import { ensureAuthorized, invalidateListUsers } from "@/api/helpers";
 import { createDb } from "@/db";
 import { zListSelect, type ListSelect } from "@/lib/types";
 import * as tables from "@/db/schema";
@@ -35,6 +35,8 @@ export const create = defineAction({
       return list;
     });
 
+    await invalidateListUsers(c, list.id, "list");
+    await invalidateListUsers(c, list.id, "listUser");
     return list;
   },
 });
@@ -65,13 +67,14 @@ export const update = defineAction({
       .where(eq(tables.List.id, input.listId))
       .returning();
 
+    await invalidateListUsers(c, input.listId, "list");
     return list;
   },
 });
 
 export const remove = defineAction({
   input: z.object({ listId: z.string() }),
-  handler: async (input, c): Promise<{ success: boolean }> => {
+  handler: async (input, c): Promise<boolean> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -88,7 +91,8 @@ export const remove = defineAction({
 
     await db.delete(tables.List).where(eq(tables.List.id, input.listId));
 
-    return { success: true };
+    await invalidateListUsers(c, input.listId, "list");
+    return true;
   },
 });
 

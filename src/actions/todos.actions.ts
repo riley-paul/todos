@@ -1,5 +1,5 @@
 import { ActionError, defineAction } from "astro:actions";
-import { ensureAuthorized } from "@/api/helpers";
+import { ensureAuthorized, invalidateListUsers } from "@/api/helpers";
 import { createDb } from "@/db";
 import { zTodoSelect, type TodoSelect } from "@/lib/types";
 import * as tables from "@/db/schema";
@@ -38,6 +38,8 @@ export const create = defineAction({
         message: "You do not have access to this list",
       });
     }
+
+    await invalidateListUsers(c, input.listId, "todo");
 
     const [todo] = await db
       .insert(tables.Todo)
@@ -98,6 +100,9 @@ export const update = defineAction({
       }
     }
 
+    if (data.listId) await invalidateListUsers(c, data.listId, "todo");
+    await invalidateListUsers(c, originalTodo.listId, "todo");
+
     const [updated] = await db
       .update(tables.Todo)
       .set(data)
@@ -109,9 +114,7 @@ export const update = defineAction({
 });
 
 export const remove = defineAction({
-  input: z.object({
-    todoId: z.string(),
-  }),
+  input: z.object({ todoId: z.string() }),
   handler: async ({ todoId }, c): Promise<boolean> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
@@ -138,6 +141,7 @@ export const remove = defineAction({
       });
     }
 
+    await invalidateListUsers(c, originalTodo.listId, "todo");
     await db.delete(tables.Todo).where(eq(tables.Todo.id, todoId));
     return true;
   },
@@ -165,6 +169,7 @@ export const deleteCompleted = defineAction({
       .where(
         and(eq(tables.Todo.listId, listId), eq(tables.Todo.isCompleted, true)),
       );
+    await invalidateListUsers(c, listId, "todo");
     return true;
   },
 });
@@ -192,6 +197,7 @@ export const uncheckCompleted = defineAction({
       .where(
         and(eq(tables.Todo.listId, listId), eq(tables.Todo.isCompleted, true)),
       );
+    await invalidateListUsers(c, listId, "todo");
     return true;
   },
 });

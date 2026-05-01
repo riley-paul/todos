@@ -1,4 +1,4 @@
-import { ensureAuthorized } from "@/api/helpers";
+import { ensureAuthorized, invalidateListUsers } from "@/api/helpers";
 import { createDb } from "@/db";
 import type { ListUserSelect } from "@/lib/types";
 import { z } from "astro/zod";
@@ -45,6 +45,7 @@ export const acceptInvite = defineAction({
       )
       .returning();
 
+    await invalidateListUsers(c, listId, "listUser");
     return updated;
   },
 });
@@ -74,6 +75,7 @@ export const leaveList = defineAction({
         ),
       );
 
+    await invalidateListUsers(c, listId, "listUser");
     return true;
   },
 });
@@ -122,6 +124,7 @@ export const inviteToList = defineAction({
       })
       .returning();
 
+    await invalidateListUsers(c, listId, "listUser");
     return invite;
   },
 });
@@ -163,6 +166,7 @@ export const removeFromList = defineAction({
         ),
       );
 
+    await invalidateListUsers(c, listId, "listUser");
     return true;
   },
 });
