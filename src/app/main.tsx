@@ -22,7 +22,7 @@ const App: React.FC<Props> = ({ currentUser }) => {
   useServiceWorker();
   return (
     <UserProvider user={currentUser}>
-      <RealtimeProvider currentUser={currentUser}>
+      <RealtimeProvider>
         <RadixProvider>
           <RouterProvider router={router} />
           <CustomToaster />
