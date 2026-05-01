@@ -1,17 +1,15 @@
 import { ActionError, defineAction } from "astro:actions";
 import { ensureAuthorized } from "@/api/helpers";
 import { createDb } from "@/db";
-import { env } from "cloudflare:workers";
 import { zListSelect, type ListSelect } from "@/lib/types";
 import * as tables from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { z } from "astro/zod";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 
-const db = createDb(env);
-
 export const populate = defineAction({
   handler: async (_, c): Promise<ListSelect[]> => {
+    const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
     return await db.query.List.findMany({
@@ -24,6 +22,7 @@ export const populate = defineAction({
 export const create = defineAction({
   input: z.object({ name: z.string() }),
   handler: async (input, c): Promise<ListSelect> => {
+    const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
     const list = await db.transaction(async (tx) => {
@@ -46,6 +45,7 @@ export const update = defineAction({
     data: zListSelect.pick({ name: true }).partial(),
   }),
   handler: async (input, c): Promise<ListSelect> => {
+    const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
     const listUser = await db.query.ListUser.findFirst({
@@ -72,6 +72,7 @@ export const update = defineAction({
 export const remove = defineAction({
   input: z.object({ listId: z.string() }),
   handler: async (input, c): Promise<{ success: boolean }> => {
+    const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
     const listUser = await db.query.ListUser.findFirst({
@@ -94,8 +95,8 @@ export const remove = defineAction({
 export const updateSortShow = defineAction({
   input: z.object({ listIds: z.array(z.string()) }),
   handler: async ({ listIds }, c): Promise<boolean> => {
+    const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
-    const db = createDb(env);
 
     const separatorIdx = listIds.indexOf(LIST_SEPARATOR_ID);
 

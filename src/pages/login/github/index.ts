@@ -2,9 +2,10 @@ import { generateState } from "arctic";
 
 import type { APIContext } from "astro";
 import { createGithub } from "@/lib/oauth";
-import { env } from "cloudflare:workers";
 
 export async function GET(context: APIContext): Promise<Response> {
+  const { env } = context.locals;
+
   const secure = env.NODE_ENV === "production";
   const github = createGithub(env);
 

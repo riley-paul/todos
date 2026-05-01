@@ -2,7 +2,6 @@ import { ListUser } from "@/db/schema";
 import { eq, and, not } from "drizzle-orm";
 import { createDb } from "@/db";
 import { Rest } from "ably";
-import { env } from "cloudflare:workers";
 import { ActionError, type ActionAPIContext } from "astro:actions";
 
 export const ensureAuthorized = (context: ActionAPIContext) => {
@@ -16,31 +15,17 @@ export const ensureAuthorized = (context: ActionAPIContext) => {
   return user;
 };
 
-export const getListUsers = async (
-  listId: string,
-  opts: { excludePending?: boolean } = {},
-): Promise<Set<string>> => {
-  const db = createDb(env);
-
-  const filters = [];
-  filters.push({ listId });
-  if (opts.excludePending) filters.push({ isPending: { eq: false } });
-
-  const listUsers = await db.query.ListUser.findMany({
-    where: { AND: filters },
-    columns: { userId: true },
-  });
-  return new Set(listUsers.map(({ userId }) => userId));
-};
-
 type InvalidateListUsersArgs = {
   listId: string;
   userId: string;
+  c: ActionAPIContext;
 };
 export const invalidateListUsers = async ({
   listId,
   userId,
+  c,
 }: InvalidateListUsersArgs) => {
+  const { env } = c.locals;
   console.log("Invalidating list users for listId:", listId);
   const db = createDb(env);
   const ably = new Rest({

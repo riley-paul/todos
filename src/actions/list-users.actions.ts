@@ -3,14 +3,12 @@ import { createDb } from "@/db";
 import type { ListUserSelect } from "@/lib/types";
 import { z } from "astro/zod";
 import { ActionError, defineAction } from "astro:actions";
-import { env } from "cloudflare:workers";
 import * as tables from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 
-const db = createDb(env);
-
 export const populate = defineAction({
   handler: async (_, c): Promise<ListUserSelect[]> => {
+    const db = createDb(c.locals.env);
     return db.query.ListUser.findMany();
   },
 });
@@ -18,6 +16,7 @@ export const populate = defineAction({
 export const acceptInvite = defineAction({
   input: z.object({ listId: z.string() }),
   handler: async ({ listId }, c): Promise<ListUserSelect> => {
+    const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
     const invite = await db.query.ListUser.findFirst({
       where: { listId, userId, isPending: true },
@@ -45,6 +44,7 @@ export const acceptInvite = defineAction({
 export const leaveList = defineAction({
   input: z.object({ listId: z.string() }),
   handler: async ({ listId }, c): Promise<boolean> => {
+    const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
     const membership = await db.query.ListUser.findFirst({
       where: { listId, userId },
@@ -73,6 +73,7 @@ export const leaveList = defineAction({
 export const inviteToList = defineAction({
   input: z.object({ listId: z.string(), email: z.email() }),
   handler: async ({ listId, email }, c): Promise<ListUserSelect> => {
+    const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
     const isMember = await db.query.ListUser.findFirst({
@@ -120,6 +121,7 @@ export const inviteToList = defineAction({
 export const removeFromList = defineAction({
   input: z.object({ listId: z.string(), userId: z.string() }),
   handler: async ({ listId, userId }, c): Promise<boolean> => {
+    const db = createDb(c.locals.env);
     const currentUserId = ensureAuthorized(c).id;
 
     const isMember = await db.query.ListUser.findFirst({
