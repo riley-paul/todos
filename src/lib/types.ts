@@ -4,9 +4,6 @@ import { z } from "astro/zod";
 
 export const zListName = z.string().trim().min(1).max(256);
 
-export const zEntityType = z.enum(["list", "todo", "listUser", "user"]);
-export type EntityType = z.infer<typeof zEntityType>;
-
 export type UserSessionInfo = {
   id: string;
   userId: string;

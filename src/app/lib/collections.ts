@@ -54,12 +54,6 @@ export const lists = createCollection(
     queryKey: ["lists"],
     queryFn: actions.lists.populate.orThrow,
     schema: zListSelect,
-    onInsert: async ({ transaction }) =>
-      Promise.all(
-        transaction.mutations.map(({ modified }) =>
-          actions.lists.create.orThrow(modified),
-        ),
-      ),
     onUpdate: async ({ transaction }) =>
       Promise.all(
         transaction.mutations.map(({ original, changes }) =>

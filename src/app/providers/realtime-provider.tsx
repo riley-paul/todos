@@ -3,7 +3,7 @@ import * as Ably from "ably";
 import React from "react";
 import { useUser } from "./user-provider";
 import * as collections from "@/app/lib/collections";
-import { zEntityType } from "@/lib/types";
+import { zEntityType } from "@/lib/realtime";
 
 const realtimeClient = new Ably.Realtime({ authUrl: "/ably-auth" });
 
