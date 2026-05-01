@@ -1,6 +1,6 @@
 import { createDb } from "@/db";
 import env from "@/envs-runtime";
-import { provisionFixtures } from "@/test/fixtures";
+import { provisionFixtures, type Fixtures } from "@/test/fixtures";
 import { beforeEach, describe, expect, it } from "vitest";
 import * as actions from "./users.actions";
 import { deleteAllData } from "@/db/scripts/delete-all-data";
@@ -9,14 +9,16 @@ import { mockActions } from "@/test/mocks/astro-actions";
 const db = createDb(env);
 
 describe("users.actions", () => {
-  beforeEach(() => {
-    deleteAllData();
-    provisionFixtures(db);
+  let fixtures: Fixtures;
+
+  beforeEach(async () => {
+    await deleteAllData();
+    fixtures = await provisionFixtures(db);
   });
 
   describe("populate", () => {
     it("should return the current user and other users in the same lists", async () => {
-      mockActions("");
+      mockActions(fixtures.mainUser.id);
       const users = await actions.populate.orThrow();
 
       expect(Array.isArray(users)).toBe(true);
