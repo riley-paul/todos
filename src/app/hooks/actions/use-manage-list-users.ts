@@ -19,7 +19,7 @@ export default function useManageListUsers(listId: string) {
         placeholder: "User email",
         schema: z.email("Please enter a valid email address"),
         handleSubmit: async (email: string) => {
-          await actions.listUsers2.inviteToList.orThrow({ listId, email });
+          await actions.listUsers.inviteToList.orThrow({ listId, email });
           await collections.listUsers.utils.refetch();
           dispatchAlert({ type: "close" });
           toast.success(`Invitation sent to "${email}"`);
@@ -37,7 +37,7 @@ export default function useManageListUsers(listId: string) {
         message:
           "Are you sure you want to remove this user from the list? They will lose access to this list and all its tasks.",
         handleDelete: async () => {
-          await actions.listUsers2.removeFromList.orThrow({
+          await actions.listUsers.removeFromList.orThrow({
             listId,
             userId: userToRemoveId,
           });
@@ -53,7 +53,7 @@ export default function useManageListUsers(listId: string) {
   };
 
   const handleAcceptInvite = async () => {
-    await actions.listUsers2.acceptInvite.orThrow({ listId });
+    await actions.listUsers.acceptInvite.orThrow({ listId });
     await collections.listUsers.utils.refetch();
     toast.success("You have joined the list");
   };
@@ -67,7 +67,7 @@ export default function useManageListUsers(listId: string) {
         message:
           "Are you sure you want to leave this list? You will lose access to this list and all its tasks.",
         handleDelete: async () => {
-          await actions.listUsers2.leaveList.orThrow({ listId });
+          await actions.listUsers.leaveList.orThrow({ listId });
           await collections.listUsers.utils.refetch();
           dispatchAlert({ type: "close" });
           toast.success("You have left the list");

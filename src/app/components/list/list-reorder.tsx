@@ -203,7 +203,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
       const newOrder = arrayMove(ids, oldIndex, newIndex);
 
       setLocalObjs((prev) => arrayMove(prev, oldIndex, newIndex));
-      await actions.lists2.updateSortShow({ listIds: newOrder });
+      await actions.lists.updateSortShow({ listIds: newOrder });
       collections.listUsers.utils.refetch();
     }
   };

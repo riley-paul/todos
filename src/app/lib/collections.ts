@@ -27,24 +27,24 @@ export const todos = createCollection(
   queryCollectionOptions({
     ...sharedOptions,
     queryKey: ["todos"],
-    queryFn: actions.todos2.populate.orThrow,
+    queryFn: actions.todos.populate.orThrow,
     schema: zTodoSelect,
     onInsert: async ({ transaction }) =>
       Promise.all(
         transaction.mutations.map(({ modified }) =>
-          actions.todos2.create.orThrow(modified),
+          actions.todos.create.orThrow(modified),
         ),
       ),
     onUpdate: async ({ transaction }) =>
       Promise.all(
         transaction.mutations.map(({ original, changes }) =>
-          actions.todos2.update.orThrow({ todoId: original.id, data: changes }),
+          actions.todos.update.orThrow({ todoId: original.id, data: changes }),
         ),
       ),
     onDelete: async ({ transaction }) =>
       Promise.all(
         transaction.mutations.map(({ original }) =>
-          actions.todos2.remove.orThrow({ todoId: original.id }),
+          actions.todos.remove.orThrow({ todoId: original.id }),
         ),
       ),
   }),
@@ -54,24 +54,24 @@ export const lists = createCollection(
   queryCollectionOptions({
     ...sharedOptions,
     queryKey: ["lists"],
-    queryFn: actions.lists2.populate.orThrow,
+    queryFn: actions.lists.populate.orThrow,
     schema: zListSelect,
     onInsert: async ({ transaction }) =>
       Promise.all(
         transaction.mutations.map(({ modified }) =>
-          actions.lists2.create.orThrow(modified),
+          actions.lists.create.orThrow(modified),
         ),
       ),
     onUpdate: async ({ transaction }) =>
       Promise.all(
         transaction.mutations.map(({ original, changes }) =>
-          actions.lists2.update.orThrow({ listId: original.id, data: changes }),
+          actions.lists.update.orThrow({ listId: original.id, data: changes }),
         ),
       ),
     onDelete: async ({ transaction }) =>
       Promise.all(
         transaction.mutations.map(({ original }) =>
-          actions.lists2.remove.orThrow({ listId: original.id }),
+          actions.lists.remove.orThrow({ listId: original.id }),
         ),
       ),
   }),
@@ -81,7 +81,7 @@ export const listUsers = createCollection(
   queryCollectionOptions({
     ...sharedOptions,
     queryKey: ["listUsers"],
-    queryFn: actions.listUsers2.populate.orThrow,
+    queryFn: actions.listUsers.populate.orThrow,
     schema: zListUserSelect,
   }),
 );
@@ -90,7 +90,7 @@ export const users = createCollection(
   queryCollectionOptions({
     ...sharedOptions,
     queryKey: ["users"],
-    queryFn: actions.users2.populate.orThrow,
+    queryFn: actions.users.populate.orThrow,
     schema: zUserSelect,
   }),
 );
@@ -105,7 +105,7 @@ export const fns = {
       toast.success(`Deleted ${ids.length} completed todos`);
     },
     mutationFn: async ({ listId }) => {
-      await actions.todos2.deleteCompleted.orThrow({ listId });
+      await actions.todos.deleteCompleted.orThrow({ listId });
       await todos.utils.refetch();
     },
   }),
@@ -122,7 +122,7 @@ export const fns = {
       toast.success(`Unchecked ${ids.length} completed todos`);
     },
     mutationFn: async ({ listId }) => {
-      await actions.todos2.uncheckCompleted.orThrow({ listId });
+      await actions.todos.uncheckCompleted.orThrow({ listId });
       await todos.utils.refetch();
     },
   }),
@@ -140,7 +140,7 @@ export const fns = {
       toast.success(`List "${list.name}" created`);
     },
     mutationFn: async ({ list }) => {
-      await actions.lists2.create.orThrow(list);
+      await actions.lists.create.orThrow(list);
       await lists.utils.refetch();
       await listUsers.utils.refetch();
       router.navigate({ to: "/todos/$listId", params: { listId: list.id } });
