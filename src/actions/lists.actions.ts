@@ -1,7 +1,7 @@
 import { ActionError, defineAction } from "astro:actions";
 import { ensureAuthorized } from "@/api/helpers";
 import { createDb } from "@/db";
-import { zListSelect, type ListSelect } from "@/lib/types";
+import { zListSelect, type ListSelect, type ListUserSelect } from "@/lib/types";
 import * as tables from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { z } from "astro/zod";
@@ -22,7 +22,10 @@ export const populate = defineAction({
 
 export const create = defineAction({
   input: z.object({ name: z.string() }),
-  handler: async (input, c): Promise<ListSelect> => {
+  handler: async (
+    input,
+    c,
+  ): Promise<{ list: ListSelect; listUser: ListUserSelect }> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -48,7 +51,7 @@ export const create = defineAction({
       operation: { type: "insert", data: listUser },
     });
 
-    return list;
+    return { list, listUser };
   },
 });
 

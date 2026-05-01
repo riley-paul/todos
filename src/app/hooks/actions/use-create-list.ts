@@ -29,7 +29,7 @@ export default function useCreateList() {
         placeholder: "List name",
         schema: zListName,
         handleSubmit: async (name: string) => {
-          const newList = await createListMutation.execute({ name });
+          const { list: newList } = await createListMutation.execute({ name });
           dispatchAlert({ type: "close" });
           navigate({ to: "/todos/$listId", params: { listId: newList.id } });
         },
