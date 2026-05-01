@@ -8,13 +8,7 @@ import {
 import { env } from "cloudflare:workers";
 
 const userValidation = defineMiddleware(async (context, next) => {
-  const authHeader = context.request.headers.get("Authorization");
-  const bearerToken = authHeader?.startsWith("Bearer ")
-    ? authHeader.slice(7)
-    : null;
-
-  const token =
-    context.cookies.get(SESSION_COOKIE_NAME)?.value ?? bearerToken ?? null;
+  const token = context.cookies.get(SESSION_COOKIE_NAME)?.value;
   if (!token) {
     context.locals.user = null;
     context.locals.session = null;
