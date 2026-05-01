@@ -6,7 +6,7 @@ import ConnectionState from "./connection-state";
 import AppSearch from "./app-search";
 
 import React from "react";
-import type { UserSelect } from "@/lib/types";
+import type { UserSelect } from "@/lib/types2";
 import { cn } from "../lib/utils";
 
 type Props = {

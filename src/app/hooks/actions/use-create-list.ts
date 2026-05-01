@@ -1,5 +1,5 @@
 import { alertSystemAtom } from "@/app/components/alert-system/alert-system.store";
-import { zListName } from "@/lib/types";
+import { zListName } from "@/lib/types2";
 import { useAtom } from "jotai";
 import * as collections from "@/app/lib/collections";
 import type { ListSelect } from "@/lib/types2";
