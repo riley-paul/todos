@@ -88,36 +88,9 @@ export default function useAlerts() {
     });
   };
 
-  const handleInviteUser = (data: { listId: string }) => {
-    const { listId } = data;
-    dispatchAlert({
-      type: "open",
-      data: {
-        type: "input",
-        title: "Invite User",
-        message: "Enter the email address of the user you want to invite",
-        value: "",
-        placeholder: "User email",
-        schema: z.email("Please enter a valid email address"),
-        handleSubmit: (email: string) => {
-          inviteUserToList.mutate(
-            { listId, email },
-            {
-              onSuccess: () => {
-                dispatchAlert({ type: "close" });
-                toast.success(`Invitation sent to "${email}"`);
-              },
-            },
-          );
-        },
-      },
-    });
-  };
-
   return {
     handleCreateList,
     handleCancelInvite,
     handleRemoveUser,
-    handleInviteUser,
   };
 }

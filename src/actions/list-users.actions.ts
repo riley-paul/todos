@@ -42,37 +42,12 @@ export const acceptInvite = defineAction({
   },
 });
 
-export const rejectInvite = defineAction({
-  input: z.object({ listId: z.string() }),
-  handler: async ({ listId }, c): Promise<boolean> => {
-    const userId = ensureAuthorized(c).id;
-    const invite = await db.query.ListUser.findFirst({
-      where: { listId, userId, isPending: true },
-    });
-
-    if (!invite) {
-      throw new ActionError({ code: "NOT_FOUND", message: "Invite not found" });
-    }
-
-    await db
-      .delete(tables.ListUser)
-      .where(
-        and(
-          eq(tables.ListUser.listId, listId),
-          eq(tables.ListUser.userId, userId),
-        ),
-      );
-
-    return true;
-  },
-});
-
 export const leaveList = defineAction({
   input: z.object({ listId: z.string() }),
   handler: async ({ listId }, c): Promise<boolean> => {
     const userId = ensureAuthorized(c).id;
     const membership = await db.query.ListUser.findFirst({
-      where: { listId, userId, isPending: false },
+      where: { listId, userId },
     });
 
     if (!membership) {
@@ -139,5 +114,45 @@ export const inviteToList = defineAction({
       .returning();
 
     return invite;
+  },
+});
+
+export const removeFromList = defineAction({
+  input: z.object({ listId: z.string(), userId: z.string() }),
+  handler: async ({ listId, userId }, c): Promise<boolean> => {
+    const currentUserId = ensureAuthorized(c).id;
+
+    const isMember = await db.query.ListUser.findFirst({
+      where: { listId, userId: currentUserId, isPending: false },
+    });
+
+    if (!isMember) {
+      throw new ActionError({
+        code: "FORBIDDEN",
+        message: "You are not a member of this list",
+      });
+    }
+
+    const membership = await db.query.ListUser.findFirst({
+      where: { listId, userId },
+    });
+
+    if (!membership) {
+      throw new ActionError({
+        code: "NOT_FOUND",
+        message: "Membership not found",
+      });
+    }
+
+    await db
+      .delete(tables.ListUser)
+      .where(
+        and(
+          eq(tables.ListUser.listId, listId),
+          eq(tables.ListUser.userId, userId),
+        ),
+      );
+
+    return true;
   },
 });
