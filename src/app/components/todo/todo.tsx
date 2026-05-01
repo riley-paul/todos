@@ -159,7 +159,10 @@ const Todo: React.FC<{ todo: TodoSelectDetails }> = ({ todo }) => {
           >
             <Text
               size="2"
-              className={cn(todo.isCompleted && "line-through opacity-50")}
+              className={cn(
+                todo.isCompleted && "line-through opacity-50",
+                "leading-relaxed",
+              )}
             >
               <TextWithLinks text={todo.text} />
             </Text>
