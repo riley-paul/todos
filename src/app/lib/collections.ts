@@ -59,12 +59,6 @@ export const lists = createCollection(
     queryKey: ["lists"],
     queryFn: actions.lists.populate.orThrow,
     schema: zListSelect,
-    onInsert: async ({ transaction }) =>
-      Promise.all(
-        transaction.mutations.map(({ modified }) =>
-          actions.lists.create.orThrow(modified),
-        ),
-      ),
     onUpdate: async ({ transaction }) =>
       Promise.all(
         transaction.mutations.map(({ original, changes }) =>
@@ -114,8 +108,8 @@ export const fns = {
       toast.success(`Deleted ${ids.length} completed todos`);
     },
     mutationFn: async ({ listId }) => {
-      await actions.todos.deleteCompleted.orThrow({ listId });
-      await todos.utils.refetch();
+      const results = await actions.todos.deleteCompleted.orThrow({ listId });
+      todos.utils.writeDelete(results);
     },
   }),
   uncheckCompletedTodos: createOptimisticAction<{ listId: string }>({

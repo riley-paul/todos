@@ -142,14 +142,14 @@ export const remove = defineAction({
       .delete(tables.Todo)
       .where(eq(tables.Todo.id, todoId))
       .returning();
-    
+
     return deleted.id;
   },
 });
 
 export const deleteCompleted = defineAction({
   input: z.object({ listId: z.string() }),
-  handler: async ({ listId }, c): Promise<boolean> => {
+  handler: async ({ listId }, c): Promise<string[]> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -164,18 +164,20 @@ export const deleteCompleted = defineAction({
       });
     }
 
-    await db
+    const deleted = await db
       .delete(tables.Todo)
       .where(
         and(eq(tables.Todo.listId, listId), eq(tables.Todo.isCompleted, true)),
-      );
-    return true;
+      )
+      .returning();
+
+    return deleted.map((d) => d.id);
   },
 });
 
 export const uncheckCompleted = defineAction({
   input: z.object({ listId: z.string() }),
-  handler: async ({ listId }, c): Promise<boolean> => {
+  handler: async ({ listId }, c): Promise<TodoSelect[]> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -190,12 +192,14 @@ export const uncheckCompleted = defineAction({
       });
     }
 
-    await db
+    const updated = await db
       .update(tables.Todo)
       .set({ isCompleted: false })
       .where(
         and(eq(tables.Todo.listId, listId), eq(tables.Todo.isCompleted, true)),
-      );
-    return true;
+      )
+      .returning();
+
+    return updated;
   },
 });
