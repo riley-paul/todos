@@ -5,6 +5,7 @@ import { zTodoSelect, type TodoSelect } from "@/lib/types";
 import * as tables from "@/db/schema";
 import { z } from "astro/zod";
 import { and, eq } from "drizzle-orm";
+import { notifyOtherListUsers } from "@/lib/realtime";
 
 export const populate = defineAction({
   handler: async (_, c): Promise<TodoSelect[]> => {
@@ -85,7 +86,9 @@ export const update = defineAction({
       });
     }
 
-    if (data.listId !== originalTodo.listId) {
+    const isMoved = data.listId && data.listId !== originalTodo.listId;
+
+    if (isMoved) {
       const newListUser = await db.query.ListUser.findFirst({
         where: { listId: data.listId, userId, isPending: false },
       });
@@ -103,6 +106,11 @@ export const update = defineAction({
       .set(data)
       .where(eq(tables.Todo.id, todoId))
       .returning();
+
+    await notifyOtherListUsers(c, updated.listId, {
+      entity: "todo",
+      operation: { type: "update", data: updated },
+    });
 
     return updated;
   },

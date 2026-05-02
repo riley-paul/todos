@@ -87,6 +87,8 @@ export async function notifyOtherListUsers(
       ),
     );
 
+  console.log(`Notifying ${listUsers.length} channels`);
+
   return Promise.all(
     listUsers.map((lu) => {
       const channelName = createChannelName(lu);

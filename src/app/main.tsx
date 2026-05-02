@@ -4,7 +4,7 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 import RadixProvider from "@/app/providers/radix-provider";
 import CustomToaster from "./components/ui/custom-toaster";
 import AlertSystem from "./components/alert-system/alert-system";
-import type { UserSelect } from "@/lib/types";
+import type { UserSelect, UserSessionInfo } from "@/lib/types";
 import useServiceWorker from "./hooks/use-service-worker";
 import { UserProvider } from "./providers/user-provider";
 import RealtimeProvider from "./providers/realtime-provider";
@@ -28,12 +28,12 @@ declare module "@tanstack/react-router" {
   }
 }
 
-type Props = { currentUser: UserSelect };
+type Props = { currentUser: UserSelect; currentUserSession: UserSessionInfo };
 
-const App: React.FC<Props> = ({ currentUser }) => {
+const App: React.FC<Props> = ({ currentUser, currentUserSession }) => {
   useServiceWorker();
   return (
-    <UserProvider user={currentUser}>
+    <UserProvider user={currentUser} userSession={currentUserSession}>
       <RealtimeProvider>
         <RadixProvider>
           <RouterProvider router={router} />

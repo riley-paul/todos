@@ -1,9 +1,9 @@
 import { AblyProvider, ChannelProvider, useChannel } from "ably/react";
 import * as Ably from "ably";
 import React from "react";
-import { useUser } from "./user-provider";
+import { useUser, useUserSession } from "./user-provider";
 import * as collections from "@/app/lib/collections";
-import { zPayload, type Payload } from "@/lib/realtime";
+import { createChannelName, zPayload, type Payload } from "@/lib/realtime";
 
 const realtimeClient = new Ably.Realtime({ authUrl: "/ably-auth" });
 
@@ -71,9 +71,9 @@ const handlePayload = (payload: Payload) => {
   }
 };
 
-const Invalidator: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const currentUser = useUser();
-  useChannel(`user:${currentUser.id}`, "invalidate", ({ data }) => {
+type InvalidatorProps = React.PropsWithChildren<{ channelName: string }>;
+const Invalidator: React.FC<InvalidatorProps> = ({ children, channelName }) => {
+  useChannel(channelName, "invalidate", ({ data }) => {
     const { data: payload } = zPayload.safeParse(data);
     if (!payload) return;
 
@@ -84,12 +84,20 @@ const Invalidator: React.FC<React.PropsWithChildren> = ({ children }) => {
   return children;
 };
 
-const RealtimeProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
+type RealtimeProviderProps = React.PropsWithChildren;
+const RealtimeProvider: React.FC<RealtimeProviderProps> = ({ children }) => {
   const currentUser = useUser();
+  const currentUserSession = useUserSession();
+
+  const channelName = createChannelName({
+    userId: currentUser.id,
+    sessionId: currentUserSession.id,
+  });
+
   return (
     <AblyProvider client={realtimeClient}>
-      <ChannelProvider channelName={`user:${currentUser.id}`}>
-        <Invalidator>{children}</Invalidator>
+      <ChannelProvider channelName={channelName}>
+        <Invalidator channelName={channelName}>{children}</Invalidator>
       </ChannelProvider>
     </AblyProvider>
   );
