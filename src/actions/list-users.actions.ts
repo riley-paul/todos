@@ -5,6 +5,7 @@ import { z } from "astro/zod";
 import { ActionError, defineAction } from "astro:actions";
 import * as tables from "@/db/schema";
 import { and, eq } from "drizzle-orm";
+import { notifyOtherListUsers } from "@/lib/realtime";
 
 export const populate = defineAction({
   handler: async (_, c): Promise<ListUserSelect[]> => {
@@ -45,13 +46,18 @@ export const acceptInvite = defineAction({
       )
       .returning();
 
+    await notifyOtherListUsers(c, listId, {
+      entity: "listUser",
+      operation: { type: "update", data: updated },
+    });
+
     return updated;
   },
 });
 
 export const leaveList = defineAction({
   input: z.object({ listId: z.string() }),
-  handler: async ({ listId }, c): Promise<boolean> => {
+  handler: async ({ listId }, c): Promise<string> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
     const membership = await db.query.ListUser.findFirst({
@@ -65,16 +71,22 @@ export const leaveList = defineAction({
       });
     }
 
-    await db
+    const [deleted] = await db
       .delete(tables.ListUser)
       .where(
         and(
           eq(tables.ListUser.listId, listId),
           eq(tables.ListUser.userId, userId),
         ),
-      );
+      )
+      .returning();
 
-    return true;
+    await notifyOtherListUsers(c, listId, {
+      entity: "listUser",
+      operation: { type: "delete", id: deleted.id },
+    });
+
+    return deleted.id;
   },
 });
 
@@ -122,13 +134,18 @@ export const inviteToList = defineAction({
       })
       .returning();
 
+    await notifyOtherListUsers(c, listId, {
+      entity: "listUser",
+      operation: { type: "insert", data: invite },
+    });
+
     return invite;
   },
 });
 
 export const removeFromList = defineAction({
   input: z.object({ listId: z.string(), userId: z.string() }),
-  handler: async ({ listId, userId }, c): Promise<boolean> => {
+  handler: async ({ listId, userId }, c): Promise<string> => {
     const db = createDb(c.locals.env);
     const currentUserId = ensureAuthorized(c).id;
 
@@ -154,15 +171,21 @@ export const removeFromList = defineAction({
       });
     }
 
-    await db
+    const [deleted] = await db
       .delete(tables.ListUser)
       .where(
         and(
           eq(tables.ListUser.listId, listId),
           eq(tables.ListUser.userId, userId),
         ),
-      );
+      )
+      .returning();
 
-    return true;
+    await notifyOtherListUsers(c, listId, {
+      entity: "listUser",
+      operation: { type: "delete", id: deleted.id },
+    });
+
+    return deleted.id;
   },
 });

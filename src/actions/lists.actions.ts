@@ -6,6 +6,7 @@ import * as tables from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { z } from "astro/zod";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
+import { notifyOtherListUsers } from "@/lib/realtime";
 
 export const populate = defineAction({
   handler: async (_, c): Promise<ListSelect[]> => {
@@ -25,14 +26,26 @@ export const create = defineAction({
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
-    const list = await db.transaction(async (tx) => {
+    const [list, listUser] = await db.transaction(async (tx) => {
       const [list] = await tx.insert(tables.List).values(input).returning();
-      await tx.insert(tables.ListUser).values({
-        listId: list.id,
-        userId,
-        isPending: false,
-      });
-      return list;
+      const [listUser] = await tx
+        .insert(tables.ListUser)
+        .values({
+          listId: list.id,
+          userId,
+          isPending: false,
+        })
+        .returning();
+      return [list, listUser];
+    });
+
+    await notifyOtherListUsers(c, list.id, {
+      entity: "list",
+      operation: { type: "insert", data: list },
+    });
+    await notifyOtherListUsers(c, list.id, {
+      entity: "listUser",
+      operation: { type: "insert", data: listUser },
     });
 
     return list;
@@ -65,13 +78,18 @@ export const update = defineAction({
       .where(eq(tables.List.id, input.listId))
       .returning();
 
+    await notifyOtherListUsers(c, list.id, {
+      entity: "list",
+      operation: { type: "update", data: list },
+    });
+
     return list;
   },
 });
 
 export const remove = defineAction({
   input: z.object({ listId: z.string() }),
-  handler: async (input, c): Promise<{ success: boolean }> => {
+  handler: async (input, c): Promise<string> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -86,9 +104,17 @@ export const remove = defineAction({
       });
     }
 
-    await db.delete(tables.List).where(eq(tables.List.id, input.listId));
+    const [deleted] = await db
+      .delete(tables.List)
+      .where(eq(tables.List.id, input.listId))
+      .returning();
 
-    return { success: true };
+    await notifyOtherListUsers(c, input.listId, {
+      entity: "list",
+      operation: { type: "delete", id: input.listId },
+    });
+
+    return deleted.id;
   },
 });
 

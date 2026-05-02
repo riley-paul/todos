@@ -18,7 +18,7 @@ const sharedOptions = {
   queryClient,
   autoIndex: "eager",
   defaultIndexType: BasicIndex,
-  staleTime: 1000 * 60 * 5, // 5 minutes
+  staleTime: 0,
   getKey: (item: { id: string }) => item.id,
 } as const;
 
