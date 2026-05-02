@@ -9,6 +9,19 @@ import {
 import type { ActionAPIContext } from "astro:actions";
 import { createDb } from "@/db";
 import { Rest } from "ably";
+import * as tables from "@/db/schema";
+import { and, eq, ne } from "drizzle-orm";
+
+export const createChannelName = (info: {
+  userId: string;
+  sessionId: string;
+}) => {
+  return `user:${info.userId}:session:${info.sessionId}`;
+};
+
+const createAbly = (env: Env) => {
+  return new Rest({ key: env.ABLY_API_KEY, clientId: "server" });
+};
 
 const createOperationSchema = <T extends z.ZodObject>(dataSchema: T) => {
   return z.discriminatedUnion("type", [
@@ -47,33 +60,38 @@ export const zPayload = z.discriminatedUnion("entity", [
 ]);
 export type Payload = z.infer<typeof zPayload>;
 
-export async function notifyListUsers(
+export async function notifyOtherListUsers(
   c: ActionAPIContext,
   listId: string,
   payload: Payload,
 ) {
   const db = createDb(c.locals.env);
-  const ably = new Rest({ key: c.locals.env.ABLY_API_KEY, clientId: "server" });
+  const ably = createAbly(c.locals.env);
 
-  const listUserIds = await db.query.ListUser.findMany({
-    where: { listId },
-    columns: { userId: true },
-  }).then((lus) => lus.map((lu) => lu.userId));
+  const currentSessionId = c.locals.session?.id ?? "";
+
+  const listUsers = await db
+    .selectDistinct({
+      userId: tables.ListUser.userId,
+      sessionId: tables.UserSession.id,
+    })
+    .from(tables.ListUser)
+    .innerJoin(
+      tables.UserSession,
+      eq(tables.ListUser.userId, tables.UserSession.userId),
+    )
+    .where(
+      and(
+        eq(tables.ListUser.listId, listId),
+        ne(tables.UserSession.id, currentSessionId),
+      ),
+    );
 
   return Promise.all(
-    listUserIds.map((id) => {
-      const channel = ably.channels.get(`user:${id}`);
+    listUsers.map((lu) => {
+      const channelName = createChannelName(lu);
+      const channel = ably.channels.get(channelName);
       return channel.publish("invalidate", payload);
     }),
   );
-}
-
-export async function notifyUser(
-  c: ActionAPIContext,
-  userId: string,
-  payload: Payload,
-) {
-  const ably = new Rest({ key: c.locals.env.ABLY_API_KEY, clientId: "server" });
-  const channel = ably.channels.get(`user:${userId}`);
-  return channel.publish("invalidate", payload);
 }
