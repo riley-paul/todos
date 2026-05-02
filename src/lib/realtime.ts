@@ -89,11 +89,8 @@ export async function notifyOtherListUsers(
 
   console.log(`Notifying ${listUsers.length} channels`);
 
-  return Promise.all(
-    listUsers.map((lu) => {
-      const channelName = createChannelName(lu);
-      const channel = ably.channels.get(channelName);
-      return channel.publish("invalidate", payload);
-    }),
-  );
+  return ably.batchPublish({
+    channels: listUsers.map(createChannelName),
+    messages: [{ data: payload, name: "invalidate" }],
+  });
 }
