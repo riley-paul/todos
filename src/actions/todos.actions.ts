@@ -168,7 +168,7 @@ export const remove = defineAction({
 
 export const deleteCompleted = defineAction({
   input: z.object({ listId: z.string() }),
-  handler: async ({ listId }, c): Promise<boolean> => {
+  handler: async ({ listId }, c): Promise<string[]> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -189,19 +189,20 @@ export const deleteCompleted = defineAction({
         and(eq(tables.Todo.listId, listId), eq(tables.Todo.isCompleted, true)),
       )
       .returning({ id: tables.Todo.id });
+    const deletedIds = deleted.map((d) => d.id);
 
     await notifyListUsers(c, listId, {
       entity: "todo",
-      operation: { type: "delete", id: deleted.map((d) => d.id) },
+      operation: { type: "delete", id: deletedIds },
     });
 
-    return true;
+    return deletedIds;
   },
 });
 
 export const uncheckCompleted = defineAction({
   input: z.object({ listId: z.string() }),
-  handler: async ({ listId }, c): Promise<boolean> => {
+  handler: async ({ listId }, c): Promise<TodoSelect[]> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -229,6 +230,6 @@ export const uncheckCompleted = defineAction({
       operation: { type: "update", data: updated },
     });
 
-    return true;
+    return updated;
   },
 });

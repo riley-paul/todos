@@ -109,8 +109,8 @@ export const fns = {
       toast.success(`Deleted ${ids.length} completed todos`);
     },
     mutationFn: async ({ listId }) => {
-      await actions.todos.deleteCompleted.orThrow({ listId });
-      await todos.utils.refetch();
+      const ids = await actions.todos.deleteCompleted.orThrow({ listId });
+      todos.utils.writeDelete(ids);
     },
   }),
   uncheckCompletedTodos: createOptimisticAction<{ listId: string }>({
@@ -126,8 +126,8 @@ export const fns = {
       toast.success(`Unchecked ${ids.length} completed todos`);
     },
     mutationFn: async ({ listId }) => {
-      await actions.todos.uncheckCompleted.orThrow({ listId });
-      await todos.utils.refetch();
+      const updates = await actions.todos.uncheckCompleted.orThrow({ listId });
+      todos.utils.writeUpdate(updates);
     },
   }),
 };
