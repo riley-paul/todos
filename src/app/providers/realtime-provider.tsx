@@ -12,13 +12,13 @@ const handlePayload = (payload: Payload) => {
     case "list": {
       switch (payload.operation.type) {
         case "insert":
-          collections.lists.utils.writeInsert(payload.operation.data);
+          collections.lists.utils.refetch();
           break;
         case "update":
           collections.lists.utils.refetch();
           break;
         case "delete":
-          collections.lists.utils.writeDelete(payload.operation.id);
+          collections.lists.utils.refetch();
           break;
       }
       break;
@@ -27,13 +27,13 @@ const handlePayload = (payload: Payload) => {
     case "todo": {
       switch (payload.operation.type) {
         case "insert":
-          collections.todos.utils.writeInsert(payload.operation.data);
+          collections.todos.utils.refetch();
           break;
         case "update":
           collections.todos.utils.refetch();
           break;
         case "delete":
-          collections.todos.utils.writeDelete(payload.operation.id);
+          collections.todos.utils.refetch();
           break;
       }
       break;
@@ -42,13 +42,13 @@ const handlePayload = (payload: Payload) => {
     case "listUser": {
       switch (payload.operation.type) {
         case "insert":
-          collections.listUsers.utils.writeInsert(payload.operation.data);
+          collections.listUsers.utils.refetch();
           break;
         case "update":
           collections.listUsers.utils.refetch();
           break;
         case "delete":
-          collections.listUsers.utils.writeDelete(payload.operation.id);
+          collections.listUsers.utils.refetch();
           break;
       }
       break;
@@ -57,13 +57,13 @@ const handlePayload = (payload: Payload) => {
     case "user": {
       switch (payload.operation.type) {
         case "insert":
-          collections.users.utils.writeInsert(payload.operation.data);
+          collections.users.utils.refetch();
           break;
         case "update":
           collections.users.utils.refetch();
           break;
         case "delete":
-          collections.users.utils.writeDelete(payload.operation.id);
+          collections.users.utils.refetch();
           break;
       }
       break;

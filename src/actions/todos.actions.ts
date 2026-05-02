@@ -45,6 +45,11 @@ export const create = defineAction({
       .values({ ...input, userId })
       .returning();
 
+    await notifyOtherListUsers(c, input.listId, {
+      entity: "todo",
+      operation: { type: "insert", data: todo },
+    });
+
     return todo;
   },
 });
@@ -151,6 +156,11 @@ export const remove = defineAction({
       .where(eq(tables.Todo.id, todoId))
       .returning();
 
+    await notifyOtherListUsers(c, originalTodo.listId, {
+      entity: "todo",
+      operation: { type: "delete", id: todoId },
+    });
+
     return deleted.id;
   },
 });
@@ -178,6 +188,11 @@ export const deleteCompleted = defineAction({
         and(eq(tables.Todo.listId, listId), eq(tables.Todo.isCompleted, true)),
       )
       .returning();
+
+    await notifyOtherListUsers(c, listId, {
+      entity: "todo",
+      operation: { type: "delete", id: deleted.map((d) => d.id) },
+    });
 
     return deleted.map((d) => d.id);
   },
@@ -207,6 +222,11 @@ export const uncheckCompleted = defineAction({
         and(eq(tables.Todo.listId, listId), eq(tables.Todo.isCompleted, true)),
       )
       .returning();
+
+    await notifyOtherListUsers(c, listId, {
+      entity: "todo",
+      operation: { type: "update", data: updated },
+    });
 
     return updated;
   },
