@@ -1,12 +1,121 @@
-import { ActionError, defineAction } from "astro:actions";
+import {
+  ActionError,
+  defineAction,
+  type ActionAPIContext,
+} from "astro:actions";
 import { ensureAuthorized } from "@/api/helpers";
 import { createDb } from "@/db";
-import { zListSelect, type ListSelect } from "@/lib/types";
+import {
+  zListSelect,
+  type ListSelect,
+  type ListSelectDetails,
+} from "@/lib/types";
 import * as tables from "@/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, like, or, sql } from "drizzle-orm";
 import { z } from "astro/zod";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import { notifyOtherListUsers } from "@/lib/realtime";
+
+// const getOtherListUsers = async (
+//   c: ActionAPIContext,
+//   listIds: string[],
+// ): Promise<Record<string, UserSelect[]>> => {
+//   const db = createDb(c.locals.env);
+//   const userId = ensureAuthorized(c).id;
+
+//   const otherUsers = await db
+//     .selectDistinct({
+//       id: tables.User.id,
+//       name: tables.User.name,
+//       email: tables.User.email,
+//       avatarUrl: tables.User.avatarUrl,
+//     })
+//     .from(tables.ListUser)
+//     .innerJoin(tables.User, eq(tables.User.id, tables.ListUser.userId))
+//     .where(
+//       and(
+//         eq(tables.ListUser.listId, listId),
+//         eq(tables.ListUser.isPending, false),
+//         not(eq(tables.ListUser.userId, userId)),
+//       ),
+//     );
+//   return otherUsers;
+// };
+
+const getListTodoCount = async (
+  c: ActionAPIContext,
+  listIds: string[],
+): Promise<Record<string, number>> => {
+  const db = createDb(c.locals.env);
+
+  const counts = await db
+    .select({
+      listId: tables.Todo.listId,
+      count: count(),
+    })
+    .from(tables.Todo)
+    .where(
+      and(
+        inArray(tables.Todo.listId, listIds),
+        eq(tables.Todo.isCompleted, false),
+      ),
+    )
+    .groupBy(tables.Todo.listId);
+
+  const todoCount: Record<string, number> = {};
+  counts.forEach(({ listId, count }) => {
+    todoCount[listId] = count;
+  });
+
+  return todoCount;
+};
+
+const getLists = async (
+  c: ActionAPIContext,
+  filters: Partial<{
+    listId: string;
+    search: string;
+  }> = {},
+): Promise<ListSelectDetails[]> => {
+  const db = createDb(c.locals.env);
+  const userId = ensureAuthorized(c).id;
+
+  const { listId, search } = filters;
+
+  const searchTerm = `%${search}%`;
+  const searchQuery = or(like(tables.List.name, searchTerm));
+
+  const lists = await db
+    .selectDistinct({
+      id: tables.List.id,
+      name: tables.List.name,
+      isPending: tables.ListUser.isPending,
+      show: tables.ListUser.show,
+      order: tables.ListUser.order,
+    })
+    .from(tables.List)
+    .innerJoin(tables.ListUser, eq(tables.ListUser.listId, tables.List.id))
+    .orderBy(
+      desc(tables.ListUser.show),
+      asc(tables.ListUser.order),
+      asc(tables.List.createdAt),
+    )
+    .where(
+      and(
+        eq(tables.ListUser.userId, userId),
+        listId ? eq(tables.List.id, listId) : undefined,
+        search ? searchQuery : undefined,
+      ),
+    );
+
+  const listIds = lists.map((l) => l.id);
+  const todoCounts = await getListTodoCount(c, listIds);
+
+  return lists.map((list) => ({
+    ...list,
+    todoCount: todoCounts[list.id] || 0,
+  }));
+};
 
 export const populate = defineAction({
   handler: async (_, c): Promise<ListSelect[]> => {
@@ -17,6 +126,13 @@ export const populate = defineAction({
       with: { listUser: true },
       where: { listUser: { userId } },
     });
+  },
+});
+
+export const getAll = defineAction({
+  input: z.object({ search: z.string().optional() }),
+  handler: async ({ search }, c): Promise<ListSelectDetails[]> => {
+    return getLists(c, { search });
   },
 });
 

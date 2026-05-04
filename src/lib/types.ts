@@ -17,7 +17,10 @@ export type TodoSelectDetails = z.infer<typeof zTodoSelect> & {
   list: Pick<ListSelect, "id" | "name">;
 };
 
-export const zListSelect = createSelectSchema(tables.List);
+export const zListSelect = createSelectSchema(tables.List).pick({
+  id: true,
+  name: true,
+});
 export type ListSelect = z.infer<typeof zListSelect>;
 export type ListSelectDetails = z.infer<typeof zListSelect> & {
   todoCount: number;

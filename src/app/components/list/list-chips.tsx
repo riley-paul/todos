@@ -6,9 +6,10 @@ import React from "react";
 import ListReorder from "./list-reorder";
 import { ACCENT_COLOR } from "@/lib/constants";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
-import useGetLists from "@/app/hooks/actions/use-get-lists";
 import type { ListSelectDetails } from "@/lib/types";
 import useCreateList from "@/app/hooks/actions/use-create-list";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { getAllLists } from "@/app/lib/queries";
 
 const ListChip: React.FC<{ list: ListSelectDetails }> = ({ list }) => {
   const link = linkOptions({
@@ -44,7 +45,7 @@ const ListChip: React.FC<{ list: ListSelectDetails }> = ({ list }) => {
 const ListChips: React.FC = () => {
   const handleCreateList = useCreateList();
 
-  const lists = useGetLists();
+  const { data: lists } = useSuspenseQuery(getAllLists);
 
   useHotkey("A", handleCreateList, { ignoreInputs: true });
 

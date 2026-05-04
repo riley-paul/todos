@@ -12,6 +12,12 @@ import { routeTree } from "./routeTree.gen";
 import LoadingScreen from "./components/screens/loading";
 import NotFoundScreen from "./components/screens/not-found";
 import ErrorScreen from "./components/screens/error";
+import {
+  MutationCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const router = createRouter({
   routeTree,
@@ -20,6 +26,21 @@ const router = createRouter({
   defaultPendingComponent: LoadingScreen,
   defaultNotFoundComponent: NotFoundScreen,
   defaultErrorComponent: ErrorScreen,
+});
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
+  mutationCache: new MutationCache({
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+    },
+    onError: (error) => {
+      toast.error("Oops! Something went wrong.", {
+        description: error.message,
+      });
+      console.error(error);
+    },
+  }),
 });
 
 declare module "@tanstack/react-router" {
@@ -36,9 +57,11 @@ const App: React.FC<Props> = ({ currentUser, currentUserSession }) => {
     <UserProvider user={currentUser} userSession={currentUserSession}>
       <RealtimeProvider>
         <RadixProvider>
-          <RouterProvider router={router} />
-          <CustomToaster />
-          <AlertSystem />
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+            <CustomToaster />
+            <AlertSystem />
+          </QueryClientProvider>
         </RadixProvider>
       </RealtimeProvider>
     </UserProvider>
