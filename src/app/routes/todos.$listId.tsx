@@ -6,8 +6,9 @@ import { z } from "astro/zod";
 import PendingListScreen from "../components/screens/pending-list";
 import TodoAdder from "../components/todo-adder";
 import Todos from "../components/todo/todos";
-import useGetList from "../hooks/actions/use-get-list";
 import NotFoundScreen from "../components/screens/not-found";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { getList } from "../lib/queries";
 
 export const Route = createFileRoute("/todos/$listId")({
   component: RouteComponent,
@@ -16,12 +17,12 @@ export const Route = createFileRoute("/todos/$listId")({
 
 function RouteComponent() {
   const { listId } = Route.useParams();
-  const list = useGetList(listId);
+  const { data: list } = useSuspenseQuery(getList(listId));
 
   useDocumentTitle(list?.name ?? "Todos");
 
   if (!list) return <NotFoundScreen />;
-  if (list.isPending) return <PendingListScreen />;
+  if (list.isPending) return <PendingListScreen list={list} />;
 
   return (
     <React.Fragment>

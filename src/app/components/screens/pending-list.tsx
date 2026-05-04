@@ -2,23 +2,17 @@ import React from "react";
 import Empty from "../ui/empty";
 import { Button, Card, Heading } from "@radix-ui/themes";
 import { CheckIcon, HourglassIcon, XIcon } from "lucide-react";
-import { getRouteApi } from "@tanstack/react-router";
 import UserRow from "../ui/user/user-row";
-import useGetList from "@/app/hooks/actions/use-get-list";
 import NotFoundScreen from "./not-found";
-import useGetListUsers from "@/app/hooks/actions/use-get-list-users";
 import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
+import type { ListSelectDetails } from "@/lib/types";
 
-const route = getRouteApi("/todos/$listId");
+type Props = { list: ListSelectDetails };
 
-const PendingListScreen: React.FC = () => {
-  const { listId } = route.useParams();
-  const list = useGetList(listId);
-  const listUsers = useGetListUsers(listId);
-
+const PendingListScreen: React.FC<Props> = ({ list }) => {
   if (!list) return <NotFoundScreen />;
 
-  const { handleLeaveList, handleAcceptInvite } = useManageListUsers(listId);
+  const { handleLeaveList, handleAcceptInvite } = useManageListUsers(list.id);
 
   return (
     <Empty.Root>
@@ -48,7 +42,7 @@ const PendingListScreen: React.FC = () => {
         <Heading as="h4" size="1" color="gray" className="uppercase">
           List Members
         </Heading>
-        {listUsers.map((user) => (
+        {list.otherUsers.map((user) => (
           <UserRow key={user.id} user={user} />
         ))}
       </Card>

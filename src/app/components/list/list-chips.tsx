@@ -45,7 +45,7 @@ const ListChip: React.FC<{ list: ListSelectDetails }> = ({ list }) => {
 const ListChips: React.FC = () => {
   const handleCreateList = useCreateList();
 
-  const { data: lists } = useSuspenseQuery(getAllLists);
+  const { data: lists } = useSuspenseQuery(getAllLists());
 
   useHotkey("A", handleCreateList, { ignoreInputs: true });
 

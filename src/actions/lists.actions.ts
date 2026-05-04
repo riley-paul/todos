@@ -11,64 +11,11 @@ import {
   type ListSelectDetails,
 } from "@/lib/types";
 import * as tables from "@/db/schema";
-import { and, asc, count, desc, eq, inArray, like, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, like, or, sql } from "drizzle-orm";
 import { z } from "astro/zod";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import { notifyOtherListUsers } from "@/lib/realtime";
-
-// const getOtherListUsers = async (
-//   c: ActionAPIContext,
-//   listIds: string[],
-// ): Promise<Record<string, UserSelect[]>> => {
-//   const db = createDb(c.locals.env);
-//   const userId = ensureAuthorized(c).id;
-
-//   const otherUsers = await db
-//     .selectDistinct({
-//       id: tables.User.id,
-//       name: tables.User.name,
-//       email: tables.User.email,
-//       avatarUrl: tables.User.avatarUrl,
-//     })
-//     .from(tables.ListUser)
-//     .innerJoin(tables.User, eq(tables.User.id, tables.ListUser.userId))
-//     .where(
-//       and(
-//         eq(tables.ListUser.listId, listId),
-//         eq(tables.ListUser.isPending, false),
-//         not(eq(tables.ListUser.userId, userId)),
-//       ),
-//     );
-//   return otherUsers;
-// };
-
-const getListTodoCount = async (
-  c: ActionAPIContext,
-  listIds: string[],
-): Promise<Record<string, number>> => {
-  const db = createDb(c.locals.env);
-
-  const counts = await db
-    .select({
-      listId: tables.Todo.listId,
-      count: count(),
-    })
-    .from(tables.Todo)
-    .where(
-      and(
-        inArray(tables.Todo.listId, listIds),
-        eq(tables.Todo.isCompleted, false),
-      ),
-    )
-    .groupBy(tables.Todo.listId);
-
-  const todoCount: Record<string, number> = {};
-  counts.forEach(({ listId, count }) => {
-    todoCount[listId] = count;
-  });
-
-  return todoCount;
-};
+import { getListOtherUsers, getListTodoCount } from "@/api/dataloaders";
 
 const getLists = async (
   c: ActionAPIContext,
@@ -110,9 +57,11 @@ const getLists = async (
 
   const listIds = lists.map((l) => l.id);
   const todoCounts = await getListTodoCount(c, listIds);
+  const otherUsersByList = await getListOtherUsers(c, listIds);
 
   return lists.map((list) => ({
     ...list,
+    otherUsers: otherUsersByList[list.id] || [],
     todoCount: todoCounts[list.id] || 0,
   }));
 };
@@ -133,6 +82,20 @@ export const getAll = defineAction({
   input: z.object({ search: z.string().optional() }),
   handler: async ({ search }, c): Promise<ListSelectDetails[]> => {
     return getLists(c, { search });
+  },
+});
+
+export const get = defineAction({
+  input: z.object({ listId: z.string() }),
+  handler: async ({ listId }, c): Promise<ListSelectDetails> => {
+    const [list] = await getLists(c, { listId });
+    if (!list) {
+      throw new ActionError({
+        code: "NOT_FOUND",
+        message: "List not found or you do not have access to it",
+      });
+    }
+    return list;
   },
 });
 

@@ -17,6 +17,9 @@ export type TodoSelectDetails = z.infer<typeof zTodoSelect> & {
   list: Pick<ListSelect, "id" | "name">;
 };
 
+export const zListUserSelect = createSelectSchema(tables.ListUser);
+export type ListUserSelect = z.infer<typeof zListUserSelect>;
+
 export const zListSelect = createSelectSchema(tables.List).pick({
   id: true,
   name: true,
@@ -24,13 +27,11 @@ export const zListSelect = createSelectSchema(tables.List).pick({
 export type ListSelect = z.infer<typeof zListSelect>;
 export type ListSelectDetails = z.infer<typeof zListSelect> & {
   todoCount: number;
+  otherUsers: UserSelect[];
   isPending: boolean;
   show: boolean;
   order: number;
 };
-
-export const zListUserSelect = createSelectSchema(tables.ListUser);
-export type ListUserSelect = z.infer<typeof zListUserSelect>;
 
 export const zUserSettings = createSelectSchema(tables.User)
   .pick({ settingGroupCompleted: true })

@@ -5,23 +5,21 @@ import { PlusIcon, Share2Icon } from "lucide-react";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 import UserBubbleGroup from "@/app/components/ui/user/user-bubble-group";
 import type { ListSelectDetails } from "@/lib/types";
-import useGetListUsers from "@/app/hooks/actions/use-get-list-users";
 import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
 
 const ListSharing: React.FC<{ list: ListSelectDetails }> = ({ list }) => {
-  const listUsers = useGetListUsers(list.id);
   const { handleInviteToList } = useManageListUsers(list.id);
 
   return (
     <Dialog.Root>
       <Dialog.Trigger>
-        {listUsers.length === 0 ? (
+        {list.otherUsers.length === 0 ? (
           <IconButton variant="ghost">
             <Share2Icon className="size-4" />
           </IconButton>
         ) : (
           <Button variant="ghost">
-            <UserBubbleGroup users={listUsers} numAvatars={3} />
+            <UserBubbleGroup users={list.otherUsers} numAvatars={3} />
           </Button>
         )}
       </Dialog.Trigger>
