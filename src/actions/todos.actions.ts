@@ -5,11 +5,7 @@ import {
 } from "astro:actions";
 import { ensureAuthorized } from "@/api/helpers";
 import { createDb } from "@/db";
-import {
-  zTodoSelect,
-  type TodoSelect,
-  type TodoSelectDetails,
-} from "@/lib/types";
+import { zTodoSelect, type TodoSelect } from "@/lib/types";
 import * as tables from "@/db/schema";
 import { z } from "astro/zod";
 import { and, desc, eq, inArray, like, or } from "drizzle-orm";
@@ -22,7 +18,7 @@ const getTodos = async (
     userId: string;
     search: string;
   }> = {},
-): Promise<TodoSelectDetails[]> => {
+): Promise<TodoSelect[]> => {
   const reqUserId = ensureAuthorized(c).id;
   const db = createDb(c.locals.env);
 
@@ -40,7 +36,7 @@ const getTodos = async (
     like(tables.List.name, searchTerm),
   );
 
-  const todos: TodoSelectDetails[] = await db
+  const todos: TodoSelect[] = await db
     .selectDistinct({
       id: tables.Todo.id,
       text: tables.Todo.text,
@@ -75,32 +71,16 @@ const getTodos = async (
   return todos;
 };
 
-export const populate = defineAction({
-  handler: async (_, c): Promise<TodoSelect[]> => {
-    const db = createDb(c.locals.env);
-    const userId = ensureAuthorized(c).id;
-    const listIds = await db.query.ListUser.findMany({
-      where: { userId, isPending: false },
-    }).then((uls) => uls.map((ul) => ul.listId));
-
-    const todos = await db.query.Todo.findMany({
-      where: { listId: { in: listIds } },
-    });
-
-    return todos;
-  },
-});
-
 export const getForList = defineAction({
   input: z.object({ listId: z.string() }),
-  handler: async ({ listId }, c): Promise<TodoSelectDetails[]> => {
+  handler: async ({ listId }, c): Promise<TodoSelect[]> => {
     return getTodos(c, { listId });
   },
 });
 
 export const create = defineAction({
   input: z.object({ listId: z.string(), text: z.string() }),
-  handler: async (input, c): Promise<TodoSelectDetails> => {
+  handler: async (input, c): Promise<TodoSelect> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -115,17 +95,12 @@ export const create = defineAction({
       });
     }
 
-    const [newTodo] = await db
+    const [created] = await db
       .insert(tables.Todo)
       .values({ ...input, userId })
       .returning();
 
-    // await notifyOtherListUsers(c, input.listId, {
-    //   entity: "todo",
-    //   operation: { type: "insert", data: todo },
-    // });
-
-    const [result] = await getTodos(c, { todoId: newTodo.id });
+    const [result] = await getTodos(c, { todoId: created.id });
     return result;
   },
 });
@@ -188,12 +163,8 @@ export const update = defineAction({
       .where(eq(tables.Todo.id, todoId))
       .returning();
 
-    // await notifyOtherListUsers(c, updated.listId, {
-    //   entity: "todo",
-    //   operation: { type: "update", data: updated },
-    // });
-
-    return updated;
+    const [result] = await getTodos(c, { todoId: updated.id });
+    return result;
   },
 });
 
@@ -201,7 +172,7 @@ export const remove = defineAction({
   input: z.object({
     todoId: z.string(),
   }),
-  handler: async ({ todoId }, c): Promise<TodoSelect> => {
+  handler: async ({ todoId }, c): Promise<string> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -238,12 +209,7 @@ export const remove = defineAction({
         userId: tables.Todo.userId,
       });
 
-    // await notifyOtherListUsers(c, originalTodo.listId, {
-    //   entity: "todo",
-    //   operation: { type: "delete", id: todoId },
-    // });
-
-    return deleted;
+    return deleted.id;
   },
 });
 
@@ -271,18 +237,13 @@ export const removeCompleted = defineAction({
       )
       .returning();
 
-    // await notifyOtherListUsers(c, listId, {
-    //   entity: "todo",
-    //   operation: { type: "delete", id: deleted.map((d) => d.id) },
-    // });
-
     return deleted.map((d) => d.id);
   },
 });
 
 export const uncheckCompleted = defineAction({
   input: z.object({ listId: z.string() }),
-  handler: async ({ listId }, c): Promise<TodoSelect[]> => {
+  handler: async ({ listId }, c): Promise<string[]> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -305,11 +266,6 @@ export const uncheckCompleted = defineAction({
       )
       .returning();
 
-    // await notifyOtherListUsers(c, listId, {
-    //   entity: "todo",
-    //   operation: { type: "update", data: updated },
-    // });
-
-    return updated;
+    return updated.map((u) => u.id);
   },
 });

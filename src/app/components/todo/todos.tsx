@@ -8,7 +8,7 @@ import DeleteCompletedTodosButton from "./footer-buttons/delete-completed-todos-
 import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
 import NoTodosScreen from "../screens/no-todos";
-import type { ListSelect, TodoSelectDetails } from "@/lib/types";
+import type { ListSelect, TodoSelect } from "@/lib/types";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { qUser, qTodos } from "@/app/lib/queries";
 
@@ -20,7 +20,7 @@ const CompletedTodosActions: React.FC<{ listId: string }> = ({ listId }) => (
 );
 
 const CompletedTodosGroup: React.FC<{
-  completedTodos: TodoSelectDetails[];
+  completedTodos: TodoSelect[];
   listId: string;
 }> = ({ completedTodos, listId }) => {
   const [showCompleted, setShowCompleted] = React.useState(false);
@@ -57,7 +57,7 @@ const CompletedTodosGroup: React.FC<{
   );
 };
 
-const produceTodo = (todo: TodoSelectDetails) => (
+const produceTodo = (todo: TodoSelect) => (
   <Todo key={todo.id} todo={todo} />
 );
 

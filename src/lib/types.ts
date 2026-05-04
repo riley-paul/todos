@@ -17,8 +17,7 @@ export const zTodoSelect = createSelectSchema(tables.Todo).pick({
   listId: true,
   userId: true,
 });
-export type TodoSelect = z.infer<typeof zTodoSelect>;
-export type TodoSelectDetails = z.infer<typeof zTodoSelect> & {
+export type TodoSelect = z.infer<typeof zTodoSelect> & {
   author: UserSelect;
   list: Pick<ListSelect, "id" | "name">;
 };
