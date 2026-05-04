@@ -52,6 +52,7 @@ const getTodos = async (
         email: tables.User.email,
         avatarUrl: tables.User.avatarUrl,
       },
+      userId: tables.Todo.userId,
       listId: tables.Todo.listId,
       list: {
         id: tables.List.id,
@@ -70,10 +71,8 @@ const getTodos = async (
         search ? searchQuery : undefined,
       ),
     )
-    .orderBy(desc(tables.Todo.createdAt))
-    .then((data) =>
-      data.map((todo) => ({ ...todo, isAuthor: todo.author.id === reqUserId })),
-    );
+    .orderBy(desc(tables.Todo.createdAt));
+
   return todos;
 };
 

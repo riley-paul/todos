@@ -11,7 +11,7 @@ import NoTodosScreen from "../screens/no-todos";
 import type { ListSelect, TodoSelectDetails } from "@/lib/types";
 import useGetSettings from "@/app/hooks/actions/use-get-settings";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { getTodosForList } from "@/app/lib/queries";
+import { qTodosForList } from "@/app/lib/queries";
 
 const CompletedTodosActions: React.FC<{ listId: string }> = ({ listId }) => (
   <div className="flex items-center justify-end gap-4">
@@ -67,7 +67,7 @@ type Props = {
 };
 
 const Todos: React.FC<Props> = ({ list }) => {
-  const { data: todos } = useSuspenseQuery(getTodosForList(list.id));
+  const { data: todos } = useSuspenseQuery(qTodosForList(list.id));
   const settings = useGetSettings();
 
   const completedTodos = todos.filter(({ isCompleted }) => isCompleted);

@@ -9,7 +9,7 @@ import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import type { ListSelectDetails } from "@/lib/types";
 import useCreateList from "@/app/hooks/actions/use-create-list";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { getAllLists } from "@/app/lib/queries";
+import { qLists } from "@/app/lib/queries";
 
 const ListChip: React.FC<{ list: ListSelectDetails }> = ({ list }) => {
   const link = linkOptions({
@@ -45,7 +45,7 @@ const ListChip: React.FC<{ list: ListSelectDetails }> = ({ list }) => {
 const ListChips: React.FC = () => {
   const handleCreateList = useCreateList();
 
-  const { data: lists } = useSuspenseQuery(getAllLists());
+  const { data: lists } = useSuspenseQuery(qLists());
 
   useHotkey("A", handleCreateList, { ignoreInputs: true });
 

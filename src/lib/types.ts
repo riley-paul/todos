@@ -15,6 +15,7 @@ export const zTodoSelect = createSelectSchema(tables.Todo).pick({
   text: true,
   isCompleted: true,
   listId: true,
+  userId: true,
 });
 export type TodoSelect = z.infer<typeof zTodoSelect>;
 export type TodoSelectDetails = z.infer<typeof zTodoSelect> & {

@@ -8,7 +8,7 @@ import TodoAdder from "../components/todo-adder";
 import Todos from "../components/todo/todos";
 import NotFoundScreen from "../components/screens/not-found";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { getList } from "../lib/queries";
+import { qList } from "../lib/queries";
 
 export const Route = createFileRoute("/todos/$listId")({
   component: RouteComponent,
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/todos/$listId")({
 
 function RouteComponent() {
   const { listId } = Route.useParams();
-  const { data: list } = useSuspenseQuery(getList(listId));
+  const { data: list } = useSuspenseQuery(qList(listId));
 
   useDocumentTitle(list?.name ?? "Todos");
 
