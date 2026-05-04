@@ -2,12 +2,16 @@ import { Button } from "@radix-ui/themes";
 import { SquareMinusIcon } from "lucide-react";
 import React from "react";
 import * as collections from "@/app/lib/collections";
-import useGetNumCompletedTodos from "@/app/hooks/actions/use-get-num-completed-todos";
+import { qTodosForList } from "@/app/lib/queries";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 type Props = { listId: string };
 
 const UncheckAllTodosButton: React.FC<Props> = ({ listId }) => {
-  const numCompleted = useGetNumCompletedTodos(listId);
+  const { data: numCompleted } = useSuspenseQuery({
+    ...qTodosForList(listId),
+    select: (todos) => todos.filter((todo) => todo.isCompleted).length,
+  });
 
   return (
     <Button

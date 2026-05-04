@@ -1,12 +1,16 @@
 import { Button } from "@radix-ui/themes";
 import { ListXIcon } from "lucide-react";
 import * as collections from "@/app/lib/collections";
-import useGetNumCompletedTodos from "@/app/hooks/actions/use-get-num-completed-todos";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { qTodosForList } from "@/app/lib/queries";
 
 type Props = { listId: string };
 
 const DeleteCompletedTodosButton: React.FC<Props> = ({ listId }) => {
-  const numCompleted = useGetNumCompletedTodos(listId);
+  const { data: numCompleted } = useSuspenseQuery({
+    ...qTodosForList(listId),
+    select: (todos) => todos.filter((todo) => todo.isCompleted).length,
+  });
 
   return (
     <Button

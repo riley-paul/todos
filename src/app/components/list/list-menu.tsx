@@ -21,8 +21,9 @@ import { getListUrl } from "@/lib/constants";
 import type { ListSelectDetails } from "@/lib/types";
 import * as collections from "@/app/lib/collections";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import useGetNumCompletedTodos from "@/app/hooks/actions/use-get-num-completed-todos";
 import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { qTodosForList } from "@/app/lib/queries";
 
 type Props = {
   list: ListSelectDetails;
@@ -32,7 +33,10 @@ const ListMenu: React.FC<Props> = ({ list }) => {
   const { listId: currentListId } = useParams({ strict: false });
   const navigate = useNavigate();
 
-  const numCompleted = useGetNumCompletedTodos(list.id);
+  const { data: numCompleted } = useSuspenseQuery({
+    ...qTodosForList(list.id),
+    select: (todos) => todos.filter((todo) => todo.isCompleted).length,
+  });
 
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const [, copyToClipboard] = useCopyToClipboard();
