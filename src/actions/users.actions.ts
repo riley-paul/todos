@@ -1,64 +1,12 @@
 import { ensureAuthorized } from "@/api/helpers";
 import { createDb } from "@/db";
-import {
-  zUserSettings,
-  type UserSelect,
-  type UserSelectDetails,
-  type UserSettings,
-} from "@/lib/types";
+import { zUserSettings, type UserSelect, type UserSettings } from "@/lib/types";
 import { ActionError, defineAction } from "astro:actions";
 import * as tables from "@/db/schema";
-import { and, count, eq, inArray, ne } from "drizzle-orm";
-
-export const populate = defineAction({
-  handler: async (_, c): Promise<UserSelect[]> => {
-    const db = createDb(c.locals.env);
-    const userId = ensureAuthorized(c).id;
-
-    const userListIds = await db.query.ListUser.findMany({
-      where: { userId },
-      columns: { listId: true },
-    }).then((uls) => uls.map((ul) => ul.listId));
-
-    const otherUsers = await db
-      .selectDistinct({
-        id: tables.User.id,
-        email: tables.User.email,
-        name: tables.User.name,
-        avatarUrl: tables.User.avatarUrl,
-      })
-      .from(tables.User)
-      .innerJoin(tables.ListUser, eq(tables.User.id, tables.ListUser.userId))
-      .where(
-        and(
-          inArray(tables.ListUser.listId, userListIds),
-          ne(tables.User.id, userId),
-        ),
-      );
-
-    const currentUser = await db.query.User.findFirst({
-      where: { id: userId },
-      columns: {
-        id: true,
-        email: true,
-        name: true,
-        avatarUrl: true,
-        settingGroupCompleted: true,
-      },
-    });
-
-    if (!currentUser)
-      throw new ActionError({
-        code: "UNAUTHORIZED",
-        message: "User not found",
-      });
-
-    return [currentUser, ...otherUsers];
-  },
-});
+import { count, eq, inArray } from "drizzle-orm";
 
 export const getMe = defineAction({
-  handler: async (_, c): Promise<UserSelectDetails> => {
+  handler: async (_, c): Promise<UserSettings & UserSelect> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -85,7 +33,7 @@ export const getMe = defineAction({
 
 export const update = defineAction({
   input: zUserSettings,
-  handler: async (input, c): Promise<UserSettings> => {
+  handler: async (input, c): Promise<UserSettings & UserSelect> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -94,6 +42,10 @@ export const update = defineAction({
       .set(input)
       .where(eq(tables.User.id, userId))
       .returning({
+        id: tables.User.id,
+        email: tables.User.email,
+        name: tables.User.name,
+        avatarUrl: tables.User.avatarUrl,
         settingGroupCompleted: tables.User.settingGroupCompleted,
       });
 

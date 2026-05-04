@@ -190,5 +190,31 @@ export default function useMutations() {
         queryClient.setQueryData(qLists().queryKey, newLists);
       },
     }),
+
+    // LIST USERS
+    inviteToList: useMutation({
+      mutationFn: actions.listUsers.inviteToList.orThrow,
+      onSuccess: (_, { email }) => {
+        toast.success(`Invitation sent to "${email}"`);
+      },
+    }),
+    removeFromList: useMutation({
+      mutationFn: actions.listUsers.removeFromList.orThrow,
+      onSuccess: () => {
+        toast.success("User removed from list");
+      },
+    }),
+    acceptInvite: useMutation({
+      mutationFn: actions.listUsers.acceptInvite.orThrow,
+      onSuccess: () => {
+        toast.success("You have joined the list");
+      },
+    }),
+    leaveList: useMutation({
+      mutationFn: actions.listUsers.leaveList.orThrow,
+      onSuccess: () => {
+        toast.success("You have left the list");
+      },
+    }),
   };
 }

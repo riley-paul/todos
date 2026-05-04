@@ -2,83 +2,18 @@ import { AblyProvider, ChannelProvider, useChannel } from "ably/react";
 import * as Ably from "ably";
 import React from "react";
 import { useUser, useUserSession } from "./user-provider";
-import * as collections from "@/app/lib/collections";
-import { createChannelName, zPayload, type Payload } from "@/lib/realtime";
+import { createChannelName } from "@/lib/realtime";
+import { useQueryClient } from "@tanstack/react-query";
 
 const realtimeClient = new Ably.Realtime({ authUrl: "/ably-auth" });
 
-const handlePayload = (payload: Payload) => {
-  switch (payload.entity) {
-    case "list": {
-      switch (payload.operation.type) {
-        case "insert":
-          collections.lists.utils.refetch();
-          break;
-        case "update":
-          collections.lists.utils.refetch();
-          break;
-        case "delete":
-          collections.lists.utils.refetch();
-          break;
-      }
-      break;
-    }
-
-    case "todo": {
-      switch (payload.operation.type) {
-        case "insert":
-          collections.todos.utils.refetch();
-          break;
-        case "update":
-          collections.todos.utils.refetch();
-          break;
-        case "delete":
-          collections.todos.utils.refetch();
-          break;
-      }
-      break;
-    }
-
-    case "listUser": {
-      switch (payload.operation.type) {
-        case "insert":
-          collections.listUsers.utils.refetch();
-          break;
-        case "update":
-          collections.listUsers.utils.refetch();
-          break;
-        case "delete":
-          collections.listUsers.utils.refetch();
-          break;
-      }
-      break;
-    }
-
-    case "user": {
-      switch (payload.operation.type) {
-        case "insert":
-          collections.users.utils.refetch();
-          break;
-        case "update":
-          collections.users.utils.refetch();
-          break;
-        case "delete":
-          collections.users.utils.refetch();
-          break;
-      }
-      break;
-    }
-  }
-};
-
 type InvalidatorProps = React.PropsWithChildren<{ channelName: string }>;
 const Invalidator: React.FC<InvalidatorProps> = ({ children, channelName }) => {
-  useChannel(channelName, "invalidate", ({ data }) => {
-    const { data: payload } = zPayload.safeParse(data);
-    if (!payload) return;
+  const queryClient = useQueryClient();
 
-    console.log("socket:", payload.entity, payload.operation.type);
-    handlePayload(payload);
+  useChannel(channelName, "invalidate", ({ data }) => {
+    console.log("Received invalidate message", { channelName, data });
+    queryClient.invalidateQueries();
   });
 
   return children;

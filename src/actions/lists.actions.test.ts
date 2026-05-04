@@ -1,10 +1,8 @@
 import { createDb } from "@/db";
 import env from "@/envs-runtime";
 import { provisionFixtures, type Fixtures } from "@/test/fixtures";
-import { beforeEach, describe, expect, it } from "vitest";
-import * as actions from "./lists.actions";
+import { beforeEach, describe, it } from "vitest";
 import { deleteAllData } from "@/db/scripts/delete-all-data";
-import { mockActions } from "@/test/mocks/astro-actions";
 
 const db = createDb(env);
 
