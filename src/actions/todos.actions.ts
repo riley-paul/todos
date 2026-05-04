@@ -13,7 +13,6 @@ import {
 import * as tables from "@/db/schema";
 import { z } from "astro/zod";
 import { and, desc, eq, inArray, like, or } from "drizzle-orm";
-import { notifyOtherListUsers } from "@/lib/realtime";
 
 const getTodos = async (
   c: ActionAPIContext,
@@ -202,7 +201,7 @@ export const remove = defineAction({
   input: z.object({
     todoId: z.string(),
   }),
-  handler: async ({ todoId }, c): Promise<string> => {
+  handler: async ({ todoId }, c): Promise<TodoSelect> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -231,18 +230,24 @@ export const remove = defineAction({
     const [deleted] = await db
       .delete(tables.Todo)
       .where(eq(tables.Todo.id, todoId))
-      .returning();
+      .returning({
+        id: tables.Todo.id,
+        text: tables.Todo.text,
+        isCompleted: tables.Todo.isCompleted,
+        listId: tables.Todo.listId,
+        userId: tables.Todo.userId,
+      });
 
-    await notifyOtherListUsers(c, originalTodo.listId, {
-      entity: "todo",
-      operation: { type: "delete", id: todoId },
-    });
+    // await notifyOtherListUsers(c, originalTodo.listId, {
+    //   entity: "todo",
+    //   operation: { type: "delete", id: todoId },
+    // });
 
-    return deleted.id;
+    return deleted;
   },
 });
 
-export const deleteCompleted = defineAction({
+export const removeCompleted = defineAction({
   input: z.object({ listId: z.string() }),
   handler: async ({ listId }, c): Promise<string[]> => {
     const db = createDb(c.locals.env);
@@ -266,10 +271,10 @@ export const deleteCompleted = defineAction({
       )
       .returning();
 
-    await notifyOtherListUsers(c, listId, {
-      entity: "todo",
-      operation: { type: "delete", id: deleted.map((d) => d.id) },
-    });
+    // await notifyOtherListUsers(c, listId, {
+    //   entity: "todo",
+    //   operation: { type: "delete", id: deleted.map((d) => d.id) },
+    // });
 
     return deleted.map((d) => d.id);
   },
@@ -300,10 +305,10 @@ export const uncheckCompleted = defineAction({
       )
       .returning();
 
-    await notifyOtherListUsers(c, listId, {
-      entity: "todo",
-      operation: { type: "update", data: updated },
-    });
+    // await notifyOtherListUsers(c, listId, {
+    //   entity: "todo",
+    //   operation: { type: "update", data: updated },
+    // });
 
     return updated;
   },

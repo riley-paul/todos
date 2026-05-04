@@ -17,7 +17,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { handleError } from "./lib/error";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -25,12 +25,7 @@ const queryClient = new QueryClient({
     onSuccess: () => {
       // queryClient.invalidateQueries();
     },
-    onError: (error) => {
-      toast.error("Oops! Something went wrong.", {
-        description: error.message,
-      });
-      console.error(error);
-    },
+    onError: handleError,
   }),
 });
 

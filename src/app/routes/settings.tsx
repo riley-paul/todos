@@ -14,7 +14,7 @@ import { alertSystemAtom } from "../components/alert-system/alert-system.store";
 import { Trash2Icon } from "lucide-react";
 import { actions } from "astro:actions";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { qMe } from "../lib/queries";
+import { qUser } from "../lib/queries";
 import useMutations from "../hooks/use-mutations";
 
 export const Route = createFileRoute("/settings")({
@@ -36,7 +36,7 @@ const Setting: React.FC<SettingProps> = ({ label, children }) => (
 );
 
 function RouteComponent() {
-  const { data: settings } = useSuspenseQuery(qMe());
+  const { data: settings } = useSuspenseQuery(qUser());
 
   const [theme, setTheme] = useAtom(themeAtom);
   const [, dispatchAlert] = useAtom(alertSystemAtom);

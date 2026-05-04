@@ -5,16 +5,11 @@ import {
 } from "astro:actions";
 import { ensureAuthorized } from "@/api/helpers";
 import { createDb } from "@/db";
-import {
-  zListSelect,
-  type ListSelect,
-  type ListSelectDetails,
-} from "@/lib/types";
+import { zListSelect, type ListSelectDetails } from "@/lib/types";
 import * as tables from "@/db/schema";
 import { and, asc, desc, eq, like, or, sql } from "drizzle-orm";
 import { z } from "astro/zod";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
-import { notifyOtherListUsers } from "@/lib/realtime";
 import { getListOtherUsers, getListTodoCount } from "@/api/dataloaders";
 
 const getLists = async (
@@ -66,18 +61,6 @@ const getLists = async (
   }));
 };
 
-export const populate = defineAction({
-  handler: async (_, c): Promise<ListSelect[]> => {
-    const db = createDb(c.locals.env);
-    const userId = ensureAuthorized(c).id;
-
-    return await db.query.List.findMany({
-      with: { listUser: true },
-      where: { listUser: { userId } },
-    });
-  },
-});
-
 export const getAll = defineAction({
   input: z.object({ search: z.string().optional() }),
   handler: async ({ search }, c): Promise<ListSelectDetails[]> => {
@@ -101,13 +84,13 @@ export const get = defineAction({
 
 export const create = defineAction({
   input: z.object({ name: z.string() }),
-  handler: async (input, c): Promise<ListSelect> => {
+  handler: async (input, c): Promise<ListSelectDetails> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
-    const [list, listUser] = await db.transaction(async (tx) => {
+    const created = await db.transaction(async (tx) => {
       const [list] = await tx.insert(tables.List).values(input).returning();
-      const [listUser] = await tx
+      await tx
         .insert(tables.ListUser)
         .values({
           listId: list.id,
@@ -115,19 +98,11 @@ export const create = defineAction({
           isPending: false,
         })
         .returning();
-      return [list, listUser];
+      return list;
     });
 
-    await notifyOtherListUsers(c, list.id, {
-      entity: "list",
-      operation: { type: "insert", data: list },
-    });
-    await notifyOtherListUsers(c, list.id, {
-      entity: "listUser",
-      operation: { type: "insert", data: listUser },
-    });
-
-    return list;
+    const [result] = await getLists(c, { listId: created.id });
+    return result;
   },
 });
 
@@ -136,7 +111,7 @@ export const update = defineAction({
     listId: z.string(),
     data: zListSelect.pick({ name: true }).partial(),
   }),
-  handler: async (input, c): Promise<ListSelect> => {
+  handler: async (input, c): Promise<ListSelectDetails> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -151,18 +126,14 @@ export const update = defineAction({
       });
     }
 
-    const [list] = await db
+    const [updated] = await db
       .update(tables.List)
       .set(input.data)
       .where(eq(tables.List.id, input.listId))
       .returning();
 
-    await notifyOtherListUsers(c, list.id, {
-      entity: "list",
-      operation: { type: "update", data: list },
-    });
-
-    return list;
+    const [result] = await getLists(c, { listId: updated.id });
+    return result;
   },
 });
 
@@ -188,24 +159,24 @@ export const remove = defineAction({
       .where(eq(tables.List.id, input.listId))
       .returning();
 
-    await notifyOtherListUsers(c, input.listId, {
-      entity: "list",
-      operation: { type: "delete", id: input.listId },
-    });
-
     return deleted.id;
   },
 });
 
 export const updateSortShow = defineAction({
   input: z.object({ listIds: z.array(z.string()) }),
-  handler: async ({ listIds }, c): Promise<boolean> => {
+  handler: async ({ listIds }, c): Promise<ListSelectDetails[]> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
     const separatorIdx = listIds.indexOf(LIST_SEPARATOR_ID);
 
-    if (listIds.length === 0) return false;
+    if (listIds.length === 0) {
+      throw new ActionError({
+        code: "BAD_REQUEST",
+        message: "List IDs are required",
+      });
+    }
 
     // Build CASE WHEN expressions dynamically
     const orderCase = sql.join(
@@ -232,6 +203,6 @@ export const updateSortShow = defineAction({
        AND "listId" IN (${sql.join(listIds, sql`, `)});
    `);
 
-    return true;
+    return getLists(c, {});
   },
 });

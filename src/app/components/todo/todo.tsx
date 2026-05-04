@@ -121,7 +121,7 @@ const Todo: React.FC<{ todo: TodoSelectDetails }> = ({ todo }) => {
       ref.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [isHighlighted]);
 
-  const { updateTodoMutation } = useMutations();
+  const { updateTodo } = useMutations();
 
   return (
     <div
@@ -136,19 +136,19 @@ const Todo: React.FC<{ todo: TodoSelectDetails }> = ({ todo }) => {
         <TodoForm
           initialValue={todo.text}
           handleSubmit={(text) => {
-            updateTodoMutation.mutate({ todoId: todo.id, data: { text } });
+            updateTodo.mutate({ todoId: todo.id, data: { text } });
             setEditingTodoId(null);
           }}
         />
       ) : (
         <>
-          <Spinner loading={updateTodoMutation.isPending}>
+          <Spinner loading={updateTodo.isPending}>
             <Checkbox
               size="3"
               variant="soft"
               checked={todo.isCompleted}
               onCheckedChange={(value) => {
-                updateTodoMutation.mutate({
+                updateTodo.mutate({
                   todoId: todo.id,
                   data: { isCompleted: Boolean(value) },
                 });

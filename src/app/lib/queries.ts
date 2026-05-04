@@ -1,7 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import { actions } from "astro:actions";
 
-export const qMe = () =>
+export const qUser = () =>
   queryOptions({
     queryKey: ["me"],
     queryFn: () => actions.users.getMe.orThrow(),
@@ -19,7 +19,7 @@ export const qList = (listId: string) =>
     queryFn: () => actions.lists.get.orThrow({ listId }),
   });
 
-export const qTodosForList = (listId: string) =>
+export const qTodos = (listId: string) =>
   queryOptions({
     queryKey: ["todos", listId],
     queryFn: () => actions.todos.getForList.orThrow({ listId }),

@@ -24,7 +24,7 @@ const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
 
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
 
-  const { createTodoMutation } = useMutations();
+  const { createTodo } = useMutations();
 
   const resetInput = () => {
     flushSync(() => reset());
@@ -32,7 +32,7 @@ const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
   };
 
   const onSubmit = handleSubmit(({ text }) => {
-    createTodoMutation.mutate({ text, listId });
+    createTodo.mutate({ text, listId });
     resetInput();
   });
 
@@ -86,7 +86,7 @@ const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
       <input type="submit" hidden />
 
       <Button size="3" type="submit" className="px-3 sm:px-5">
-        <Spinner loading={createTodoMutation.isPending}>
+        <Spinner loading={createTodo.isPending}>
           <PlusIcon className="size-5" />
         </Spinner>
         <span className="hidden sm:block">Add</span>

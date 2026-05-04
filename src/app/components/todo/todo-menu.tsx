@@ -6,43 +6,29 @@ import {
   Edit2Icon,
   EllipsisIcon,
 } from "lucide-react";
-import { useNavigate, useParams } from "@tanstack/react-router";
+import { useParams } from "@tanstack/react-router";
 import { useAtom } from "jotai";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { editingTodoIdAtom } from "./todos.store";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
-import * as collections from "@/app/lib/collections";
-import { toast } from "sonner";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { qLists } from "@/app/lib/queries";
+import useMutations from "@/app/hooks/use-mutations";
 
 const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
   const { listId } = useParams({ strict: false });
   const { data: lists } = useSuspenseQuery(qLists());
-  const navigate = useNavigate();
 
   const [_, setEditingTodoId] = useAtom(editingTodoIdAtom);
 
+  const { deleteTodo, moveTodo } = useMutations();
+
   const handleMove = (targetListId: string) => {
-    collections.todos.update(todoId, (draft) => {
-      draft.listId = targetListId;
-    });
-    toast.success("Todo moved to new list", {
-      action: {
-        label: "View",
-        onClick: () =>
-          navigate({
-            to: "/todos/$listId",
-            params: { listId: targetListId },
-            search: { highlightedTodoId: todoId },
-          }),
-      },
-    });
+    moveTodo.mutate({ todoId, data: { listId: targetListId } });
   };
 
   const handleDelete = () => {
-    collections.todos.delete(todoId);
-    toast.success("Todo deleted");
+    deleteTodo.mutate({ todoId });
   };
 
   const handleEdit = () => {

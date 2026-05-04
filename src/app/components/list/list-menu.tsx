@@ -23,7 +23,7 @@ import * as collections from "@/app/lib/collections";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { qTodosForList } from "@/app/lib/queries";
+import { qTodos } from "@/app/lib/queries";
 
 type Props = {
   list: ListSelectDetails;
@@ -34,7 +34,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
   const navigate = useNavigate();
 
   const { data: numCompleted } = useSuspenseQuery({
-    ...qTodosForList(list.id),
+    ...qTodos(list.id),
     select: (todos) => todos.filter((todo) => todo.isCompleted).length,
   });
 
