@@ -11,6 +11,7 @@ import { and, asc, desc, eq, like, or, sql } from "drizzle-orm";
 import { z } from "astro/zod";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import { getListOtherUsers, getListTodoCount } from "@/api/dataloaders";
+import { notifyOtherListUsers, notifyUser } from "@/lib/realtime";
 
 const getLists = async (
   c: ActionAPIContext,
@@ -102,6 +103,9 @@ export const create = defineAction({
     });
 
     const [result] = await getLists(c, { listId: created.id });
+
+    await notifyOtherListUsers(c, created.id);
+
     return result;
   },
 });
@@ -133,18 +137,21 @@ export const update = defineAction({
       .returning();
 
     const [result] = await getLists(c, { listId: updated.id });
+
+    await notifyOtherListUsers(c, updated.id);
+
     return result;
   },
 });
 
 export const remove = defineAction({
   input: z.object({ listId: z.string() }),
-  handler: async (input, c): Promise<string> => {
+  handler: async ({ listId }, c): Promise<string> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
     const listUser = await db.query.ListUser.findFirst({
-      where: { listId: input.listId, userId, isPending: false },
+      where: { listId, userId, isPending: false },
     });
 
     if (!listUser) {
@@ -156,8 +163,10 @@ export const remove = defineAction({
 
     const [deleted] = await db
       .delete(tables.List)
-      .where(eq(tables.List.id, input.listId))
+      .where(eq(tables.List.id, listId))
       .returning();
+
+    await notifyOtherListUsers(c, listId);
 
     return deleted.id;
   },
@@ -202,6 +211,8 @@ export const updateSortShow = defineAction({
      WHERE "userId" = ${userId}
        AND "listId" IN (${sql.join(listIds, sql`, `)});
    `);
+
+    await notifyUser(c);
 
     return getLists(c, {});
   },

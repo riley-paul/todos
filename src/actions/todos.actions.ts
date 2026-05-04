@@ -9,6 +9,7 @@ import { zTodoSelect, type TodoSelect } from "@/lib/types";
 import * as tables from "@/db/schema";
 import { z } from "astro/zod";
 import { and, desc, eq, inArray, like, or } from "drizzle-orm";
+import { notifyOtherListUsers } from "@/lib/realtime";
 
 const getTodos = async (
   c: ActionAPIContext,
@@ -101,6 +102,9 @@ export const create = defineAction({
       .returning();
 
     const [result] = await getTodos(c, { todoId: created.id });
+
+    await notifyOtherListUsers(c, input.listId);
+
     return result;
   },
 });
@@ -163,6 +167,11 @@ export const update = defineAction({
       .where(eq(tables.Todo.id, todoId))
       .returning();
 
+    const listsToNotify = [originalTodo.listId, data.listId].filter(
+      (i) => i !== undefined,
+    );
+    await notifyOtherListUsers(c, listsToNotify);
+
     const [result] = await getTodos(c, { todoId: updated.id });
     return result;
   },
@@ -209,6 +218,7 @@ export const remove = defineAction({
         userId: tables.Todo.userId,
       });
 
+    await notifyOtherListUsers(c, originalTodo.listId);
     return deleted.id;
   },
 });
@@ -237,6 +247,7 @@ export const removeCompleted = defineAction({
       )
       .returning();
 
+    await notifyOtherListUsers(c, listId);
     return deleted.map((d) => d.id);
   },
 });
@@ -266,6 +277,7 @@ export const uncheckCompleted = defineAction({
       )
       .returning();
 
+    await notifyOtherListUsers(c, listId);
     return updated.map((u) => u.id);
   },
 });

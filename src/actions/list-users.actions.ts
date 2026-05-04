@@ -5,6 +5,7 @@ import { z } from "astro/zod";
 import { ActionError, defineAction } from "astro:actions";
 import * as tables from "@/db/schema";
 import { and, eq } from "drizzle-orm";
+import { notifyOtherListUsers } from "@/lib/realtime";
 
 export const get = defineAction({
   input: z.object({ listId: z.string() }),
@@ -72,6 +73,9 @@ export const acceptInvite = defineAction({
       .from(tables.ListUser)
       .innerJoin(tables.User, eq(tables.User.id, tables.ListUser.userId))
       .where(eq(tables.ListUser.id, updated.id));
+
+    await notifyOtherListUsers(c, listId);
+
     return result;
   },
 });
@@ -101,6 +105,8 @@ export const leaveList = defineAction({
         ),
       )
       .returning();
+
+    await notifyOtherListUsers(c, listId);
 
     return deleted.id;
   },
@@ -161,6 +167,9 @@ export const inviteToList = defineAction({
       .from(tables.ListUser)
       .innerJoin(tables.User, eq(tables.User.id, tables.ListUser.userId))
       .where(eq(tables.ListUser.id, created.id));
+
+    await notifyOtherListUsers(c, listId);
+
     return result;
   },
 });
@@ -202,6 +211,8 @@ export const removeFromList = defineAction({
         ),
       )
       .returning();
+
+    await notifyOtherListUsers(c, listId);
 
     return deleted.id;
   },

@@ -2,7 +2,7 @@ import type { ActionAPIContext } from "astro:actions";
 import { createDb } from "@/db";
 import { Rest } from "ably";
 import * as tables from "@/db/schema";
-import { and, eq, ne } from "drizzle-orm";
+import { and, eq, inArray, ne } from "drizzle-orm";
 
 export const createChannelName = (info: {
   userId: string;
@@ -17,7 +17,7 @@ const createAbly = (env: Env) => {
 
 export async function notifyOtherListUsers(
   c: ActionAPIContext,
-  listId: string,
+  listId: string | string[],
 ) {
   const db = createDb(c.locals.env);
   const ably = createAbly(c.locals.env);
@@ -36,15 +36,51 @@ export async function notifyOtherListUsers(
     )
     .where(
       and(
-        eq(tables.ListUser.listId, listId),
+        Array.isArray(listId)
+          ? inArray(tables.ListUser.listId, listId)
+          : eq(tables.ListUser.listId, listId),
         ne(tables.UserSession.id, currentSessionId),
       ),
     );
+
+  if (!listUsers.length) return;
 
   console.log(`Notifying ${listUsers.length} channels`);
 
   return ably.batchPublish({
     channels: listUsers.map(createChannelName),
+    messages: [{ name: "invalidate" }],
+  });
+}
+
+export async function notifyUser(c: ActionAPIContext) {
+  const db = createDb(c.locals.env);
+  const ably = createAbly(c.locals.env);
+
+  const currentSessionId = c.locals.session?.id ?? "";
+  const currentUserId = c.locals.session?.userId ?? "";
+
+  const otherSessions = await db
+    .select({
+      userId: tables.UserSession.userId,
+      sessionId: tables.UserSession.id,
+    })
+    .from(tables.UserSession)
+    .where(
+      and(
+        eq(tables.UserSession.userId, currentUserId),
+        ne(tables.UserSession.id, currentSessionId),
+      ),
+    );
+
+  if (!otherSessions) return;
+
+  console.log(
+    `Notifying ${otherSessions.length} channels for user ${currentUserId}`,
+  );
+
+  return ably.batchPublish({
+    channels: otherSessions.map(createChannelName),
     messages: [{ name: "invalidate" }],
   });
 }
