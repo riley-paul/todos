@@ -5,24 +5,8 @@ import { z } from "astro/zod";
 import { ActionError, defineAction } from "astro:actions";
 import * as tables from "@/db/schema";
 import { and, eq } from "drizzle-orm";
-import { notifyOtherListUsers } from "@/lib/realtime";
 
-export const populate = defineAction({
-  handler: async (_, c): Promise<ListUserSelect[]> => {
-    const db = createDb(c.locals.env);
-    const userId = ensureAuthorized(c).id;
-
-    const userListIds = await db.query.ListUser.findMany({
-      where: { userId },
-    }).then((uls) => uls.map((ul) => ul.listId));
-
-    return db.query.ListUser.findMany({
-      where: { listId: { in: userListIds } },
-    });
-  },
-});
-
-export const getListUsers = defineAction({
+export const get = defineAction({
   input: z.object({ listId: z.string() }),
   handler: async ({ listId }, c): Promise<ListUserSelect[]> => {
     const db = createDb(c.locals.env);
@@ -39,9 +23,17 @@ export const getListUsers = defineAction({
       });
     }
 
-    return db.query.ListUser.findMany({
-      where: { listId },
-    });
+    return db
+      .select({
+        id: tables.User.id,
+        email: tables.User.email,
+        name: tables.User.name,
+        avatarUrl: tables.User.avatarUrl,
+        isPending: tables.ListUser.isPending,
+      })
+      .from(tables.ListUser)
+      .innerJoin(tables.User, eq(tables.User.id, tables.ListUser.userId))
+      .where(eq(tables.ListUser.listId, listId));
   },
 });
 
@@ -69,12 +61,18 @@ export const acceptInvite = defineAction({
       )
       .returning();
 
-    await notifyOtherListUsers(c, listId, {
-      entity: "listUser",
-      operation: { type: "update", data: updated },
-    });
-
-    return updated;
+    const [result] = await db
+      .select({
+        id: tables.User.id,
+        email: tables.User.email,
+        name: tables.User.name,
+        avatarUrl: tables.User.avatarUrl,
+        isPending: tables.ListUser.isPending,
+      })
+      .from(tables.ListUser)
+      .innerJoin(tables.User, eq(tables.User.id, tables.ListUser.userId))
+      .where(eq(tables.ListUser.id, updated.id));
+    return result;
   },
 });
 
@@ -103,11 +101,6 @@ export const leaveList = defineAction({
         ),
       )
       .returning();
-
-    await notifyOtherListUsers(c, listId, {
-      entity: "listUser",
-      operation: { type: "delete", id: deleted.id },
-    });
 
     return deleted.id;
   },
@@ -147,7 +140,7 @@ export const inviteToList = defineAction({
       });
     }
 
-    const [invite] = await db
+    const [created] = await db
       .insert(tables.ListUser)
       .values({
         listId,
@@ -157,12 +150,18 @@ export const inviteToList = defineAction({
       })
       .returning();
 
-    await notifyOtherListUsers(c, listId, {
-      entity: "listUser",
-      operation: { type: "insert", data: invite },
-    });
-
-    return invite;
+    const [result] = await db
+      .select({
+        id: tables.User.id,
+        email: tables.User.email,
+        name: tables.User.name,
+        avatarUrl: tables.User.avatarUrl,
+        isPending: tables.ListUser.isPending,
+      })
+      .from(tables.ListUser)
+      .innerJoin(tables.User, eq(tables.User.id, tables.ListUser.userId))
+      .where(eq(tables.ListUser.id, created.id));
+    return result;
   },
 });
 
@@ -203,11 +202,6 @@ export const removeFromList = defineAction({
         ),
       )
       .returning();
-
-    await notifyOtherListUsers(c, listId, {
-      entity: "listUser",
-      operation: { type: "delete", id: deleted.id },
-    });
 
     return deleted.id;
   },

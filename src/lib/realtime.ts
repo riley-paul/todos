@@ -1,10 +1,4 @@
 import { z } from "astro/zod";
-import {
-  zListSelect,
-  zListUserSelect,
-  zTodoSelect,
-  zUserSelect,
-} from "./types";
 
 import type { ActionAPIContext } from "astro:actions";
 import { createDb } from "@/db";
@@ -40,24 +34,26 @@ const createOperationSchema = <T extends z.ZodObject>(dataSchema: T) => {
   ]);
 };
 
-export const zPayload = z.discriminatedUnion("entity", [
-  z.object({
-    entity: z.literal("list"),
-    operation: createOperationSchema(zListSelect),
-  }),
-  z.object({
-    entity: z.literal("todo"),
-    operation: createOperationSchema(zTodoSelect),
-  }),
-  z.object({
-    entity: z.literal("listUser"),
-    operation: createOperationSchema(zListUserSelect),
-  }),
-  z.object({
-    entity: z.literal("user"),
-    operation: createOperationSchema(zUserSelect),
-  }),
-]);
+export const zPayload = z.any();
+
+// z.discriminatedUnion("entity", [
+//   z.object({
+//     entity: z.literal("list"),
+//     operation: createOperationSchema(zListSelect),
+//   }),
+//   z.object({
+//     entity: z.literal("todo"),
+//     operation: createOperationSchema(zTodoSelect),
+//   }),
+//   z.object({
+//     entity: z.literal("listUser"),
+//     operation: createOperationSchema(zListUserSelect),
+//   }),
+//   z.object({
+//     entity: z.literal("user"),
+//     operation: createOperationSchema(zUserSelect),
+//   }),
+// ]);
 export type Payload = z.infer<typeof zPayload>;
 
 export async function notifyOtherListUsers(

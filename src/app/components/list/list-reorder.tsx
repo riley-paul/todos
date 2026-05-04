@@ -41,9 +41,7 @@ import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import ListRow from "./list-row";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import type { ListSelect } from "@/lib/types";
-import * as collections from "@/app/lib/collections";
-import { actions } from "astro:actions";
-import { mutationCache, queryClient } from "@/app/lib/query-client";
+import useMutations from "@/app/hooks/use-mutations";
 
 type SortableObjectData =
   | {
@@ -56,9 +54,7 @@ type SortableObjectData =
       id: string;
     };
 
-const getSortableObjectList = (
-  lists: ListSelect[],
-): SortableObjectData[] => {
+const getSortableObjectList = (lists: ListSelect[]): SortableObjectData[] => {
   const listToSortableObj = (list: ListSelect): SortableObjectData => ({
     type: "list",
     id: list.id,
@@ -84,13 +80,6 @@ const getSortableObjectList = (
     ...lists.filter(({ show }) => !show).map(listToSortableObj),
   ];
 };
-
-const updateSortShowMutation = mutationCache.build(queryClient, {
-  mutationFn: actions.lists.updateSortShow.orThrow,
-  onSuccess: () => {
-    collections.listUsers.utils.refetch();
-  },
-});
 
 type SortableItemProps = SortableObjectData & {
   isDragging?: boolean;
@@ -187,6 +176,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
   const [localObjs, setLocalObjs] = useState(getSortableObjectList(lists));
 
   useEffect(() => setLocalObjs(getSortableObjectList(lists)), [lists]);
+  const { updateListSortShow } = useMutations();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -211,7 +201,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
       const newOrder = arrayMove(ids, oldIndex, newIndex);
 
       setLocalObjs((prev) => arrayMove(prev, oldIndex, newIndex));
-      return updateSortShowMutation.execute({ listIds: newOrder });
+      return updateListSortShow.mutate({ listIds: newOrder });
     }
   };
 

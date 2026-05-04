@@ -24,3 +24,9 @@ export const qTodos = (listId: string) =>
     queryKey: ["todos", listId],
     queryFn: () => actions.todos.getForList.orThrow({ listId }),
   });
+
+export const qListUsers = (listId: string) =>
+  queryOptions({
+    queryKey: ["listUsers", listId],
+    queryFn: () => actions.listUsers.get.orThrow({ listId }),
+  });

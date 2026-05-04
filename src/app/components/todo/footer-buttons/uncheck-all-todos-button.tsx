@@ -1,9 +1,9 @@
 import { Button } from "@radix-ui/themes";
 import { SquareMinusIcon } from "lucide-react";
 import React from "react";
-import * as collections from "@/app/lib/collections";
 import { qTodos } from "@/app/lib/queries";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import useMutations from "@/app/hooks/use-mutations";
 
 type Props = { listId: string };
 
@@ -13,12 +13,14 @@ const UncheckAllTodosButton: React.FC<Props> = ({ listId }) => {
     select: (todos) => todos.filter((todo) => todo.isCompleted).length,
   });
 
+  const { uncheckCompletedTodos } = useMutations();
+
   return (
     <Button
       size="1"
       variant="ghost"
       color="gray"
-      onClick={() => collections.fns.uncheckCompletedTodos({ listId })}
+      onClick={() => uncheckCompletedTodos.mutate({ listId })}
       disabled={numCompleted === 0}
     >
       <SquareMinusIcon className="size-3" />

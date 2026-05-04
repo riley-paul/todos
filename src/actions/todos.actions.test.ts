@@ -5,8 +5,6 @@ import { beforeEach, describe, expect, it } from "vitest";
 import * as actions from "./todos.actions";
 import { deleteAllData } from "@/db/scripts/delete-all-data";
 import { mockActions } from "@/test/mocks/astro-actions";
-import * as tables from "@/db/schema";
-import { and, eq } from "drizzle-orm";
 
 const db = createDb(env);
 
@@ -18,44 +16,6 @@ describe("todos.actions", () => {
     fixtures = await provisionFixtures(db);
   });
 
-  describe("populate", () => {
-    it("should return the todos in the user's lists", async () => {
-      mockActions(fixtures.mainUser.id);
-      const todos = await actions.populate.orThrow();
-      expect(Array.isArray(todos)).toBe(true);
-      const todoIds = todos.map((t) => t.id);
-
-      fixtures.unsharedListTodos.forEach(({ id }) =>
-        expect(todoIds).toContain(id),
-      );
-      fixtures.sharedListTodos.forEach(({ id }) =>
-        expect(todoIds).toContain(id),
-      );
-      fixtures.outsideListTodos.forEach(({ id }) =>
-        expect(todoIds).not.toContain(id),
-      );
-    });
-    it("should exclude todos from lists the user doesn't belong to", async () => {});
-    it("should exclude todos from pending lists", async () => {
-      await db
-        .update(tables.ListUser)
-        .set({ isPending: true })
-        .where(
-          and(
-            eq(tables.ListUser.listId, fixtures.mainUserSharedList.id),
-            eq(tables.ListUser.userId, fixtures.mainUser.id),
-          ),
-        );
-      mockActions(fixtures.mainUser.id);
-      const todos = await actions.populate.orThrow();
-      expect(Array.isArray(todos)).toBe(true);
-      const todoIds = todos.map((t) => t.id);
-
-      fixtures.sharedListTodos.forEach(({ id }) =>
-        expect(todoIds).not.toContain(id),
-      );
-    });
-  });
   describe("create", () => {
     it("should create a new todo in the specified list", async () => {
       mockActions(fixtures.mainUser.id);

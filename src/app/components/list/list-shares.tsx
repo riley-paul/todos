@@ -3,13 +3,14 @@ import { Button, Separator, Text, type ButtonProps } from "@radix-ui/themes";
 import { ArrowDownIcon, HourglassIcon, LogOutIcon, XIcon } from "lucide-react";
 import UserRow from "../ui/user/user-row";
 import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
-import type { UserSelectListDetails } from "@/lib/types";
 import { useUser } from "@/app/providers/user-provider";
-import useGetListUsers from "@/app/hooks/actions/use-get-list-users";
+import type { ListUserSelect } from "@/lib/types";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { qListUsers } from "@/app/lib/queries";
 
 type ListShareProps = {
   listId: string;
-  listUser: UserSelectListDetails;
+  listUser: ListUserSelect;
   isOnlyUser?: boolean;
 };
 
@@ -74,7 +75,7 @@ const ListUser: React.FC<ListShareProps> = ({
 };
 
 const ListShares: React.FC<{ listId: string }> = ({ listId }) => {
-  const listUsers = useGetListUsers(listId);
+  const { data: listUsers } = useSuspenseQuery(qListUsers(listId));
 
   const pendingListUsers = listUsers.filter(({ isPending }) => isPending);
   const nonPendingListUsers = listUsers.filter(({ isPending }) => !isPending);

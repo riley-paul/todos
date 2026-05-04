@@ -16,23 +16,6 @@ describe("list-users.actions", () => {
     fixtures = await provisionFixtures(db);
   });
 
-  describe("populate", () => {
-    it("should return listusers associated with lists the user belongs to", async () => {
-      mockActions(fixtures.mainUser.id);
-      const listUsers = await actions.populate.orThrow();
-
-      expect(Array.isArray(listUsers)).toBe(true);
-      const listIds = listUsers.map((lu) => lu.listId);
-      expect(listIds).toContain(fixtures.mainUserSharedList.id);
-      expect(listIds).toContain(fixtures.mainUserUnsharedList.id);
-      expect(listIds).not.toContain(fixtures.outsideUserList.id);
-
-      const userIds = listUsers.map((lu) => lu.userId);
-      expect(userIds).toContain(fixtures.mainUser.id);
-      expect(userIds).toContain(fixtures.collaboratingUser.id);
-      expect(userIds).not.toContain(fixtures.outsideUser.id);
-    });
-  });
   describe("acceptInvite", () => {
     it("should change the status of the listuser to accepted", async () => {
       mockActions(fixtures.collaboratingUser.id);

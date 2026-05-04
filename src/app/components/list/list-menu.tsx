@@ -19,20 +19,16 @@ import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
 import { getListUrl } from "@/lib/constants";
 import type { ListSelect } from "@/lib/types";
-import * as collections from "@/app/lib/collections";
-import { useNavigate, useParams } from "@tanstack/react-router";
 import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { qTodos } from "@/app/lib/queries";
+import useMutations from "@/app/hooks/use-mutations";
 
 type Props = {
   list: ListSelect;
 };
 
 const ListMenu: React.FC<Props> = ({ list }) => {
-  const { listId: currentListId } = useParams({ strict: false });
-  const navigate = useNavigate();
-
   const { data: numCompleted } = useSuspenseQuery({
     ...qTodos(list.id),
     select: (todos) => todos.filter((todo) => todo.isCompleted).length,
@@ -44,6 +40,12 @@ const ListMenu: React.FC<Props> = ({ list }) => {
   const isOnlyUser = list.otherUsers.length === 0;
 
   const { handleLeaveList } = useManageListUsers(list.id);
+  const {
+    updateList,
+    deleteList,
+    uncheckCompletedTodos,
+    deleteCompletedTodos,
+  } = useMutations();
 
   const handleRenameList = () => {
     dispatchAlert({
@@ -56,9 +58,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         placeholder: "Enter new list name",
         schema: zListName,
         handleSubmit: (name: string) => {
-          collections.lists.update(list.id, (draft) => {
-            draft.name = name;
-          });
+          updateList.mutate({ listId: list.id, data: { name } });
           dispatchAlert({ type: "close" });
           toast.success("List renamed successfully");
         },
@@ -74,10 +74,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         title: "Delete List",
         message: `Are you sure you want to delete this list? This action cannot be undone.`,
         handleDelete: () => {
-          collections.lists.delete(list.id);
-          if (list.id === currentListId) {
-            navigate({ to: "/" });
-          }
+          deleteList.mutate({ listId: list.id });
           dispatchAlert({ type: "close" });
         },
       },
@@ -128,7 +125,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       key: "uncheck-all",
       text: "Uncheck all",
       icon: <SquareMinusIcon className="size-4 opacity-70" />,
-      onClick: () => collections.fns.uncheckCompletedTodos({ listId: list.id }),
+      onClick: () => uncheckCompletedTodos.mutate({ listId: list.id }),
       disabled: numCompleted <= 0,
     },
     {
@@ -136,7 +133,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       key: "delete-completed",
       text: "Delete completed",
       icon: <ListXIcon className="size-4 opacity-70" />,
-      onClick: () => collections.fns.deleteCompletedTodos({ listId: list.id }),
+      onClick: () => deleteCompletedTodos.mutate({ listId: list.id }),
       disabled: numCompleted <= 0,
     },
     {
