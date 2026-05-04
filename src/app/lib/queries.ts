@@ -12,3 +12,9 @@ export const getList = (listId: string) =>
     queryKey: ["list", listId],
     queryFn: () => actions.lists.get.orThrow({ listId }),
   });
+
+export const getTodosForList = (listId: string) =>
+  queryOptions({
+    queryKey: ["todos", listId],
+    queryFn: () => actions.todos.getForList.orThrow({ listId }),
+  });

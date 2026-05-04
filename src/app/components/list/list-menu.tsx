@@ -19,7 +19,6 @@ import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
 import { getListUrl } from "@/lib/constants";
 import type { ListSelectDetails } from "@/lib/types";
-import useGetListUsers from "@/app/hooks/actions/use-get-list-users";
 import * as collections from "@/app/lib/collections";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import useGetNumCompletedTodos from "@/app/hooks/actions/use-get-num-completed-todos";
@@ -33,13 +32,12 @@ const ListMenu: React.FC<Props> = ({ list }) => {
   const { listId: currentListId } = useParams({ strict: false });
   const navigate = useNavigate();
 
-  const listUsers = useGetListUsers(list.id);
   const numCompleted = useGetNumCompletedTodos(list.id);
 
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const [, copyToClipboard] = useCopyToClipboard();
 
-  const isOnlyUser = listUsers.length === 0;
+  const isOnlyUser = list.otherUsers.length === 0;
 
   const { handleLeaveList } = useManageListUsers(list.id);
 

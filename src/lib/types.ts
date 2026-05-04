@@ -10,7 +10,12 @@ export type UserSessionInfo = {
   expiresAt: Date;
 };
 
-export const zTodoSelect = createSelectSchema(tables.Todo);
+export const zTodoSelect = createSelectSchema(tables.Todo).pick({
+  id: true,
+  text: true,
+  isCompleted: true,
+  listId: true,
+});
 export type TodoSelect = z.infer<typeof zTodoSelect>;
 export type TodoSelectDetails = z.infer<typeof zTodoSelect> & {
   author: UserSelect;

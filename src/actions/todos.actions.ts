@@ -1,11 +1,81 @@
-import { ActionError, defineAction } from "astro:actions";
+import {
+  ActionError,
+  defineAction,
+  type ActionAPIContext,
+} from "astro:actions";
 import { ensureAuthorized } from "@/api/helpers";
 import { createDb } from "@/db";
-import { zTodoSelect, type TodoSelect } from "@/lib/types";
+import {
+  zTodoSelect,
+  type TodoSelect,
+  type TodoSelectDetails,
+} from "@/lib/types";
 import * as tables from "@/db/schema";
 import { z } from "astro/zod";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, inArray, like, or } from "drizzle-orm";
 import { notifyOtherListUsers } from "@/lib/realtime";
+
+const getTodos = async (
+  c: ActionAPIContext,
+  filters: Partial<{
+    todoId: string;
+    listId: string;
+    userId: string;
+    search: string;
+  }> = {},
+): Promise<TodoSelectDetails[]> => {
+  const reqUserId = ensureAuthorized(c).id;
+  const db = createDb(c.locals.env);
+
+  const { todoId, listId, userId, search } = filters;
+
+  const userLists = await db
+    .select({ listId: tables.ListUser.listId })
+    .from(tables.ListUser)
+    .where(eq(tables.ListUser.userId, reqUserId))
+    .then((rows) => rows.map(({ listId }) => listId));
+
+  const searchTerm = `%${search}%`;
+  const searchQuery = or(
+    like(tables.Todo.text, searchTerm),
+    like(tables.List.name, searchTerm),
+  );
+
+  const todos: TodoSelectDetails[] = await db
+    .selectDistinct({
+      id: tables.Todo.id,
+      text: tables.Todo.text,
+      isCompleted: tables.Todo.isCompleted,
+      author: {
+        id: tables.User.id,
+        name: tables.User.name,
+        email: tables.User.email,
+        avatarUrl: tables.User.avatarUrl,
+      },
+      listId: tables.Todo.listId,
+      list: {
+        id: tables.List.id,
+        name: tables.List.name,
+      },
+    })
+    .from(tables.Todo)
+    .innerJoin(tables.List, eq(tables.List.id, tables.Todo.listId))
+    .innerJoin(tables.User, eq(tables.User.id, tables.Todo.userId))
+    .where(
+      and(
+        inArray(tables.Todo.listId, userLists),
+        todoId ? eq(tables.Todo.id, todoId) : undefined,
+        listId ? eq(tables.Todo.listId, listId) : undefined,
+        userId ? eq(tables.Todo.userId, userId) : undefined,
+        search ? searchQuery : undefined,
+      ),
+    )
+    .orderBy(desc(tables.Todo.createdAt))
+    .then((data) =>
+      data.map((todo) => ({ ...todo, isAuthor: todo.author.id === reqUserId })),
+    );
+  return todos;
+};
 
 export const populate = defineAction({
   handler: async (_, c): Promise<TodoSelect[]> => {
@@ -23,8 +93,15 @@ export const populate = defineAction({
   },
 });
 
+export const getForList = defineAction({
+  input: z.object({ listId: z.string() }),
+  handler: async ({ listId }, c): Promise<TodoSelectDetails[]> => {
+    return getTodos(c, { listId });
+  },
+});
+
 export const create = defineAction({
-  input: zTodoSelect.omit({ userId: true }),
+  input: zTodoSelect,
   handler: async (input, c): Promise<TodoSelect> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
