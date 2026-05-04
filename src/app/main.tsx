@@ -50,17 +50,17 @@ type Props = { currentUser: UserSelect; currentUserSession: UserSessionInfo };
 const App: React.FC<Props> = ({ currentUser, currentUserSession }) => {
   useServiceWorker();
   return (
-    <UserProvider user={currentUser} userSession={currentUserSession}>
-      <RealtimeProvider>
-        <RadixProvider>
-          <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <UserProvider user={currentUser} userSession={currentUserSession}>
+        <RealtimeProvider>
+          <RadixProvider>
             <RouterProvider router={router} />
             <CustomToaster />
             <AlertSystem />
-          </QueryClientProvider>
-        </RadixProvider>
-      </RealtimeProvider>
-    </UserProvider>
+          </RadixProvider>
+        </RealtimeProvider>
+      </UserProvider>
+    </QueryClientProvider>
   );
 };
 
