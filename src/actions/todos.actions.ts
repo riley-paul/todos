@@ -100,8 +100,8 @@ export const getForList = defineAction({
 });
 
 export const create = defineAction({
-  input: zTodoSelect,
-  handler: async (input, c): Promise<TodoSelect> => {
+  input: z.object({ listId: z.string(), text: z.string() }),
+  handler: async (input, c): Promise<TodoSelectDetails> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -116,17 +116,18 @@ export const create = defineAction({
       });
     }
 
-    const [todo] = await db
+    const [newTodo] = await db
       .insert(tables.Todo)
       .values({ ...input, userId })
       .returning();
 
-    await notifyOtherListUsers(c, input.listId, {
-      entity: "todo",
-      operation: { type: "insert", data: todo },
-    });
+    // await notifyOtherListUsers(c, input.listId, {
+    //   entity: "todo",
+    //   operation: { type: "insert", data: todo },
+    // });
 
-    return todo;
+    const [result] = await getTodos(c, { todoId: newTodo.id });
+    return result;
   },
 });
 
@@ -188,10 +189,10 @@ export const update = defineAction({
       .where(eq(tables.Todo.id, todoId))
       .returning();
 
-    await notifyOtherListUsers(c, updated.listId, {
-      entity: "todo",
-      operation: { type: "update", data: updated },
-    });
+    // await notifyOtherListUsers(c, updated.listId, {
+    //   entity: "todo",
+    //   operation: { type: "update", data: updated },
+    // });
 
     return updated;
   },

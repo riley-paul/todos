@@ -6,6 +6,7 @@ import {
   Button,
   Checkbox,
   Flex,
+  Spinner,
   Text,
   TextArea,
 } from "@radix-ui/themes";
@@ -25,7 +26,7 @@ import { SaveIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
 import type { TodoSelectDetails } from "@/lib/types";
 import { useUser } from "@/app/providers/user-provider";
-import * as collections from "@/app/lib/collections";
+import useMutations from "@/app/hooks/use-mutations";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -120,6 +121,8 @@ const Todo: React.FC<{ todo: TodoSelectDetails }> = ({ todo }) => {
       ref.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [isHighlighted]);
 
+  const { updateTodoMutation } = useMutations();
+
   return (
     <div
       ref={ref}
@@ -133,24 +136,25 @@ const Todo: React.FC<{ todo: TodoSelectDetails }> = ({ todo }) => {
         <TodoForm
           initialValue={todo.text}
           handleSubmit={(text) => {
-            collections.todos.update(todo.id, (draft) => {
-              draft.text = text;
-            });
+            updateTodoMutation.mutate({ todoId: todo.id, data: { text } });
             setEditingTodoId(null);
           }}
         />
       ) : (
         <>
-          <Checkbox
-            size="3"
-            variant="soft"
-            checked={todo.isCompleted}
-            onCheckedChange={() =>
-              collections.todos.update(todo.id, (draft) => {
-                draft.isCompleted = !todo.isCompleted;
-              })
-            }
-          />
+          <Spinner loading={updateTodoMutation.isPending}>
+            <Checkbox
+              size="3"
+              variant="soft"
+              checked={todo.isCompleted}
+              onCheckedChange={(value) => {
+                updateTodoMutation.mutate({
+                  todoId: todo.id,
+                  data: { isCompleted: Boolean(value) },
+                });
+              }}
+            />
+          </Spinner>
           <Flex
             flexGrow="1"
             align="center"
