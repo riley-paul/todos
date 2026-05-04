@@ -7,9 +7,15 @@ export const qUser = () =>
     queryFn: () => actions.users.getMe.orThrow(),
   });
 
-export const qLists = (search?: string) =>
+export const qLists = () =>
   queryOptions({
-    queryKey: ["lists", search],
+    queryKey: ["lists"],
+    queryFn: () => actions.lists.getAll.orThrow({}),
+  });
+
+export const qListsSearch = (search: string) =>
+  queryOptions({
+    queryKey: ["listsSearch", search],
     queryFn: () => actions.lists.getAll.orThrow({ search }),
   });
 
@@ -23,6 +29,12 @@ export const qTodos = (listId: string) =>
   queryOptions({
     queryKey: ["todos", listId],
     queryFn: () => actions.todos.getForList.orThrow({ listId }),
+  });
+
+export const qTodosSearch = (search: string) =>
+  queryOptions({
+    queryKey: ["todosSearch", search],
+    queryFn: () => actions.todos.getAll.orThrow({ search }),
   });
 
 export const qListUsers = (listId: string) =>

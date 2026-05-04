@@ -79,6 +79,13 @@ export const getForList = defineAction({
   },
 });
 
+export const getAll = defineAction({
+  input: z.object({ search: z.string().optional() }),
+  handler: async ({ search }, c): Promise<TodoSelect[]> => {
+    return getTodos(c, { search });
+  },
+});
+
 export const create = defineAction({
   input: z.object({ listId: z.string(), text: z.string() }),
   handler: async (input, c): Promise<TodoSelect> => {
