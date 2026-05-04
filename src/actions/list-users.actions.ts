@@ -22,6 +22,29 @@ export const populate = defineAction({
   },
 });
 
+export const getListUsers = defineAction({
+  input: z.object({ listId: z.string() }),
+  handler: async ({ listId }, c): Promise<ListUserSelect[]> => {
+    const db = createDb(c.locals.env);
+    const userId = ensureAuthorized(c).id;
+
+    const isMember = await db.query.ListUser.findFirst({
+      where: { listId, userId, isPending: false },
+    });
+
+    if (!isMember) {
+      throw new ActionError({
+        code: "FORBIDDEN",
+        message: "You are not a member of this list",
+      });
+    }
+
+    return db.query.ListUser.findMany({
+      where: { listId },
+    });
+  },
+});
+
 export const acceptInvite = defineAction({
   input: z.object({ listId: z.string() }),
   handler: async ({ listId }, c): Promise<ListUserSelect> => {

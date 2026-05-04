@@ -12,18 +12,10 @@ import { useAtom } from "jotai";
 import { themeAtom } from "../hooks/use-theme";
 import { alertSystemAtom } from "../components/alert-system/alert-system.store";
 import { Trash2Icon } from "lucide-react";
-import useGetSettings from "../hooks/actions/use-get-settings";
-import * as collections from "@/app/lib/collections";
-import { useUser } from "../providers/user-provider";
 import { actions } from "astro:actions";
-import { mutationCache, queryClient } from "../lib/query-client";
-
-const deleteAccountMutation = mutationCache.build(queryClient, {
-  mutationFn: actions.users.remove.orThrow,
-  onSuccess: () => {
-    window.location.reload();
-  },
-});
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { qMe } from "../lib/queries";
+import useMutations from "../hooks/use-mutations";
 
 export const Route = createFileRoute("/settings")({
   component: RouteComponent,
@@ -44,11 +36,20 @@ const Setting: React.FC<SettingProps> = ({ label, children }) => (
 );
 
 function RouteComponent() {
-  const user = useUser();
-  const settings = useGetSettings();
+  const { data: settings } = useSuspenseQuery(qMe());
 
   const [theme, setTheme] = useAtom(themeAtom);
   const [, dispatchAlert] = useAtom(alertSystemAtom);
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: actions.users.remove.orThrow,
+    onSuccess: () => {
+      dispatchAlert({ type: "close" });
+      window.location.reload();
+    },
+  });
+
+  const { updateUserMutation } = useMutations();
 
   const handleDeleteAccount = () => {
     dispatchAlert({
@@ -58,7 +59,7 @@ function RouteComponent() {
         title: "Delete Account",
         message:
           "This action cannot be undone. This will permanently delete your account and remove your data from our servers.",
-        handleDelete: () => deleteAccountMutation.execute({}),
+        handleDelete: () => deleteAccountMutation.mutate({}),
       },
     });
   };
@@ -72,8 +73,8 @@ function RouteComponent() {
             <Switch
               checked={settings.settingGroupCompleted}
               onCheckedChange={(value) => {
-                collections.users.update(user.id, (draft) => {
-                  draft.settingGroupCompleted = value;
+                updateUserMutation.mutate({
+                  settingGroupCompleted: value,
                 });
               }}
             />

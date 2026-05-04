@@ -1,6 +1,11 @@
 import { ensureAuthorized } from "@/api/helpers";
 import { createDb } from "@/db";
-import { zUserSettings, type UserSelect, type UserSettings } from "@/lib/types";
+import {
+  zUserSettings,
+  type UserSelect,
+  type UserSelectDetails,
+  type UserSettings,
+} from "@/lib/types";
 import { ActionError, defineAction } from "astro:actions";
 import * as tables from "@/db/schema";
 import { and, count, eq, inArray, ne } from "drizzle-orm";
@@ -49,6 +54,32 @@ export const populate = defineAction({
       });
 
     return [currentUser, ...otherUsers];
+  },
+});
+
+export const getMe = defineAction({
+  handler: async (_, c): Promise<UserSelectDetails> => {
+    const db = createDb(c.locals.env);
+    const userId = ensureAuthorized(c).id;
+
+    const currentUser = await db.query.User.findFirst({
+      where: { id: userId },
+      columns: {
+        id: true,
+        email: true,
+        name: true,
+        avatarUrl: true,
+        settingGroupCompleted: true,
+      },
+    });
+
+    if (!currentUser)
+      throw new ActionError({
+        code: "UNAUTHORIZED",
+        message: "User not found",
+      });
+
+    return currentUser;
   },
 });
 

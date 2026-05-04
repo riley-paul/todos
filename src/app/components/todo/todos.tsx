@@ -9,9 +9,8 @@ import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
 import NoTodosScreen from "../screens/no-todos";
 import type { ListSelect, TodoSelectDetails } from "@/lib/types";
-import useGetSettings from "@/app/hooks/actions/use-get-settings";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { qTodosForList } from "@/app/lib/queries";
+import { qMe, qTodosForList } from "@/app/lib/queries";
 
 const CompletedTodosActions: React.FC<{ listId: string }> = ({ listId }) => (
   <div className="flex items-center justify-end gap-4">
@@ -68,7 +67,7 @@ type Props = {
 
 const Todos: React.FC<Props> = ({ list }) => {
   const { data: todos } = useSuspenseQuery(qTodosForList(list.id));
-  const settings = useGetSettings();
+  const { data: settings } = useSuspenseQuery(qMe());
 
   const completedTodos = todos.filter(({ isCompleted }) => isCompleted);
   const notCompletedTodos = todos.filter(({ isCompleted }) => !isCompleted);

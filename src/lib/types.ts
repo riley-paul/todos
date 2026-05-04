@@ -43,15 +43,17 @@ export const zUserSettings = createSelectSchema(tables.User)
   .pick({ settingGroupCompleted: true })
   .partial();
 export type UserSettings = z.infer<typeof zUserSettings>;
-export const zUserSelect = createSelectSchema(tables.User)
-  .pick({
-    id: true,
-    name: true,
-    email: true,
-    avatarUrl: true,
-  })
-  .extend(zUserSettings.shape);
+export const zUserSelect = createSelectSchema(tables.User).pick({
+  id: true,
+  name: true,
+  email: true,
+  avatarUrl: true,
+});
+
 export type UserSelect = z.infer<typeof zUserSelect>;
+export type UserSelectDetails = z.infer<typeof zUserSelect> & {
+  settingGroupCompleted: boolean;
+};
 export type UserSelectListDetails = z.infer<typeof zUserSelect> & {
   isPending: boolean;
 };
