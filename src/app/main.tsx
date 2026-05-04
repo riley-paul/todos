@@ -19,15 +19,6 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-const router = createRouter({
-  routeTree,
-  defaultPreload: "intent",
-  defaultPreloadStaleTime: 0,
-  defaultPendingComponent: LoadingScreen,
-  defaultNotFoundComponent: NotFoundScreen,
-  defaultErrorComponent: ErrorScreen,
-});
-
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
   mutationCache: new MutationCache({
@@ -41,6 +32,16 @@ const queryClient = new QueryClient({
       console.error(error);
     },
   }),
+});
+
+const router = createRouter({
+  routeTree,
+  context: { queryClient },
+  defaultPreload: "intent",
+  defaultPreloadStaleTime: 0,
+  defaultPendingComponent: LoadingScreen,
+  defaultNotFoundComponent: NotFoundScreen,
+  defaultErrorComponent: ErrorScreen,
 });
 
 declare module "@tanstack/react-router" {
