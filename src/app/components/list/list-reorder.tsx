@@ -40,7 +40,7 @@ import { Link } from "@tanstack/react-router";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import ListRow from "./list-row";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
-import type { ListSelectDetails } from "@/lib/types";
+import type { ListSelect } from "@/lib/types";
 import * as collections from "@/app/lib/collections";
 import { actions } from "astro:actions";
 import { mutationCache, queryClient } from "@/app/lib/query-client";
@@ -49,7 +49,7 @@ type SortableObjectData =
   | {
       type: "list";
       id: string;
-      list: ListSelectDetails;
+      list: ListSelect;
     }
   | {
       type: "separator";
@@ -57,9 +57,9 @@ type SortableObjectData =
     };
 
 const getSortableObjectList = (
-  lists: ListSelectDetails[],
+  lists: ListSelect[],
 ): SortableObjectData[] => {
-  const listToSortableObj = (list: ListSelectDetails): SortableObjectData => ({
+  const listToSortableObj = (list: ListSelect): SortableObjectData => ({
     type: "list",
     id: list.id,
     list,
@@ -180,7 +180,7 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
   }
 };
 
-type ListReorderContentProps = { lists: ListSelectDetails[] };
+type ListReorderContentProps = { lists: ListSelect[] };
 
 const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -244,7 +244,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
 };
 
 type ListReorderProps = {
-  lists: ListSelectDetails[];
+  lists: ListSelect[];
 };
 
 const ListReorder: React.FC<ListReorderProps> = ({ lists }) => {

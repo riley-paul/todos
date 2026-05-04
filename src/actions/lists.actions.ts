@@ -5,7 +5,7 @@ import {
 } from "astro:actions";
 import { ensureAuthorized } from "@/api/helpers";
 import { createDb } from "@/db";
-import { zListSelect, type ListSelectDetails } from "@/lib/types";
+import { zListSelect, type ListSelect } from "@/lib/types";
 import * as tables from "@/db/schema";
 import { and, asc, desc, eq, like, or, sql } from "drizzle-orm";
 import { z } from "astro/zod";
@@ -18,7 +18,7 @@ const getLists = async (
     listId: string;
     search: string;
   }> = {},
-): Promise<ListSelectDetails[]> => {
+): Promise<ListSelect[]> => {
   const db = createDb(c.locals.env);
   const userId = ensureAuthorized(c).id;
 
@@ -63,14 +63,14 @@ const getLists = async (
 
 export const getAll = defineAction({
   input: z.object({ search: z.string().optional() }),
-  handler: async ({ search }, c): Promise<ListSelectDetails[]> => {
+  handler: async ({ search }, c): Promise<ListSelect[]> => {
     return getLists(c, { search });
   },
 });
 
 export const get = defineAction({
   input: z.object({ listId: z.string() }),
-  handler: async ({ listId }, c): Promise<ListSelectDetails> => {
+  handler: async ({ listId }, c): Promise<ListSelect> => {
     const [list] = await getLists(c, { listId });
     if (!list) {
       throw new ActionError({
@@ -84,7 +84,7 @@ export const get = defineAction({
 
 export const create = defineAction({
   input: z.object({ name: z.string() }),
-  handler: async (input, c): Promise<ListSelectDetails> => {
+  handler: async (input, c): Promise<ListSelect> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -111,7 +111,7 @@ export const update = defineAction({
     listId: z.string(),
     data: zListSelect.pick({ name: true }).partial(),
   }),
-  handler: async (input, c): Promise<ListSelectDetails> => {
+  handler: async (input, c): Promise<ListSelect> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 
@@ -165,7 +165,7 @@ export const remove = defineAction({
 
 export const updateSortShow = defineAction({
   input: z.object({ listIds: z.array(z.string()) }),
-  handler: async ({ listIds }, c): Promise<ListSelectDetails[]> => {
+  handler: async ({ listIds }, c): Promise<ListSelect[]> => {
     const db = createDb(c.locals.env);
     const userId = ensureAuthorized(c).id;
 

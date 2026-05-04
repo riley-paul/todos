@@ -18,7 +18,7 @@ import { alertSystemAtom } from "../alert-system/alert-system.store";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
 import { getListUrl } from "@/lib/constants";
-import type { ListSelectDetails } from "@/lib/types";
+import type { ListSelect } from "@/lib/types";
 import * as collections from "@/app/lib/collections";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
@@ -26,7 +26,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { qTodos } from "@/app/lib/queries";
 
 type Props = {
-  list: ListSelectDetails;
+  list: ListSelect;
 };
 
 const ListMenu: React.FC<Props> = ({ list }) => {

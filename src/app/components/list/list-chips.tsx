@@ -6,12 +6,12 @@ import React from "react";
 import ListReorder from "./list-reorder";
 import { ACCENT_COLOR } from "@/lib/constants";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
-import type { ListSelectDetails } from "@/lib/types";
+import type { ListSelect } from "@/lib/types";
 import useCreateList from "@/app/hooks/actions/use-create-list";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { qLists } from "@/app/lib/queries";
 
-const ListChip: React.FC<{ list: ListSelectDetails }> = ({ list }) => {
+const ListChip: React.FC<{ list: ListSelect }> = ({ list }) => {
   const link = linkOptions({
     to: "/todos/$listId",
     params: { listId: list.id },

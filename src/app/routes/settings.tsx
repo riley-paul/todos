@@ -49,7 +49,7 @@ function RouteComponent() {
     },
   });
 
-  const { updateUserMutation } = useMutations();
+  const { updateUserSettings } = useMutations();
 
   const handleDeleteAccount = () => {
     dispatchAlert({
@@ -73,7 +73,7 @@ function RouteComponent() {
             <Switch
               checked={settings.settingGroupCompleted}
               onCheckedChange={(value) => {
-                updateUserMutation.mutate({
+                updateUserSettings.mutate({
                   settingGroupCompleted: value,
                 });
               }}

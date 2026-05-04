@@ -167,7 +167,7 @@ export default function useMutations() {
     }),
     createList: useMutation({
       mutationFn: actions.lists.create.orThrow,
-      onSuccess: ({ id }, { name }) => {
+      onSuccess: ({ id, name }) => {
         router.invalidate();
         toast.success(`${name} created`);
         navigate({ to: "/todos/$listId", params: { listId: id } });

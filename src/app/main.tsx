@@ -23,7 +23,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
   mutationCache: new MutationCache({
     onSuccess: () => {
-      // queryClient.invalidateQueries();
+      queryClient.invalidateQueries();
     },
     onError: handleError,
   }),

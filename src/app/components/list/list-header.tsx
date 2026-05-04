@@ -3,9 +3,9 @@ import React from "react";
 import ListMenu from "./list-menu";
 import { cn } from "@/app/lib/utils";
 import ListSharing from "./list-sharing";
-import type { ListSelectDetails } from "@/lib/types";
+import type { ListSelect } from "@/lib/types";
 
-type Props = { list: ListSelectDetails };
+type Props = { list: ListSelect };
 
 const ListHeader: React.FC<Props> = ({ list }) => {
   return (

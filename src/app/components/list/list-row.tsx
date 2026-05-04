@@ -3,9 +3,9 @@ import { HourglassIcon } from "lucide-react";
 import React from "react";
 import UserBubbleGroup from "../ui/user/user-bubble-group";
 import { cn } from "@/app/lib/utils";
-import type { ListSelectDetails } from "@/lib/types";
+import type { ListSelect } from "@/lib/types";
 
-type Props = { list: ListSelectDetails };
+type Props = { list: ListSelect };
 
 const ListRow: React.FC<Props> = ({ list }) => {
   return (

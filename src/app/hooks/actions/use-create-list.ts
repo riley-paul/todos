@@ -1,22 +1,11 @@
 import { alertSystemAtom } from "@/app/components/alert-system/alert-system.store";
 import { zListName } from "@/lib/types";
 import { useAtom } from "jotai";
-import * as collections from "@/app/lib/collections";
-import { mutationCache, queryClient } from "@/app/lib/query-client";
-import { actions } from "astro:actions";
-import { useNavigate } from "@tanstack/react-router";
-
-const createListMutation = mutationCache.build(queryClient, {
-  mutationFn: actions.lists.create.orThrow,
-  onSuccess: () => {
-    collections.lists.utils.refetch();
-    collections.listUsers.utils.refetch();
-  },
-});
+import useMutations from "../use-mutations";
 
 export default function useCreateList() {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
-  const navigate = useNavigate();
+  const { createList } = useMutations();
 
   const handleCreateList = () => {
     dispatchAlert({
@@ -29,9 +18,8 @@ export default function useCreateList() {
         placeholder: "List name",
         schema: zListName,
         handleSubmit: async (name: string) => {
-          const newList = await createListMutation.execute({ name });
+          createList.mutate({ name });
           dispatchAlert({ type: "close" });
-          navigate({ to: "/todos/$listId", params: { listId: newList.id } });
         },
       },
     });
