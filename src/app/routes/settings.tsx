@@ -119,11 +119,6 @@ function RouteComponent() {
           <ThemeSetting />
         </Card>
         <Card>
-          <Setting label="Enable notifications">
-            <Button size="1">Enable</Button>
-          </Setting>
-        </Card>
-        <Card>
           <DeleteAccountSetting />
         </Card>
       </article>
