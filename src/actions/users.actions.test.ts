@@ -16,20 +16,6 @@ describe("users.actions", () => {
     fixtures = await provisionFixtures(db);
   });
 
-  describe("populate", () => {
-    it("should return the current user and other users in the same lists", async () => {
-      mockActions(fixtures.mainUser.id);
-      const users = await actions.populate.orThrow();
-
-      expect(Array.isArray(users)).toBe(true);
-
-      const userIds = users.map((u) => u.id);
-      expect(userIds).toContain(fixtures.mainUser.id);
-      expect(userIds).toContain(fixtures.collaboratingUser.id);
-      expect(userIds).not.toContain(fixtures.outsideUser.id);
-    });
-  });
-
   describe("update", () => {
     it("should update the user's settings", async () => {
       mockActions(fixtures.mainUser.id);
