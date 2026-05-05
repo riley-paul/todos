@@ -81,8 +81,8 @@ export default function useMutations() {
         handleError(error);
         context?.resetter();
       },
-      onSuccess: () => {
-        toast.success("Completed todos deleted");
+      onSuccess: (data) => {
+        toast.success(`Deleted ${data.length} completed todos`);
       },
     }),
     uncheckCompletedTodos: useMutation({
@@ -97,8 +97,8 @@ export default function useMutations() {
         handleError(error);
         context?.resetter();
       },
-      onSuccess: () => {
-        toast.success("All completed todos unchecked");
+      onSuccess: (data) => {
+        toast.success(`${data.length} todos unchecked`);
       },
     }),
     moveTodo: useMutation({
@@ -118,7 +118,7 @@ export default function useMutations() {
         const nextList = lists?.find((list) => list.id === listId);
         if (!nextList) return;
 
-        toast.success(`Todo moved to ${nextList.name}`, {
+        toast.success(`Moved to ${nextList.name}`, {
           action: {
             label: "View",
             onClick: () =>
@@ -163,6 +163,7 @@ export default function useMutations() {
           );
         });
         queryClient.setQueryData(qList(data.id).queryKey, data);
+        toast.success("List updated");
       },
     }),
     createList: useMutation({
