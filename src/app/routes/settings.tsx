@@ -68,7 +68,7 @@ function RouteComponent() {
     <React.Fragment>
       <Heading size="7">Settings</Heading>
       <article className="grid gap-4">
-        <Card size="3" className="grid gap-5">
+        <Card className="grid gap-5">
           <Setting label="Group completed todos">
             <Switch
               checked={settings.settingGroupCompleted}
@@ -92,8 +92,10 @@ function RouteComponent() {
               <SegmentedControl.Item value="light">Light</SegmentedControl.Item>
             </SegmentedControl.Root>
           </Setting>
+        </Card>
+        <Card>
           <Setting label="Delete account">
-            <Button size="2" color="red" onClick={handleDeleteAccount}>
+            <Button size="1" color="red" onClick={handleDeleteAccount}>
               <Trash2Icon className="size-4" />
               Delete
             </Button>
