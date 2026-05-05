@@ -1,19 +1,6 @@
-import { createDb } from "@/db";
-import env from "@/envs-runtime";
-import { provisionFixtures, type Fixtures } from "@/test/fixtures";
-import { beforeEach, describe, it } from "vitest";
-import { deleteAllData } from "@/db/scripts/delete-all-data";
-
-const db = createDb(env);
+import { describe, it } from "vitest";
 
 describe("lists.actions", () => {
-  let fixtures: Fixtures;
-
-  beforeEach(async () => {
-    await deleteAllData();
-    fixtures = await provisionFixtures(db);
-  });
-
   describe("create", () => {
     it("should create a new list with the specified name", async () => {});
     it("should add the user to the new list", async () => {});
