@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import React from "react";
 import { useDocumentTitle } from "usehooks-ts";
 import ListHeader from "../components/list/list-header";
@@ -8,11 +8,16 @@ import TodoAdder from "../components/todo-adder";
 import Todos from "../components/todo/todos";
 import NotFoundScreen from "../components/screens/not-found";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { qList } from "../lib/queries";
+import { qList, qTodos } from "../lib/queries";
 
 export const Route = createFileRoute("/todos/$listId")({
   component: RouteComponent,
   validateSearch: z.object({ highlightedTodoId: z.string().optional() }),
+  loader: async ({ params: { listId }, context: { queryClient } }) => {
+    const list = await queryClient.ensureQueryData(qList(listId));
+    if (!list) throw notFound();
+    await queryClient.ensureQueryData(qTodos(listId));
+  },
 });
 
 function RouteComponent() {

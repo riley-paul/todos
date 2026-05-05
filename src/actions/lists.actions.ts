@@ -71,14 +71,9 @@ export const getAll = defineAction({
 
 export const get = defineAction({
   input: z.object({ listId: z.string() }),
-  handler: async ({ listId }, c): Promise<ListSelect> => {
+  handler: async ({ listId }, c): Promise<ListSelect | null> => {
     const [list] = await getLists(c, { listId });
-    if (!list) {
-      throw new ActionError({
-        code: "NOT_FOUND",
-        message: "List not found or you do not have access to it",
-      });
-    }
+    if (!list) return null;
     return list;
   },
 });
