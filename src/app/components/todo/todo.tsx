@@ -87,12 +87,47 @@ const TodoForm: React.FC<{
   );
 };
 
-const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
+const TodoCheckbox: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
+  const { updateTodo } = useMutations();
+  return (
+    <Spinner loading={updateTodo.isPending}>
+      <Checkbox
+        size="3"
+        variant="soft"
+        checked={todo.isCompleted}
+        onCheckedChange={(value) => {
+          updateTodo.mutate({
+            todoId: todo.id,
+            data: { isCompleted: Boolean(value) },
+          });
+        }}
+      />
+    </Spinner>
+  );
+};
+
+const TodoListBadge: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   const { listId } = useParams({ strict: false });
-  const navigate = useNavigate();
+
+  if (todo.listId === listId) return null;
+  return (
+    <Badge asChild>
+      <Link to="/todos/$listId" params={{ listId: todo.list.id }}>
+        {todo.list.name}
+      </Link>
+    </Badge>
+  );
+};
+
+const TodoAuthorBubble: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   const user = useUser();
 
-  const isAuthor = user.id === todo.userId;
+  if (user.id === todo.userId) return null;
+  return <UserBubble user={todo.author} avatarProps={{ size: "1" }} />;
+};
+
+const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
+  const navigate = useNavigate();
 
   const [editingTodoId, setEditingTodoId] = useAtom(editingTodoIdAtom);
   const isEditing = editingTodoId === todo.id;
@@ -142,19 +177,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
         />
       ) : (
         <>
-          <Spinner loading={updateTodo.isPending}>
-            <Checkbox
-              size="3"
-              variant="soft"
-              checked={todo.isCompleted}
-              onCheckedChange={(value) => {
-                updateTodo.mutate({
-                  todoId: todo.id,
-                  data: { isCompleted: Boolean(value) },
-                });
-              }}
-            />
-          </Spinner>
+          <TodoCheckbox todo={todo} />
           <Flex
             flexGrow="1"
             align="center"
@@ -171,16 +194,8 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
               <TextWithLinks text={todo.text} />
             </Text>
           </Flex>
-          {todo.list && todo.list.id !== listId && (
-            <Badge asChild>
-              <Link to="/todos/$listId" params={{ listId: todo.list.id }}>
-                {todo.list.name}
-              </Link>
-            </Badge>
-          )}
-          {!isAuthor && (
-            <UserBubble user={todo.author} avatarProps={{ size: "1" }} />
-          )}
+          <TodoListBadge todo={todo} />
+          <TodoAuthorBubble todo={todo} />
           <TodoMenu todoId={todo.id} />
         </>
       )}
