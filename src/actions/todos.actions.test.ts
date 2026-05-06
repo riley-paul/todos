@@ -20,14 +20,7 @@ describe("todos.actions", () => {
     it("should create a new todo in the specified list", async () => {
       mockActions(fixtures.mainUser.id);
       const listId = fixtures.mainUserSharedList.id;
-      const newTodoData = {
-        id: "new-todo-id",
-        text: "New Todo",
-        isCompleted: false,
-        listId,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      const newTodoData = { text: "New Todo", listId };
       const newTodo = await actions.create.orThrow(newTodoData);
 
       expect(newTodo).toMatchObject({
@@ -47,12 +40,8 @@ describe("todos.actions", () => {
     it("should not allow creating a todo in a list the user doesn't belong to", async () => {
       mockActions(fixtures.mainUser.id);
       const newTodoData = {
-        id: "new-todo-id",
         text: "New Todo",
-        isCompleted: false,
         listId: fixtures.outsideUserList.id,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
       };
       await expect(actions.create.orThrow(newTodoData)).rejects.toMatchObject({
         code: "FORBIDDEN",

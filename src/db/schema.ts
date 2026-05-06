@@ -13,10 +13,6 @@ const listId = text()
   .references(() => List.id, { onDelete: "cascade" });
 
 const timeStamps = {
-  createdAt: text().$defaultFn(() => new Date().toISOString()),
-  updatedAt: text()
-    .$defaultFn(() => new Date().toISOString())
-    .$onUpdateFn(() => new Date().toISOString()),
   createdAt2: integer({ mode: "timestamp_ms" })
     .notNull()
     .$defaultFn(() => new Date()),
