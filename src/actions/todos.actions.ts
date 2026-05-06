@@ -67,7 +67,7 @@ const getTodos = async (
         search ? searchQuery : undefined,
       ),
     )
-    .orderBy(desc(tables.Todo.createdAt2));
+    .orderBy(desc(tables.Todo.createdAt));
 
   return todos;
 };

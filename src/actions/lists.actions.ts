@@ -41,7 +41,7 @@ const getLists = async (
     .orderBy(
       desc(tables.ListUser.show),
       asc(tables.ListUser.order),
-      asc(tables.List.createdAt2),
+      asc(tables.List.createdAt),
     )
     .where(
       and(
