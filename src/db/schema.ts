@@ -13,13 +13,17 @@ const listId = text()
   .references(() => List.id, { onDelete: "cascade" });
 
 const timeStamps = {
-  createdAt: text()
-    .notNull()
-    .$defaultFn(() => new Date().toISOString()),
+  createdAt: text().$defaultFn(() => new Date().toISOString()),
   updatedAt: text()
-    .notNull()
     .$defaultFn(() => new Date().toISOString())
     .$onUpdateFn(() => new Date().toISOString()),
+  createdAt2: integer({ mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt2: integer({ mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date()),
 };
 
 export const User = sqliteTable("user", {
@@ -62,6 +66,7 @@ export const ListUser = sqliteTable("listUser", {
 
   order: integer().notNull().default(1_000_000),
   show: integer({ mode: "boolean" }).notNull().default(true),
+  ...timeStamps,
 });
 
 export const Todo = sqliteTable(
