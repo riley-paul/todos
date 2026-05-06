@@ -17,7 +17,7 @@ const timeStamps = {
     .notNull()
     .$defaultFn(() => new Date().toISOString()),
   updatedAt: text()
-    // .notNull()
+    .notNull()
     .$defaultFn(() => new Date().toISOString())
     .$onUpdateFn(() => new Date().toISOString()),
 };
