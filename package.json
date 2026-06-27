@@ -19,10 +19,7 @@
     "db:seed": "tsx src/db/seed.ts"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@apollo/client": "^3.14.1",
-=======
->>>>>>> origin/main
     "@astrojs/check": "^0.9.9",
     "@astrojs/cloudflare": "^14.0.1",
     "@astrojs/react": "^6.0.0",
@@ -53,6 +50,7 @@
     "dotenv": "^16.6.1",
     "drizzle-orm": "^1.0.0-beta.22",
     "drizzle-zod": "^1.0.0-beta.14-a36c63d",
+    "graphql-yoga": "^5.21.2",
     "jotai": "^2.19.1",
     "lucide-react": "^1.14.0",
     "radix-themes-tw": "^1.1.0",
@@ -67,13 +65,10 @@
     "workbox-window": "^7.4.0"
   },
   "devDependencies": {
-<<<<<<< HEAD
+    "@faker-js/faker": "^10.4.0",
     "@graphql-codegen/cli": "^6.3.1",
     "@graphql-codegen/typescript-react-apollo": "^4.4.2",
     "@parcel/watcher": "^2.5.6",
-=======
->>>>>>> origin/main
-    "@faker-js/faker": "^10.4.0",
     "@tanstack/router-devtools": "^1.166.13",
     "@types/node": "^20.19.39",
     "drizzle-kit": "^1.0.0-beta.22",
