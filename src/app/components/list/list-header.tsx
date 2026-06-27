@@ -3,7 +3,11 @@ import React from "react";
 import ListMenu from "./list-menu";
 import { cn } from "@/app/lib/utils";
 import ListSharing from "./list-sharing";
+<<<<<<< HEAD
 import type { ShallowListFragment } from "@/app/gql.gen";
+=======
+import type { ListSelect } from "@/lib/types";
+>>>>>>> origin/main
 
 type Props = { list: ShallowListFragment };
 

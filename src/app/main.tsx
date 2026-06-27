@@ -18,9 +18,12 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { handleError } from "./lib/error";
+<<<<<<< HEAD
 
 import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
+=======
+>>>>>>> origin/main
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -39,11 +42,15 @@ const apolloClient = new ApolloClient({
 
 const router = createRouter({
   routeTree,
+<<<<<<< HEAD
   context: {
     queryClient,
     apolloClient,
     currentUser: null as unknown as UserSelect,
   },
+=======
+  context: { queryClient },
+>>>>>>> origin/main
   defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
   defaultPendingComponent: LoadingScreen,
@@ -62,6 +69,7 @@ type Props = { currentUser: UserSelect; currentUserSession: UserSessionInfo };
 const App: React.FC<Props> = ({ currentUser, currentUserSession }) => {
   useServiceWorker();
   return (
+<<<<<<< HEAD
     <ApolloProvider client={apolloClient}>
       <QueryClientProvider client={queryClient}>
         <RealtimeProvider currentUser={currentUser}>
@@ -70,12 +78,24 @@ const App: React.FC<Props> = ({ currentUser, currentUserSession }) => {
               router={router}
               context={{ queryClient, apolloClient, currentUser }}
             />
+=======
+    <QueryClientProvider client={queryClient}>
+      <UserProvider user={currentUser} userSession={currentUserSession}>
+        <RealtimeProvider>
+          <RadixProvider>
+            <RouterProvider router={router} />
+>>>>>>> origin/main
             <CustomToaster />
             <AlertSystem />
           </RadixProvider>
         </RealtimeProvider>
+<<<<<<< HEAD
       </QueryClientProvider>
     </ApolloProvider>
+=======
+      </UserProvider>
+    </QueryClientProvider>
+>>>>>>> origin/main
   );
 };
 

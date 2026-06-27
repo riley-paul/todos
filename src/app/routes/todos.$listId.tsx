@@ -7,6 +7,7 @@ import PendingListScreen from "../components/screens/pending-list";
 import TodoAdder from "../components/todo-adder";
 import Todos from "../components/todo/todos";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import {
   GetListDocument,
   useGetListSuspenseQuery,
@@ -18,10 +19,16 @@ import NotFoundScreen from "../components/screens/not-found";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { qList, qTodos } from "../lib/queries";
 >>>>>>> main
+=======
+import NotFoundScreen from "../components/screens/not-found";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { qList, qTodos } from "../lib/queries";
+>>>>>>> origin/main
 
 export const Route = createFileRoute("/todos/$listId")({
   component: RouteComponent,
   validateSearch: z.object({ highlightedTodoId: z.string().optional() }),
+<<<<<<< HEAD
 <<<<<<< HEAD
   loader: async ({ context: { apolloClient }, params: { listId } }) => {
     const {
@@ -31,6 +38,8 @@ export const Route = createFileRoute("/todos/$listId")({
       variables: { listId },
     });
 =======
+=======
+>>>>>>> origin/main
   loader: async ({ params: { listId }, context: { queryClient } }) => {
     const list = await queryClient.ensureQueryData(qList(listId));
 >>>>>>> main
@@ -42,6 +51,7 @@ export const Route = createFileRoute("/todos/$listId")({
 function RouteComponent() {
   const { listId } = Route.useParams();
 <<<<<<< HEAD
+<<<<<<< HEAD
   const { list: loaderList } = Route.useLoaderData();
   const {
     data: { list: queryList },
@@ -49,6 +59,9 @@ function RouteComponent() {
 =======
   const { data: list } = useSuspenseQuery(qList(listId));
 >>>>>>> main
+=======
+  const { data: list } = useSuspenseQuery(qList(listId));
+>>>>>>> origin/main
 
   useDocumentTitle(list?.name ?? "Todos");
 

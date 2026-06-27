@@ -24,7 +24,12 @@ import { useAtom } from "jotai";
 import { editingTodoIdAtom } from "./todos.store";
 import { SaveIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
+<<<<<<< HEAD
 import { useUpdateTodoMutation, type TodoFragment } from "@/app/gql.gen";
+=======
+import type { TodoSelect } from "@/lib/types";
+import { useUser } from "@/app/providers/user-provider";
+>>>>>>> origin/main
 import useMutations from "@/app/hooks/use-mutations";
 
 const TodoForm: React.FC<{
@@ -86,6 +91,7 @@ const TodoForm: React.FC<{
   );
 };
 
+<<<<<<< HEAD
 const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
   const { listId } = useParams({ strict: false });
   const [updateTodo, { loading }] = useUpdateTodoMutation({
@@ -105,6 +111,48 @@ const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
       };
     },
   });
+=======
+const TodoCheckbox: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
+  const { updateTodo } = useMutations();
+  return (
+    <Spinner loading={updateTodo.isPending}>
+      <Checkbox
+        size="3"
+        variant="soft"
+        checked={todo.isCompleted}
+        onCheckedChange={(value) => {
+          updateTodo.mutate({
+            todoId: todo.id,
+            data: { isCompleted: Boolean(value) },
+          });
+        }}
+      />
+    </Spinner>
+  );
+};
+
+const TodoListBadge: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
+  const { listId } = useParams({ strict: false });
+
+  if (todo.listId === listId) return null;
+  return (
+    <Badge asChild>
+      <Link to="/todos/$listId" params={{ listId: todo.list.id }}>
+        {todo.list.name}
+      </Link>
+    </Badge>
+  );
+};
+
+const TodoAuthorBubble: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
+  const user = useUser();
+
+  if (user.id === todo.userId) return null;
+  return <UserBubble user={todo.author} avatarProps={{ size: "1" }} />;
+};
+
+const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
+>>>>>>> origin/main
   const navigate = useNavigate();
 
   const [editingTodoId, setEditingTodoId] = useAtom(editingTodoIdAtom);
@@ -149,12 +197,17 @@ const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
         <TodoForm
           initialValue={todo.text}
           handleSubmit={(text) => {
+<<<<<<< HEAD
             updateTodo({ variables: { input: { id: todo.id, text } } });
+=======
+            updateTodo.mutate({ todoId: todo.id, data: { text } });
+>>>>>>> origin/main
             setEditingTodoId(null);
           }}
         />
       ) : (
         <>
+<<<<<<< HEAD
           <Spinner loading={loading}>
             <Checkbox
               size="3"
@@ -169,6 +222,9 @@ const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
               }
             />
           </Spinner>
+=======
+          <TodoCheckbox todo={todo} />
+>>>>>>> origin/main
           <Flex
             flexGrow="1"
             align="center"
