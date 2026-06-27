@@ -9,18 +9,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { mergeRefs } from "@/app/lib/utils";
 import { PlusIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
-<<<<<<< HEAD
 import { useCreateTodoMutation, type ListFullFragment } from "@/app/gql.gen";
-=======
-import useMutations from "../hooks/use-mutations";
->>>>>>> origin/main
 
 const schema = z.object({
   text: z.string().nonempty("Todo text cannot be empty"),
 });
 type Schema = z.infer<typeof schema>;
 
-<<<<<<< HEAD
 const TodoAdder: React.FC<{ list: ListFullFragment }> = ({ list }) => {
   const [createTodo, { loading }] = useCreateTodoMutation({
     optimisticResponse: ({ input: { text } }) => {
@@ -55,9 +50,6 @@ const TodoAdder: React.FC<{ list: ListFullFragment }> = ({ list }) => {
     },
   });
 
-=======
-const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
->>>>>>> origin/main
   const { control, handleSubmit, reset } = useForm<Schema>({
     resolver: zodResolver(schema),
     values: { text: "" },
@@ -65,19 +57,13 @@ const TodoAdder: React.FC<{ listId: string }> = ({ listId }) => {
 
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
 
-  const { createTodo } = useMutations();
-
   const resetInput = () => {
     flushSync(() => reset());
     resizeTextArea(inputRef.current);
   };
 
   const onSubmit = handleSubmit(({ text }) => {
-<<<<<<< HEAD
     createTodo({ variables: { input: { text, listId: list.id } } });
-=======
-    createTodo.mutate({ text, listId });
->>>>>>> origin/main
     resetInput();
   });
 

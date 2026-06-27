@@ -5,9 +5,9 @@ import { CheckIcon, HourglassIcon, XIcon } from "lucide-react";
 import UserRow from "../ui/user/user-row";
 import NotFoundScreen from "./not-found";
 import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
-import type { ListSelect } from "@/lib/types";
+import type { ShallowListFragment } from "@/app/gql.gen";
 
-type Props = { list: ListSelect };
+type Props = { list: ShallowListFragment };
 
 const PendingListScreen: React.FC<Props> = ({ list }) => {
   if (!list) return <NotFoundScreen />;

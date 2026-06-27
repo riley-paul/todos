@@ -65,10 +65,7 @@ const App: React.FC<Props> = ({ currentUser, currentUserSession }) => {
         <UserProvider user={currentUser} userSession={currentUserSession}>
           <RealtimeProvider>
             <RadixProvider>
-              <RouterProvider
-                router={router}
-                context={{ queryClient, apolloClient }}
-              />
+              <RouterProvider router={router} />
               <CustomToaster />
               <AlertSystem />
             </RadixProvider>
