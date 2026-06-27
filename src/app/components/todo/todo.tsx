@@ -25,6 +25,7 @@ import { editingTodoIdAtom } from "./todos.store";
 import { SaveIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
 import { useUpdateTodoMutation, type TodoFragment } from "@/app/gql.gen";
+import useMutations from "@/app/hooks/use-mutations";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -133,6 +134,8 @@ const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
       ref.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [isHighlighted]);
 
+  const { updateTodo } = useMutations();
+
   return (
     <div
       ref={ref}
@@ -174,21 +177,16 @@ const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
           >
             <Text
               size="2"
-              className={cn(todo.isCompleted && "line-through opacity-50")}
+              className={cn(
+                todo.isCompleted && "line-through opacity-50",
+                "leading-relaxed",
+              )}
             >
               <TextWithLinks text={todo.text} />
             </Text>
           </Flex>
-          {todo.list && todo.list.id !== listId && (
-            <Badge asChild>
-              <Link to="/todos/$listId" params={{ listId: todo.list.id }}>
-                {todo.list.name}
-              </Link>
-            </Badge>
-          )}
-          {!todo.isAuthor && (
-            <UserBubble user={todo.author} avatarProps={{ size: "1" }} />
-          )}
+          <TodoListBadge todo={todo} />
+          <TodoAuthorBubble todo={todo} />
           <TodoMenu todoId={todo.id} />
         </>
       )}

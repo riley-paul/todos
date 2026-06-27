@@ -10,9 +10,10 @@ import {
   generateSessionToken,
   setSessionTokenCookie,
 } from "@/lib/lucia";
-import { env } from "cloudflare:workers";
 
 export async function GET(context: APIContext): Promise<Response> {
+  const { env } = context.locals;
+
   const db = createDb(env);
   const google = createGoogle(env);
 
@@ -52,10 +53,14 @@ export async function GET(context: APIContext): Promise<Response> {
         .set({ googleId: googleUser.id })
         .where(eq(User.id, existingUser.id));
       const sessionToken = generateSessionToken();
-      const session = await createSession(env, sessionToken, existingUser.id);
+      const session = await createSession(
+        context,
+        sessionToken,
+        existingUser.id,
+      );
       if (isNative)
         return context.redirect(`todos://auth?token=${sessionToken}`);
-      setSessionTokenCookie(env, context, sessionToken, session.expiresAt);
+      setSessionTokenCookie(context, sessionToken, session.expiresAt);
       return context.redirect("/");
     }
 
@@ -71,9 +76,9 @@ export async function GET(context: APIContext): Promise<Response> {
       .returning();
 
     const sessionToken = generateSessionToken();
-    const session = await createSession(env, sessionToken, user.id);
+    const session = await createSession(context, sessionToken, user.id);
     if (isNative) return context.redirect(`todos://auth?token=${sessionToken}`);
-    setSessionTokenCookie(env, context, sessionToken, session.expiresAt);
+    setSessionTokenCookie(context, sessionToken, session.expiresAt);
     return context.redirect("/");
   } catch (e) {
     // the specific error message depends on the provider

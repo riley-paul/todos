@@ -11,17 +11,17 @@ import {
   TrashIcon,
 } from "lucide-react";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
-import useMutations from "@/app/hooks/use-mutations";
 import { useAtom } from "jotai";
 import { toast } from "sonner";
 import { useCopyToClipboard } from "usehooks-ts";
 import { alertSystemAtom } from "../alert-system/alert-system.store";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
-import useAlerts from "@/app/hooks/use-alerts";
 import { getListUrl } from "@/lib/constants";
 import { useDeleteListMutation, type ShallowListFragment } from "@/app/gql.gen";
 import { useParams, useRouter } from "@tanstack/react-router";
+import useMutations from "@/app/hooks/use-mutations";
+import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
 
 type Props = {
   list: ShallowListFragment;
@@ -51,7 +51,9 @@ const ListMenu: React.FC<Props> = ({ list }) => {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const [, copyToClipboard] = useCopyToClipboard();
 
-  const isOnlyUser = otherUsers.length === 0;
+  const isOnlyUser = list.otherUsers.length === 0;
+
+  const { handleLeaveList } = useManageListUsers(list.id);
 
   const handleRenameList = () => {
     dispatchAlert({
@@ -60,11 +62,11 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         type: "input",
         title: "Rename List",
         message: "Update the name of your list",
-        value: name,
+        value: list.name,
         placeholder: "Enter new list name",
         schema: zListName,
         handleSubmit: (name: string) => {
-          updateList.mutate({ id, data: { name } });
+          updateList.mutate({ listId: list.id, data: { name } });
           dispatchAlert({ type: "close" });
           toast.success("List renamed successfully");
         },
@@ -87,16 +89,14 @@ const ListMenu: React.FC<Props> = ({ list }) => {
     });
   };
 
-  const { handleRemoveSelf } = useAlerts();
-
   const handleCopyLink = () => {
-    const link = getListUrl(id);
+    const link = getListUrl(list.id);
     copyToClipboard(link);
     toast.success("Link copied to clipboard", { description: link });
   };
 
   const handleOpenInNewTab = () => {
-    const link = getListUrl(id);
+    const link = getListUrl(list.id);
     window.open(link, "_blank");
   };
 
@@ -133,14 +133,16 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       key: "uncheck-all",
       text: "Uncheck all",
       icon: <SquareMinusIcon className="size-4 opacity-70" />,
-      onClick: () => uncheckCompletedTodos.mutate({ listId: id }),
+      onClick: () => uncheckCompletedTodos.mutate({ listId: list.id }),
+      disabled: numCompleted <= 0,
     },
     {
       type: "item",
       key: "delete-completed",
       text: "Delete completed",
       icon: <ListXIcon className="size-4 opacity-70" />,
-      onClick: () => deleteCompletedTodos.mutate({ listId: id }),
+      onClick: () => deleteCompletedTodos.mutate({ listId: list.id }),
+      disabled: numCompleted <= 0,
     },
     {
       type: "separator",
@@ -151,7 +153,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       text: "Leave",
       icon: <LogOutIcon className="size-4 opacity-70" />,
       color: "amber",
-      onClick: () => handleRemoveSelf({ listId: id }),
+      onClick: handleLeaveList,
       hide: isOnlyUser,
     },
     {

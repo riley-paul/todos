@@ -12,7 +12,6 @@ const ListRow: React.FC<Props> = ({ list }) => {
     <article className="flex flex-1 items-center gap-4">
       <Text
         size="2"
-        weight="bold"
         className={cn("flex flex-1 gap-2", list.isPending && "opacity-50")}
       >
         <span>{list.name}</span>

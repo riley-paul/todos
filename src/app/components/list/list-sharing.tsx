@@ -39,7 +39,7 @@ const ListSharing: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
             size="3"
             variant="ghost"
             className="flex flex-1 justify-start gap-3 text-left"
-            onClick={() => handleInviteUser({ listId: list.id })}
+            onClick={handleInviteToList}
           >
             <Avatar
               src=""

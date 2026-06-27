@@ -10,8 +10,6 @@ import {
   Tooltip,
   VisuallyHidden,
 } from "@radix-ui/themes";
-import { useQuery } from "@tanstack/react-query";
-import { qListSearch, qTodoSearch } from "@/app/lib/queries";
 import { cn } from "@/app/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
 import { SearchIcon, XIcon } from "lucide-react";
@@ -22,6 +20,8 @@ import ListRow from "./list/list-row";
 import TodoRow from "./todo/todo-row";
 import NoSearchResultsScreen from "./screens/no-search-results";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
+import { useQuery } from "@tanstack/react-query";
+import { qListsSearch, qTodosSearch } from "../lib/queries";
 
 type ContentProps = {
   handleClose: () => void;
@@ -71,10 +71,10 @@ const CommandList: React.FC<{ handleClose: () => void }> = ({
   const navigate = useNavigate();
 
   const { data: lists = [], isLoading: listsLoading } = useQuery(
-    qListSearch(""),
+    qListsSearch(""),
   );
   const { data: todos = [], isLoading: todosLoading } = useQuery(
-    qTodoSearch(""),
+    qTodosSearch(""),
   );
 
   if (listsLoading || todosLoading) {

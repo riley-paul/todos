@@ -18,7 +18,7 @@ const AppHeader: React.FC<Props> = ({ currentUser }) => {
     <header
       className={cn(
         "sticky top-0 z-10 flex h-18 flex-col justify-center",
-        "bg-linear-to-t from-[color-mix(in_lch,var(--background)_80%,transparent)] to-[var(--background)] backdrop-blur-md",
+        "bg-linear-to-t from-[color-mix(in_lch,var(--background)_80%,transparent)] to-(--background) backdrop-blur-md",
       )}
     >
       <div className="container2 flex flex-1 items-center justify-between">

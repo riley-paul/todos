@@ -1,4 +1,3 @@
-import useAlerts from "@/app/hooks/use-alerts";
 import useIsLinkActive from "@/app/hooks/use-is-link-active";
 import { Badge, IconButton, Kbd, Tooltip } from "@radix-ui/themes";
 import { Link, linkOptions } from "@tanstack/react-router";
@@ -11,6 +10,7 @@ import {
   useGetListsForChipsSuspenseQuery,
   type ShallowListFragment,
 } from "@/app/gql.gen";
+import useAlerts from "@/app/hooks/use-alerts";
 
 const ListChip: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
   const link = linkOptions({
@@ -35,7 +35,9 @@ const ListChip: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
     >
       <Link {...link}>
         <span>{list.name}</span>
-        <span className="font-mono opacity-70">{list.todoCount}</span>
+        {!list.isPending && (
+          <span className="font-mono opacity-70">{list.todoCount}</span>
+        )}
       </Link>
     </Badge>
   );

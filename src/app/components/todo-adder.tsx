@@ -57,6 +57,8 @@ const TodoAdder: React.FC<{ list: ListFullFragment }> = ({ list }) => {
 
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
 
+  const { createTodo } = useMutations();
+
   const resetInput = () => {
     flushSync(() => reset());
     resizeTextArea(inputRef.current);

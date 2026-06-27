@@ -1,9 +1,5 @@
-import {
-  deleteSessionTokenCookie,
-  invalidateSession,
-} from "@/lib/lucia";
+import { deleteSessionTokenCookie, invalidateSession } from "@/lib/lucia";
 import type { APIContext } from "astro";
-import { env } from "cloudflare:workers";
 
 export async function GET(context: APIContext): Promise<Response> {
   if (!context.locals.session) {
@@ -12,8 +8,8 @@ export async function GET(context: APIContext): Promise<Response> {
     });
   }
 
-  invalidateSession(env, context.locals.session.id);
-  deleteSessionTokenCookie(env, context);
+  invalidateSession(context, context.locals.session.id);
+  deleteSessionTokenCookie(context);
 
   return context.redirect("/");
 }

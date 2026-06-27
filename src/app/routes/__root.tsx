@@ -3,7 +3,6 @@ import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import React from "react";
 import ListChips from "../components/list/list-chips";
-import type { UserSelect } from "@/lib/types";
 import AppHeader from "../components/app-header";
 import type { ApolloClient, NormalizedCacheObject } from "@apollo/client";
 import {
@@ -31,7 +30,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function Component() {
-  const { currentUser } = Route.useRouteContext();
+  const currentUser = useUser();
   return (
     <React.Fragment>
       <AppHeader currentUser={currentUser} />

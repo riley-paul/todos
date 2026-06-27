@@ -21,5 +21,9 @@ import RootLayout from "@/pages/_root-layout.astro";
 </script>
 
 <RootLayout>
-  <App client:only="react" currentUser={Astro.locals.user!} />
+  <App
+    client:only="react"
+    currentUser={Astro.locals.user!}
+    currentUserSession={Astro.locals.session!}
+  />
 </RootLayout>

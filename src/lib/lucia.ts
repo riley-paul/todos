@@ -19,10 +19,11 @@ export function generateSessionToken(): string {
 }
 
 export async function createSession(
-  env: Env,
+  context: APIContext,
   token: string,
   userId: string,
 ): Promise<UserSessionInfo> {
+  const { env } = context.locals;
   const db = createDb(env);
   const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
   const session: UserSessionInfo = {
@@ -35,9 +36,10 @@ export async function createSession(
 }
 
 export async function validateSessionToken(
-  env: Env,
+  context: APIContext,
   token: string,
 ): Promise<SessionValidationResult> {
+  const { env } = context.locals;
   const db = createDb(env);
   const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 
@@ -70,28 +72,29 @@ export async function validateSessionToken(
 }
 
 export async function invalidateSession(
-  env: Env,
+  context: APIContext,
   sessionId: string,
 ): Promise<void> {
+  const { env } = context.locals;
   const db = createDb(env);
   await db.delete(UserSession).where(eq(UserSession.id, sessionId));
 }
 
 export async function invalidateAllSessions(
-  env: Env,
+  context: APIContext,
   userId: string,
 ): Promise<void> {
+  const { env } = context.locals;
   const db = createDb(env);
   await db.delete(UserSession).where(eq(UserSession.userId, userId));
 }
 
 export function setSessionTokenCookie(
-  env: Env,
   context: APIContext,
   token: string,
   expiresAt: Date,
 ): void {
-  const secure = env.NODE_ENV === "production";
+  const secure = import.meta.env.PROD;
   context.cookies.set(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
     path: "/",
@@ -101,8 +104,8 @@ export function setSessionTokenCookie(
   });
 }
 
-export function deleteSessionTokenCookie(env: Env, context: APIContext): void {
-  const secure = env.NODE_ENV === "production";
+export function deleteSessionTokenCookie(context: APIContext): void {
+  const secure = import.meta.env.PROD;
   context.cookies.set(SESSION_COOKIE_NAME, "", {
     httpOnly: true,
     path: "/",

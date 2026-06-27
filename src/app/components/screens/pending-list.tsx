@@ -2,20 +2,17 @@ import React from "react";
 import Empty from "../ui/empty";
 import { Button, Card, Heading } from "@radix-ui/themes";
 import { CheckIcon, HourglassIcon, XIcon } from "lucide-react";
-import useMutations from "@/app/hooks/use-mutations";
-import { getRouteApi } from "@tanstack/react-router";
 import UserRow from "../ui/user/user-row";
+import NotFoundScreen from "./not-found";
+import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
+import type { ListSelect } from "@/lib/types";
 
-const route = getRouteApi("/todos/$listId");
+type Props = { list: ListSelect };
 
-const PendingListScreen: React.FC = () => {
-  const { listId } = route.useParams();
-  const { list } = route.useLoaderData();
+const PendingListScreen: React.FC<Props> = ({ list }) => {
+  if (!list) return <NotFoundScreen />;
 
-  const { acceptListJoin, removeSelfFromList } = useMutations();
-
-  const handleAcceptJoin = () => acceptListJoin.mutate({ listId });
-  const handleDeclineJoin = () => removeSelfFromList.mutate({ listId });
+  const { handleLeaveList, handleAcceptInvite } = useManageListUsers(list.id);
 
   return (
     <Empty.Root>
@@ -31,11 +28,11 @@ const PendingListScreen: React.FC = () => {
       </Empty.Header>
       <Empty.Content>
         <div className="grid w-full max-w-2xs grid-cols-2 gap-2">
-          <Button variant="soft" className="h-9" onClick={handleDeclineJoin}>
+          <Button variant="soft" className="h-9" onClick={handleLeaveList}>
             <XIcon className="size-4" />
             Decline
           </Button>
-          <Button variant="solid" className="h-9" onClick={handleAcceptJoin}>
+          <Button variant="solid" className="h-9" onClick={handleAcceptInvite}>
             <CheckIcon className="size-4" />
             Join
           </Button>

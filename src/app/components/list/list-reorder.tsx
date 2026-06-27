@@ -36,12 +36,12 @@ import {
 } from "lucide-react";
 import { cn } from "@/app/lib/utils";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
-import useMutations from "@/app/hooks/use-mutations";
 import { Link } from "@tanstack/react-router";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import ListRow from "./list-row";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import type { ShallowListFragment } from "@/app/gql.gen";
+import useMutations from "@/app/hooks/use-mutations";
 
 type SortableObjectData =
   | {
@@ -180,6 +180,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
   const [localObjs, setLocalObjs] = useState(getSortableObjectList(lists));
 
   useEffect(() => setLocalObjs(getSortableObjectList(lists)), [lists]);
+  const { updateListSortShow } = useMutations();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -189,13 +190,11 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
     }),
   );
 
-  const { updateListSortShow } = useMutations();
-
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     setActiveId(null);
     const { active, over } = event;
     if (over && active.id !== over.id) {

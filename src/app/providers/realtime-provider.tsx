@@ -1,28 +1,38 @@
 import { AblyProvider, ChannelProvider, useChannel } from "ably/react";
 import * as Ably from "ably";
 import React from "react";
+import { useUser, useUserSession } from "./user-provider";
+import { createChannelName } from "@/lib/realtime";
 import { useQueryClient } from "@tanstack/react-query";
-import type { UserSelect } from "@/lib/types";
 
 const realtimeClient = new Ably.Realtime({ authUrl: "/ably-auth" });
 
-type Props = React.PropsWithChildren<{ currentUser: UserSelect }>;
-
-const Invalidator: React.FC<Props> = ({ children, currentUser }) => {
+type InvalidatorProps = React.PropsWithChildren<{ channelName: string }>;
+const Invalidator: React.FC<InvalidatorProps> = ({ children, channelName }) => {
   const queryClient = useQueryClient();
-  useChannel(`user:${currentUser.id}`, "invalidate", () => {
-    console.log("Invalidating...");
+
+  useChannel(channelName, "invalidate", ({ data }) => {
+    console.log("Received invalidate message", { channelName, data });
     queryClient.invalidateQueries();
   });
 
   return children;
 };
 
-const RealtimeProvider: React.FC<Props> = ({ children, currentUser }) => {
+type RealtimeProviderProps = React.PropsWithChildren;
+const RealtimeProvider: React.FC<RealtimeProviderProps> = ({ children }) => {
+  const currentUser = useUser();
+  const currentUserSession = useUserSession();
+
+  const channelName = createChannelName({
+    userId: currentUser.id,
+    sessionId: currentUserSession.id,
+  });
+
   return (
     <AblyProvider client={realtimeClient}>
-      <ChannelProvider channelName={`user:${currentUser.id}`}>
-        <Invalidator currentUser={currentUser}>{children}</Invalidator>
+      <ChannelProvider channelName={channelName}>
+        <Invalidator channelName={channelName}>{children}</Invalidator>
       </ChannelProvider>
     </AblyProvider>
   );

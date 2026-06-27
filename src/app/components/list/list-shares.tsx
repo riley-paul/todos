@@ -1,25 +1,29 @@
-import type { ListUserSelect } from "@/lib/types";
 import React from "react";
 import { Button, Separator, Text, type ButtonProps } from "@radix-ui/themes";
 import { ArrowDownIcon, HourglassIcon, LogOutIcon, XIcon } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { qListShares, qUser } from "@/app/lib/queries";
-import useAlerts from "@/app/hooks/use-alerts";
-import LoadingScreen from "../screens/loading";
 import UserRow from "../ui/user/user-row";
+import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
+import { useUser } from "@/app/providers/user-provider";
+import type { ListUserSelect } from "@/lib/types";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { qListUsers } from "@/app/lib/queries";
 
 type ListShareProps = {
-  listShare: ListUserSelect;
+  listId: string;
+  listUser: ListUserSelect;
   isOnlyUser?: boolean;
 };
 
-const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
-  const { data: currentUser } = useQuery(qUser);
-  const { handleCancelInvite, handleRemoveSelf, handleRemoveUser } =
-    useAlerts();
+const ListUser: React.FC<ListShareProps> = ({
+  listId,
+  listUser,
+  isOnlyUser,
+}) => {
+  const currentUser = useUser();
+  const { handleRemoveFromList, handleLeaveList } = useManageListUsers(listId);
 
   const getActionProps = (): ButtonProps => {
-    if (listShare.isPending) {
+    if (listUser.isPending) {
       return {
         color: "amber",
         children: (
@@ -28,15 +32,11 @@ const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
             <span>Cancel</span>
           </React.Fragment>
         ),
-        onClick: () =>
-          handleCancelInvite({
-            listId: listShare.listId,
-            userToRemoveId: listShare.userId,
-          }),
+        onClick: () => handleRemoveFromList(listUser.id),
       };
     }
 
-    if (listShare.userId === currentUser?.id) {
+    if (listUser.id === currentUser?.id) {
       return {
         disabled: isOnlyUser,
         children: (
@@ -45,7 +45,7 @@ const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
             <span>Leave</span>
           </React.Fragment>
         ),
-        onClick: () => handleRemoveSelf({ listId: listShare.listId }),
+        onClick: handleLeaveList,
       };
     }
 
@@ -57,19 +57,15 @@ const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
           <span>Remove</span>
         </React.Fragment>
       ),
-      onClick: () =>
-        handleRemoveUser({
-          listId: listShare.listId,
-          userToRemoveId: listShare.userId,
-        }),
+      onClick: () => handleRemoveFromList(listUser.id),
     };
   };
 
   return (
     <article className="xs:hover:bg-accent-3 rounded-3 -mx-3 flex items-center gap-3 px-3 py-2 transition-colors ease-in">
-      <UserRow user={listShare.user} className="flex-1" isLarge />
+      <UserRow user={listUser} className="flex-1" isLarge />
       <section className="flex items-center gap-3">
-        {listShare.isPending && (
+        {listUser.isPending && (
           <HourglassIcon className="text-amber-10 size-3" />
         )}
         <Button size="1" variant="soft" {...getActionProps()} />
@@ -79,23 +75,22 @@ const ListShare: React.FC<ListShareProps> = ({ listShare, isOnlyUser }) => {
 };
 
 const ListShares: React.FC<{ listId: string }> = ({ listId }) => {
-  const { data: listShares, isLoading } = useQuery(qListShares(listId));
+  const { data: listUsers } = useSuspenseQuery(qListUsers(listId));
 
-  if (isLoading || listShares === undefined) return <LoadingScreen />;
-
-  const pendingListShares = listShares.filter(({ isPending }) => isPending);
-  const nonPendingListShares = listShares.filter(({ isPending }) => !isPending);
+  const pendingListUsers = listUsers.filter(({ isPending }) => isPending);
+  const nonPendingListUsers = listUsers.filter(({ isPending }) => !isPending);
 
   return (
     <article className="-mx-6 flex flex-col gap-1 overflow-x-hidden overflow-y-auto px-6">
-      {nonPendingListShares.map((listShare) => (
-        <ListShare
+      {nonPendingListUsers.map((listShare) => (
+        <ListUser
           key={listShare.id}
-          listShare={listShare}
-          isOnlyUser={nonPendingListShares.length === 1}
+          listId={listId}
+          listUser={listShare}
+          isOnlyUser={nonPendingListUsers.length === 1}
         />
       ))}
-      {pendingListShares.length > 0 && (
+      {pendingListUsers.length > 0 && (
         <div className="flex items-center gap-2 py-2">
           <section className="flex items-center gap-1">
             <ArrowDownIcon className="size-3 opacity-70" />
@@ -111,8 +106,8 @@ const ListShares: React.FC<{ listId: string }> = ({ listId }) => {
           <Separator size="4" className="h-0.5" />
         </div>
       )}
-      {pendingListShares.map((listShare) => (
-        <ListShare key={listShare.id} listShare={listShare} />
+      {pendingListUsers.map((listUser) => (
+        <ListUser key={listUser.id} listId={listId} listUser={listUser} />
       ))}
     </article>
   );

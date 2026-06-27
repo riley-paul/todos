@@ -7,6 +7,14 @@ const relations = defineRelations(schema, (r) => ({
       from: r.User.id.through(r.ListUser.userId),
       to: r.List.id.through(r.ListUser.listId),
     }),
+    listUsers: r.many.ListUser({
+      from: r.User.id,
+      to: r.ListUser.userId,
+    }),
+    sessions: r.many.UserSession({
+      from: r.User.id,
+      to: r.UserSession.userId,
+    }),
   },
   List: {
     todos: r.many.Todo({
@@ -30,6 +38,10 @@ const relations = defineRelations(schema, (r) => ({
     list: r.one.List({
       from: r.Todo.listId,
       to: r.List.id,
+    }),
+    users: r.many.User({
+      from: r.Todo.listId.through(r.ListUser.listId),
+      to: r.User.id.through(r.ListUser.userId),
     }),
   },
 }));

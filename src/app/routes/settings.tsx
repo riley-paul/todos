@@ -1,5 +1,3 @@
-import useMutations from "@/app/hooks/use-mutations";
-import { qUser } from "@/app/lib/queries";
 import {
   Button,
   Card,
@@ -8,20 +6,19 @@ import {
   Switch,
   Text,
 } from "@radix-ui/themes";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 import { useAtom } from "jotai";
 import { themeAtom } from "../hooks/use-theme";
 import { alertSystemAtom } from "../components/alert-system/alert-system.store";
 import { Trash2Icon } from "lucide-react";
+import { actions } from "astro:actions";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { qUser } from "../lib/queries";
+import useMutations from "../hooks/use-mutations";
 
 export const Route = createFileRoute("/settings")({
   component: RouteComponent,
-  loader: async ({ context }) => {
-    const user = await context.queryClient.ensureQueryData(qUser);
-    return { user };
-  },
 });
 
 type SettingProps = React.PropsWithChildren<{
@@ -38,12 +35,16 @@ const Setting: React.FC<SettingProps> = ({ label, children }) => (
   </Text>
 );
 
-function RouteComponent() {
-  const { data: user } = useSuspenseQuery(qUser);
-  const { updateUserSettings, deleteUser } = useMutations();
-
-  const [theme, setTheme] = useAtom(themeAtom);
+const DeleteAccountSetting: React.FC = () => {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: actions.users.remove.orThrow,
+    onSuccess: () => {
+      dispatchAlert({ type: "close" });
+      window.location.reload();
+    },
+  });
 
   const handleDeleteAccount = () => {
     dispatchAlert({
@@ -53,46 +54,72 @@ function RouteComponent() {
         title: "Delete Account",
         message:
           "This action cannot be undone. This will permanently delete your account and remove your data from our servers.",
-        handleDelete: () => {
-          deleteUser.mutate({});
-          dispatchAlert({ type: "close" });
-        },
+        handleDelete: () => deleteAccountMutation.mutate({}),
       },
     });
   };
 
   return (
+    <Setting label="Delete account">
+      <Button
+        size="1"
+        color="red"
+        variant="surface"
+        onClick={handleDeleteAccount}
+      >
+        <Trash2Icon className="size-4" />
+        Delete
+      </Button>
+    </Setting>
+  );
+};
+
+const ThemeSetting: React.FC = () => {
+  const [theme, setTheme] = useAtom(themeAtom);
+  return (
+    <Setting label="Dark mode">
+      <SegmentedControl.Root
+        size="1"
+        value={theme}
+        onValueChange={(value) => setTheme(value as any)}
+      >
+        <SegmentedControl.Item value="system">System</SegmentedControl.Item>
+        <SegmentedControl.Item value="dark">Dark</SegmentedControl.Item>
+        <SegmentedControl.Item value="light">Light</SegmentedControl.Item>
+      </SegmentedControl.Root>
+    </Setting>
+  );
+};
+
+const GroupCompletedSetting: React.FC = () => {
+  const { data: settings } = useSuspenseQuery(qUser());
+  const { updateUserSettings } = useMutations();
+
+  return (
+    <Setting label="Group completed todos">
+      <Switch
+        checked={settings.settingGroupCompleted}
+        onCheckedChange={(value) => {
+          updateUserSettings.mutate({
+            settingGroupCompleted: value,
+          });
+        }}
+      />
+    </Setting>
+  );
+};
+
+function RouteComponent() {
+  return (
     <React.Fragment>
       <Heading size="7">Settings</Heading>
       <article className="grid gap-4">
-        <Card size="3" className="grid gap-5">
-          <Setting label="Group completed todos">
-            <Switch
-              checked={user.settingGroupCompleted}
-              onCheckedChange={(settingGroupCompleted) => {
-                updateUserSettings.mutate({ settingGroupCompleted });
-              }}
-            />
-          </Setting>
-          <Setting label="Dark mode">
-            <SegmentedControl.Root
-              size="1"
-              value={theme}
-              onValueChange={(value) => setTheme(value as any)}
-            >
-              <SegmentedControl.Item value="system">
-                System
-              </SegmentedControl.Item>
-              <SegmentedControl.Item value="dark">Dark</SegmentedControl.Item>
-              <SegmentedControl.Item value="light">Light</SegmentedControl.Item>
-            </SegmentedControl.Root>
-          </Setting>
-          <Setting label="Delete account">
-            <Button size="2" color="red" onClick={handleDeleteAccount}>
-              <Trash2Icon className="size-4" />
-              Delete
-            </Button>
-          </Setting>
+        <Card className="grid gap-5">
+          <GroupCompletedSetting />
+          <ThemeSetting />
+        </Card>
+        <Card>
+          <DeleteAccountSetting />
         </Card>
       </article>
     </React.Fragment>
