@@ -11,7 +11,6 @@ import { useAtom } from "jotai";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { editingTodoIdAtom } from "./todos.store";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
-<<<<<<< HEAD
 import {
   type ListFullFragment,
   useDeleteTodoMutation,
@@ -85,34 +84,15 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
   const {
     data: { lists = [] },
   } = useGetListsForChipsSuspenseQuery();
-=======
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { qLists } from "@/app/lib/queries";
-import useMutations from "@/app/hooks/use-mutations";
-
-const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
-  const { listId } = useParams({ strict: false });
-  const { data: lists } = useSuspenseQuery(qLists());
->>>>>>> origin/main
 
   const [_, setEditingTodoId] = useAtom(editingTodoIdAtom);
 
-  const { deleteTodo, moveTodo } = useMutations();
-
   const handleMove = (targetListId: string) => {
-<<<<<<< HEAD
     moveTodo({ variables: { input: { id: todoId, listId: targetListId } } });
   };
 
   const handleDelete = () => {
     deleteTodo({ variables: { input: { id: todoId } } });
-=======
-    moveTodo.mutate({ todoId, data: { listId: targetListId } });
-  };
-
-  const handleDelete = () => {
-    deleteTodo.mutate({ todoId });
->>>>>>> origin/main
   };
 
   const handleEdit = () => {

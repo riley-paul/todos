@@ -8,23 +8,11 @@ import DeleteCompletedTodosButton from "./footer-buttons/delete-completed-todos-
 import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
 import NoTodosScreen from "../screens/no-todos";
-<<<<<<< HEAD
-<<<<<<< HEAD
 import {
   useGetMeSuspenseQuery,
   type ListFullFragment,
   type TodoFragment,
 } from "@/app/gql.gen";
-=======
-import type { ListSelect, TodoSelect } from "@/lib/types";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { qUser, qTodos } from "@/app/lib/queries";
->>>>>>> main
-=======
-import type { ListSelect, TodoSelect } from "@/lib/types";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { qUser, qTodos } from "@/app/lib/queries";
->>>>>>> origin/main
 
 const CompletedTodosActions: React.FC<{ listId: string }> = ({ listId }) => (
   <div className="flex items-center justify-end gap-4">
@@ -71,37 +59,17 @@ const CompletedTodosGroup: React.FC<{
   );
 };
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 const produceTodo = (todo: TodoFragment) => <Todo key={todo.id} todo={todo} />;
-=======
-const produceTodo = (todo: TodoSelect) => (
-  <Todo key={todo.id} todo={todo} />
-);
->>>>>>> main
-=======
-const produceTodo = (todo: TodoSelect) => (
-  <Todo key={todo.id} todo={todo} />
-);
->>>>>>> origin/main
 
 type Props = {
   list: ListFullFragment;
 };
 
 const Todos: React.FC<Props> = ({ list }) => {
-<<<<<<< HEAD
   const { todos } = list;
   const {
     data: { me },
   } = useGetMeSuspenseQuery();
-=======
-  const { data: todos } = useSuspenseQuery(qTodos(list.id));
-  const { data: settings } = useSuspenseQuery(qUser());
-<<<<<<< HEAD
->>>>>>> main
-=======
->>>>>>> origin/main
 
   const completedTodos = todos.filter(({ isCompleted }) => isCompleted);
   const notCompletedTodos = todos.filter(({ isCompleted }) => !isCompleted);
@@ -110,15 +78,7 @@ const Todos: React.FC<Props> = ({ list }) => {
     return <NoTodosScreen />;
   }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   if (me.settingGroupCompleted) {
-=======
-  if (settings.settingGroupCompleted) {
->>>>>>> main
-=======
-  if (settings.settingGroupCompleted) {
->>>>>>> origin/main
     return (
       <React.Fragment>
         <div className="grid gap-1">{notCompletedTodos.map(produceTodo)}</div>

@@ -24,13 +24,9 @@ import { useAtom } from "jotai";
 import { editingTodoIdAtom } from "./todos.store";
 import { SaveIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
-<<<<<<< HEAD
-import { useUpdateTodoMutation, type TodoFragment } from "@/app/gql.gen";
-=======
-import type { TodoSelect } from "@/lib/types";
+import { type TodoFragment } from "@/app/gql.gen";
 import { useUser } from "@/app/providers/user-provider";
->>>>>>> origin/main
-import useMutations from "@/app/hooks/use-mutations";
+import useUpdateTodo from "@/app/hooks/actions/use-update-todo";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -91,39 +87,22 @@ const TodoForm: React.FC<{
   );
 };
 
-<<<<<<< HEAD
-const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
-  const { listId } = useParams({ strict: false });
-  const [updateTodo, { loading }] = useUpdateTodoMutation({
-    optimisticResponse: (vars) => {
-      const definedInputs = Object.fromEntries(
-        Object.entries(vars.input).filter(
-          ([_, value]) => value !== undefined && value !== null,
-        ),
-      );
-      return {
-        __typename: "Mutation",
-        updateTodo: {
-          __typename: "TodoObjectType",
-          ...todo,
-          ...definedInputs,
-        },
-      };
-    },
-  });
-=======
-const TodoCheckbox: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
-  const { updateTodo } = useMutations();
+const TodoCheckbox: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
+  const [updateTodo, { loading }] = useUpdateTodo(todo);
   return (
-    <Spinner loading={updateTodo.isPending}>
+    <Spinner loading={loading}>
       <Checkbox
         size="3"
         variant="soft"
         checked={todo.isCompleted}
         onCheckedChange={(value) => {
-          updateTodo.mutate({
-            todoId: todo.id,
-            data: { isCompleted: Boolean(value) },
+          updateTodo({
+            variables: {
+              input: {
+                id: todo.id,
+                isCompleted: Boolean(value),
+              },
+            },
           });
         }}
       />
@@ -131,10 +110,10 @@ const TodoCheckbox: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   );
 };
 
-const TodoListBadge: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
+const TodoListBadge: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
   const { listId } = useParams({ strict: false });
 
-  if (todo.listId === listId) return null;
+  if (todo.list.id === listId) return null;
   return (
     <Badge asChild>
       <Link to="/todos/$listId" params={{ listId: todo.list.id }}>
@@ -144,15 +123,16 @@ const TodoListBadge: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   );
 };
 
-const TodoAuthorBubble: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
+const TodoAuthorBubble: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
   const user = useUser();
 
-  if (user.id === todo.userId) return null;
+  if (user.id === todo.author.id) return null;
   return <UserBubble user={todo.author} avatarProps={{ size: "1" }} />;
 };
 
-const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
->>>>>>> origin/main
+const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
+  const [updateTodo] = useUpdateTodo(todo);
+
   const navigate = useNavigate();
 
   const [editingTodoId, setEditingTodoId] = useAtom(editingTodoIdAtom);
@@ -182,8 +162,6 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
       ref.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [isHighlighted]);
 
-  const { updateTodo } = useMutations();
-
   return (
     <div
       ref={ref}
@@ -197,34 +175,13 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
         <TodoForm
           initialValue={todo.text}
           handleSubmit={(text) => {
-<<<<<<< HEAD
             updateTodo({ variables: { input: { id: todo.id, text } } });
-=======
-            updateTodo.mutate({ todoId: todo.id, data: { text } });
->>>>>>> origin/main
             setEditingTodoId(null);
           }}
         />
       ) : (
         <>
-<<<<<<< HEAD
-          <Spinner loading={loading}>
-            <Checkbox
-              size="3"
-              variant="soft"
-              checked={todo.isCompleted}
-              onCheckedChange={() =>
-                updateTodo({
-                  variables: {
-                    input: { id: todo.id, isCompleted: !todo.isCompleted },
-                  },
-                })
-              }
-            />
-          </Spinner>
-=======
           <TodoCheckbox todo={todo} />
->>>>>>> origin/main
           <Flex
             flexGrow="1"
             align="center"
