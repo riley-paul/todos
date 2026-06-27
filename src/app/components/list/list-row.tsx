@@ -3,11 +3,7 @@ import { HourglassIcon } from "lucide-react";
 import React from "react";
 import UserBubbleGroup from "../ui/user/user-bubble-group";
 import { cn } from "@/app/lib/utils";
-<<<<<<< HEAD
 import type { ShallowListFragment } from "@/app/gql.gen";
-=======
-import type { ListSelect } from "@/lib/types";
->>>>>>> origin/main
 
 type Props = { list: ShallowListFragment };
 

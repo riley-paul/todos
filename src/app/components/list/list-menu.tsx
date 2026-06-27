@@ -18,26 +18,17 @@ import { alertSystemAtom } from "../alert-system/alert-system.store";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
 import { getListUrl } from "@/lib/constants";
-<<<<<<< HEAD
 import { useDeleteListMutation, type ShallowListFragment } from "@/app/gql.gen";
 import { useParams, useRouter } from "@tanstack/react-router";
 import useMutations from "@/app/hooks/use-mutations";
 import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
-=======
-import type { ListSelect } from "@/lib/types";
-import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { qTodos } from "@/app/lib/queries";
-import useMutations from "@/app/hooks/use-mutations";
->>>>>>> origin/main
+import useNumCompletedTodos from "@/app/hooks/actions/use-num-completed-todos";
 
 type Props = {
   list: ShallowListFragment;
 };
 
 const ListMenu: React.FC<Props> = ({ list }) => {
-<<<<<<< HEAD
-  const { id, name, otherUsers } = list;
   const { updateList, uncheckCompletedTodos, deleteCompletedTodos } =
     useMutations();
 
@@ -48,35 +39,22 @@ const ListMenu: React.FC<Props> = ({ list }) => {
     onCompleted: () => {
       router.invalidate();
       toast.success("List deleted successfully");
-      if (currentList === id) router.navigate({ to: "/" });
+      if (currentList === list.id) router.navigate({ to: "/" });
     },
     update: (cache) => {
-      const listCacheId = cache.identify({ __typename: "ListObjectType", id });
+      const listCacheId = cache.identify(list);
       cache.evict({ id: listCacheId });
       cache.gc();
     },
-=======
-  const { data: numCompleted } = useSuspenseQuery({
-    ...qTodos(list.id),
-    select: (todos) => todos.filter((todo) => todo.isCompleted).length,
->>>>>>> origin/main
   });
 
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const [, copyToClipboard] = useCopyToClipboard();
 
   const isOnlyUser = list.otherUsers.length === 0;
+  const numCompleted = useNumCompletedTodos(list.id);
 
   const { handleLeaveList } = useManageListUsers(list.id);
-<<<<<<< HEAD
-=======
-  const {
-    updateList,
-    deleteList,
-    uncheckCompletedTodos,
-    deleteCompletedTodos,
-  } = useMutations();
->>>>>>> origin/main
 
   const handleRenameList = () => {
     dispatchAlert({
@@ -105,11 +83,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         title: "Delete List",
         message: `Are you sure you want to delete this list? This action cannot be undone.`,
         handleDelete: () => {
-<<<<<<< HEAD
           deleteList({ variables: { listId: list.id } });
-=======
-          deleteList.mutate({ listId: list.id });
->>>>>>> origin/main
           dispatchAlert({ type: "close" });
         },
       },

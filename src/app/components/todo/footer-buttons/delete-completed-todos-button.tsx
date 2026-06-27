@@ -1,7 +1,5 @@
-import {
-  useDeleteCompletedTodosMutation,
-  useGetListSuspenseQuery,
-} from "@/app/gql.gen";
+import { useDeleteCompletedTodosMutation } from "@/app/gql.gen";
+import useNumCompletedTodos from "@/app/hooks/actions/use-num-completed-todos";
 import { Button } from "@radix-ui/themes";
 import { ListXIcon } from "lucide-react";
 import { toast } from "sonner";
@@ -14,11 +12,7 @@ const DeleteCompletedTodosButton: React.FC<Props> = ({ listId }) => {
       toast.success("Completed todos deleted");
     },
   });
-  const {
-    data: { list },
-  } = useGetListSuspenseQuery({ variables: { listId } });
-  const todos = list?.todos || [];
-  const numCompleted = todos.filter((i) => i.isCompleted).length;
+  const numCompleted = useNumCompletedTodos(listId);
 
   return (
     <Button

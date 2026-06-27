@@ -1,7 +1,5 @@
-import {
-  useGetListSuspenseQuery,
-  useUncheckCompletedTodosMutation,
-} from "@/app/gql.gen";
+import { useUncheckCompletedTodosMutation } from "@/app/gql.gen";
+import useNumCompletedTodos from "@/app/hooks/actions/use-num-completed-todos";
 import { Button } from "@radix-ui/themes";
 import { SquareMinusIcon } from "lucide-react";
 import React from "react";
@@ -15,11 +13,7 @@ const UncheckAllTodosButton: React.FC<Props> = ({ listId }) => {
       toast.success("Completed todos unchecked");
     },
   });
-  const {
-    data: { list },
-  } = useGetListSuspenseQuery({ variables: { listId } });
-  const todos = list?.todos || [];
-  const numCompleted = todos.filter((i) => i.isCompleted).length;
+  const numCompleted = useNumCompletedTodos(listId);
 
   return (
     <Button

@@ -6,18 +6,11 @@ import React from "react";
 import ListReorder from "./list-reorder";
 import { ACCENT_COLOR } from "@/lib/constants";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
-<<<<<<< HEAD
 import {
   useGetListsForChipsSuspenseQuery,
   type ShallowListFragment,
 } from "@/app/gql.gen";
 import useAlerts from "@/app/hooks/use-alerts";
-=======
-import type { ListSelect } from "@/lib/types";
-import useCreateList from "@/app/hooks/actions/use-create-list";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { qLists } from "@/app/lib/queries";
->>>>>>> origin/main
 
 const ListChip: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
   const link = linkOptions({
@@ -51,14 +44,8 @@ const ListChip: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
 };
 
 const ListChips: React.FC = () => {
-<<<<<<< HEAD
   const { handleCreateList } = useAlerts();
   const { data: { lists = [] } = {} } = useGetListsForChipsSuspenseQuery();
-=======
-  const handleCreateList = useCreateList();
-
-  const { data: lists } = useSuspenseQuery(qLists());
->>>>>>> origin/main
 
   useHotkey("A", handleCreateList, { ignoreInputs: true });
 

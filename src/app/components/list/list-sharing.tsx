@@ -2,23 +2,13 @@ import React from "react";
 import { Avatar, Button, Dialog, IconButton } from "@radix-ui/themes";
 import ListShares from "./list-shares";
 import { PlusIcon, Share2Icon } from "lucide-react";
-<<<<<<< HEAD
-import useAlerts from "@/app/hooks/use-alerts";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 import UserBubbleGroup from "@/app/components/ui/user/user-bubble-group";
 import type { ShallowListFragment } from "@/app/gql.gen";
-
-const ListSharing: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
-  const { handleInviteUser } = useAlerts();
-=======
-import ResponsiveDialogContent from "../ui/responsive-dialog-content";
-import UserBubbleGroup from "@/app/components/ui/user/user-bubble-group";
-import type { ListSelect } from "@/lib/types";
 import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
 
-const ListSharing: React.FC<{ list: ListSelect }> = ({ list }) => {
+const ListSharing: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
   const { handleInviteToList } = useManageListUsers(list.id);
->>>>>>> origin/main
 
   return (
     <Dialog.Root>

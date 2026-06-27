@@ -40,11 +40,7 @@ import { Link } from "@tanstack/react-router";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import ListRow from "./list-row";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
-<<<<<<< HEAD
 import type { ShallowListFragment } from "@/app/gql.gen";
-=======
-import type { ListSelect } from "@/lib/types";
->>>>>>> origin/main
 import useMutations from "@/app/hooks/use-mutations";
 
 type SortableObjectData =
