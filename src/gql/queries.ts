@@ -79,7 +79,10 @@ builder.queryFields((t) => ({
         throw new Error("You do not have access to this list");
       }
       return db.query.ListUser.findMany(
-        query({ where: { listId: { eq: args.listId } } }),
+        query({
+          where: { listId: { eq: args.listId } },
+          orderBy: { createdAt: "desc" },
+        }),
       );
     },
   }),
