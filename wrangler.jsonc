@@ -12,10 +12,4 @@
   "observability": {
     "enabled": true,
   },
-  "migrations": [
-    {
-      "tag": "v1",
-      "new_sqlite_classes": ["Sockets"],
-    },
-  ],
 }
