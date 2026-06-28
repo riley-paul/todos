@@ -36,10 +36,10 @@ export type ListObjectType = {
   isPending: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   order: Scalars['Int']['output'];
-  otherUsers: Array<UserObjectType>;
   show: Scalars['Boolean']['output'];
   todoCount: Scalars['Int']['output'];
   todos: Array<TodoObjectType>;
+  users: Array<ListUserObjectType>;
 };
 
 export type ListUserObjectType = {
@@ -201,21 +201,12 @@ export type UserObjectType = {
   settingGroupCompleted: Scalars['Boolean']['output'];
 };
 
-export type ListUserFragment = { __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } };
-
-export type GetListUsersQueryVariables = Exact<{
-  listId: Scalars['ID']['input'];
-}>;
-
-
-export type GetListUsersQuery = { __typename?: 'Query', listUsers: Array<{ __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } }> };
-
 export type AcceptListInviteMutationVariables = Exact<{
   listId: Scalars['ID']['input'];
 }>;
 
 
-export type AcceptListInviteMutation = { __typename?: 'Mutation', acceptListInvite?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
+export type AcceptListInviteMutation = { __typename?: 'Mutation', acceptListInvite?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, users: Array<{ __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } }> } | null };
 
 export type LeaveListMutationVariables = Exact<{
   listId: Scalars['ID']['input'];
@@ -230,7 +221,7 @@ export type InviteUserToListMutationVariables = Exact<{
 }>;
 
 
-export type InviteUserToListMutation = { __typename?: 'Mutation', inviteUserToList?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
+export type InviteUserToListMutation = { __typename?: 'Mutation', inviteUserToList?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, users: Array<{ __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } }> } | null };
 
 export type RemoveUserFromListMutationVariables = Exact<{
   listId: Scalars['ID']['input'];
@@ -238,30 +229,32 @@ export type RemoveUserFromListMutationVariables = Exact<{
 }>;
 
 
-export type RemoveUserFromListMutation = { __typename?: 'Mutation', removeUserFromList?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
+export type RemoveUserFromListMutation = { __typename?: 'Mutation', removeUserFromList?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, users: Array<{ __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } }> } | null };
 
-export type ShallowListFragment = { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> };
+export type ListUserFragment = { __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } };
 
-export type ListFullFragment = { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> };
+export type ShallowListFragment = { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, users: Array<{ __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } }> };
+
+export type ListFullFragment = { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, users: Array<{ __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } }> };
 
 export type GetListsForChipsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetListsForChipsQuery = { __typename?: 'Query', lists: Array<{ __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> }> };
+export type GetListsForChipsQuery = { __typename?: 'Query', lists: Array<{ __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, users: Array<{ __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } }> }> };
 
 export type GetListQueryVariables = Exact<{
   listId: Scalars['ID']['input'];
 }>;
 
 
-export type GetListQuery = { __typename?: 'Query', list?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
+export type GetListQuery = { __typename?: 'Query', list?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, users: Array<{ __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } }> } | null };
 
 export type CreateListMutationVariables = Exact<{
   input: CreateListInput;
 }>;
 
 
-export type CreateListMutation = { __typename?: 'Mutation', createList?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
+export type CreateListMutation = { __typename?: 'Mutation', createList?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, users: Array<{ __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } }> } | null };
 
 export type UpdateListMutationVariables = Exact<{
   listId: Scalars['ID']['input'];
@@ -269,7 +262,7 @@ export type UpdateListMutationVariables = Exact<{
 }>;
 
 
-export type UpdateListMutation = { __typename?: 'Mutation', updateList?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
+export type UpdateListMutation = { __typename?: 'Mutation', updateList?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, users: Array<{ __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } }> } | null };
 
 export type DeleteListMutationVariables = Exact<{
   listId: Scalars['ID']['input'];
@@ -283,7 +276,7 @@ export type UpdateListSortShowMutationVariables = Exact<{
 }>;
 
 
-export type UpdateListSortShowMutation = { __typename?: 'Mutation', updateListSortShow: Array<{ __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> }> };
+export type UpdateListSortShowMutation = { __typename?: 'Mutation', updateListSortShow: Array<{ __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, users: Array<{ __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } }> }> };
 
 export type TodoFragment = { __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } };
 
@@ -299,7 +292,7 @@ export type CreateTodoMutationVariables = Exact<{
 }>;
 
 
-export type CreateTodoMutation = { __typename?: 'Mutation', createTodo?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
+export type CreateTodoMutation = { __typename?: 'Mutation', createTodo?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, users: Array<{ __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } }> } | null };
 
 export type DeleteTodoMutationVariables = Exact<{
   input: DeleteTodoInput;
@@ -320,14 +313,14 @@ export type DeleteCompletedTodosMutationVariables = Exact<{
 }>;
 
 
-export type DeleteCompletedTodosMutation = { __typename?: 'Mutation', deleteCompletedTodos?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
+export type DeleteCompletedTodosMutation = { __typename?: 'Mutation', deleteCompletedTodos?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, users: Array<{ __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } }> } | null };
 
 export type UncheckCompletedTodosMutationVariables = Exact<{
   listId: Scalars['ID']['input'];
 }>;
 
 
-export type UncheckCompletedTodosMutation = { __typename?: 'Mutation', uncheckCompletedTodos?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
+export type UncheckCompletedTodosMutation = { __typename?: 'Mutation', uncheckCompletedTodos?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ __typename?: 'TodoObjectType', id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }, list: { __typename?: 'ListObjectType', id: string, name: string } }>, users: Array<{ __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } }> } | null };
 
 export type UserFragment = { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null };
 
@@ -373,11 +366,11 @@ export const ShallowListFragmentDoc = gql`
   show
   order
   isPending
-  otherUsers {
-    ...User
+  users {
+    ...ListUser
   }
 }
-    ${UserFragmentDoc}`;
+    ${ListUserFragmentDoc}`;
 export const TodoFragmentDoc = gql`
     fragment Todo on TodoObjectType {
   id
@@ -402,49 +395,6 @@ export const ListFullFragmentDoc = gql`
 }
     ${ShallowListFragmentDoc}
 ${TodoFragmentDoc}`;
-export const GetListUsersDocument = gql`
-    query GetListUsers($listId: ID!) {
-  listUsers(listId: $listId) {
-    ...ListUser
-  }
-}
-    ${ListUserFragmentDoc}`;
-
-/**
- * __useGetListUsersQuery__
- *
- * To run a query within a React component, call `useGetListUsersQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetListUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetListUsersQuery({
- *   variables: {
- *      listId: // value for 'listId'
- *   },
- * });
- */
-export function useGetListUsersQuery(baseOptions: Apollo.QueryHookOptions<GetListUsersQuery, GetListUsersQueryVariables> & ({ variables: GetListUsersQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetListUsersQuery, GetListUsersQueryVariables>(GetListUsersDocument, options);
-      }
-export function useGetListUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetListUsersQuery, GetListUsersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetListUsersQuery, GetListUsersQueryVariables>(GetListUsersDocument, options);
-        }
-// @ts-ignore
-export function useGetListUsersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetListUsersQuery, GetListUsersQueryVariables>): Apollo.UseSuspenseQueryResult<GetListUsersQuery, GetListUsersQueryVariables>;
-export function useGetListUsersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetListUsersQuery, GetListUsersQueryVariables>): Apollo.UseSuspenseQueryResult<GetListUsersQuery | undefined, GetListUsersQueryVariables>;
-export function useGetListUsersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetListUsersQuery, GetListUsersQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetListUsersQuery, GetListUsersQueryVariables>(GetListUsersDocument, options);
-        }
-export type GetListUsersQueryHookResult = ReturnType<typeof useGetListUsersQuery>;
-export type GetListUsersLazyQueryHookResult = ReturnType<typeof useGetListUsersLazyQuery>;
-export type GetListUsersSuspenseQueryHookResult = ReturnType<typeof useGetListUsersSuspenseQuery>;
-export type GetListUsersQueryResult = Apollo.QueryResult<GetListUsersQuery, GetListUsersQueryVariables>;
 export const AcceptListInviteDocument = gql`
     mutation AcceptListInvite($listId: ID!) {
   acceptListInvite(listId: $listId) {

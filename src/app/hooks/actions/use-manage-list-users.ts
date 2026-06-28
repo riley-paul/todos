@@ -3,7 +3,6 @@ import { z } from "astro/zod";
 import { useAtom } from "jotai";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import {
-  GetListUsersDocument,
   useAcceptListInviteMutation,
   useInviteUserToListMutation,
   useLeaveListMutation,
@@ -17,9 +16,7 @@ export default function useManageListUsers(listId: string) {
 
   const [inviteToList] = useInviteUserToListMutation();
   const [acceptInvite] = useAcceptListInviteMutation();
-  const [removeFromList] = useRemoveUserFromListMutation({
-    refetchQueries: [GetListUsersDocument],
-  });
+  const [removeFromList] = useRemoveUserFromListMutation();
   const [leaveList] = useLeaveListMutation({
     update: (cache) => {
       const listCacheId = cache.identify({

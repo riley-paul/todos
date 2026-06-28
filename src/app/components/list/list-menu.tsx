@@ -67,7 +67,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const [, copyToClipboard] = useCopyToClipboard();
 
-  const isOnlyUser = list.otherUsers.length === 0;
+  const isOnlyUser = list.users.length === 1;
   const numCompleted = useNumCompletedTodos(list.id);
 
   const { handleLeaveList } = useManageListUsers(list.id);

@@ -4,10 +4,12 @@ import React from "react";
 import UserBubbleGroup from "../ui/user/user-bubble-group";
 import { cn } from "@/app/lib/utils";
 import type { ShallowListFragment } from "@/app/gql.gen";
+import useNonPendingListUsers from "@/app/hooks/actions/use-non-pending-list-users";
 
 type Props = { list: ShallowListFragment };
 
 const ListRow: React.FC<Props> = ({ list }) => {
+  const nonPendingUsers = useNonPendingListUsers(list);
   return (
     <article className="flex flex-1 items-center gap-4">
       <Text
@@ -19,7 +21,7 @@ const ListRow: React.FC<Props> = ({ list }) => {
       </Text>
       <section className="flex items-center gap-2">
         {list.isPending && <HourglassIcon className="text-amber-10 size-4" />}
-        <UserBubbleGroup users={list.otherUsers} />
+        <UserBubbleGroup users={nonPendingUsers} />
       </section>
     </article>
   );

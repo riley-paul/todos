@@ -4,7 +4,7 @@ import { ArrowDownIcon, HourglassIcon, LogOutIcon, XIcon } from "lucide-react";
 import UserRow from "../ui/user/user-row";
 import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
 import { useUser } from "@/app/providers/user-provider";
-import { useGetListUsersQuery, type ListUserFragment } from "@/app/gql.gen";
+import type { ListUserFragment, ShallowListFragment } from "@/app/gql.gen";
 
 type ListShareProps = {
   listId: string;
@@ -72,20 +72,16 @@ const ListUser: React.FC<ListShareProps> = ({
   );
 };
 
-const ListShares: React.FC<{ listId: string }> = ({ listId }) => {
-  const { data: { listUsers = [] } = {} } = useGetListUsersQuery({
-    variables: { listId },
-  });
-
-  const pendingListUsers = listUsers.filter(({ isPending }) => isPending);
-  const nonPendingListUsers = listUsers.filter(({ isPending }) => !isPending);
+const ListShares: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
+  const pendingListUsers = list.users.filter(({ isPending }) => isPending);
+  const nonPendingListUsers = list.users.filter(({ isPending }) => !isPending);
 
   return (
     <article className="-mx-6 flex flex-col gap-1 overflow-x-hidden overflow-y-auto px-6">
       {nonPendingListUsers.map((listShare) => (
         <ListUser
           key={listShare.id}
-          listId={listId}
+          listId={list.id}
           listUser={listShare}
           isOnlyUser={nonPendingListUsers.length === 1}
         />
@@ -107,7 +103,7 @@ const ListShares: React.FC<{ listId: string }> = ({ listId }) => {
         </div>
       )}
       {pendingListUsers.map((listUser) => (
-        <ListUser key={listUser.id} listId={listId} listUser={listUser} />
+        <ListUser key={listUser.id} listId={list.id} listUser={listUser} />
       ))}
     </article>
   );

@@ -1,3 +1,11 @@
+fragment ListUser on ListUserObjectType {
+  id
+  isPending
+  user {
+    ...User
+  }
+}
+
 fragment ShallowList on ListObjectType {
   id
   name
@@ -5,8 +13,8 @@ fragment ShallowList on ListObjectType {
   show
   order
   isPending
-  otherUsers {
-    ...User
+  users {
+    ...ListUser
   }
 }
 

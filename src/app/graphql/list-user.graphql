@@ -1,17 +1,3 @@
-fragment ListUser on ListUserObjectType {
-  id
-  isPending
-  user {
-    ...User
-  }
-}
-
-query GetListUsers($listId: ID!) {
-  listUsers(listId: $listId) {
-    ...ListUser
-  }
-}
-
 mutation AcceptListInvite($listId: ID!) {
   acceptListInvite(listId: $listId) {
     ...ShallowList

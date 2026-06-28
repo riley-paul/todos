@@ -30,7 +30,7 @@ builder.queryFields((t) => ({
       return db.query.List.findMany(
         query({
           where: { AND: filters },
-          with: { listUser: true },
+          with: { listUsers: true },
 
           extras: {
             userSortOrder: (lists) => sql`
