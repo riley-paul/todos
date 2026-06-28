@@ -11,3 +11,14 @@ query GetMe {
     settingGroupCompleted
   }
 }
+
+mutation UpdateUser($input: UpdateUserInput!) {
+  updateUser(input: $input) {
+    ...User
+    settingGroupCompleted
+  }
+}
+
+mutation DeleteUser {
+  deleteUser
+}

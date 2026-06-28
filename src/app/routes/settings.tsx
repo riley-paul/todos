@@ -12,10 +12,12 @@ import { useAtom } from "jotai";
 import { themeAtom } from "../hooks/use-theme";
 import { alertSystemAtom } from "../components/alert-system/alert-system.store";
 import { Trash2Icon } from "lucide-react";
-import { actions } from "astro:actions";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { qUser } from "../lib/queries";
-import useMutations from "../hooks/use-mutations";
+import {
+  useDeleteUserMutation,
+  useGetMeSuspenseQuery,
+  useUpdateUserMutation,
+} from "../gql.gen";
+import { useApolloClient } from "@apollo/client";
 
 export const Route = createFileRoute("/settings")({
   component: RouteComponent,
@@ -37,11 +39,12 @@ const Setting: React.FC<SettingProps> = ({ label, children }) => (
 
 const DeleteAccountSetting: React.FC = () => {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
+  const client = useApolloClient();
 
-  const deleteAccountMutation = useMutation({
-    mutationFn: actions.users.remove.orThrow,
-    onSuccess: () => {
+  const [deleteAccount] = useDeleteUserMutation({
+    onCompleted: () => {
       dispatchAlert({ type: "close" });
+      client.resetStore();
       window.location.reload();
     },
   });
@@ -54,7 +57,7 @@ const DeleteAccountSetting: React.FC = () => {
         title: "Delete Account",
         message:
           "This action cannot be undone. This will permanently delete your account and remove your data from our servers.",
-        handleDelete: () => deleteAccountMutation.mutate({}),
+        handleDelete: () => deleteAccount(),
       },
     });
   };
@@ -92,16 +95,29 @@ const ThemeSetting: React.FC = () => {
 };
 
 const GroupCompletedSetting: React.FC = () => {
-  const { data: settings } = useSuspenseQuery(qUser());
-  const { updateUserSettings } = useMutations();
+  const { data: { me: settings } = {} } = useGetMeSuspenseQuery();
+  const [updateUserSettings, { loading }] = useUpdateUserMutation({
+    optimisticResponse: (variables, { IGNORE }) => {
+      if (!settings) return IGNORE;
+      return {
+        __typename: "Mutation",
+        updateUser: {
+          __typename: "UserObjectType",
+          ...settings,
+          ...variables.input,
+        },
+      };
+    },
+  });
 
   return (
     <Setting label="Group completed todos">
       <Switch
-        checked={settings.settingGroupCompleted}
+        disabled={loading}
+        checked={settings?.settingGroupCompleted}
         onCheckedChange={(value) => {
-          updateUserSettings.mutate({
-            settingGroupCompleted: value,
+          updateUserSettings({
+            variables: { input: { settingGroupCompleted: value } },
           });
         }}
       />

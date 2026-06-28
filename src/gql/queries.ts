@@ -23,6 +23,7 @@ builder.queryFields((t) => ({
 
       const filters = [];
       if (userLists.size) filters.push({ id: { in: [...userLists] } });
+      if (!userLists.size) filters.push({ id: { eq: "none" } });
 
       return db.query.List.findMany(query({ where: { AND: filters } }));
     },
@@ -63,6 +64,7 @@ builder.queryFields((t) => ({
 
       const filters = [];
       if (userLists.size) filters.push({ listId: { in: [...userLists] } });
+      if (!userLists.size) filters.push({ listId: { eq: "none" } });
       if (args.listId) filters.push({ listId: { eq: args.listId } });
 
       return db.query.Todo.findMany(query({ where: { AND: filters } }));
