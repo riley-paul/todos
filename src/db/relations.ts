@@ -44,6 +44,16 @@ const relations = defineRelations(schema, (r) => ({
       to: r.User.id.through(r.ListUser.userId),
     }),
   },
+  ListUser: {
+    user: r.one.User({
+      from: r.ListUser.userId,
+      to: r.User.id,
+    }),
+    list: r.one.List({
+      from: r.ListUser.listId,
+      to: r.List.id,
+    }),
+  },
 }));
 
 export default relations;

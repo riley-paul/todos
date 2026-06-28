@@ -44,9 +44,10 @@ export type ListObjectType = {
 
 export type ListUserObjectType = {
   __typename?: 'ListUserObjectType';
+  id: Scalars['ID']['output'];
   isPending: Scalars['Boolean']['output'];
   listId: Scalars['ID']['output'];
-  show: Scalars['Boolean']['output'];
+  user: UserObjectType;
   userId: Scalars['ID']['output'];
 };
 
@@ -145,6 +146,7 @@ export type MutationUpdateUserArgs = {
 export type Query = {
   __typename?: 'Query';
   list?: Maybe<ListObjectType>;
+  listUsers: Array<ListUserObjectType>;
   lists: Array<ListObjectType>;
   me: UserObjectType;
   todos: Array<TodoObjectType>;
@@ -152,6 +154,11 @@ export type Query = {
 
 
 export type QueryListArgs = {
+  listId: Scalars['ID']['input'];
+};
+
+
+export type QueryListUsersArgs = {
   listId: Scalars['ID']['input'];
 };
 
@@ -193,6 +200,15 @@ export type UserObjectType = {
   name: Scalars['String']['output'];
   settingGroupCompleted: Scalars['Boolean']['output'];
 };
+
+export type ListUserFragment = { __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } };
+
+export type GetListUsersQueryVariables = Exact<{
+  listId: Scalars['ID']['input'];
+}>;
+
+
+export type GetListUsersQuery = { __typename?: 'Query', listUsers: Array<{ __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } }> };
 
 export type AcceptListInviteMutationVariables = Exact<{
   listId: Scalars['ID']['input'];
@@ -340,6 +356,15 @@ export const UserFragmentDoc = gql`
   avatarUrl
 }
     `;
+export const ListUserFragmentDoc = gql`
+    fragment ListUser on ListUserObjectType {
+  id
+  isPending
+  user {
+    ...User
+  }
+}
+    ${UserFragmentDoc}`;
 export const ShallowListFragmentDoc = gql`
     fragment ShallowList on ListObjectType {
   id
@@ -377,6 +402,49 @@ export const ListFullFragmentDoc = gql`
 }
     ${ShallowListFragmentDoc}
 ${TodoFragmentDoc}`;
+export const GetListUsersDocument = gql`
+    query GetListUsers($listId: ID!) {
+  listUsers(listId: $listId) {
+    ...ListUser
+  }
+}
+    ${ListUserFragmentDoc}`;
+
+/**
+ * __useGetListUsersQuery__
+ *
+ * To run a query within a React component, call `useGetListUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetListUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetListUsersQuery({
+ *   variables: {
+ *      listId: // value for 'listId'
+ *   },
+ * });
+ */
+export function useGetListUsersQuery(baseOptions: Apollo.QueryHookOptions<GetListUsersQuery, GetListUsersQueryVariables> & ({ variables: GetListUsersQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetListUsersQuery, GetListUsersQueryVariables>(GetListUsersDocument, options);
+      }
+export function useGetListUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetListUsersQuery, GetListUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetListUsersQuery, GetListUsersQueryVariables>(GetListUsersDocument, options);
+        }
+// @ts-ignore
+export function useGetListUsersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetListUsersQuery, GetListUsersQueryVariables>): Apollo.UseSuspenseQueryResult<GetListUsersQuery, GetListUsersQueryVariables>;
+export function useGetListUsersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetListUsersQuery, GetListUsersQueryVariables>): Apollo.UseSuspenseQueryResult<GetListUsersQuery | undefined, GetListUsersQueryVariables>;
+export function useGetListUsersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetListUsersQuery, GetListUsersQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetListUsersQuery, GetListUsersQueryVariables>(GetListUsersDocument, options);
+        }
+export type GetListUsersQueryHookResult = ReturnType<typeof useGetListUsersQuery>;
+export type GetListUsersLazyQueryHookResult = ReturnType<typeof useGetListUsersLazyQuery>;
+export type GetListUsersSuspenseQueryHookResult = ReturnType<typeof useGetListUsersSuspenseQuery>;
+export type GetListUsersQueryResult = Apollo.QueryResult<GetListUsersQuery, GetListUsersQueryVariables>;
 export const AcceptListInviteDocument = gql`
     mutation AcceptListInvite($listId: ID!) {
   acceptListInvite(listId: $listId) {

@@ -67,9 +67,10 @@ builder.drizzleObject("List", {
 builder.drizzleObject("ListUser", {
   name: "ListUserObjectType",
   fields: (t) => ({
+    id: t.exposeID("id"),
     listId: t.exposeID("listId"),
     userId: t.exposeID("userId"),
-    show: t.exposeBoolean("show"),
     isPending: t.exposeBoolean("isPending"),
+    user: t.relation("user"),
   }),
 });

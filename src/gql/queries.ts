@@ -17,6 +17,7 @@ builder.queryFields((t) => ({
       return user;
     },
   }),
+
   lists: t.drizzleField({
     type: ["List"],
     resolve: async (query, _root, _args, ctx) => {
@@ -55,6 +56,7 @@ builder.queryFields((t) => ({
       );
     },
   }),
+
   list: t.drizzleField({
     type: "List",
     nullable: true,
@@ -67,6 +69,21 @@ builder.queryFields((t) => ({
       );
     },
   }),
+
+  listUsers: t.drizzleField({
+    type: ["ListUser"],
+    args: { listId: t.arg.id() },
+    resolve: async (query, _root, args, ctx) => {
+      const userLists = await getUserLists(ctx.userId);
+      if (!userLists.has(args.listId)) {
+        throw new Error("You do not have access to this list");
+      }
+      return db.query.ListUser.findMany(
+        query({ where: { listId: { eq: args.listId } } }),
+      );
+    },
+  }),
+
   todos: t.drizzleField({
     type: ["Todo"],
     args: { listId: t.arg.id({ required: false }) },

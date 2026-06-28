@@ -2,15 +2,34 @@ import { alertSystemAtom } from "@/app/components/alert-system/alert-system.stor
 import { z } from "astro/zod";
 import { useAtom } from "jotai";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import useMutations from "../use-mutations";
+import {
+  GetListUsersDocument,
+  useAcceptListInviteMutation,
+  useInviteUserToListMutation,
+  useLeaveListMutation,
+  useRemoveUserFromListMutation,
+} from "@/app/gql.gen";
 
 export default function useManageListUsers(listId: string) {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const navigate = useNavigate();
   const { listId: currentListId } = useParams({ strict: false });
 
-  const { inviteToList, acceptInvite, removeFromList, leaveList } =
-    useMutations();
+  const [inviteToList] = useInviteUserToListMutation();
+  const [acceptInvite] = useAcceptListInviteMutation();
+  const [removeFromList] = useRemoveUserFromListMutation({
+    refetchQueries: [GetListUsersDocument],
+  });
+  const [leaveList] = useLeaveListMutation({
+    update: (cache) => {
+      const listCacheId = cache.identify({
+        __typename: "ListObjectType",
+        id: listId,
+      });
+      cache.evict({ id: listCacheId });
+      cache.gc();
+    },
+  });
 
   const handleInviteToList = () => {
     dispatchAlert({
@@ -23,7 +42,7 @@ export default function useManageListUsers(listId: string) {
         placeholder: "User email",
         schema: z.email("Please enter a valid email address"),
         handleSubmit: async (email: string) => {
-          inviteToList.mutate({ listId, email });
+          inviteToList({ variables: { listId, email } });
           dispatchAlert({ type: "close" });
         },
       },
@@ -39,9 +58,11 @@ export default function useManageListUsers(listId: string) {
         message:
           "Are you sure you want to remove this user from the list? They will lose access to this list and all its tasks.",
         handleDelete: async () => {
-          removeFromList.mutate({
-            listId,
-            userId: userToRemoveId,
+          removeFromList({
+            variables: {
+              listId,
+              userId: userToRemoveId,
+            },
           });
           dispatchAlert({ type: "close" });
         },
@@ -53,7 +74,7 @@ export default function useManageListUsers(listId: string) {
   };
 
   const handleAcceptInvite = async () => {
-    acceptInvite.mutate({ listId });
+    acceptInvite({ variables: { listId } });
     navigate({ to: "/todos/$listId", params: { listId } });
   };
 
@@ -66,7 +87,7 @@ export default function useManageListUsers(listId: string) {
         message:
           "Are you sure you want to leave this list? You will lose access to this list and all its tasks.",
         handleDelete: async () => {
-          leaveList.mutate({ listId });
+          leaveList({ variables: { listId } });
           dispatchAlert({ type: "close" });
           if (currentListId === listId) navigate({ to: "/" });
         },

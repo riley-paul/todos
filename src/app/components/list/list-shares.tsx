@@ -4,13 +4,11 @@ import { ArrowDownIcon, HourglassIcon, LogOutIcon, XIcon } from "lucide-react";
 import UserRow from "../ui/user/user-row";
 import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
 import { useUser } from "@/app/providers/user-provider";
-import type { ListUserSelect } from "@/lib/types";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { qListUsers } from "@/app/lib/queries";
+import { useGetListUsersQuery, type ListUserFragment } from "@/app/gql.gen";
 
 type ListShareProps = {
   listId: string;
-  listUser: ListUserSelect;
+  listUser: ListUserFragment;
   isOnlyUser?: boolean;
 };
 
@@ -63,7 +61,7 @@ const ListUser: React.FC<ListShareProps> = ({
 
   return (
     <article className="xs:hover:bg-accent-3 rounded-3 -mx-3 flex items-center gap-3 px-3 py-2 transition-colors ease-in">
-      <UserRow user={listUser} className="flex-1" isLarge />
+      <UserRow user={listUser.user} className="flex-1" isLarge />
       <section className="flex items-center gap-3">
         {listUser.isPending && (
           <HourglassIcon className="text-amber-10 size-3" />
@@ -75,7 +73,9 @@ const ListUser: React.FC<ListShareProps> = ({
 };
 
 const ListShares: React.FC<{ listId: string }> = ({ listId }) => {
-  const { data: listUsers } = useSuspenseQuery(qListUsers(listId));
+  const { data: { listUsers = [] } = {} } = useGetListUsersQuery({
+    variables: { listId },
+  });
 
   const pendingListUsers = listUsers.filter(({ isPending }) => isPending);
   const nonPendingListUsers = listUsers.filter(({ isPending }) => !isPending);
