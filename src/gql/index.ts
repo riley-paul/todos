@@ -1,5 +1,6 @@
 import "./objects";
 import "./queries";
-import "./mutations/todos";
-import "./mutations/lists"
-import "./mutations/users"
+import "./mutations/todos.mutations";
+import "./mutations/lists.mutations";
+import "./mutations/users.mutations";
+import "./mutations/list-users.mutations";

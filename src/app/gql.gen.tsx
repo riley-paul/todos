@@ -52,17 +52,26 @@ export type ListUserObjectType = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  acceptListInvite?: Maybe<ListObjectType>;
   createList?: Maybe<ListObjectType>;
   createTodo?: Maybe<ListObjectType>;
   deleteCompletedTodos?: Maybe<ListObjectType>;
   deleteList: Scalars['Boolean']['output'];
   deleteTodo?: Maybe<Scalars['Boolean']['output']>;
   deleteUser: Scalars['Boolean']['output'];
+  inviteUserToList?: Maybe<ListObjectType>;
+  leaveList: Scalars['Boolean']['output'];
+  removeUserFromList?: Maybe<ListObjectType>;
   uncheckCompletedTodos?: Maybe<ListObjectType>;
   updateList?: Maybe<ListObjectType>;
   updateListSortShow: Array<ListObjectType>;
   updateTodo?: Maybe<TodoObjectType>;
   updateUser?: Maybe<UserObjectType>;
+};
+
+
+export type MutationAcceptListInviteArgs = {
+  listId: Scalars['ID']['input'];
 };
 
 
@@ -88,6 +97,23 @@ export type MutationDeleteListArgs = {
 
 export type MutationDeleteTodoArgs = {
   input: DeleteTodoInput;
+};
+
+
+export type MutationInviteUserToListArgs = {
+  email: Scalars['String']['input'];
+  listId: Scalars['ID']['input'];
+};
+
+
+export type MutationLeaveListArgs = {
+  listId: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveUserFromListArgs = {
+  listId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
 };
 
 
@@ -167,6 +193,36 @@ export type UserObjectType = {
   name: Scalars['String']['output'];
   settingGroupCompleted: Scalars['Boolean']['output'];
 };
+
+export type AcceptListInviteMutationVariables = Exact<{
+  listId: Scalars['ID']['input'];
+}>;
+
+
+export type AcceptListInviteMutation = { __typename?: 'Mutation', acceptListInvite?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
+
+export type LeaveListMutationVariables = Exact<{
+  listId: Scalars['ID']['input'];
+}>;
+
+
+export type LeaveListMutation = { __typename?: 'Mutation', leaveList: boolean };
+
+export type InviteUserToListMutationVariables = Exact<{
+  listId: Scalars['ID']['input'];
+  email: Scalars['String']['input'];
+}>;
+
+
+export type InviteUserToListMutation = { __typename?: 'Mutation', inviteUserToList?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
+
+export type RemoveUserFromListMutationVariables = Exact<{
+  listId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
+}>;
+
+
+export type RemoveUserFromListMutation = { __typename?: 'Mutation', removeUserFromList?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> } | null };
 
 export type ShallowListFragment = { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, otherUsers: Array<{ __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null }> };
 
@@ -321,6 +377,138 @@ export const ListFullFragmentDoc = gql`
 }
     ${ShallowListFragmentDoc}
 ${TodoFragmentDoc}`;
+export const AcceptListInviteDocument = gql`
+    mutation AcceptListInvite($listId: ID!) {
+  acceptListInvite(listId: $listId) {
+    ...ShallowList
+  }
+}
+    ${ShallowListFragmentDoc}`;
+export type AcceptListInviteMutationFn = Apollo.MutationFunction<AcceptListInviteMutation, AcceptListInviteMutationVariables>;
+
+/**
+ * __useAcceptListInviteMutation__
+ *
+ * To run a mutation, you first call `useAcceptListInviteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAcceptListInviteMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [acceptListInviteMutation, { data, loading, error }] = useAcceptListInviteMutation({
+ *   variables: {
+ *      listId: // value for 'listId'
+ *   },
+ * });
+ */
+export function useAcceptListInviteMutation(baseOptions?: Apollo.MutationHookOptions<AcceptListInviteMutation, AcceptListInviteMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AcceptListInviteMutation, AcceptListInviteMutationVariables>(AcceptListInviteDocument, options);
+      }
+export type AcceptListInviteMutationHookResult = ReturnType<typeof useAcceptListInviteMutation>;
+export type AcceptListInviteMutationResult = Apollo.MutationResult<AcceptListInviteMutation>;
+export type AcceptListInviteMutationOptions = Apollo.BaseMutationOptions<AcceptListInviteMutation, AcceptListInviteMutationVariables>;
+export const LeaveListDocument = gql`
+    mutation LeaveList($listId: ID!) {
+  leaveList(listId: $listId)
+}
+    `;
+export type LeaveListMutationFn = Apollo.MutationFunction<LeaveListMutation, LeaveListMutationVariables>;
+
+/**
+ * __useLeaveListMutation__
+ *
+ * To run a mutation, you first call `useLeaveListMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLeaveListMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [leaveListMutation, { data, loading, error }] = useLeaveListMutation({
+ *   variables: {
+ *      listId: // value for 'listId'
+ *   },
+ * });
+ */
+export function useLeaveListMutation(baseOptions?: Apollo.MutationHookOptions<LeaveListMutation, LeaveListMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LeaveListMutation, LeaveListMutationVariables>(LeaveListDocument, options);
+      }
+export type LeaveListMutationHookResult = ReturnType<typeof useLeaveListMutation>;
+export type LeaveListMutationResult = Apollo.MutationResult<LeaveListMutation>;
+export type LeaveListMutationOptions = Apollo.BaseMutationOptions<LeaveListMutation, LeaveListMutationVariables>;
+export const InviteUserToListDocument = gql`
+    mutation InviteUserToList($listId: ID!, $email: String!) {
+  inviteUserToList(listId: $listId, email: $email) {
+    ...ShallowList
+  }
+}
+    ${ShallowListFragmentDoc}`;
+export type InviteUserToListMutationFn = Apollo.MutationFunction<InviteUserToListMutation, InviteUserToListMutationVariables>;
+
+/**
+ * __useInviteUserToListMutation__
+ *
+ * To run a mutation, you first call `useInviteUserToListMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useInviteUserToListMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [inviteUserToListMutation, { data, loading, error }] = useInviteUserToListMutation({
+ *   variables: {
+ *      listId: // value for 'listId'
+ *      email: // value for 'email'
+ *   },
+ * });
+ */
+export function useInviteUserToListMutation(baseOptions?: Apollo.MutationHookOptions<InviteUserToListMutation, InviteUserToListMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<InviteUserToListMutation, InviteUserToListMutationVariables>(InviteUserToListDocument, options);
+      }
+export type InviteUserToListMutationHookResult = ReturnType<typeof useInviteUserToListMutation>;
+export type InviteUserToListMutationResult = Apollo.MutationResult<InviteUserToListMutation>;
+export type InviteUserToListMutationOptions = Apollo.BaseMutationOptions<InviteUserToListMutation, InviteUserToListMutationVariables>;
+export const RemoveUserFromListDocument = gql`
+    mutation RemoveUserFromList($listId: ID!, $userId: ID!) {
+  removeUserFromList(listId: $listId, userId: $userId) {
+    ...ShallowList
+  }
+}
+    ${ShallowListFragmentDoc}`;
+export type RemoveUserFromListMutationFn = Apollo.MutationFunction<RemoveUserFromListMutation, RemoveUserFromListMutationVariables>;
+
+/**
+ * __useRemoveUserFromListMutation__
+ *
+ * To run a mutation, you first call `useRemoveUserFromListMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveUserFromListMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeUserFromListMutation, { data, loading, error }] = useRemoveUserFromListMutation({
+ *   variables: {
+ *      listId: // value for 'listId'
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useRemoveUserFromListMutation(baseOptions?: Apollo.MutationHookOptions<RemoveUserFromListMutation, RemoveUserFromListMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemoveUserFromListMutation, RemoveUserFromListMutationVariables>(RemoveUserFromListDocument, options);
+      }
+export type RemoveUserFromListMutationHookResult = ReturnType<typeof useRemoveUserFromListMutation>;
+export type RemoveUserFromListMutationResult = Apollo.MutationResult<RemoveUserFromListMutation>;
+export type RemoveUserFromListMutationOptions = Apollo.BaseMutationOptions<RemoveUserFromListMutation, RemoveUserFromListMutationVariables>;
 export const GetListsForChipsDocument = gql`
     query GetListsForChips {
   lists {
