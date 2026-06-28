@@ -7,9 +7,15 @@ import relations from "@/db/relations";
 
 type DrizzleRelations = typeof relations;
 
+export type BuilderContext = {
+  userId: string;
+  sessionId: string;
+  env: Env;
+};
+
 interface PothosTypes {
   DrizzleRelations: DrizzleRelations;
-  Context: { userId: string; env: Env };
+  Context: BuilderContext;
   DefaultFieldNullability: false;
   DefaultInputFieldRequiredness: true;
 }

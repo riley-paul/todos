@@ -1,8 +1,8 @@
-import type { ActionAPIContext } from "astro:actions";
 import { createDb } from "@/db";
 import { Rest } from "ably";
 import * as tables from "@/db/schema";
 import { and, eq, inArray, ne } from "drizzle-orm";
+import type { BuilderContext } from "@/gql/gql-builder";
 
 export const createChannelName = (info: {
   userId: string;
@@ -16,13 +16,13 @@ const createAbly = (env: Env) => {
 };
 
 export async function notifyOtherListUsers(
-  c: ActionAPIContext,
+  ctx: BuilderContext,
   listId: string | string[],
 ) {
-  const db = createDb(c.locals.env);
-  const ably = createAbly(c.locals.env);
+  const db = createDb(ctx.env);
+  const ably = createAbly(ctx.env);
 
-  const currentSessionId = c.locals.session?.id ?? "";
+  const currentSessionId = ctx.sessionId;
 
   const listUsers = await db
     .selectDistinct({
@@ -53,12 +53,12 @@ export async function notifyOtherListUsers(
   });
 }
 
-export async function notifyUser(c: ActionAPIContext) {
-  const db = createDb(c.locals.env);
-  const ably = createAbly(c.locals.env);
+export async function notifyUser(ctx: BuilderContext) {
+  const db = createDb(ctx.env);
+  const ably = createAbly(ctx.env);
 
-  const currentSessionId = c.locals.session?.id ?? "";
-  const currentUserId = c.locals.session?.userId ?? "";
+  const currentSessionId = ctx.sessionId;
+  const currentUserId = ctx.userId;
 
   const otherSessions = await db
     .select({

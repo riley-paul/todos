@@ -33,7 +33,7 @@ builder.mutationFields((t) => ({
     nullable: true,
     resolve: async (query, _root, { input }, ctx) => {
       const db = createDb(ctx.env);
-      const userLists = await getUserLists(ctx.userId);
+      const userLists = await getUserLists(ctx);
       if (!userLists.has(input.listId)) {
         throw new Error("You do not have access to this list");
       }
@@ -63,7 +63,7 @@ builder.mutationFields((t) => ({
       });
       if (!todo) throw new Error("Todo not found");
 
-      const userLists = await getUserLists(ctx.userId);
+      const userLists = await getUserLists(ctx);
       if (!userLists.has(todo.listId)) {
         throw new Error("You do not have access to this todo");
       }
@@ -96,7 +96,7 @@ builder.mutationFields((t) => ({
       });
       if (!todo) throw new Error("Todo not found");
 
-      const userLists = await getUserLists(ctx.userId);
+      const userLists = await getUserLists(ctx);
       if (!userLists.has(todo.listId)) {
         throw new Error("You do not have access to this todo");
       }
@@ -112,7 +112,7 @@ builder.mutationFields((t) => ({
     nullable: true,
     resolve: async (query, _root, { listId }, ctx) => {
       const db = createDb(ctx.env);
-      const userLists = await getUserLists(ctx.userId);
+      const userLists = await getUserLists(ctx);
       if (!userLists.has(listId)) {
         throw new Error("You do not have access to this list");
       }
@@ -136,7 +136,7 @@ builder.mutationFields((t) => ({
     nullable: true,
     resolve: async (query, _root, { listId }, ctx) => {
       const db = createDb(ctx.env);
-      const userLists = await getUserLists(ctx.userId);
+      const userLists = await getUserLists(ctx);
       if (!userLists.has(listId)) {
         throw new Error("You do not have access to this list");
       }

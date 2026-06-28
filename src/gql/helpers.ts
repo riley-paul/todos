@@ -1,9 +1,12 @@
 import { createDb } from "@/db";
-import { env } from "cloudflare:workers";
+import type { BuilderContext } from "./gql-builder";
 
-const db = createDb(env);
-
-export const getUserLists = async (userId: string): Promise<Set<string>> => {
-  const listUsers = await db.query.ListUser.findMany({ where: { userId } });
+export const getUserLists = async (
+  ctx: BuilderContext,
+): Promise<Set<string>> => {
+  const db = createDb(ctx.env);
+  const listUsers = await db.query.ListUser.findMany({
+    where: { userId: ctx.userId },
+  });
   return new Set(listUsers.map((lu) => lu.listId));
 };

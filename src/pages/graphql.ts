@@ -1,6 +1,5 @@
 import { createYoga } from "graphql-yoga";
 import type { APIRoute } from "astro";
-import { env } from "cloudflare:workers";
 
 import { builder } from "@/gql/gql-builder";
 import "@/gql";
@@ -10,7 +9,7 @@ export const ALL: APIRoute = async (ctx) => {
     .get("Authorization")
     ?.replace("Bearer ", "");
   const bearerTokenValid =
-    bearerToken !== undefined && bearerToken === env.API_KEY;
+    bearerToken !== undefined && bearerToken === ctx.locals.env.API_KEY;
 
   const user = ctx.locals.user;
   if (!(user || bearerTokenValid))
@@ -18,7 +17,11 @@ export const ALL: APIRoute = async (ctx) => {
 
   const yoga = createYoga({
     schema: builder.toSchema(),
-    context: { userId: user?.id, env: ctx.locals.env },
+    context: {
+      userId: ctx.locals.user?.id,
+      sessionId: ctx.locals.session?.id,
+      env: ctx.locals.env,
+    },
     fetchAPI: { Response },
   });
   return yoga(ctx.request);

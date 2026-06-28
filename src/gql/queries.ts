@@ -20,7 +20,7 @@ builder.queryFields((t) => ({
     type: ["List"],
     resolve: async (query, _root, _args, ctx) => {
       const db = createDb(ctx.env);
-      const userLists = await getUserLists(ctx.userId);
+      const userLists = await getUserLists(ctx);
 
       const filters = [];
       if (userLists.size) filters.push({ id: { in: [...userLists] } });
@@ -62,7 +62,7 @@ builder.queryFields((t) => ({
     args: { listId: t.arg.id() },
     resolve: async (query, _root, args, ctx) => {
       const db = createDb(ctx.env);
-      const userLists = await getUserLists(ctx.userId);
+      const userLists = await getUserLists(ctx);
       if (!userLists.has(args.listId)) return null;
       return db.query.List.findFirst(
         query({ where: { id: { eq: args.listId } } }),
@@ -75,7 +75,7 @@ builder.queryFields((t) => ({
     args: { listId: t.arg.id() },
     resolve: async (query, _root, args, ctx) => {
       const db = createDb(ctx.env);
-      const userLists = await getUserLists(ctx.userId);
+      const userLists = await getUserLists(ctx);
       if (!userLists.has(args.listId)) {
         throw new Error("You do not have access to this list");
       }
@@ -93,7 +93,7 @@ builder.queryFields((t) => ({
     args: { listId: t.arg.id({ required: false }) },
     resolve: async (query, _root, args, ctx) => {
       const db = createDb(ctx.env);
-      const userLists = await getUserLists(ctx.userId);
+      const userLists = await getUserLists(ctx);
 
       const filters = [];
       if (userLists.size) filters.push({ listId: { in: [...userLists] } });
