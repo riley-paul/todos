@@ -22,7 +22,11 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
   const { listId } = useParams({ strict: false });
 
   const [deleteTodo] = useDeleteTodoMutation({
-    update: (cache, { data }, { variables }) => {
+    optimisticResponse: {
+      __typename: "Mutation",
+      deleteTodo: true,
+    },
+    update: (cache, { data }) => {
       if (!data?.deleteTodo) return;
 
       const listCacheId = cache.identify({
@@ -33,15 +37,13 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
         id: listCacheId,
         fields: {
           todoCount: (count) => count - 1,
+          todos: (existingTodoRefs = [], { readField }) => {
+            return existingTodoRefs.filter(
+              (ref) => readField("id", ref) !== todoId,
+            );
+          },
         },
       });
-
-      const todoCacheId = cache.identify({
-        __typename: "TodoObjectType",
-        id: variables?.input.id,
-      });
-      cache.evict({ id: todoCacheId });
-      cache.gc();
     },
   });
 
