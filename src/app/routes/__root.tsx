@@ -1,4 +1,3 @@
-import { type QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import React from "react";
@@ -8,7 +7,6 @@ import type { ApolloClient, NormalizedCacheObject } from "@apollo/client";
 import { useUser } from "../providers/user-provider";
 
 type RouterContext = {
-  queryClient: QueryClient;
   apolloClient: ApolloClient<NormalizedCacheObject>;
 };
 

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import React from "react";
 import { useDocumentTitle } from "usehooks-ts";
 import ListHeader from "../components/list/list-header";
@@ -24,6 +24,7 @@ export const Route = createFileRoute("/todos/$listId")({
       query: GetListDocument,
       variables: { listId },
     });
+    if (!list) throw notFound();
     return { list };
   },
 });
