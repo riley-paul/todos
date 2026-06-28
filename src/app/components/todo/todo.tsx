@@ -96,12 +96,21 @@ const TodoCheckbox: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
         variant="soft"
         checked={todo.isCompleted}
         onCheckedChange={(value) => {
+          const isCompleted = Boolean(value);
           updateTodo({
-            variables: {
-              input: {
-                id: todo.id,
-                isCompleted: Boolean(value),
-              },
+            variables: { input: { id: todo.id, isCompleted } },
+            update: (cache) => {
+              const listCacheId = cache.identify({
+                __typename: "ListObjectType",
+                id: todo.list.id,
+              });
+              cache.modify({
+                id: listCacheId,
+                fields: {
+                  todoCount: (existingCount) =>
+                    isCompleted ? existingCount - 1 : existingCount + 1,
+                },
+              });
             },
           });
         }}

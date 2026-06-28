@@ -1,3 +1,5 @@
+import { eq } from "drizzle-orm";
+import * as tables from "@/db/schema";
 import { builder } from "./gql-builder";
 
 builder.drizzleObject("User", {
@@ -31,7 +33,9 @@ builder.drizzleObject("List", {
   fields: (t) => ({
     id: t.exposeID("id"),
     name: t.exposeString("name"),
-    todoCount: t.relatedCount("todos"),
+    todoCount: t.relatedCount("todos", {
+      where: eq(tables.Todo.isCompleted, false),
+    }),
     todos: t.relation("todos", {
       query: () => ({
         orderBy: {
