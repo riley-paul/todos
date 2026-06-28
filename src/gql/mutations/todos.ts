@@ -14,8 +14,23 @@ const CreateTodoInput = builder.inputType("CreateTodoInput", {
   }),
 });
 
-builder.mutationField("createTodo", (t) =>
-  t.drizzleField({
+const DeleteTodoInput = builder.inputType("DeleteTodoInput", {
+  fields: (t) => ({
+    id: t.id(),
+  }),
+});
+
+const UpdateTodoInput = builder.inputType("UpdateTodoInput", {
+  fields: (t) => ({
+    id: t.id(),
+    text: t.string({ required: false }),
+    isCompleted: t.boolean({ required: false }),
+    listId: t.id({ required: false }),
+  }),
+});
+
+builder.mutationFields((t) => ({
+  createTodo: t.drizzleField({
     type: "List",
     args: { input: t.arg({ type: CreateTodoInput }) },
     nullable: true,
@@ -38,46 +53,8 @@ builder.mutationField("createTodo", (t) =>
       );
     },
   }),
-);
 
-const DeleteTodoInput = builder.inputType("DeleteTodoInput", {
-  fields: (t) => ({
-    id: t.id(),
-  }),
-});
-
-builder.mutationField("deleteTodo", (t) =>
-  t.boolean({
-    args: { input: t.arg({ type: DeleteTodoInput }) },
-    nullable: true,
-    resolve: async (_root, { input }, ctx) => {
-      const todo = await db.query.Todo.findFirst({
-        where: { id: { eq: input.id } },
-      });
-      if (!todo) throw new Error("Todo not found");
-
-      const userLists = await getUserLists(ctx.userId);
-      if (!userLists.has(todo.listId)) {
-        throw new Error("You do not have access to this todo");
-      }
-
-      await db.delete(tables.Todo).where(eq(tables.Todo.id, input.id));
-      return true;
-    },
-  }),
-);
-
-const UpdateTodoInput = builder.inputType("UpdateTodoInput", {
-  fields: (t) => ({
-    id: t.id(),
-    text: t.string({ required: false }),
-    isCompleted: t.boolean({ required: false }),
-    listId: t.id({ required: false }),
-  }),
-});
-
-builder.mutationField("updateTodo", (t) =>
-  t.drizzleField({
+  updateTodo: t.drizzleField({
     type: "Todo",
     args: { input: t.arg({ type: UpdateTodoInput }) },
     nullable: true,
@@ -109,9 +86,26 @@ builder.mutationField("updateTodo", (t) =>
       );
     },
   }),
-);
 
-builder.mutationFields((t) => ({
+  deleteTodo: t.boolean({
+    args: { input: t.arg({ type: DeleteTodoInput }) },
+    nullable: true,
+    resolve: async (_root, { input }, ctx) => {
+      const todo = await db.query.Todo.findFirst({
+        where: { id: { eq: input.id } },
+      });
+      if (!todo) throw new Error("Todo not found");
+
+      const userLists = await getUserLists(ctx.userId);
+      if (!userLists.has(todo.listId)) {
+        throw new Error("You do not have access to this todo");
+      }
+
+      await db.delete(tables.Todo).where(eq(tables.Todo.id, input.id));
+      return true;
+    },
+  }),
+
   deleteCompletedTodos: t.drizzleField({
     type: "List",
     args: { listId: t.arg.id() },
@@ -134,6 +128,7 @@ builder.mutationFields((t) => ({
       return db.query.List.findFirst(query({ where: { id: { eq: listId } } }));
     },
   }),
+
   uncheckCompletedTodos: t.drizzleField({
     type: "List",
     args: { listId: t.arg.id() },
