@@ -7,12 +7,12 @@ import { toast } from "sonner";
 type Props = { listId: string };
 
 const DeleteCompletedTodosButton: React.FC<Props> = ({ listId }) => {
+  const numCompleted = useNumCompletedTodos(listId);
   const [deleteCompletedTodos] = useDeleteCompletedTodosMutation({
     onCompleted: () => {
       toast.success("Completed todos deleted");
     },
   });
-  const numCompleted = useNumCompletedTodos(listId);
 
   return (
     <Button

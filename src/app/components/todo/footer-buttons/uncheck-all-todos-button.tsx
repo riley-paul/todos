@@ -8,12 +8,12 @@ import { toast } from "sonner";
 type Props = { listId: string };
 
 const UncheckAllTodosButton: React.FC<Props> = ({ listId }) => {
+  const numCompleted = useNumCompletedTodos(listId);
   const [uncheckCompletedTodos] = useUncheckCompletedTodosMutation({
     onCompleted: () => {
       toast.success("Completed todos unchecked");
     },
   });
-  const numCompleted = useNumCompletedTodos(listId);
 
   return (
     <Button
