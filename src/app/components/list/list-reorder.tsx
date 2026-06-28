@@ -182,10 +182,11 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [localObjs, setLocalObjs] = useState(getSortableObjectList(lists));
 
-  useEffect(() => setLocalObjs(getSortableObjectList(lists)), [lists]);
   const [updateListSortShow] = useUpdateListSortShowMutation({
     refetchQueries: [GetListsForChipsDocument],
   });
+
+  useEffect(() => setLocalObjs(getSortableObjectList(lists)), [lists]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
