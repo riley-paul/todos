@@ -44,3 +44,9 @@ mutation UpdateList($listId: ID!, $input: UpdateListInput!) {
 mutation DeleteList($listId: ID!) {
   deleteList(listId: $listId)
 }
+
+mutation UpdateListSortShow($listIds: [ID!]!) {
+  updateListSortShow(listIds: $listIds) {
+    ...ShallowList
+  }
+}

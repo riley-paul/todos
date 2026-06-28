@@ -10,7 +10,7 @@ import {
   useGetListsForChipsSuspenseQuery,
   type ShallowListFragment,
 } from "@/app/gql.gen";
-import useAlerts from "@/app/hooks/use-alerts";
+import useCreateList from "@/app/hooks/actions/use-create-list";
 
 const ListChip: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
   const link = linkOptions({
@@ -44,7 +44,7 @@ const ListChip: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
 };
 
 const ListChips: React.FC = () => {
-  const { handleCreateList } = useAlerts();
+  const handleCreateList = useCreateList();
   const { data: { lists = [] } = {} } = useGetListsForChipsSuspenseQuery();
 
   useHotkey("A", handleCreateList, { ignoreInputs: true });

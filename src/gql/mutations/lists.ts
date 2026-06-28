@@ -2,7 +2,8 @@ import { env } from "cloudflare:workers";
 import { builder } from "../gql-builder";
 import { createDb } from "@/db";
 import * as tables from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
+import { LIST_SEPARATOR_ID } from "@/lib/constants";
 
 const db = createDb(env);
 
@@ -94,6 +95,55 @@ builder.mutationFields((t) => ({
 
       await db.delete(tables.List).where(eq(tables.List.id, listId));
       return true;
+    },
+  }),
+
+  updateListSortShow: t.drizzleField({
+    type: ["List"],
+    args: { listIds: t.arg.idList() },
+    resolve: async (query, root, { listIds }, ctx) => {
+      const separatorIdx = listIds.indexOf(LIST_SEPARATOR_ID);
+
+      const orderCase = sql.join(
+        listIds.map((listId, idx) => sql`WHEN ${listId} THEN ${idx}`),
+        sql` `,
+      );
+
+      const showCase = sql.join(
+        listIds.map(
+          (listId, idx) =>
+            sql`WHEN ${listId} THEN ${
+              separatorIdx === -1 || idx < separatorIdx ? 1 : 0
+            }`,
+        ),
+        sql` `,
+      );
+
+      await db.run(sql`
+       UPDATE ${tables.ListUser}
+       SET
+         "order" = CASE "listId" ${orderCase} END,
+         "show" = CASE "listId" ${showCase} END
+       WHERE "userId" = ${ctx.userId}
+         AND "listId" IN (${sql.join(listIds, sql`, `)});
+     `);
+
+      return db.query.List.findMany(
+        query({
+          where: { id: { in: listIds } },
+          orderBy: {
+            createdAt: "asc",
+          },
+          with: {
+            listUser: {
+              orderBy: {
+                show: "desc",
+                order: "asc",
+              },
+            },
+          },
+        }),
+      );
     },
   }),
 }));

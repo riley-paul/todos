@@ -2,6 +2,7 @@ import { createDb } from "@/db";
 import { getUserLists } from "./helpers";
 import { env } from "cloudflare:workers";
 import { builder } from "./gql-builder";
+import { sql } from "drizzle-orm";
 
 const db = createDb(env);
 
@@ -25,7 +26,40 @@ builder.queryFields((t) => ({
       if (userLists.size) filters.push({ id: { in: [...userLists] } });
       if (!userLists.size) filters.push({ id: { eq: "none" } });
 
-      return db.query.List.findMany(query({ where: { AND: filters } }));
+      const lists = await db.query.List.findMany(
+        query({
+          where: { AND: filters },
+          with: { listUser: true },
+
+          // 1. Dynamically append child values as metadata fields onto the main row
+          extras: {
+            userSortOrder: sql`
+              (SELECT "order" FROM listUser
+              WHERE listUser.listId = id
+              AND listUser.userId = ${ctx.userId}
+              LIMIT 1)
+            `,
+            userShowOrder: sql`
+              (SELECT "show" FROM listUser
+              WHERE listUser.listId = id
+              AND listUser.userId = ${ctx.userId}
+              LIMIT 1)
+            `,
+          },
+
+          // 2. Use those newly created virtual column metadata flags to order the output
+          orderBy: (lists, { desc, asc }) => [
+            // Use the exact custom text alias assigned in the extras configuration block above
+            sql`userShowOrder DESC`,
+            sql`userSortOrder ASC`,
+            desc(lists.createdAt),
+          ],
+        }),
+      );
+
+      console.log("lists", lists);
+
+      return lists;
     },
   }),
   list: t.drizzleField({

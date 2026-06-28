@@ -40,8 +40,10 @@ import { Link } from "@tanstack/react-router";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import ListRow from "./list-row";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
-import type { ShallowListFragment } from "@/app/gql.gen";
-import useMutations from "@/app/hooks/use-mutations";
+import {
+  useUpdateListSortShowMutation,
+  type ShallowListFragment,
+} from "@/app/gql.gen";
 
 type SortableObjectData =
   | {
@@ -180,7 +182,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
   const [localObjs, setLocalObjs] = useState(getSortableObjectList(lists));
 
   useEffect(() => setLocalObjs(getSortableObjectList(lists)), [lists]);
-  const { updateListSortShow } = useMutations();
+  const [updateListSortShow] = useUpdateListSortShowMutation();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -205,7 +207,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
       const newOrder = arrayMove(ids, oldIndex, newIndex);
 
       setLocalObjs((prev) => arrayMove(prev, oldIndex, newIndex));
-      return updateListSortShow.mutate({ listIds: newOrder });
+      return updateListSortShow({ variables: { listIds: newOrder } });
     }
   };
 
