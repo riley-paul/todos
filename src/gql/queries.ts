@@ -26,40 +26,33 @@ builder.queryFields((t) => ({
       if (userLists.size) filters.push({ id: { in: [...userLists] } });
       if (!userLists.size) filters.push({ id: { eq: "none" } });
 
-      const lists = await db.query.List.findMany(
+      return db.query.List.findMany(
         query({
           where: { AND: filters },
           with: { listUser: true },
 
-          // 1. Dynamically append child values as metadata fields onto the main row
           extras: {
-            userSortOrder: sql`
+            userSortOrder: (lists) => sql`
               (SELECT "order" FROM listUser
-              WHERE listUser.listId = id
+              WHERE listUser.listId = ${lists.id}
               AND listUser.userId = ${ctx.userId}
               LIMIT 1)
             `,
-            userShowOrder: sql`
+            userShowOrder: (lists) => sql`
               (SELECT "show" FROM listUser
-              WHERE listUser.listId = id
+              WHERE listUser.listId = ${lists.id}
               AND listUser.userId = ${ctx.userId}
               LIMIT 1)
             `,
           },
 
-          // 2. Use those newly created virtual column metadata flags to order the output
-          orderBy: (lists, { desc, asc }) => [
-            // Use the exact custom text alias assigned in the extras configuration block above
+          orderBy: (lists, { desc }) => [
             sql`userShowOrder DESC`,
             sql`userSortOrder ASC`,
             desc(lists.createdAt),
           ],
         }),
       );
-
-      console.log("lists", lists);
-
-      return lists;
     },
   }),
   list: t.drizzleField({
@@ -69,24 +62,8 @@ builder.queryFields((t) => ({
     resolve: async (query, root, args, ctx) => {
       const userLists = await getUserLists(ctx.userId);
       if (!userLists.has(args.listId)) return null;
-
-      // .orderBy(desc(ListUser.show), asc(ListUser.order), asc(List.createdAt))
-
       return db.query.List.findFirst(
-        query({
-          where: { id: { eq: args.listId } },
-          orderBy: {
-            createdAt: "asc",
-          },
-          with: {
-            listUser: {
-              orderBy: {
-                show: "desc",
-                order: "asc",
-              },
-            },
-          },
-        }),
+        query({ where: { id: { eq: args.listId } } }),
       );
     },
   }),

@@ -128,22 +128,7 @@ builder.mutationFields((t) => ({
          AND "listId" IN (${sql.join(listIds, sql`, `)});
      `);
 
-      return db.query.List.findMany(
-        query({
-          where: { id: { in: listIds } },
-          orderBy: {
-            createdAt: "asc",
-          },
-          with: {
-            listUser: {
-              orderBy: {
-                show: "desc",
-                order: "asc",
-              },
-            },
-          },
-        }),
-      );
+      return db.query.List.findMany(query({ where: { id: { in: listIds } } }));
     },
   }),
 }));

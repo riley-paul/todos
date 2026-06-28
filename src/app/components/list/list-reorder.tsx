@@ -41,6 +41,7 @@ import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import ListRow from "./list-row";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import {
+  GetListsForChipsDocument,
   useUpdateListSortShowMutation,
   type ShallowListFragment,
 } from "@/app/gql.gen";
@@ -182,7 +183,9 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
   const [localObjs, setLocalObjs] = useState(getSortableObjectList(lists));
 
   useEffect(() => setLocalObjs(getSortableObjectList(lists)), [lists]);
-  const [updateListSortShow] = useUpdateListSortShowMutation();
+  const [updateListSortShow] = useUpdateListSortShowMutation({
+    refetchQueries: [GetListsForChipsDocument],
+  });
 
   const sensors = useSensors(
     useSensor(PointerSensor),
