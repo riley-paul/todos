@@ -12,6 +12,12 @@ const CreateListInput = builder.inputType("CreateListInput", {
   }),
 });
 
+const UpdateListInput = builder.inputType("UpdateListInput", {
+  fields: (t) => ({
+    name: t.string(),
+  }),
+});
+
 builder.mutationFields((t) => ({
   createList: t.drizzleField({
     type: "List",
@@ -32,6 +38,38 @@ builder.mutationFields((t) => ({
       return db.query.List.findFirst(
         query({ where: { id: { eq: newList.id } } }),
       );
+    },
+  }),
+
+  updateList: t.drizzleField({
+    type: "List",
+    args: {
+      listId: t.arg.id(),
+      input: t.arg({ type: UpdateListInput }),
+    },
+    nullable: true,
+    resolve: async (query, root, { listId, input }, ctx) => {
+      const list = await db.query.List.findFirst({
+        where: { id: { eq: listId } },
+      });
+      if (!list) throw new Error("List not found");
+
+      const listUser = await db.query.ListUser.findFirst({
+        where: {
+          AND: [
+            { listId: { eq: listId } },
+            { userId: { eq: ctx.userId } },
+            { isPending: { eq: false } },
+          ],
+        },
+      });
+      if (!listUser) throw new Error("You do not have access to this list");
+
+      await db
+        .update(tables.List)
+        .set({ name: input.name })
+        .where(eq(tables.List.id, listId));
+      return db.query.List.findFirst(query({ where: { id: { eq: listId } } }));
     },
   }),
 

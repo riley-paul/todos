@@ -35,6 +35,12 @@ mutation CreateList($input: CreateListInput!) {
   }
 }
 
+mutation UpdateList($listId: ID!, $input: UpdateListInput!) {
+  updateList(listId: $listId, input: $input) {
+    ...ListFull
+  }
+}
+
 mutation DeleteList($listId: ID!) {
   deleteList(listId: $listId)
 }

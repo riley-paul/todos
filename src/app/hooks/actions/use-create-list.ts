@@ -1,11 +1,11 @@
 import { alertSystemAtom } from "@/app/components/alert-system/alert-system.store";
 import { zListName } from "@/lib/types";
 import { useAtom } from "jotai";
-import useMutations from "../use-mutations";
+import { useCreateListMutation } from "@/app/gql.gen";
 
 export default function useCreateList() {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
-  const { createList } = useMutations();
+  const [createList] = useCreateListMutation();
 
   const handleCreateList = () => {
     dispatchAlert({
@@ -18,7 +18,7 @@ export default function useCreateList() {
         placeholder: "List name",
         schema: zListName,
         handleSubmit: async (name: string) => {
-          createList.mutate({ name });
+          createList({ variables: { input: { name } } });
           dispatchAlert({ type: "close" });
         },
       },
