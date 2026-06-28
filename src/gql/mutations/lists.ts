@@ -24,7 +24,7 @@ builder.mutationFields((t) => ({
     type: "List",
     args: { input: t.arg({ type: CreateListInput }) },
     nullable: true,
-    resolve: async (query, root, { input }, ctx) => {
+    resolve: async (query, _root, { input }, ctx) => {
       const newList = await db.transaction(async (tx) => {
         const [newList] = await tx
           .insert(tables.List)
@@ -49,7 +49,7 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: UpdateListInput }),
     },
     nullable: true,
-    resolve: async (query, root, { listId, input }, ctx) => {
+    resolve: async (query, _root, { listId, input }, ctx) => {
       const list = await db.query.List.findFirst({
         where: { id: { eq: listId } },
       });
@@ -76,7 +76,7 @@ builder.mutationFields((t) => ({
 
   deleteList: t.boolean({
     args: { listId: t.arg.id() },
-    resolve: async (root, { listId }, ctx) => {
+    resolve: async (_root, { listId }, ctx) => {
       const list = await db.query.List.findFirst({
         where: { id: { eq: listId } },
       });
@@ -101,7 +101,7 @@ builder.mutationFields((t) => ({
   updateListSortShow: t.drizzleField({
     type: ["List"],
     args: { listIds: t.arg.idList() },
-    resolve: async (query, root, { listIds }, ctx) => {
+    resolve: async (query, _root, { listIds }, ctx) => {
       const separatorIdx = listIds.indexOf(LIST_SEPARATOR_ID);
 
       const orderCase = sql.join(

@@ -41,21 +41,21 @@ builder.drizzleObject("List", {
     }),
     show: t.boolean({
       select: { with: { listUser: true } },
-      resolve: async (list, args, ctx) => {
+      resolve: async (list, _args, ctx) => {
         const listUser = list.listUser.find((lu) => lu.userId === ctx.userId);
         return !!listUser?.show;
       },
     }),
     order: t.int({
       select: { with: { listUser: true } },
-      resolve: async (list, args, ctx) => {
+      resolve: async (list, _args, ctx) => {
         const listUser = list.listUser.find((lu) => lu.userId === ctx.userId);
         return listUser?.order ?? 1_000_000;
       },
     }),
     isPending: t.boolean({
       select: { with: { listUser: true } },
-      resolve: async (list, args, ctx) => {
+      resolve: async (list, _args, ctx) => {
         const listUser = list.listUser.find((lu) => lu.userId === ctx.userId);
         return !!listUser?.isPending;
       },

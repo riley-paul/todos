@@ -19,7 +19,7 @@ builder.mutationField("createTodo", (t) =>
     type: "List",
     args: { input: t.arg({ type: CreateTodoInput }) },
     nullable: true,
-    resolve: async (query, root, { input }, ctx) => {
+    resolve: async (query, _root, { input }, ctx) => {
       const userLists = await getUserLists(ctx.userId);
       if (!userLists.has(input.listId)) {
         throw new Error("You do not have access to this list");
@@ -50,7 +50,7 @@ builder.mutationField("deleteTodo", (t) =>
   t.boolean({
     args: { input: t.arg({ type: DeleteTodoInput }) },
     nullable: true,
-    resolve: async (root, { input }, ctx) => {
+    resolve: async (_root, { input }, ctx) => {
       const todo = await db.query.Todo.findFirst({
         where: { id: { eq: input.id } },
       });
@@ -81,7 +81,7 @@ builder.mutationField("updateTodo", (t) =>
     type: "Todo",
     args: { input: t.arg({ type: UpdateTodoInput }) },
     nullable: true,
-    resolve: async (query, root, { input }, ctx) => {
+    resolve: async (query, _root, { input }, ctx) => {
       const todo = await db.query.Todo.findFirst({
         where: { id: { eq: input.id } },
       });
@@ -116,7 +116,7 @@ builder.mutationFields((t) => ({
     type: "List",
     args: { listId: t.arg.id() },
     nullable: true,
-    resolve: async (query, root, { listId }, ctx) => {
+    resolve: async (query, _root, { listId }, ctx) => {
       const userLists = await getUserLists(ctx.userId);
       if (!userLists.has(listId)) {
         throw new Error("You do not have access to this list");
@@ -138,7 +138,7 @@ builder.mutationFields((t) => ({
     type: "List",
     args: { listId: t.arg.id() },
     nullable: true,
-    resolve: async (query, root, { listId }, ctx) => {
+    resolve: async (query, _root, { listId }, ctx) => {
       const userLists = await getUserLists(ctx.userId);
       if (!userLists.has(listId)) {
         throw new Error("You do not have access to this list");

@@ -1,11 +1,10 @@
 const CACHE_NAME = "app-cache-v1";
 const ASSET_CACHE = "asset-cache-v1";
 
-
 // --------------------
 // INSTALL
 // --------------------
-self.addEventListener("install", (event) => {
+self.addEventListener("install", () => {
   self.skipWaiting();
 });
 
@@ -20,9 +19,9 @@ self.addEventListener("activate", (event) => {
           if (![CACHE_NAME, ASSET_CACHE].includes(key)) {
             return caches.delete(key);
           }
-        })
-      )
-    )
+        }),
+      ),
+    ),
   );
 
   self.clients.claim();
@@ -39,10 +38,7 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(req.url);
 
   // ❌ never cache API / actions
-  if (
-    url.pathname.startsWith("/api") ||
-    url.pathname.startsWith("/_actions")
-  ) {
+  if (url.pathname.startsWith("/api") || url.pathname.startsWith("/_actions")) {
     return;
   }
 
@@ -67,7 +63,6 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 });
-
 
 async function cacheFirst(req) {
   const cached = await caches.match(req);

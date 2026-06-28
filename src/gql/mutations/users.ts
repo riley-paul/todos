@@ -17,7 +17,7 @@ builder.mutationFields((t) => ({
     type: "User",
     args: { input: t.arg({ type: UpdateUserInput }) },
     nullable: true,
-    resolve: async (query, root, { input }, ctx) => {
+    resolve: async (query, _root, { input }, ctx) => {
       const [updatedUser] = await db
         .update(tables.User)
         .set(input)
@@ -31,7 +31,7 @@ builder.mutationFields((t) => ({
   }),
 
   deleteUser: t.boolean({
-    resolve: async (root, args, ctx) => {
+    resolve: async (_root, _args, ctx) => {
       await db.delete(tables.User).where(eq(tables.User.id, ctx.userId));
       return true;
     },

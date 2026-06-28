@@ -9,7 +9,7 @@ const db = createDb(env);
 builder.queryFields((t) => ({
   me: t.drizzleField({
     type: "User",
-    resolve: async (query, root, args, ctx) => {
+    resolve: async (query, _root, _args, ctx) => {
       const user = await db.query.User.findFirst(
         query({ where: { id: { eq: ctx.userId } } }),
       );
@@ -19,7 +19,7 @@ builder.queryFields((t) => ({
   }),
   lists: t.drizzleField({
     type: ["List"],
-    resolve: async (query, root, args, ctx) => {
+    resolve: async (query, _root, _args, ctx) => {
       const userLists = await getUserLists(ctx.userId);
 
       const filters = [];
@@ -59,7 +59,7 @@ builder.queryFields((t) => ({
     type: "List",
     nullable: true,
     args: { listId: t.arg.id() },
-    resolve: async (query, root, args, ctx) => {
+    resolve: async (query, _root, args, ctx) => {
       const userLists = await getUserLists(ctx.userId);
       if (!userLists.has(args.listId)) return null;
       return db.query.List.findFirst(
@@ -70,7 +70,7 @@ builder.queryFields((t) => ({
   todos: t.drizzleField({
     type: ["Todo"],
     args: { listId: t.arg.id({ required: false }) },
-    resolve: async (query, root, args, ctx) => {
+    resolve: async (query, _root, args, ctx) => {
       const userLists = await getUserLists(ctx.userId);
 
       const filters = [];
