@@ -1,10 +1,7 @@
-import { env } from "cloudflare:workers";
 import { builder } from "../gql-builder";
-import { createDb } from "@/db";
 import * as tables from "@/db/schema";
 import { eq } from "drizzle-orm";
-
-const db = createDb(env);
+import { createDb } from "@/db";
 
 const UpdateUserInput = builder.inputType("UpdateUserInput", {
   fields: (t) => ({
@@ -18,6 +15,7 @@ builder.mutationFields((t) => ({
     args: { input: t.arg({ type: UpdateUserInput }) },
     nullable: true,
     resolve: async (query, _root, { input }, ctx) => {
+      const db = createDb(ctx.env);
       const [updatedUser] = await db
         .update(tables.User)
         .set(input)
@@ -32,6 +30,7 @@ builder.mutationFields((t) => ({
 
   deleteUser: t.boolean({
     resolve: async (_root, _args, ctx) => {
+      const db = createDb(ctx.env);
       await db.delete(tables.User).where(eq(tables.User.id, ctx.userId));
       return true;
     },

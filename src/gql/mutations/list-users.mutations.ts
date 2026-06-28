@@ -1,10 +1,7 @@
-import { env } from "cloudflare:workers";
 import { builder } from "../gql-builder";
 import { createDb } from "@/db";
 import * as tables from "@/db/schema";
 import { and, eq } from "drizzle-orm";
-
-const db = createDb(env);
 
 builder.mutationFields((t) => ({
   acceptListInvite: t.drizzleField({
@@ -12,6 +9,7 @@ builder.mutationFields((t) => ({
     args: { listId: t.arg.id() },
     nullable: true,
     resolve: async (query, _root, { listId }, ctx) => {
+      const db = createDb(ctx.env);
       const [updated] = await db
         .update(tables.ListUser)
         .set({ isPending: false, show: true })
@@ -32,6 +30,7 @@ builder.mutationFields((t) => ({
   leaveList: t.boolean({
     args: { listId: t.arg.id() },
     resolve: async (_root, { listId }, ctx) => {
+      const db = createDb(ctx.env);
       await db
         .delete(tables.ListUser)
         .where(
@@ -49,6 +48,7 @@ builder.mutationFields((t) => ({
     args: { listId: t.arg.id(), email: t.arg.string() },
     nullable: true,
     resolve: async (query, _root, { listId, email }, ctx) => {
+      const db = createDb(ctx.env);
       const isMember = await db.query.ListUser.findFirst({
         where: { listId, userId: ctx.userId, isPending: false },
       });
@@ -82,6 +82,7 @@ builder.mutationFields((t) => ({
     args: { listUserId: t.arg.id() },
     nullable: true,
     resolve: async (query, _root, { listUserId }, ctx) => {
+      const db = createDb(ctx.env);
       const membership = await db.query.ListUser.findFirst({
         where: { id: listUserId },
       });

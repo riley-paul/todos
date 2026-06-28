@@ -9,7 +9,7 @@ type DrizzleRelations = typeof relations;
 
 interface PothosTypes {
   DrizzleRelations: DrizzleRelations;
-  Context: { userId: string };
+  Context: { userId: string; env: Env };
   DefaultFieldNullability: false;
   DefaultInputFieldRequiredness: true;
 }

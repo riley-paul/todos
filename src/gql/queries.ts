@@ -1,15 +1,13 @@
 import { createDb } from "@/db";
 import { getUserLists } from "./helpers";
-import { env } from "cloudflare:workers";
 import { builder } from "./gql-builder";
 import { sql } from "drizzle-orm";
-
-const db = createDb(env);
 
 builder.queryFields((t) => ({
   me: t.drizzleField({
     type: "User",
     resolve: async (query, _root, _args, ctx) => {
+      const db = createDb(ctx.env);
       const user = await db.query.User.findFirst(
         query({ where: { id: { eq: ctx.userId } } }),
       );
@@ -21,6 +19,7 @@ builder.queryFields((t) => ({
   lists: t.drizzleField({
     type: ["List"],
     resolve: async (query, _root, _args, ctx) => {
+      const db = createDb(ctx.env);
       const userLists = await getUserLists(ctx.userId);
 
       const filters = [];
@@ -62,6 +61,7 @@ builder.queryFields((t) => ({
     nullable: true,
     args: { listId: t.arg.id() },
     resolve: async (query, _root, args, ctx) => {
+      const db = createDb(ctx.env);
       const userLists = await getUserLists(ctx.userId);
       if (!userLists.has(args.listId)) return null;
       return db.query.List.findFirst(
@@ -74,6 +74,7 @@ builder.queryFields((t) => ({
     type: ["ListUser"],
     args: { listId: t.arg.id() },
     resolve: async (query, _root, args, ctx) => {
+      const db = createDb(ctx.env);
       const userLists = await getUserLists(ctx.userId);
       if (!userLists.has(args.listId)) {
         throw new Error("You do not have access to this list");
@@ -91,6 +92,7 @@ builder.queryFields((t) => ({
     type: ["Todo"],
     args: { listId: t.arg.id({ required: false }) },
     resolve: async (query, _root, args, ctx) => {
+      const db = createDb(ctx.env);
       const userLists = await getUserLists(ctx.userId);
 
       const filters = [];

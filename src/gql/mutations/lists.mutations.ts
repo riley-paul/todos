@@ -1,11 +1,9 @@
-import { env } from "cloudflare:workers";
 import { builder } from "../gql-builder";
 import { createDb } from "@/db";
 import * as tables from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 
-const db = createDb(env);
 
 const CreateListInput = builder.inputType("CreateListInput", {
   fields: (t) => ({
@@ -25,6 +23,7 @@ builder.mutationFields((t) => ({
     args: { input: t.arg({ type: CreateListInput }) },
     nullable: true,
     resolve: async (query, _root, { input }, ctx) => {
+      const db = createDb(ctx.env);
       const newList = await db.transaction(async (tx) => {
         const [newList] = await tx
           .insert(tables.List)
@@ -50,6 +49,7 @@ builder.mutationFields((t) => ({
     },
     nullable: true,
     resolve: async (query, _root, { listId, input }, ctx) => {
+      const db = createDb(ctx.env);
       const list = await db.query.List.findFirst({
         where: { id: { eq: listId } },
       });
@@ -77,6 +77,7 @@ builder.mutationFields((t) => ({
   deleteList: t.boolean({
     args: { listId: t.arg.id() },
     resolve: async (_root, { listId }, ctx) => {
+      const db = createDb(ctx.env);
       const list = await db.query.List.findFirst({
         where: { id: { eq: listId } },
       });
@@ -102,6 +103,7 @@ builder.mutationFields((t) => ({
     type: ["List"],
     args: { listIds: t.arg.idList() },
     resolve: async (query, _root, { listIds }, ctx) => {
+      const db = createDb(ctx.env);
       const separatorIdx = listIds.indexOf(LIST_SEPARATOR_ID);
 
       const orderCase = sql.join(

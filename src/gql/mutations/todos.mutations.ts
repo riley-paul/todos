@@ -1,11 +1,8 @@
 import { createDb } from "@/db";
 import { builder } from "../gql-builder";
 import { getUserLists } from "../helpers";
-import { env } from "cloudflare:workers";
 import * as tables from "@/db/schema";
 import { and, eq } from "drizzle-orm";
-
-const db = createDb(env);
 
 const CreateTodoInput = builder.inputType("CreateTodoInput", {
   fields: (t) => ({
@@ -35,6 +32,7 @@ builder.mutationFields((t) => ({
     args: { input: t.arg({ type: CreateTodoInput }) },
     nullable: true,
     resolve: async (query, _root, { input }, ctx) => {
+      const db = createDb(ctx.env);
       const userLists = await getUserLists(ctx.userId);
       if (!userLists.has(input.listId)) {
         throw new Error("You do not have access to this list");
@@ -59,6 +57,7 @@ builder.mutationFields((t) => ({
     args: { input: t.arg({ type: UpdateTodoInput }) },
     nullable: true,
     resolve: async (query, _root, { input }, ctx) => {
+      const db = createDb(ctx.env);
       const todo = await db.query.Todo.findFirst({
         where: { id: { eq: input.id } },
       });
@@ -91,6 +90,7 @@ builder.mutationFields((t) => ({
     args: { input: t.arg({ type: DeleteTodoInput }) },
     nullable: true,
     resolve: async (_root, { input }, ctx) => {
+      const db = createDb(ctx.env);
       const todo = await db.query.Todo.findFirst({
         where: { id: { eq: input.id } },
       });
@@ -111,6 +111,7 @@ builder.mutationFields((t) => ({
     args: { listId: t.arg.id() },
     nullable: true,
     resolve: async (query, _root, { listId }, ctx) => {
+      const db = createDb(ctx.env);
       const userLists = await getUserLists(ctx.userId);
       if (!userLists.has(listId)) {
         throw new Error("You do not have access to this list");
@@ -134,6 +135,7 @@ builder.mutationFields((t) => ({
     args: { listId: t.arg.id() },
     nullable: true,
     resolve: async (query, _root, { listId }, ctx) => {
+      const db = createDb(ctx.env);
       const userLists = await getUserLists(ctx.userId);
       if (!userLists.has(listId)) {
         throw new Error("You do not have access to this list");

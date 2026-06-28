@@ -18,7 +18,7 @@ export const ALL: APIRoute = async (ctx) => {
 
   const yoga = createYoga({
     schema: builder.toSchema(),
-    context: { userId: user?.id },
+    context: { userId: user?.id, env: ctx.locals.env },
     fetchAPI: { Response },
   });
   return yoga(ctx.request);
