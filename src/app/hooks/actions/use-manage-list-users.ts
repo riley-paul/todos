@@ -46,7 +46,7 @@ export default function useManageListUsers(listId: string) {
     });
   };
 
-  const handleRemoveFromList = (userToRemoveId: string) => {
+  const handleRemoveFromList = (listUserId: string) => {
     dispatchAlert({
       type: "open",
       data: {
@@ -55,12 +55,7 @@ export default function useManageListUsers(listId: string) {
         message:
           "Are you sure you want to remove this user from the list? They will lose access to this list and all its tasks.",
         handleDelete: async () => {
-          removeFromList({
-            variables: {
-              listId,
-              userId: userToRemoveId,
-            },
-          });
+          removeFromList({ variables: { listUserId } });
           dispatchAlert({ type: "close" });
         },
         confirmButtonProps: {

@@ -14,8 +14,8 @@ mutation InviteUserToList($listId: ID!, $email: String!) {
   }
 }
 
-mutation RemoveUserFromList($listId: ID!, $userId: ID!) {
-  removeUserFromList(listId: $listId, userId: $userId) {
+mutation RemoveUserFromList($listUserId: ID!) {
+  removeUserFromList(listUserId: $listUserId) {
     ...ShallowList
   }
 }

@@ -113,8 +113,7 @@ export type MutationLeaveListArgs = {
 
 
 export type MutationRemoveUserFromListArgs = {
-  listId: Scalars['ID']['input'];
-  userId: Scalars['ID']['input'];
+  listUserId: Scalars['ID']['input'];
 };
 
 
@@ -224,8 +223,7 @@ export type InviteUserToListMutationVariables = Exact<{
 export type InviteUserToListMutation = { __typename?: 'Mutation', inviteUserToList?: { __typename?: 'ListObjectType', id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, users: Array<{ __typename?: 'ListUserObjectType', id: string, isPending: boolean, user: { __typename?: 'UserObjectType', id: string, name: string, email: string, avatarUrl?: string | null } }> } | null };
 
 export type RemoveUserFromListMutationVariables = Exact<{
-  listId: Scalars['ID']['input'];
-  userId: Scalars['ID']['input'];
+  listUserId: Scalars['ID']['input'];
 }>;
 
 
@@ -494,8 +492,8 @@ export type InviteUserToListMutationHookResult = ReturnType<typeof useInviteUser
 export type InviteUserToListMutationResult = Apollo.MutationResult<InviteUserToListMutation>;
 export type InviteUserToListMutationOptions = Apollo.BaseMutationOptions<InviteUserToListMutation, InviteUserToListMutationVariables>;
 export const RemoveUserFromListDocument = gql`
-    mutation RemoveUserFromList($listId: ID!, $userId: ID!) {
-  removeUserFromList(listId: $listId, userId: $userId) {
+    mutation RemoveUserFromList($listUserId: ID!) {
+  removeUserFromList(listUserId: $listUserId) {
     ...ShallowList
   }
 }
@@ -515,8 +513,7 @@ export type RemoveUserFromListMutationFn = Apollo.MutationFunction<RemoveUserFro
  * @example
  * const [removeUserFromListMutation, { data, loading, error }] = useRemoveUserFromListMutation({
  *   variables: {
- *      listId: // value for 'listId'
- *      userId: // value for 'userId'
+ *      listUserId: // value for 'listUserId'
  *   },
  * });
  */

@@ -79,31 +79,32 @@ builder.mutationFields((t) => ({
 
   removeUserFromList: t.drizzleField({
     type: "List",
-    args: { listId: t.arg.id(), userId: t.arg.id() },
+    args: { listUserId: t.arg.id() },
     nullable: true,
-    resolve: async (query, _root, { listId, userId }, ctx) => {
+    resolve: async (query, _root, { listUserId }, ctx) => {
+      const membership = await db.query.ListUser.findFirst({
+        where: { id: listUserId },
+      });
+
+      if (!membership) throw new Error("Membership not found");
+
       const isMember = await db.query.ListUser.findFirst({
-        where: { listId, userId: ctx.userId, isPending: false },
+        where: {
+          listId: membership.listId,
+          userId: ctx.userId,
+          isPending: false,
+        },
       });
 
       if (!isMember) throw new Error("You are not a member of the list");
 
-      const membership = await db.query.ListUser.findFirst({
-        where: { listId, userId },
-      });
-
-      if (!membership) throw new Error("User is not a member of the list");
-
       await db
         .delete(tables.ListUser)
-        .where(
-          and(
-            eq(tables.ListUser.listId, listId),
-            eq(tables.ListUser.userId, userId),
-          ),
-        );
+        .where(eq(tables.ListUser.id, listUserId));
 
-      return db.query.List.findFirst(query({ where: { id: { eq: listId } } }));
+      return db.query.List.findFirst(
+        query({ where: { id: { eq: membership.listId } } }),
+      );
     },
   }),
 }));
