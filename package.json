@@ -65,6 +65,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^10.5.0",
+    "@graphql-codegen/add": "^7.0.1",
     "@graphql-codegen/cli": "^6.3.1",
     "@graphql-codegen/typescript-react-apollo": "^4.4.2",
     "@parcel/watcher": "^2.5.6",
