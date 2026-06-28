@@ -19,32 +19,23 @@ import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
 import { getListUrl } from "@/lib/constants";
 import {
-  useDeleteCompletedTodosMutation,
   useDeleteListMutation,
-  useUncheckCompletedTodosMutation,
   useUpdateListMutation,
   type ShallowListFragment,
 } from "@/app/gql.gen";
 import { useParams, useRouter } from "@tanstack/react-router";
 import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
 import useNumCompletedTodos from "@/app/hooks/actions/use-num-completed-todos";
+import useDeleteCompletedTodos from "@/app/hooks/actions/use-delete-completed-todos";
+import useUncheckCompletedTodos from "@/app/hooks/actions/use-uncheck-completed-todos";
 
 type Props = {
   list: ShallowListFragment;
 };
 
 const ListMenu: React.FC<Props> = ({ list }) => {
-  const [deleteCompletedTodos] = useDeleteCompletedTodosMutation({
-    onCompleted: () => {
-      toast.success("Completed todos deleted");
-    },
-  });
-
-  const [uncheckCompletedTodos] = useUncheckCompletedTodosMutation({
-    onCompleted: () => {
-      toast.success("Completed todos unchecked");
-    },
-  });
+  const [deleteCompletedTodos] = useDeleteCompletedTodos(list.id);
+  const [uncheckCompletedTodos] = useUncheckCompletedTodos(list.id);
 
   const { listId: currentList } = useParams({ strict: false });
   const router = useRouter();

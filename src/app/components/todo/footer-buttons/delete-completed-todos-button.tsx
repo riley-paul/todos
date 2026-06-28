@@ -1,18 +1,13 @@
-import { useDeleteCompletedTodosMutation } from "@/app/gql.gen";
+import useDeleteCompletedTodos from "@/app/hooks/actions/use-delete-completed-todos";
 import useNumCompletedTodos from "@/app/hooks/actions/use-num-completed-todos";
 import { Button } from "@radix-ui/themes";
 import { ListXIcon } from "lucide-react";
-import { toast } from "sonner";
 
 type Props = { listId: string };
 
 const DeleteCompletedTodosButton: React.FC<Props> = ({ listId }) => {
   const numCompleted = useNumCompletedTodos(listId);
-  const [deleteCompletedTodos] = useDeleteCompletedTodosMutation({
-    onCompleted: () => {
-      toast.success("Completed todos deleted");
-    },
-  });
+  const [deleteCompletedTodos] = useDeleteCompletedTodos(listId);
 
   return (
     <Button

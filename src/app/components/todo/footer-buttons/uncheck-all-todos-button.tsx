@@ -1,19 +1,14 @@
-import { useUncheckCompletedTodosMutation } from "@/app/gql.gen";
 import useNumCompletedTodos from "@/app/hooks/actions/use-num-completed-todos";
+import useUncheckCompletedTodos from "@/app/hooks/actions/use-uncheck-completed-todos";
 import { Button } from "@radix-ui/themes";
 import { SquareMinusIcon } from "lucide-react";
 import React from "react";
-import { toast } from "sonner";
 
 type Props = { listId: string };
 
 const UncheckAllTodosButton: React.FC<Props> = ({ listId }) => {
   const numCompleted = useNumCompletedTodos(listId);
-  const [uncheckCompletedTodos] = useUncheckCompletedTodosMutation({
-    onCompleted: () => {
-      toast.success("Completed todos unchecked");
-    },
-  });
+  const [uncheckCompletedTodos] = useUncheckCompletedTodos(listId);
 
   return (
     <Button
