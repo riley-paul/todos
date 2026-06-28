@@ -1,9 +1,9 @@
-import type { UserSelect } from "@/lib/types";
+import type { UserFragment } from "@/app/gql.gen";
 import { Avatar, type AvatarProps } from "@radix-ui/themes";
 import React from "react";
 
 type Props = {
-  user: UserSelect;
+  user: UserFragment;
   avatarProps?: Omit<AvatarProps, "src" | "alt" | "fallback" | "radius">;
 };
 

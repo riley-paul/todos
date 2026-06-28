@@ -25,7 +25,7 @@ const relations = defineRelations(schema, (r) => ({
       from: r.List.id.through(r.ListUser.listId),
       to: r.User.id.through(r.ListUser.userId),
     }),
-    listUser: r.many.ListUser({
+    listUsers: r.many.ListUser({
       from: r.List.id,
       to: r.ListUser.listId,
     }),
@@ -42,6 +42,16 @@ const relations = defineRelations(schema, (r) => ({
     users: r.many.User({
       from: r.Todo.listId.through(r.ListUser.listId),
       to: r.User.id.through(r.ListUser.userId),
+    }),
+  },
+  ListUser: {
+    user: r.one.User({
+      from: r.ListUser.userId,
+      to: r.User.id,
+    }),
+    list: r.one.List({
+      from: r.ListUser.listId,
+      to: r.List.id,
     }),
   },
 }));

@@ -20,8 +20,7 @@ import ListRow from "./list/list-row";
 import TodoRow from "./todo/todo-row";
 import NoSearchResultsScreen from "./screens/no-search-results";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
-import { useQuery } from "@tanstack/react-query";
-import { qListsSearch, qTodosSearch } from "../lib/queries";
+import { useGetListsForChipsQuery, useGetTodosQuery } from "../gql.gen";
 
 type ContentProps = {
   handleClose: () => void;
@@ -70,12 +69,10 @@ const CommandList: React.FC<{ handleClose: () => void }> = ({
 }) => {
   const navigate = useNavigate();
 
-  const { data: lists = [], isLoading: listsLoading } = useQuery(
-    qListsSearch(""),
-  );
-  const { data: todos = [], isLoading: todosLoading } = useQuery(
-    qTodosSearch(""),
-  );
+  const { data: { lists = [] } = {}, loading: listsLoading } =
+    useGetListsForChipsQuery();
+  const { data: { todos = [] } = {}, loading: todosLoading } =
+    useGetTodosQuery();
 
   if (listsLoading || todosLoading) {
     return <LoadingScreen />;
@@ -126,7 +123,7 @@ const CommandList: React.FC<{ handleClose: () => void }> = ({
               handleClose();
               navigate({
                 to: "/todos/$listId",
-                params: { listId: todo.listId },
+                params: { listId: todo.list.id },
                 search: { highlightedTodoId: todo.id },
               });
             }}

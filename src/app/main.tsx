@@ -12,26 +12,17 @@ import { routeTree } from "./routeTree.gen";
 import LoadingScreen from "./components/screens/loading";
 import NotFoundScreen from "./components/screens/not-found";
 import ErrorScreen from "./components/screens/error";
-import {
-  MutationCache,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
-import { handleError } from "./lib/error";
+import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client/react";
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
-  mutationCache: new MutationCache({
-    onSuccess: () => {
-      queryClient.invalidateQueries();
-    },
-    onError: handleError,
-  }),
+const apolloClient = new ApolloClient({
+  link: new HttpLink({ uri: "/graphql", useGETForQueries: true }),
+  cache: new InMemoryCache(),
 });
 
 const router = createRouter({
   routeTree,
-  context: { queryClient },
+  context: { apolloClient },
   defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
   defaultPendingComponent: LoadingScreen,
@@ -49,8 +40,9 @@ type Props = { currentUser: UserSelect; currentUserSession: UserSessionInfo };
 
 const App: React.FC<Props> = ({ currentUser, currentUserSession }) => {
   useServiceWorker();
+  if (!currentUser || !currentUserSession) return null;
   return (
-    <QueryClientProvider client={queryClient}>
+    <ApolloProvider client={apolloClient}>
       <UserProvider user={currentUser} userSession={currentUserSession}>
         <RealtimeProvider>
           <RadixProvider>
@@ -60,7 +52,7 @@ const App: React.FC<Props> = ({ currentUser, currentUserSession }) => {
           </RadixProvider>
         </RealtimeProvider>
       </UserProvider>
-    </QueryClientProvider>
+    </ApolloProvider>
   );
 };
 

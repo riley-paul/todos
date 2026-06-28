@@ -1,0 +1,60 @@
+fragment ListUser on ListUserObjectType {
+  id
+  isPending
+  user {
+    ...User
+  }
+}
+
+fragment ShallowList on ListObjectType {
+  id
+  name
+  todoCount
+  show
+  order
+  isPending
+  users {
+    ...ListUser
+  }
+}
+
+fragment ListFull on ListObjectType {
+  ...ShallowList
+  todos {
+    ...Todo
+  }
+}
+
+query GetListsForChips {
+  lists {
+    ...ShallowList
+  }
+}
+
+query GetList($listId: ID!) {
+  list(listId: $listId) {
+    ...ListFull
+  }
+}
+
+mutation CreateList($input: CreateListInput!) {
+  createList(input: $input) {
+    ...ListFull
+  }
+}
+
+mutation UpdateList($listId: ID!, $input: UpdateListInput!) {
+  updateList(listId: $listId, input: $input) {
+    ...ListFull
+  }
+}
+
+mutation DeleteList($listId: ID!) {
+  deleteList(listId: $listId)
+}
+
+mutation UpdateListSortShow($listIds: [ID!]!) {
+  updateListSortShow(listIds: $listIds) {
+    ...ShallowList
+  }
+}

@@ -1,10 +1,10 @@
 import { cn } from "@/app/lib/utils";
-import type { TodoSelect } from "@/lib/types";
 import React from "react";
 import TextWithLinks from "../ui/text-with-links";
 import { Badge, Text } from "@radix-ui/themes";
+import type { TodoFragment } from "@/app/gql.gen";
 
-type Props = { todo: TodoSelect };
+type Props = { todo: TodoFragment };
 
 const TodoRow: React.FC<Props> = ({ todo }) => {
   return (

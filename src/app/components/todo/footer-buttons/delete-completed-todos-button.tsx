@@ -1,25 +1,25 @@
+import { useDeleteCompletedTodosMutation } from "@/app/gql.gen";
+import useNumCompletedTodos from "@/app/hooks/actions/use-num-completed-todos";
 import { Button } from "@radix-ui/themes";
 import { ListXIcon } from "lucide-react";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { qTodos } from "@/app/lib/queries";
-import useMutations from "@/app/hooks/use-mutations";
+import { toast } from "sonner";
 
 type Props = { listId: string };
 
 const DeleteCompletedTodosButton: React.FC<Props> = ({ listId }) => {
-  const { data: numCompleted } = useSuspenseQuery({
-    ...qTodos(listId),
-    select: (todos) => todos.filter((todo) => todo.isCompleted).length,
+  const numCompleted = useNumCompletedTodos(listId);
+  const [deleteCompletedTodos] = useDeleteCompletedTodosMutation({
+    onCompleted: () => {
+      toast.success("Completed todos deleted");
+    },
   });
-
-  const { deleteCompletedTodos } = useMutations();
 
   return (
     <Button
       size="1"
       variant="ghost"
       color="gray"
-      onClick={() => deleteCompletedTodos.mutate({ listId })}
+      onClick={() => deleteCompletedTodos({ variables: { listId } })}
       disabled={numCompleted === 0}
     >
       <ListXIcon className="size-3" />

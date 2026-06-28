@@ -1,0 +1,21 @@
+mutation AcceptListInvite($listId: ID!) {
+  acceptListInvite(listId: $listId) {
+    ...ShallowList
+  }
+}
+
+mutation LeaveList($listId: ID!) {
+  leaveList(listId: $listId)
+}
+
+mutation InviteUserToList($listId: ID!, $email: String!) {
+  inviteUserToList(listId: $listId, email: $email) {
+    ...ShallowList
+  }
+}
+
+mutation RemoveUserFromList($listUserId: ID!) {
+  removeUserFromList(listUserId: $listUserId) {
+    ...ShallowList
+  }
+}

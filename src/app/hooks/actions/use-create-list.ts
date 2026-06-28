@@ -1,11 +1,26 @@
 import { alertSystemAtom } from "@/app/components/alert-system/alert-system.store";
 import { zListName } from "@/lib/types";
 import { useAtom } from "jotai";
-import useMutations from "../use-mutations";
+import { GetListsForChipsDocument, useCreateListMutation } from "@/app/gql.gen";
+import { useNavigate, useRouter } from "@tanstack/react-router";
 
 export default function useCreateList() {
+  const navigate = useNavigate();
+  const router = useRouter();
+
   const [, dispatchAlert] = useAtom(alertSystemAtom);
-  const { createList } = useMutations();
+
+  const [createList] = useCreateListMutation({
+    refetchQueries: [GetListsForChipsDocument],
+    onCompleted: ({ createList }) => {
+      if (!createList) return;
+      router.invalidate();
+      navigate({
+        to: "/todos/$listId",
+        params: { listId: createList.id },
+      });
+    },
+  });
 
   const handleCreateList = () => {
     dispatchAlert({
@@ -18,7 +33,7 @@ export default function useCreateList() {
         placeholder: "List name",
         schema: zListName,
         handleSubmit: async (name: string) => {
-          createList.mutate({ name });
+          createList({ variables: { input: { name } } });
           dispatchAlert({ type: "close" });
         },
       },

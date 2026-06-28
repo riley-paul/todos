@@ -1,0 +1,24 @@
+fragment User on UserObjectType {
+  id
+  name
+  email
+  avatarUrl
+}
+
+query GetMe {
+  me {
+    ...User
+    settingGroupCompleted
+  }
+}
+
+mutation UpdateUser($input: UpdateUserInput!) {
+  updateUser(input: $input) {
+    ...User
+    settingGroupCompleted
+  }
+}
+
+mutation DeleteUser {
+  deleteUser
+}

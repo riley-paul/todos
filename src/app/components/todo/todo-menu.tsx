@@ -11,24 +11,88 @@ import { useAtom } from "jotai";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { editingTodoIdAtom } from "./todos.store";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { qLists } from "@/app/lib/queries";
-import useMutations from "@/app/hooks/use-mutations";
+import {
+  type ListFullFragment,
+  useDeleteTodoMutation,
+  useGetListsForChipsSuspenseQuery,
+  useUpdateTodoMutation,
+} from "@/app/gql.gen";
 
 const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
   const { listId } = useParams({ strict: false });
-  const { data: lists } = useSuspenseQuery(qLists());
+
+  const [deleteTodo] = useDeleteTodoMutation({
+    update: (cache, { data }, { variables }) => {
+      if (!data?.deleteTodo) return;
+
+      const listCacheId = cache.identify({
+        __typename: "ListObjectType",
+        id: listId,
+      });
+      cache.modify<ListFullFragment>({
+        id: listCacheId,
+        fields: {
+          todoCount: (count) => count - 1,
+        },
+      });
+
+      const todoCacheId = cache.identify({
+        __typename: "TodoObjectType",
+        id: variables?.input.id,
+      });
+      cache.evict({ id: todoCacheId });
+      cache.gc();
+    },
+  });
+
+  const [moveTodo] = useUpdateTodoMutation({
+    update: (cache, { data }, { variables }) => {
+      if (!data?.updateTodo) return;
+
+      const oldListCacheId = cache.identify({
+        __typename: "ListObjectType",
+        id: listId,
+      });
+      cache.modify<ListFullFragment>({
+        id: oldListCacheId,
+        fields: {
+          todoCount: (count) => count - 1,
+          todos: (existingTodoRefs, { readField }) => {
+            return existingTodoRefs.filter(
+              (ref) => readField("id", ref) !== todoId,
+            );
+          },
+        },
+      });
+      const newListCacheId = cache.identify({
+        __typename: "ListObjectType",
+        id: variables?.input.listId,
+      });
+      cache.modify<ListFullFragment>({
+        id: newListCacheId,
+        fields: {
+          todoCount: (count) => count + 1,
+        },
+      });
+      cache.evict({
+        id: newListCacheId,
+        fieldName: "todos",
+      });
+    },
+  });
+
+  const {
+    data: { lists = [] },
+  } = useGetListsForChipsSuspenseQuery();
 
   const [_, setEditingTodoId] = useAtom(editingTodoIdAtom);
 
-  const { deleteTodo, moveTodo } = useMutations();
-
   const handleMove = (targetListId: string) => {
-    moveTodo.mutate({ todoId, data: { listId: targetListId } });
+    moveTodo({ variables: { input: { id: todoId, listId: targetListId } } });
   };
 
   const handleDelete = () => {
-    deleteTodo.mutate({ todoId });
+    deleteTodo({ variables: { input: { id: todoId } } });
   };
 
   const handleEdit = () => {

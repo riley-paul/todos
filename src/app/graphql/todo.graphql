@@ -1,0 +1,47 @@
+fragment Todo on TodoObjectType {
+  id
+  text
+  isCompleted
+  isAuthor
+  author {
+    ...User
+  }
+  list {
+    id
+    name
+  }
+}
+
+query GetTodos($listId: ID) {
+  todos(listId: $listId) {
+    ...Todo
+  }
+}
+
+mutation CreateTodo($input: CreateTodoInput!) {
+  createTodo(input: $input) {
+    ...ListFull
+  }
+}
+
+mutation DeleteTodo($input: DeleteTodoInput!) {
+  deleteTodo(input: $input)
+}
+
+mutation UpdateTodo($input: UpdateTodoInput!) {
+  updateTodo(input: $input) {
+    ...Todo
+  }
+}
+
+mutation DeleteCompletedTodos($listId: ID!) {
+  deleteCompletedTodos(listId: $listId) {
+    ...ListFull
+  }
+}
+
+mutation UncheckCompletedTodos($listId: ID!) {
+  uncheckCompletedTodos(listId: $listId) {
+    ...ListFull
+  }
+}

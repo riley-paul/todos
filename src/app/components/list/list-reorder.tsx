@@ -40,22 +40,29 @@ import { Link } from "@tanstack/react-router";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
 import ListRow from "./list-row";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
-import type { ListSelect } from "@/lib/types";
-import useMutations from "@/app/hooks/use-mutations";
+import {
+  GetListsForChipsDocument,
+  useUpdateListSortShowMutation,
+  type ShallowListFragment,
+} from "@/app/gql.gen";
 
 type SortableObjectData =
   | {
       type: "list";
       id: string;
-      list: ListSelect;
+      list: ShallowListFragment;
     }
   | {
       type: "separator";
       id: string;
     };
 
-const getSortableObjectList = (lists: ListSelect[]): SortableObjectData[] => {
-  const listToSortableObj = (list: ListSelect): SortableObjectData => ({
+const getSortableObjectList = (
+  lists: ShallowListFragment[],
+): SortableObjectData[] => {
+  const listToSortableObj = (
+    list: ShallowListFragment,
+  ): SortableObjectData => ({
     type: "list",
     id: list.id,
     list,
@@ -169,14 +176,17 @@ const SortableItem: React.FC<SortableItemProps> = (props) => {
   }
 };
 
-type ListReorderContentProps = { lists: ListSelect[] };
+type ListReorderContentProps = { lists: ShallowListFragment[] };
 
 const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [localObjs, setLocalObjs] = useState(getSortableObjectList(lists));
 
+  const [updateListSortShow] = useUpdateListSortShowMutation({
+    refetchQueries: [GetListsForChipsDocument],
+  });
+
   useEffect(() => setLocalObjs(getSortableObjectList(lists)), [lists]);
-  const { updateListSortShow } = useMutations();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -201,7 +211,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
       const newOrder = arrayMove(ids, oldIndex, newIndex);
 
       setLocalObjs((prev) => arrayMove(prev, oldIndex, newIndex));
-      return updateListSortShow.mutate({ listIds: newOrder });
+      return updateListSortShow({ variables: { listIds: newOrder } });
     }
   };
 
@@ -234,7 +244,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
 };
 
 type ListReorderProps = {
-  lists: ListSelect[];
+  lists: ShallowListFragment[];
 };
 
 const ListReorder: React.FC<ListReorderProps> = ({ lists }) => {

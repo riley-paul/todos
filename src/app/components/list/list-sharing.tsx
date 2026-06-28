@@ -4,22 +4,24 @@ import ListShares from "./list-shares";
 import { PlusIcon, Share2Icon } from "lucide-react";
 import ResponsiveDialogContent from "../ui/responsive-dialog-content";
 import UserBubbleGroup from "@/app/components/ui/user/user-bubble-group";
-import type { ListSelect } from "@/lib/types";
+import { type ShallowListFragment } from "@/app/gql.gen";
 import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
+import useNonPendingListUsers from "@/app/hooks/actions/use-non-pending-list-users";
 
-const ListSharing: React.FC<{ list: ListSelect }> = ({ list }) => {
+const ListSharing: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
   const { handleInviteToList } = useManageListUsers(list.id);
+  const nonPendingUsers = useNonPendingListUsers(list);
 
   return (
     <Dialog.Root>
       <Dialog.Trigger>
-        {list.otherUsers.length === 0 ? (
+        {nonPendingUsers.length === 0 ? (
           <IconButton variant="ghost">
             <Share2Icon className="size-4" />
           </IconButton>
         ) : (
           <Button variant="ghost">
-            <UserBubbleGroup users={list.otherUsers} numAvatars={3} />
+            <UserBubbleGroup users={nonPendingUsers} numAvatars={3} />
           </Button>
         )}
       </Dialog.Trigger>
@@ -32,7 +34,7 @@ const ListSharing: React.FC<{ list: ListSelect }> = ({ list }) => {
           </Dialog.Description>
         </header>
         <article className="relative flex-1">
-          <ListShares listId={list.id} />
+          <ListShares list={list} />
         </article>
         <footer className="flex">
           <Button

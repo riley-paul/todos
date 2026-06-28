@@ -1,10 +1,10 @@
-import type { UserSelect } from "@/lib/types";
 import React from "react";
 import UserBubble from "./user-bubble";
 import { Text } from "@radix-ui/themes";
 import { cn } from "@/app/lib/utils";
+import type { UserFragment } from "@/app/gql.gen";
 
-type Props = { user: UserSelect; className?: string; isLarge?: boolean };
+type Props = { user: UserFragment; className?: string; isLarge?: boolean };
 
 const UserRow: React.FC<Props> = ({ user, className, isLarge }) => {
   return (

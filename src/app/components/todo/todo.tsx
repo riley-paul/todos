@@ -24,9 +24,9 @@ import { useAtom } from "jotai";
 import { editingTodoIdAtom } from "./todos.store";
 import { SaveIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
-import type { TodoSelect } from "@/lib/types";
+import { type TodoFragment } from "@/app/gql.gen";
 import { useUser } from "@/app/providers/user-provider";
-import useMutations from "@/app/hooks/use-mutations";
+import useUpdateTodo from "@/app/hooks/actions/use-update-todo";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -87,18 +87,31 @@ const TodoForm: React.FC<{
   );
 };
 
-const TodoCheckbox: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
-  const { updateTodo } = useMutations();
+const TodoCheckbox: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
+  const [updateTodo, { loading }] = useUpdateTodo(todo);
   return (
-    <Spinner loading={updateTodo.isPending}>
+    <Spinner loading={loading}>
       <Checkbox
         size="3"
         variant="soft"
         checked={todo.isCompleted}
         onCheckedChange={(value) => {
-          updateTodo.mutate({
-            todoId: todo.id,
-            data: { isCompleted: Boolean(value) },
+          const isCompleted = Boolean(value);
+          updateTodo({
+            variables: { input: { id: todo.id, isCompleted } },
+            update: (cache) => {
+              const listCacheId = cache.identify({
+                __typename: "ListObjectType",
+                id: todo.list.id,
+              });
+              cache.modify({
+                id: listCacheId,
+                fields: {
+                  todoCount: (existingCount) =>
+                    isCompleted ? existingCount - 1 : existingCount + 1,
+                },
+              });
+            },
           });
         }}
       />
@@ -106,10 +119,10 @@ const TodoCheckbox: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   );
 };
 
-const TodoListBadge: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
+const TodoListBadge: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
   const { listId } = useParams({ strict: false });
 
-  if (todo.listId === listId) return null;
+  if (todo.list.id === listId) return null;
   return (
     <Badge asChild>
       <Link to="/todos/$listId" params={{ listId: todo.list.id }}>
@@ -119,14 +132,16 @@ const TodoListBadge: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
   );
 };
 
-const TodoAuthorBubble: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
+const TodoAuthorBubble: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
   const user = useUser();
 
-  if (user.id === todo.userId) return null;
+  if (user.id === todo.author.id) return null;
   return <UserBubble user={todo.author} avatarProps={{ size: "1" }} />;
 };
 
-const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
+const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
+  const [updateTodo] = useUpdateTodo(todo);
+
   const navigate = useNavigate();
 
   const [editingTodoId, setEditingTodoId] = useAtom(editingTodoIdAtom);
@@ -156,8 +171,6 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
       ref.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [isHighlighted]);
 
-  const { updateTodo } = useMutations();
-
   return (
     <div
       ref={ref}
@@ -171,7 +184,7 @@ const Todo: React.FC<{ todo: TodoSelect }> = ({ todo }) => {
         <TodoForm
           initialValue={todo.text}
           handleSubmit={(text) => {
-            updateTodo.mutate({ todoId: todo.id, data: { text } });
+            updateTodo({ variables: { input: { id: todo.id, text } } });
             setEditingTodoId(null);
           }}
         />
