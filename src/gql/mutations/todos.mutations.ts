@@ -3,6 +3,7 @@ import { builder } from "../gql-builder";
 import { getUserLists } from "../helpers";
 import * as tables from "@/db/schema";
 import { and, eq } from "drizzle-orm";
+import { notifyOtherListUsers } from "@/lib/realtime";
 
 const CreateTodoInput = builder.inputType("CreateTodoInput", {
   fields: (t) => ({
@@ -37,7 +38,8 @@ builder.mutationFields((t) => ({
       if (!userLists.has(input.listId)) {
         throw new Error("You do not have access to this list");
       }
-      await db
+
+      const [newTodo] = await db
         .insert(tables.Todo)
         .values({
           text: input.text,
@@ -46,8 +48,9 @@ builder.mutationFields((t) => ({
         })
         .returning();
 
+      await notifyOtherListUsers(ctx, newTodo.listId);
       return db.query.List.findFirst(
-        query({ where: { id: { eq: input.listId } } }),
+        query({ where: { id: { eq: newTodo.listId } } }),
       );
     },
   }),
@@ -71,15 +74,17 @@ builder.mutationFields((t) => ({
         throw new Error("You cannot move to this list");
       }
 
-      await db
+      const [updatedTodo] = await db
         .update(tables.Todo)
         .set({
           text: input.text ?? undefined,
           isCompleted: input.isCompleted ?? undefined,
           listId: input.listId ?? undefined,
         })
-        .where(eq(tables.Todo.id, input.id));
+        .where(eq(tables.Todo.id, input.id))
+        .returning();
 
+      await notifyOtherListUsers(ctx, [updatedTodo.listId, todo.listId]);
       return db.query.Todo.findFirst(
         query({ where: { id: { eq: input.id } } }),
       );
@@ -101,6 +106,7 @@ builder.mutationFields((t) => ({
         throw new Error("You do not have access to this todo");
       }
 
+      await notifyOtherListUsers(ctx, todo.listId);
       await db.delete(tables.Todo).where(eq(tables.Todo.id, input.id));
       return true;
     },
@@ -126,6 +132,7 @@ builder.mutationFields((t) => ({
           ),
         );
 
+      await notifyOtherListUsers(ctx, listId);
       return db.query.List.findFirst(query({ where: { id: { eq: listId } } }));
     },
   }),
@@ -151,6 +158,7 @@ builder.mutationFields((t) => ({
           ),
         );
 
+      await notifyOtherListUsers(ctx, listId);
       return db.query.List.findFirst(query({ where: { id: { eq: listId } } }));
     },
   }),

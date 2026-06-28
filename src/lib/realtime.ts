@@ -15,12 +15,21 @@ const createAbly = (env: Env) => {
   return new Rest({ key: env.ABLY_API_KEY, clientId: "server" });
 };
 
+const getListIds = (listId: string | string[]) => {
+  const array = Array.isArray(listId) ? listId : [listId];
+  const unique = [...new Set(array)];
+  return unique;
+};
+
 export async function notifyOtherListUsers(
   ctx: BuilderContext,
   listId: string | string[],
 ) {
   const db = createDb(ctx.env);
   const ably = createAbly(ctx.env);
+
+  const listIds = getListIds(listId);
+  if (listIds.length === 0) return;
 
   const currentSessionId = ctx.sessionId;
 
@@ -36,9 +45,7 @@ export async function notifyOtherListUsers(
     )
     .where(
       and(
-        Array.isArray(listId)
-          ? inArray(tables.ListUser.listId, listId)
-          : eq(tables.ListUser.listId, listId),
+        inArray(tables.ListUser.listId, listIds),
         ne(tables.UserSession.id, currentSessionId),
       ),
     );
@@ -49,7 +56,7 @@ export async function notifyOtherListUsers(
 
   return ably.batchPublish({
     channels: listUsers.map(createChannelName),
-    messages: [{ name: "invalidate" }],
+    messages: [{ name: "invalidate", data: listIds }],
   });
 }
 

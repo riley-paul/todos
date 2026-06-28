@@ -40,6 +40,7 @@ type Props = { currentUser: UserSelect; currentUserSession: UserSessionInfo };
 
 const App: React.FC<Props> = ({ currentUser, currentUserSession }) => {
   useServiceWorker();
+  if (!currentUser || !currentUserSession) return null;
   return (
     <ApolloProvider client={apolloClient}>
       <UserProvider user={currentUser} userSession={currentUserSession}>

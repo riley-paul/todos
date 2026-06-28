@@ -3,7 +3,7 @@ import { createDb } from "@/db";
 import * as tables from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { LIST_SEPARATOR_ID } from "@/lib/constants";
-
+import { notifyOtherListUsers } from "@/lib/realtime";
 
 const CreateListInput = builder.inputType("CreateListInput", {
   fields: (t) => ({
@@ -35,6 +35,7 @@ builder.mutationFields((t) => ({
         return newList;
       });
 
+      await notifyOtherListUsers(ctx, newList.id);
       return db.query.List.findFirst(
         query({ where: { id: { eq: newList.id } } }),
       );
@@ -70,6 +71,8 @@ builder.mutationFields((t) => ({
         .update(tables.List)
         .set({ name: input.name })
         .where(eq(tables.List.id, listId));
+
+      await notifyOtherListUsers(ctx, listId);
       return db.query.List.findFirst(query({ where: { id: { eq: listId } } }));
     },
   }),
@@ -95,6 +98,7 @@ builder.mutationFields((t) => ({
       if (!listUser) throw new Error("You do not have access to this list");
 
       await db.delete(tables.List).where(eq(tables.List.id, listId));
+      await notifyOtherListUsers(ctx, listId);
       return true;
     },
   }),

@@ -1,6 +1,7 @@
 import { builder } from "../gql-builder";
 import { createDb } from "@/db";
 import * as tables from "@/db/schema";
+import { notifyOtherListUsers } from "@/lib/realtime";
 import { and, eq } from "drizzle-orm";
 
 builder.mutationFields((t) => ({
@@ -21,6 +22,7 @@ builder.mutationFields((t) => ({
         )
         .returning();
 
+      await notifyOtherListUsers(ctx, listId);
       return db.query.List.findFirst(
         query({ where: { id: { eq: updated.listId } } }),
       );
@@ -39,6 +41,7 @@ builder.mutationFields((t) => ({
             eq(tables.ListUser.userId, ctx.userId),
           ),
         );
+      await notifyOtherListUsers(ctx, listId);
       return true;
     },
   }),
@@ -71,6 +74,7 @@ builder.mutationFields((t) => ({
         .values({ listId, userId: user.id, isPending: true })
         .returning();
 
+      await notifyOtherListUsers(ctx, listId);
       return db.query.List.findFirst(
         query({ where: { id: { eq: newInvite.listId } } }),
       );
@@ -103,6 +107,7 @@ builder.mutationFields((t) => ({
         .delete(tables.ListUser)
         .where(eq(tables.ListUser.id, listUserId));
 
+      await notifyOtherListUsers(ctx, membership.listId);
       return db.query.List.findFirst(
         query({ where: { id: { eq: membership.listId } } }),
       );
