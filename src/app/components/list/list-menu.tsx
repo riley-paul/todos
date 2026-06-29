@@ -154,7 +154,13 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       key: "uncheck-all",
       text: "Uncheck all",
       icon: <SquareMinusIcon className="size-4 opacity-70" />,
-      onClick: () => uncheckCompletedTodos({ variables: { listId: list.id } }),
+      onClick: () =>
+        uncheckCompletedTodos({
+          variables: { listId: list.id },
+          onCompleted: () => {
+            toast.success(`Unchecked ${numCompleted} completed todos`);
+          },
+        }),
       disabled: numCompleted <= 0,
     },
     {
@@ -162,7 +168,13 @@ const ListMenu: React.FC<Props> = ({ list }) => {
       key: "delete-completed",
       text: "Delete completed",
       icon: <ListXIcon className="size-4 opacity-70" />,
-      onClick: () => deleteCompletedTodos({ variables: { listId: list.id } }),
+      onClick: () =>
+        deleteCompletedTodos({
+          variables: { listId: list.id },
+          onCompleted: () => {
+            toast.success(`Deleted ${numCompleted} completed todos`);
+          },
+        }),
       disabled: numCompleted <= 0,
     },
     {

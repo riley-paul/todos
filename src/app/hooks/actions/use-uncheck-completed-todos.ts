@@ -1,7 +1,6 @@
 import { useUncheckCompletedTodosMutation } from "@/app/gql.gen";
 import { readListFromCache } from "@/app/graphql/utils";
 import { useApolloClient } from "@apollo/client";
-import { toast } from "sonner";
 
 export default function useUncheckCompletedTodos(listId: string) {
   const { cache } = useApolloClient();
@@ -22,9 +21,6 @@ export default function useUncheckCompletedTodos(listId: string) {
           })),
         },
       };
-    },
-    onCompleted: () => {
-      toast.success("Completed todos unchecked");
     },
   });
 }

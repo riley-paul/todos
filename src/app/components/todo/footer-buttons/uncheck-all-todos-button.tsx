@@ -3,6 +3,7 @@ import useUncheckCompletedTodos from "@/app/hooks/actions/use-uncheck-completed-
 import { Button } from "@radix-ui/themes";
 import { SquareMinusIcon } from "lucide-react";
 import React from "react";
+import { toast } from "sonner";
 
 type Props = { listId: string };
 
@@ -15,7 +16,14 @@ const UncheckAllTodosButton: React.FC<Props> = ({ listId }) => {
       size="1"
       variant="ghost"
       color="gray"
-      onClick={() => uncheckCompletedTodos({ variables: { listId } })}
+      onClick={() =>
+        uncheckCompletedTodos({
+          variables: { listId },
+          onCompleted: () => {
+            toast.success(`Unchecked ${numCompleted} completed todos`);
+          },
+        })
+      }
       disabled={numCompleted === 0}
     >
       <SquareMinusIcon className="size-3" />
