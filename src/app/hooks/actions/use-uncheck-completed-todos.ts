@@ -1,8 +1,5 @@
-import {
-  ListFullFragmentDoc,
-  useUncheckCompletedTodosMutation,
-  type ListFullFragment,
-} from "@/app/gql.gen";
+import { useUncheckCompletedTodosMutation } from "@/app/gql.gen";
+import { readListFromCache } from "@/app/graphql/utils";
 import { useApolloClient } from "@apollo/client";
 import { toast } from "sonner";
 
@@ -11,15 +8,7 @@ export default function useUncheckCompletedTodos(listId: string) {
 
   return useUncheckCompletedTodosMutation({
     optimisticResponse: (_variables, { IGNORE }) => {
-      const listCacheId = cache.identify({
-        __typename: "ListObjectType",
-        id: listId,
-      });
-      const existingList = cache.readFragment<ListFullFragment>({
-        id: listCacheId,
-        fragmentName: "ListFull",
-        fragment: ListFullFragmentDoc,
-      });
+      const existingList = readListFromCache(cache, listId);
       if (!existingList) return IGNORE;
 
       return {
