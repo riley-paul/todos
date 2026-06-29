@@ -24,9 +24,8 @@ import { useAtom } from "jotai";
 import { editingTodoIdAtom } from "./todos.store";
 import { SaveIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
-import { type TodoFragment } from "@/app/gql.gen";
+import { useUpdateTodoMutation, type TodoFragment } from "@/app/gql.gen";
 import { useUser } from "@/app/providers/user-provider";
-import useUpdateTodo from "@/app/hooks/actions/use-update-todo";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -88,7 +87,7 @@ const TodoForm: React.FC<{
 };
 
 const TodoCheckbox: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
-  const [updateTodo, { loading }] = useUpdateTodo(todo);
+  const [updateTodo, { loading }] = useUpdateTodoMutation();
   return (
     <Spinner loading={loading}>
       <Checkbox
@@ -99,6 +98,13 @@ const TodoCheckbox: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
           const isCompleted = Boolean(value);
           updateTodo({
             variables: { input: { id: todo.id, isCompleted } },
+            optimisticResponse: {
+              __typename: "Mutation",
+              updateTodo: {
+                ...todo,
+                isCompleted,
+              },
+            },
             update: (cache) => {
               const listCacheId = cache.identify({
                 __typename: "ListObjectType",
@@ -140,7 +146,7 @@ const TodoAuthorBubble: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
 };
 
 const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
-  const [updateTodo] = useUpdateTodo(todo);
+  const [updateTodo] = useUpdateTodoMutation();
 
   const navigate = useNavigate();
 
@@ -184,7 +190,13 @@ const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
         <TodoForm
           initialValue={todo.text}
           handleSubmit={(text) => {
-            updateTodo({ variables: { input: { id: todo.id, text } } });
+            updateTodo({
+              variables: { input: { id: todo.id, text } },
+              optimisticResponse: {
+                __typename: "Mutation",
+                updateTodo: { ...todo, text },
+              },
+            });
             setEditingTodoId(null);
           }}
         />
