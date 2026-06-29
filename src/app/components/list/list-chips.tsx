@@ -7,10 +7,11 @@ import ListReorder from "./list-reorder";
 import { ACCENT_COLOR } from "@/lib/constants";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import {
-  useGetListsForChipsSuspenseQuery,
+  GetListsForChipsDocument,
   type ShallowListFragment,
 } from "@/app/gql.gen";
 import useCreateList from "@/app/hooks/actions/use-create-list";
+import { useSuspenseQuery } from "@apollo/client/react";
 
 const ListChip: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
   const link = linkOptions({
@@ -45,7 +46,9 @@ const ListChip: React.FC<{ list: ShallowListFragment }> = ({ list }) => {
 
 const ListChips: React.FC = () => {
   const handleCreateList = useCreateList();
-  const { data: { lists = [] } = {} } = useGetListsForChipsSuspenseQuery();
+  const { data: { lists = [] } = {} } = useSuspenseQuery(
+    GetListsForChipsDocument,
+  );
 
   useHotkey("A", handleCreateList, { ignoreInputs: true });
 

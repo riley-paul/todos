@@ -3,21 +3,22 @@ import { z } from "astro/zod";
 import { useAtom } from "jotai";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import {
-  useAcceptListInviteMutation,
-  useInviteUserToListMutation,
-  useLeaveListMutation,
-  useRemoveUserFromListMutation,
+  AcceptListInviteDocument,
+  InviteUserToListDocument,
+  LeaveListDocument,
+  RemoveUserFromListDocument,
 } from "@/app/gql.gen";
+import { useMutation } from "@apollo/client/react";
 
 export default function useManageListUsers(listId: string) {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const navigate = useNavigate();
   const { listId: currentListId } = useParams({ strict: false });
 
-  const [inviteToList] = useInviteUserToListMutation();
-  const [acceptInvite] = useAcceptListInviteMutation();
-  const [removeFromList] = useRemoveUserFromListMutation();
-  const [leaveList] = useLeaveListMutation({
+  const [inviteToList] = useMutation(InviteUserToListDocument);
+  const [acceptInvite] = useMutation(AcceptListInviteDocument);
+  const [removeFromList] = useMutation(RemoveUserFromListDocument);
+  const [leaveList] = useMutation(LeaveListDocument, {
     update: (cache) => {
       const listCacheId = cache.identify({
         __typename: "ListObjectType",

@@ -12,18 +12,18 @@ import type { MenuItem } from "../ui/menu/menu.types";
 import { editingTodoIdAtom } from "./todos.store";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
 import {
+  DeleteTodoDocument,
+  GetListsForChipsDocument,
+  UpdateTodoDocument,
   type ListFullFragment,
-  useDeleteTodoMutation,
-  useGetListsForChipsSuspenseQuery,
-  useUpdateTodoMutation,
 } from "@/app/gql.gen";
+import { useMutation, useSuspenseQuery } from "@apollo/client/react";
 
 const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
   const { listId } = useParams({ strict: false });
 
-  const [deleteTodo] = useDeleteTodoMutation({
+  const [deleteTodo] = useMutation(DeleteTodoDocument, {
     optimisticResponse: {
-      __typename: "Mutation",
       deleteTodo: true,
     },
     update: (cache, { data }) => {
@@ -47,7 +47,7 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
     },
   });
 
-  const [moveTodo] = useUpdateTodoMutation({
+  const [moveTodo] = useMutation(UpdateTodoDocument, {
     update: (cache, { data }, { variables }) => {
       if (!data?.updateTodo) return;
 
@@ -85,7 +85,7 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
 
   const {
     data: { lists = [] },
-  } = useGetListsForChipsSuspenseQuery();
+  } = useSuspenseQuery(GetListsForChipsDocument);
 
   const [_, setEditingTodoId] = useAtom(editingTodoIdAtom);
 
@@ -101,16 +101,14 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
     setEditingTodoId(todoId);
   };
 
-  const moveMenuItems: MenuItem[] = lists.map(
-    (list): MenuItem => ({
-      type: "item",
-      key: `move-${list.id}`,
-      text: list.name,
-      onClick: () => handleMove(list.id),
-      hide: list.id === listId,
-      disabled: list.isPending,
-    }),
-  );
+  const moveMenuItems: MenuItem[] = lists.map((list): MenuItem => ({
+    type: "item",
+    key: `move-${list.id}`,
+    text: list.name,
+    onClick: () => handleMove(list.id),
+    hide: list.id === listId,
+    disabled: list.isPending,
+  }));
 
   const menuItems: MenuItem[] = [
     {

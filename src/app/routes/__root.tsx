@@ -3,11 +3,11 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import React from "react";
 import ListChips from "../components/list/list-chips";
 import AppHeader from "../components/app-header";
-import type { ApolloClient, NormalizedCacheObject } from "@apollo/client";
+import type { ApolloClient } from "@apollo/client";
 import { useUser } from "../providers/user-provider";
 
 type RouterContext = {
-  apolloClient: ApolloClient<NormalizedCacheObject>;
+  apolloClient: ApolloClient;
 };
 
 export const Route = createRootRouteWithContext<RouterContext>()({

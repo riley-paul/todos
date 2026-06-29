@@ -3,21 +3,25 @@ import * as Ably from "ably";
 import React from "react";
 import { useUser, useUserSession } from "./user-provider";
 import { createChannelName } from "@/lib/realtime";
-import { useGetListLazyQuery } from "../gql.gen";
 import { z } from "astro/zod";
+import { useLazyQuery } from "@apollo/client/react";
+import { GetListDocument } from "../gql.gen";
 
 const realtimeClient = new Ably.Realtime({ authUrl: "/ably-auth" });
 const zData = z.array(z.string());
 
 type InvalidatorProps = React.PropsWithChildren<{ channelName: string }>;
 const Invalidator: React.FC<InvalidatorProps> = ({ children, channelName }) => {
-  const [getList] = useGetListLazyQuery();
+  const [getList] = useLazyQuery(GetListDocument, {
+    fetchPolicy: "network-only",
+    nextFetchPolicy: "network-only",
+  });
 
   useChannel(channelName, "invalidate", ({ data }) => {
     console.log("Received invalidate message", { channelName, data });
     const { data: listIds = [] } = zData.safeParse(data);
     listIds.forEach((listId) => {
-      getList({ variables: { listId }, fetchPolicy: "network-only" });
+      getList({ variables: { listId } });
     });
   });
 

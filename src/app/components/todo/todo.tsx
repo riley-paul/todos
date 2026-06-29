@@ -24,8 +24,9 @@ import { useAtom } from "jotai";
 import { editingTodoIdAtom } from "./todos.store";
 import { SaveIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
-import { useUpdateTodoMutation, type TodoFragment } from "@/app/gql.gen";
+import { UpdateTodoDocument, type TodoFragment } from "@/app/gql.gen";
 import { useUser } from "@/app/providers/user-provider";
+import { useMutation } from "@apollo/client/react";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -87,7 +88,7 @@ const TodoForm: React.FC<{
 };
 
 const TodoCheckbox: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
-  const [updateTodo, { loading }] = useUpdateTodoMutation();
+  const [updateTodo, { loading }] = useMutation(UpdateTodoDocument);
   return (
     <Spinner loading={loading}>
       <Checkbox
@@ -99,7 +100,6 @@ const TodoCheckbox: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
           updateTodo({
             variables: { input: { id: todo.id, isCompleted } },
             optimisticResponse: {
-              __typename: "Mutation",
               updateTodo: {
                 ...todo,
                 isCompleted,
@@ -146,7 +146,7 @@ const TodoAuthorBubble: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
 };
 
 const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
-  const [updateTodo] = useUpdateTodoMutation();
+  const [updateTodo] = useMutation(UpdateTodoDocument);
 
   const navigate = useNavigate();
 
@@ -192,10 +192,7 @@ const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
           handleSubmit={(text) => {
             updateTodo({
               variables: { input: { id: todo.id, text } },
-              optimisticResponse: {
-                __typename: "Mutation",
-                updateTodo: { ...todo, text },
-              },
+              optimisticResponse: { updateTodo: { ...todo, text } },
             });
             setEditingTodoId(null);
           }}

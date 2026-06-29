@@ -6,21 +6,15 @@ import { z } from "astro/zod";
 import PendingListScreen from "../components/screens/pending-list";
 import TodoAdder from "../components/todo-adder";
 import Todos from "../components/todo/todos";
-import {
-  GetListDocument,
-  useGetListSuspenseQuery,
-  type GetListQuery,
-  type GetListQueryVariables,
-} from "@/app/gql.gen";
+import { GetListDocument } from "@/app/gql.gen";
 import NotFoundScreen from "@/app/components/screens/not-found";
+import { useSuspenseQuery } from "@apollo/client/react";
 
 export const Route = createFileRoute("/todos/$listId")({
   component: RouteComponent,
   validateSearch: z.object({ highlightedTodoId: z.string().optional() }),
   loader: async ({ context: { apolloClient }, params: { listId } }) => {
-    const {
-      data: { list },
-    } = await apolloClient.query<GetListQuery, GetListQueryVariables>({
+    const { data: { list } = {} } = await apolloClient.query({
       query: GetListDocument,
       variables: { listId },
     });
@@ -33,7 +27,7 @@ function RouteComponent() {
   const { listId } = Route.useParams();
   const {
     data: { list },
-  } = useGetListSuspenseQuery({ variables: { listId } });
+  } = useSuspenseQuery(GetListDocument, { variables: { listId } });
 
   useDocumentTitle(list?.name ?? "Todos");
 

@@ -20,7 +20,8 @@ import ListRow from "./list/list-row";
 import TodoRow from "./todo/todo-row";
 import NoSearchResultsScreen from "./screens/no-search-results";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
-import { useGetListsForChipsQuery, useGetTodosQuery } from "../gql.gen";
+import { GetListsForChipsDocument, GetTodosDocument } from "../gql.gen";
+import { useQuery } from "@apollo/client/react";
 
 type ContentProps = {
   handleClose: () => void;
@@ -69,10 +70,11 @@ const CommandList: React.FC<{ handleClose: () => void }> = ({
 }) => {
   const navigate = useNavigate();
 
-  const { data: { lists = [] } = {}, loading: listsLoading } =
-    useGetListsForChipsQuery();
+  const { data: { lists = [] } = {}, loading: listsLoading } = useQuery(
+    GetListsForChipsDocument,
+  );
   const { data: { todos = [] } = {}, loading: todosLoading } =
-    useGetTodosQuery();
+    useQuery(GetTodosDocument);
 
   if (listsLoading || todosLoading) {
     return <LoadingScreen />;

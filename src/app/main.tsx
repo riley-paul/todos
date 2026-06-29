@@ -12,12 +12,25 @@ import { routeTree } from "./routeTree.gen";
 import LoadingScreen from "./components/screens/loading";
 import NotFoundScreen from "./components/screens/not-found";
 import ErrorScreen from "./components/screens/error";
-import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
+import {
+  ApolloClient,
+  HttpLink,
+  InMemoryCache,
+  onlineSource,
+  RefetchEventManager,
+  windowFocusSource,
+} from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
 
 const apolloClient = new ApolloClient({
   link: new HttpLink({ uri: "/graphql", useGETForQueries: true }),
   cache: new InMemoryCache(),
+  refetchEventManager: new RefetchEventManager({
+    sources: {
+      online: onlineSource,
+      windowFocus: windowFocusSource,
+    },
+  }),
 });
 
 const router = createRouter({
@@ -39,7 +52,7 @@ declare module "@tanstack/react-router" {
 type Props = { currentUser: UserSelect; currentUserSession: UserSessionInfo };
 
 const App: React.FC<Props> = ({ currentUser, currentUserSession }) => {
-  useServiceWorker();
+  // useServiceWorker();
   if (!currentUser || !currentUserSession) return null;
   return (
     <ApolloProvider client={apolloClient}>

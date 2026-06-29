@@ -1,11 +1,11 @@
-import { useDeleteCompletedTodosMutation } from "@/app/gql.gen";
+import { DeleteCompletedTodosDocument } from "@/app/gql.gen";
 import { readListFromCache } from "@/app/graphql/utils";
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient, useMutation } from "@apollo/client/react";
 
 export default function useDeleteCompletedTodos(listId: string) {
   const { cache } = useApolloClient();
 
-  return useDeleteCompletedTodosMutation({
+  return useMutation(DeleteCompletedTodosDocument, {
     optimisticResponse: (_variables, { IGNORE }) => {
       const existingList = readListFromCache(cache, listId);
       if (!existingList) return IGNORE;

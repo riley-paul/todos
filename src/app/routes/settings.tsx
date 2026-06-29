@@ -13,11 +13,15 @@ import { themeAtom } from "../hooks/use-theme";
 import { alertSystemAtom } from "../components/alert-system/alert-system.store";
 import { Trash2Icon } from "lucide-react";
 import {
-  useDeleteUserMutation,
-  useGetMeSuspenseQuery,
-  useUpdateUserMutation,
+  useApolloClient,
+  useMutation,
+  useSuspenseQuery,
+} from "@apollo/client/react";
+import {
+  DeleteUserDocument,
+  GetMeDocument,
+  UpdateUserDocument,
 } from "../gql.gen";
-import { useApolloClient } from "@apollo/client";
 
 export const Route = createFileRoute("/settings")({
   component: RouteComponent,
@@ -41,7 +45,7 @@ const DeleteAccountSetting: React.FC = () => {
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const client = useApolloClient();
 
-  const [deleteAccount] = useDeleteUserMutation({
+  const [deleteAccount] = useMutation(DeleteUserDocument, {
     onCompleted: () => {
       dispatchAlert({ type: "close" });
       client.resetStore();
@@ -95,14 +99,13 @@ const ThemeSetting: React.FC = () => {
 };
 
 const GroupCompletedSetting: React.FC = () => {
-  const { data: { me: settings } = {} } = useGetMeSuspenseQuery();
-  const [updateUserSettings, { loading }] = useUpdateUserMutation({
+  const { data: { me: settings } = {} } = useSuspenseQuery(GetMeDocument);
+  const [updateUserSettings, { loading }] = useMutation(UpdateUserDocument, {
     optimisticResponse: (variables, { IGNORE }) => {
       if (!settings) return IGNORE;
       return {
         __typename: "Mutation",
         updateUser: {
-          __typename: "UserObjectType",
           ...settings,
           ...variables.input,
         },

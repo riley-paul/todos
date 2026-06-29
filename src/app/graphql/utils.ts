@@ -2,7 +2,7 @@ import type { ApolloCache } from "@apollo/client";
 import { ListFullFragmentDoc, type ListFullFragment } from "../gql.gen";
 
 export const readListFromCache = (
-  cache: ApolloCache<object>,
+  cache: ApolloCache,
   listId: string,
 ) => {
   const listCacheId = cache.identify({

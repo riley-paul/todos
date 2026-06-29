@@ -42,9 +42,10 @@ import ListRow from "./list-row";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import {
   GetListsForChipsDocument,
-  useUpdateListSortShowMutation,
+  UpdateListSortShowDocument,
   type ShallowListFragment,
 } from "@/app/gql.gen";
+import { useMutation } from "@apollo/client/react";
 
 type SortableObjectData =
   | {
@@ -182,7 +183,7 @@ const ListReorderContent: React.FC<ListReorderContentProps> = ({ lists }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [localObjs, setLocalObjs] = useState(getSortableObjectList(lists));
 
-  const [updateListSortShow] = useUpdateListSortShowMutation({
+  const [updateListSortShow] = useMutation(UpdateListSortShowDocument, {
     refetchQueries: [GetListsForChipsDocument],
   });
 

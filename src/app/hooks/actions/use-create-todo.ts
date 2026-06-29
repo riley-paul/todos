@@ -1,14 +1,18 @@
-import { useCreateTodoMutation, useGetMeSuspenseQuery } from "@/app/gql.gen";
+import { CreateTodoDocument, GetMeDocument } from "@/app/gql.gen";
 import { readListFromCache } from "@/app/graphql/utils";
-import { useApolloClient } from "@apollo/client";
+import {
+  useApolloClient,
+  useMutation,
+  useSuspenseQuery,
+} from "@apollo/client/react";
 
 export default function useCreateTodo(listId: string) {
   const { cache } = useApolloClient();
   const {
     data: { me },
-  } = useGetMeSuspenseQuery();
+  } = useSuspenseQuery(GetMeDocument);
 
-  return useCreateTodoMutation({
+  return useMutation(CreateTodoDocument, {
     optimisticResponse: ({ input: { text } }, { IGNORE }) => {
       const existingList = readListFromCache(cache, listId);
       if (!existingList) return IGNORE;

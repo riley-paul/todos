@@ -12,16 +12,10 @@ const config: CodegenConfig = {
   documents: ["src/**/*.graphql"],
   generates: {
     "./src/app/gql.gen.tsx": {
-      plugins: [
-        "typescript",
-        "typescript-operations",
-        "typescript-react-apollo",
-        {
-          add: {
-            content: "// @ts-nocheck",
-          },
-        },
-      ],
+      plugins: ["typescript-operations", "typed-document-node"],
+      config: {
+        skipTypeNameForRoot: true,
+      },
     },
   },
   config: {

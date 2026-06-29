@@ -9,10 +9,11 @@ import UncheckAllTodosButton from "./footer-buttons/uncheck-all-todos-button";
 
 import NoTodosScreen from "../screens/no-todos";
 import {
-  useGetMeSuspenseQuery,
+  GetMeDocument,
   type ListFullFragment,
   type TodoFragment,
 } from "@/app/gql.gen";
+import { useSuspenseQuery } from "@apollo/client/react";
 
 const CompletedTodosActions: React.FC<{ listId: string }> = ({ listId }) => (
   <div className="flex items-center justify-end gap-4">
@@ -69,7 +70,7 @@ const Todos: React.FC<Props> = ({ list }) => {
   const { todos } = list;
   const {
     data: { me },
-  } = useGetMeSuspenseQuery();
+  } = useSuspenseQuery(GetMeDocument);
 
   const completedTodos = todos.filter(({ isCompleted }) => isCompleted);
   const notCompletedTodos = todos.filter(({ isCompleted }) => !isCompleted);
