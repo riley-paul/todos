@@ -100,7 +100,7 @@ const ThemeSetting: React.FC = () => {
 
 const GroupCompletedSetting: React.FC = () => {
   const { data: { me: settings } = {} } = useSuspenseQuery(GetMeDocument);
-  const [updateUserSettings, { loading }] = useMutation(UpdateUserDocument, {
+  const [updateUserSettings] = useMutation(UpdateUserDocument, {
     optimisticResponse: (variables, { IGNORE }) => {
       if (!settings) return IGNORE;
       return {
@@ -116,7 +116,6 @@ const GroupCompletedSetting: React.FC = () => {
   return (
     <Setting label="Group completed todos">
       <Switch
-        disabled={loading}
         checked={settings?.settingGroupCompleted}
         onCheckedChange={(value) => {
           updateUserSettings({
