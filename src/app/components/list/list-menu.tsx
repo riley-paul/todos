@@ -28,6 +28,8 @@ import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
 import useNumCompletedTodos from "@/app/hooks/actions/use-num-completed-todos";
 import useDeleteCompletedTodos from "@/app/hooks/actions/use-delete-completed-todos";
 import useUncheckCompletedTodos from "@/app/hooks/actions/use-uncheck-completed-todos";
+import { useApolloClient } from "@apollo/client";
+import { readListFromCache } from "@/app/graphql/utils";
 
 type Props = {
   list: ShallowListFragment;
@@ -39,6 +41,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
 
   const { listId: currentList } = useParams({ strict: false });
   const router = useRouter();
+  const { cache } = useApolloClient();
 
   const [updateList] = useUpdateListMutation();
 
@@ -74,7 +77,17 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         placeholder: "Enter new list name",
         schema: zListName,
         handleSubmit: (name: string) => {
-          updateList({ variables: { listId: list.id, input: { name } } });
+          updateList({
+            variables: { listId: list.id, input: { name } },
+            optimisticResponse: (_variables, { IGNORE }) => {
+              const existingList = readListFromCache(cache, list.id);
+              if (!existingList) return IGNORE;
+              return {
+                __typename: "Mutation",
+                updateList: { ...existingList, name },
+              };
+            },
+          });
           dispatchAlert({ type: "close" });
           toast.success("List renamed successfully");
         },
