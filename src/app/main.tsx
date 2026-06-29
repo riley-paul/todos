@@ -5,7 +5,7 @@ import RadixProvider from "@/app/providers/radix-provider";
 import CustomToaster from "./components/ui/custom-toaster";
 import AlertSystem from "./components/alert-system/alert-system";
 import type { UserSelect, UserSessionInfo } from "@/lib/types";
-import useServiceWorker from "./hooks/use-service-worker";
+// import useServiceWorker from "./hooks/use-service-worker";
 import { UserProvider } from "./providers/user-provider";
 import RealtimeProvider from "./providers/realtime-provider";
 import { routeTree } from "./routeTree.gen";
