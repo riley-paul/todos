@@ -6,7 +6,6 @@ import {
   Button,
   Checkbox,
   Flex,
-  Spinner,
   Text,
   TextArea,
 } from "@radix-ui/themes";
@@ -88,40 +87,38 @@ const TodoForm: React.FC<{
 };
 
 const TodoCheckbox: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
-  const [updateTodo, { loading }] = useMutation(UpdateTodoDocument);
+  const [updateTodo] = useMutation(UpdateTodoDocument);
   return (
-    <Spinner loading={loading}>
-      <Checkbox
-        size="3"
-        variant="soft"
-        checked={todo.isCompleted}
-        onCheckedChange={(value) => {
-          const isCompleted = Boolean(value);
-          updateTodo({
-            variables: { input: { id: todo.id, isCompleted } },
-            optimisticResponse: {
-              updateTodo: {
-                ...todo,
-                isCompleted,
+    <Checkbox
+      size="3"
+      variant="soft"
+      checked={todo.isCompleted}
+      onCheckedChange={(value) => {
+        const isCompleted = Boolean(value);
+        updateTodo({
+          variables: { input: { id: todo.id, isCompleted } },
+          optimisticResponse: {
+            updateTodo: {
+              ...todo,
+              isCompleted,
+            },
+          },
+          update: (cache) => {
+            const listCacheId = cache.identify({
+              __typename: "ListObjectType",
+              id: todo.list.id,
+            });
+            cache.modify({
+              id: listCacheId,
+              fields: {
+                todoCount: (existingCount) =>
+                  isCompleted ? existingCount - 1 : existingCount + 1,
               },
-            },
-            update: (cache) => {
-              const listCacheId = cache.identify({
-                __typename: "ListObjectType",
-                id: todo.list.id,
-              });
-              cache.modify({
-                id: listCacheId,
-                fields: {
-                  todoCount: (existingCount) =>
-                    isCompleted ? existingCount - 1 : existingCount + 1,
-                },
-              });
-            },
-          });
-        }}
-      />
-    </Spinner>
+            });
+          },
+        });
+      }}
+    />
   );
 };
 
