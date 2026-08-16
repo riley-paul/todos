@@ -187,3 +187,4 @@ test.db
 .dev.vars
 
 data-export.json
+ios/todos/TodosAPI/.build/
