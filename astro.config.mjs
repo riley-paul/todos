@@ -19,9 +19,6 @@ export default defineConfig({
       }),
       tailwindcss(),
     ],
-    optimizeDeps: {
-      exclude: ["cloudflare:workers"],
-    },
   },
   output: "server",
   adapter: cloudflare({ platformProxy: { enabled: true } }),
