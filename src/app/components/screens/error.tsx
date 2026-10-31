@@ -4,14 +4,17 @@ import { Button } from "@radix-ui/themes";
 import { BugIcon, HomeIcon, RotateCwIcon } from "lucide-react";
 
 const ErrorScreen: ErrorRouteComponent = ({ error }) => {
+  const errorMessage =
+    error instanceof Error ? error.message : "An unexpected error occurred.";
+  const errorName = error instanceof Error ? error.name : "Error";
   return (
     <Empty.Root>
       <Empty.Header>
         <Empty.Media variant="icon">
           <BugIcon />
         </Empty.Media>
-        <Empty.Title>500 - {error.name}</Empty.Title>
-        <Empty.Description>{error.message}</Empty.Description>
+        <Empty.Title>500 - {errorName}</Empty.Title>
+        <Empty.Description>{errorMessage}</Empty.Description>
       </Empty.Header>
       <Empty.Content>
         <div className="flex items-center gap-2">
