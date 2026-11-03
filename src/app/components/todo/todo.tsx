@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, type RefObject } from "react";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 import UserBubble from "@/app/components/ui/user/user-bubble";
 import {
@@ -155,7 +155,7 @@ const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
   const { highlightedTodoId } = useSearch({ strict: false });
   const isHighlighted = highlightedTodoId === todo.id;
 
-  useOnClickOutside(ref, () => {
+  useOnClickOutside(ref as RefObject<HTMLElement>, () => {
     if (isEditing) setEditingTodoId(null);
     if (isHighlighted) navigate({ search: undefined });
   });

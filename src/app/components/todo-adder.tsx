@@ -6,11 +6,11 @@ import { flushSync } from "react-dom";
 import { z } from "astro/zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { mergeRefs } from "@/app/lib/utils";
 import { PlusIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
 import { type ListFullFragment } from "@/app/gql.gen";
 import useTodoMutations from "../hooks/mutations/use-todo-mutations";
+import useMergeRefs from "../hooks/use-merge-refs";
 
 const schema = z.object({
   text: z.string().nonempty("Todo text cannot be empty"),
@@ -59,31 +59,34 @@ const TodoAdder: React.FC<{ list: ListFullFragment }> = ({ list }) => {
       <Controller
         control={control}
         name="text"
-        render={({ field }) => (
-          <div className="grid flex-1 gap-1">
-            <TextArea
-              size="3"
-              placeholder="Add a todo..."
-              rows={1}
-              className="min-h-min overflow-hidden"
-              {...field}
-              ref={mergeRefs([field.ref, inputRef])}
-              onChange={(e) => {
-                field.onChange(e);
-                resizeTextArea(e.target);
-              }}
-              onFocus={(e) => {
-                e.target.select();
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  onSubmit();
-                }
-              }}
-            />
-          </div>
-        )}
+        render={({ field }) => {
+          const mergedRefs = useMergeRefs(field.ref, inputRef);
+          return (
+            <div className="grid flex-1 gap-1">
+              <TextArea
+                size="3"
+                placeholder="Add a todo..."
+                rows={1}
+                className="min-h-min overflow-hidden"
+                {...field}
+                ref={mergedRefs}
+                onChange={(e) => {
+                  field.onChange(e);
+                  resizeTextArea(e.target);
+                }}
+                onFocus={(e) => {
+                  e.target.select();
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    onSubmit();
+                  }
+                }}
+              />
+            </div>
+          );
+        }}
       />
 
       <input type="submit" hidden />
