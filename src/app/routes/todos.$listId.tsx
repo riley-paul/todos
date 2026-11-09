@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 import { useDocumentTitle } from "usehooks-ts";
 import ListHeader from "../components/list/list-header";
