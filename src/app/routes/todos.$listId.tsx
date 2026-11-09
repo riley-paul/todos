@@ -8,29 +8,26 @@ import TodoAdder from "../components/todo-adder";
 import Todos from "../components/todo/todos";
 import { GetListDocument } from "@/app/gql.gen";
 import NotFoundScreen from "@/app/components/screens/not-found";
-import { useSuspenseQuery } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
+import LoadingScreen from "../components/screens/loading";
 
 export const Route = createFileRoute("/todos/$listId")({
   component: RouteComponent,
   validateSearch: z.object({ highlightedTodoId: z.string().optional() }),
-  loader: async ({ context: { apolloClient }, params: { listId } }) => {
-    const { data: { list } = {} } = await apolloClient.query({
-      query: GetListDocument,
-      variables: { listId },
-    });
-    if (!list) throw notFound();
-    return { list };
+  loader: ({ context: { apolloClient }, params: { listId } }) => {
+    apolloClient.query({ query: GetListDocument, variables: { listId } });
   },
 });
 
 function RouteComponent() {
   const { listId } = Route.useParams();
-  const {
-    data: { list },
-  } = useSuspenseQuery(GetListDocument, { variables: { listId } });
+  const { data: { list } = {}, loading } = useQuery(GetListDocument, {
+    variables: { listId },
+  });
 
   useDocumentTitle(list?.name ?? "Todos");
 
+  if (loading) return <LoadingScreen />;
   if (!list) return <NotFoundScreen />;
   if (list.isPending) return <PendingListScreen list={list} />;
 
